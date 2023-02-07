@@ -302,7 +302,7 @@ public class SwerveDrive extends RobotDriveBase implements Sendable, AutoCloseab
   private double applyDeadband(double value, boolean complex)
   {
     value = Math.abs(value) > m_deadband ? value : 0;
-    return complex ? ((1 / (1 - m_deadband)) * (Math.abs(value) - .2)) * Math.signum(value) : value;
+    return complex ? ((1 / (1 - m_deadband)) * (Math.abs(value) - m_deadband)) * Math.signum(value) : value;
   }
 
   /**

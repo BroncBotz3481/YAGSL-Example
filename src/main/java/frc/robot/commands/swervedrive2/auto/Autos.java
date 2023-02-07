@@ -2,21 +2,18 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
-
-import frc.robot.Constants.Auton;
-import frc.robot.autoCommands.FollowTrajectory;
-import frc.robot.subsystems.SwerveBase;
+package frc.robot.commands.swervedrive2.auto;
 
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
-
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import frc.robot.Constants.Auton;
+import frc.robot.subsystems.swervedrive2.SwerveBase;
 
 public final class Autos {
   /** Example static factory for an autonomous command. */

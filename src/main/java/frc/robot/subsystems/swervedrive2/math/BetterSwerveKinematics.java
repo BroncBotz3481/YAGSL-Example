@@ -1,4 +1,4 @@
-package frc.lib.util;
+package frc.robot.subsystems.swervedrive2.math;
 
 import edu.wpi.first.math.MathSharedStore;
 import edu.wpi.first.math.MathUsageId;
@@ -9,10 +9,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import org.ejml.simple.SimpleMatrix;
-
 import java.util.Arrays;
 import java.util.Collections;
+import org.ejml.simple.SimpleMatrix;
 
 /**
  * Clone of WPI SwerveKinematics, which implements second order

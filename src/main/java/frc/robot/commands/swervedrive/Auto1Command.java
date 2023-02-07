@@ -10,7 +10,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.Drivebase;
+import frc.robot.Constants.Drivebase.DrivetrainLimitations;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.swervedrive.swerve.commands.CustomSwerveControllerCommand;
 import java.util.List;
@@ -31,8 +31,8 @@ public class Auto1Command extends CommandBase
     addRequirements(this.swerveSubsystem);
 
     // 1. Create trajectory settings
-    TrajectoryConfig trajectoryConfig = new TrajectoryConfig(Drivebase.MAX_SPEED,
-                                                             Drivebase.MAX_ACCELERATION)
+    TrajectoryConfig trajectoryConfig = new TrajectoryConfig(DrivetrainLimitations.MAX_SPEED,
+                                                             DrivetrainLimitations.MAX_ACCELERATION)
         .setKinematics(
             swerveSubsystem.m_drive.m_swerveKinematics);
 

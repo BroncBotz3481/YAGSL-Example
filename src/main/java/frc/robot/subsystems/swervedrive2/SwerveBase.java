@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Drivebase;
+import frc.robot.Constants.Drivebase.DrivetrainLimitations;
+import frc.robot.Constants.Drivebase.ModuleLocations;
 import frc.robot.Robot;
 import frc.robot.subsystems.swervedrive2.math.BetterSwerveKinematics;
 import frc.robot.subsystems.swervedrive2.math.BetterSwerveModuleState;
@@ -56,11 +58,11 @@ public class SwerveBase extends SubsystemBase
     }
 
     this.swerveModules = new SwerveModule[]{
-        new SwerveModule(0, Drivebase.Mod0.CONSTANTS),
-        new SwerveModule(1, Drivebase.Mod1.CONSTANTS),
-        new SwerveModule(2, Drivebase.Mod2.CONSTANTS),
-        new SwerveModule(3, Drivebase.Mod3.CONSTANTS),
-        };
+        new SwerveModule(0, Drivebase.Mod0.CONSTANTS), // Front Left
+        new SwerveModule(1, Drivebase.Mod1.CONSTANTS), // Front Right
+        new SwerveModule(2, Drivebase.Mod2.CONSTANTS), // Back Left
+        new SwerveModule(3, Drivebase.Mod3.CONSTANTS), // Back Right
+    };
 
     odometry = new SwerveDriveOdometry(Drivebase.KINEMATICS, getYaw(), getModulePositions());
     zeroGyro();
@@ -105,7 +107,7 @@ public class SwerveBase extends SubsystemBase
             velocity
                                                  );
     // Desaturate calculated speeds
-    BetterSwerveKinematics.desaturateWheelSpeeds(swerveModuleStates, Drivebase.MAX_SPEED);
+    BetterSwerveKinematics.desaturateWheelSpeeds(swerveModuleStates, DrivetrainLimitations.MAX_SPEED);
 
     // Command and display desired states
     for (SwerveModule module : swerveModules)
@@ -126,7 +128,7 @@ public class SwerveBase extends SubsystemBase
   public void setModuleStates(BetterSwerveModuleState[] desiredStates)
   {
     // Desaturates wheel speeds
-    BetterSwerveKinematics.desaturateWheelSpeeds(desiredStates, Drivebase.MAX_SPEED);
+    BetterSwerveKinematics.desaturateWheelSpeeds(desiredStates, DrivetrainLimitations.MAX_SPEED);
 
     // Sets states
     for (SwerveModule module : swerveModules)
@@ -303,7 +305,7 @@ public class SwerveBase extends SubsystemBase
       swerveModule.setDesiredState(
           new BetterSwerveModuleState(
               0,
-              Drivebase.MODULE_LOCATIONS[swerveModule.moduleNumber].getAngle(),
+              ModuleLocations.MODULE_LOCATIONS[swerveModule.moduleNumber].getAngle(),
               0),
           true);
     }

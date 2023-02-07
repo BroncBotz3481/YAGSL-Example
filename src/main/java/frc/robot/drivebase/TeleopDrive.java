@@ -7,7 +7,7 @@ package frc.robot.drivebase;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.Drivebase;
+import frc.robot.Constants.Drivebase.DrivetrainLimitations;
 import frc.robot.subsystems.swervedrive2.SwerveBase;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -53,9 +53,9 @@ public class TeleopDrive extends CommandBase
   @Override
   public void execute()
   {
-    double xVelocity   = Math.pow(vX.getAsDouble(), 3) * Drivebase.MAX_SPEED;
-    double yVelocity   = Math.pow(vY.getAsDouble(), 3) * Drivebase.MAX_SPEED;
-    double angVelocity = Math.pow(omega.getAsDouble(), 3) * Drivebase.MAX_ANGULAR_VELOCITY;
+    double xVelocity   = Math.pow(vX.getAsDouble(), 3) * DrivetrainLimitations.MAX_SPEED;
+    double yVelocity   = Math.pow(vY.getAsDouble(), 3) * DrivetrainLimitations.MAX_SPEED;
+    double angVelocity = Math.pow(omega.getAsDouble(), 3) * DrivetrainLimitations.MAX_ANGULAR_VELOCITY;
     SmartDashboard.putNumber("vX", xVelocity);
     SmartDashboard.putNumber("vY", yVelocity);
     SmartDashboard.putNumber("omega", angVelocity);

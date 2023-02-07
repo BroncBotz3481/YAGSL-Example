@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Drivebase;
+import frc.robot.Constants.Drivebase.DrivetrainLimitations;
+import frc.robot.Constants.Drivebase.ModuleLocations;
 import frc.robot.subsystems.swervedrive2.SwerveBase;
 import java.util.function.DoubleSupplier;
 
@@ -97,11 +99,11 @@ public class AbsoluteDrive extends CommandBase
     }
     // Calculates an angular rate using a PIDController and the commanded angle.  This is then scaled by
     // the drivebase's maximum angular velocity.
-    omega = thetaController.calculate(swerve.getYaw().getRadians(), angle) * Drivebase.MAX_ANGULAR_VELOCITY;
+    omega = thetaController.calculate(swerve.getYaw().getRadians(), angle) * DrivetrainLimitations.MAX_ANGULAR_VELOCITY;
     // Convert joystick inputs to m/s by scaling by max linear speed.  Also uses a cubic function
     // to allow for precise control and fast movement.
-    x = Math.pow(vX.getAsDouble(), 3) * Drivebase.MAX_SPEED;
-    y = Math.pow(vY.getAsDouble(), 3) * Drivebase.MAX_SPEED;
+    x = Math.pow(vX.getAsDouble(), 3) * DrivetrainLimitations.MAX_SPEED;
+    y = Math.pow(vY.getAsDouble(), 3) * DrivetrainLimitations.MAX_SPEED;
 
     // Limit velocity to prevent tippy
     Translation2d translation = limitVelocity(new Translation2d(x, y));
@@ -168,23 +170,23 @@ public class AbsoluteDrive extends CommandBase
     if (angDeg <= 45 && angDeg >= -45)
     {
       projectedWheelbaseEdge = new Translation2d(
-          Drivebase.FRONT_LEFT_X,
-          Drivebase.FRONT_LEFT_X * angle.getTan());
+          ModuleLocations.FRONT_LEFT_X,
+          ModuleLocations.FRONT_LEFT_X * angle.getTan());
     } else if (135 >= angDeg && angDeg > 45)
     {
       projectedWheelbaseEdge = new Translation2d(
-          Drivebase.FRONT_LEFT_Y / angle.getTan(),
-          Drivebase.FRONT_LEFT_Y);
+          ModuleLocations.FRONT_LEFT_Y / angle.getTan(),
+          ModuleLocations.FRONT_LEFT_Y);
     } else if (-135 <= angDeg && angDeg < -45)
     {
       projectedWheelbaseEdge = new Translation2d(
-          Drivebase.FRONT_RIGHT_Y / angle.getTan(),
-          Drivebase.FRONT_RIGHT_Y);
+          ModuleLocations.FRONT_RIGHT_Y / angle.getTan(),
+          ModuleLocations.FRONT_RIGHT_Y);
     } else
     {
       projectedWheelbaseEdge = new Translation2d(
-          Drivebase.BACK_LEFT_X,
-          Drivebase.BACK_LEFT_X * angle.getTan());
+          ModuleLocations.BACK_LEFT_X,
+          ModuleLocations.BACK_LEFT_X * angle.getTan());
     }
 
     double horizontalDistance = projectedHorizontalCg.plus(projectedWheelbaseEdge).getNorm();

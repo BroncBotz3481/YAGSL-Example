@@ -17,13 +17,17 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.Drivebase;
+import frc.robot.Constants.Drivebase.DriveFeedforwardGains;
+import frc.robot.Constants.Drivebase.DrivetrainLimitations;
+import frc.robot.Constants.Drivebase.EncoderConversions;
+import frc.robot.Constants.Drivebase.ModulePIDFGains;
 import frc.robot.Robot;
 import frc.robot.subsystems.swervedrive2.math.BetterSwerveModuleState;
 
 public class SwerveModule
 {
 
-    public int moduleNumber;
+    public        int                   moduleNumber;
     private final double                angleOffset;
     private final CANSparkMax           angleMotor;
     private final CANSparkMax           driveMotor;
@@ -32,7 +36,8 @@ public class SwerveModule
     private final RelativeEncoder       driveEncoder;
     private final SparkMaxPIDController angleController;
     private final SparkMaxPIDController driveController;
-    SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(Drivebase.KS, Drivebase.KV, Drivebase.KA);
+    SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(DriveFeedforwardGains.KS, DriveFeedforwardGains.KV,
+                                                                    DriveFeedforwardGains.KA);
     private       double                lastAngle;
     private       double                angle, omega, speed, fakePos, lastTime, dt;
     private Timer time;
@@ -62,17 +67,17 @@ public class SwerveModule
         absoluteEncoder.configAllSettings(canCoderConfiguration);
 
         angleEncoder = angleMotor.getEncoder();
-        angleEncoder.setPositionConversionFactor(Drivebase.DEGREES_PER_STEERING_ROTATION);
-        angleEncoder.setVelocityConversionFactor(Drivebase.DEGREES_PER_STEERING_ROTATION / 60);
+        angleEncoder.setPositionConversionFactor(EncoderConversions.DEGREES_PER_STEERING_ROTATION);
+        angleEncoder.setVelocityConversionFactor(EncoderConversions.DEGREES_PER_STEERING_ROTATION / 60);
         angleEncoder.setPosition(absoluteEncoder.getAbsolutePosition() - angleOffset);
 
         // Config angle motor/controller
         angleController = angleMotor.getPIDController();
-        angleController.setP(Drivebase.MODULE_KP);
-        angleController.setI(Drivebase.MODULE_KI);
-        angleController.setD(Drivebase.MODULE_KD);
-        angleController.setFF(Drivebase.MODULE_KF);
-        angleController.setIZone(Drivebase.MODULE_IZ);
+        angleController.setP(ModulePIDFGains.MODULE_KP);
+        angleController.setI(ModulePIDFGains.MODULE_KI);
+        angleController.setD(ModulePIDFGains.MODULE_KD);
+        angleController.setFF(ModulePIDFGains.MODULE_KF);
+        angleController.setIZone(ModulePIDFGains.MODULE_IZ);
         angleController.setPositionPIDWrappingEnabled(true);
         angleController.setPositionPIDWrappingMaxInput(180);
         angleController.setPositionPIDWrappingMinInput(-180);
@@ -81,13 +86,13 @@ public class SwerveModule
         // Config drive motor/controller
         driveController = driveMotor.getPIDController();
         driveEncoder = driveMotor.getEncoder();
-        driveEncoder.setPositionConversionFactor(Drivebase.METERS_PER_MOTOR_ROTATION);
-        driveEncoder.setVelocityConversionFactor(Drivebase.METERS_PER_MOTOR_ROTATION / 60);
-        driveController.setP(Drivebase.VELOCITY_KP);
-        driveController.setI(Drivebase.VELOCITY_KI);
-        driveController.setD(Drivebase.VELOCITY_KD);
-        driveController.setFF(Drivebase.VELOCITY_KF);
-        driveController.setIZone(Drivebase.VELOCITY_IZ);
+        driveEncoder.setPositionConversionFactor(EncoderConversions.METERS_PER_MOTOR_ROTATION);
+        driveEncoder.setVelocityConversionFactor(EncoderConversions.METERS_PER_MOTOR_ROTATION / 60);
+        driveController.setP(ModulePIDFGains.VELOCITY_KP);
+        driveController.setI(ModulePIDFGains.VELOCITY_KI);
+        driveController.setD(ModulePIDFGains.VELOCITY_KD);
+        driveController.setFF(ModulePIDFGains.VELOCITY_KF);
+        driveController.setIZone(ModulePIDFGains.VELOCITY_IZ);
         driveMotor.setInverted(Drivebase.DRIVE_MOTOR_INVERT);
         driveMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
@@ -117,7 +122,7 @@ public class SwerveModule
 
         if (isOpenLoop)
         {
-            double percentOutput = desiredState.speedMetersPerSecond / Drivebase.MAX_SPEED;
+            double percentOutput = desiredState.speedMetersPerSecond / DrivetrainLimitations.MAX_SPEED;
             driveMotor.set(percentOutput);
         } else
         {
@@ -125,11 +130,11 @@ public class SwerveModule
             driveController.setReference(velocity, ControlType.kVelocity, 0, feedforward.calculate(velocity));
         }
 
-        double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Drivebase.MAX_SPEED * 0.01) ?
+        double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (DrivetrainLimitations.MAX_SPEED * 0.01) ?
                         lastAngle :
                         desiredState.angle.getDegrees()); // Prevents module rotation if speed is less than 1%
         angleController.setReference(angle, ControlType.kPosition, 0,
-                                     Math.toDegrees(desiredState.omegaRadPerSecond) * Drivebase.MODULE_KV);
+                                     Math.toDegrees(desiredState.omegaRadPerSecond) * ModulePIDFGains.MODULE_KV);
         lastAngle = angle;
 
         this.angle = desiredState.angle.getDegrees();

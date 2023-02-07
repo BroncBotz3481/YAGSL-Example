@@ -7,15 +7,18 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.Auton;
 import frc.robot.subsystems.swervedrive2.SwerveBase;
 
-public class FollowTrajectory extends SequentialCommandGroup{
-    
-    public FollowTrajectory(SwerveBase drivebase, PathPlannerTrajectory trajectory, boolean resetOdometry) {
+public class FollowTrajectory extends SequentialCommandGroup
+{
+
+    public FollowTrajectory(SwerveBase drivebase, PathPlannerTrajectory trajectory, boolean resetOdometry)
+    {
         addRequirements(drivebase);
 
-        if(resetOdometry) {
+        if (resetOdometry)
+        {
             drivebase.resetOdometry(trajectory.getInitialHolonomicPose());
         }
-        
+
         addCommands(
             new PPSwerveControllerCommand(
                 trajectory,
@@ -25,6 +28,6 @@ public class FollowTrajectory extends SequentialCommandGroup{
                 new PIDController(Auton.ANG_KP, Auton.ANG_KI, Auton.ANG_KD),
                 drivebase::setChassisSpeeds,
                 drivebase)
-        );
-    } 
+                   );
+    }
 }

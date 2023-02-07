@@ -15,19 +15,27 @@ import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import frc.robot.Constants.Auton;
 import frc.robot.subsystems.swervedrive2.SwerveBase;
 
-public final class Autos {
-  /** Example static factory for an autonomous command. */
-  public static CommandBase exampleAuto(SwerveBase swerve) {
-    PathPlannerTrajectory example = PathPlanner.loadPath("New Path", 
-      new PathConstraints(Auton.MAX_SPEED, Auton.MAX_ACCELERATION));
+public final class Autos
+{
+
+  private Autos()
+  {
+    throw new UnsupportedOperationException("This is a utility class!");
+  }
+
+  /**
+   * Example static factory for an autonomous command.
+   */
+  public static CommandBase exampleAuto(SwerveBase swerve)
+  {
+    PathPlannerTrajectory example = PathPlanner.loadPath("New Path",
+                                                         new PathConstraints(Auton.MAX_SPEED, Auton.MAX_ACCELERATION));
     return Commands.sequence(new FollowTrajectory(swerve, example, true));
   }
 
-  public static CommandBase driveAndSpin(SwerveBase swerve) {
-    return Commands.sequence(new RepeatCommand(new InstantCommand(() -> swerve.drive(new Translation2d(1, 0), 5, true, true), swerve)));
-  }
-
-  private Autos() {
-    throw new UnsupportedOperationException("This is a utility class!");
+  public static CommandBase driveAndSpin(SwerveBase swerve)
+  {
+    return Commands.sequence(
+        new RepeatCommand(new InstantCommand(() -> swerve.drive(new Translation2d(1, 0), 5, true, true), swerve)));
   }
 }

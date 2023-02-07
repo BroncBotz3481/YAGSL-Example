@@ -1,12 +1,15 @@
 package frc.robot.subsystems.swervedrive2;
 
-public class SwerveModuleConstants {
-    public final int driveMotorID;
-    public final int angleMotorID;
-    public final int cancoderID;
+public class SwerveModuleConstants
+{
+
+    public final int    driveMotorID;
+    public final int    angleMotorID;
+    public final int    cancoderID;
     public final double angleOffset;
 
-    public SwerveModuleConstants(int driveMotorID, int angleMotorID, int cancoderID, double angleOffset) {
+    public SwerveModuleConstants(int driveMotorID, int angleMotorID, int cancoderID, double angleOffset)
+    {
         this.driveMotorID = driveMotorID;
         this.angleMotorID = angleMotorID;
         this.cancoderID = cancoderID;

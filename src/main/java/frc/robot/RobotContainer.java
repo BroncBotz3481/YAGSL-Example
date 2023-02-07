@@ -21,69 +21,71 @@ import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.swervedrive2.SwerveBase;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and trigger mappings) should be declared here.
+ * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
+ * little robot logic should actually be handled in the {@link Robot} periodic methods (other than the scheduler calls).
+ * Instead, the structure of the robot (including subsystems, commands, and trigger mappings) should be declared here.
  */
-public class RobotContainer {
+public class RobotContainer
+{
+
   // The robot's subsystems and commands are defined here...
-  private final SwerveBase drivebase = new SwerveBase();
+  private final SwerveBase       drivebase          = new SwerveBase();
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-
-  private SendableChooser<CommandBase> driveModeSelector;
-
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  CommandJoystick driverController = new CommandJoystick(OperatorConstants.DRIVER_CONTROLLER_PORT);
+  private final SendableChooser<CommandBase> driveModeSelector;
   CommandJoystick rotationController = new CommandJoystick(1);
+  // Replace with CommandPS4Controller or CommandJoystick if needed
+  CommandJoystick driverController   = new CommandJoystick(OperatorConstants.DRIVER_CONTROLLER_PORT);
 
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
+  public RobotContainer()
+  {
     // Configure the trigger bindings
     configureBindings();
 
     AbsoluteDrive absoluteDrive = new AbsoluteDrive(
-      drivebase,
-      // Applies deadbands and inverts controls because joysticks are back-right positive while robot
-      // controls are front-left positive
-      () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
-      () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
-      () -> -rotationController.getX(),
-      () -> -rotationController.getY(), true);
+        drivebase,
+        // Applies deadbands and inverts controls because joysticks are back-right positive while robot
+        // controls are front-left positive
+        () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
+        () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
+        () -> -rotationController.getX(),
+        () -> -rotationController.getY(), true);
 
     AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(
-      drivebase,
-      // Applies deadbands and inverts controls because joysticks are back-right positive while robot
-      // controls are front-left positive
-      () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
-      () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
-      () -> -rotationController.getX(),
-      () -> -rotationController.getY(), false);
+        drivebase,
+        // Applies deadbands and inverts controls because joysticks are back-right positive while robot
+        // controls are front-left positive
+        () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
+        () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
+        () -> -rotationController.getX(),
+        () -> -rotationController.getY(), false);
 
     TeleopDrive openRobotRel = new TeleopDrive(
-      drivebase,
-      () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
-      () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
-      () -> -driverController.getTwist(), () -> false, true);
-    
+        drivebase,
+        () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
+        () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
+        () -> -driverController.getTwist(), () -> false, true);
+
     TeleopDrive closedRobotRel = new TeleopDrive(
-      drivebase,
-      () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
-      () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
-      () -> -driverController.getTwist(), () -> false, false);
-    
+        drivebase,
+        () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
+        () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
+        () -> -driverController.getTwist(), () -> false, false);
+
     TeleopDrive openFieldRel = new TeleopDrive(
-      drivebase,
-      () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
-      () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
-      () -> -driverController.getTwist(), () -> true, true);
+        drivebase,
+        () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
+        () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
+        () -> -driverController.getTwist(), () -> true, true);
 
     TeleopDrive closedFieldRel = new TeleopDrive(
-      drivebase,
-      () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
-      () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
-      () -> -driverController.getTwist(), () -> true, false);
+        drivebase,
+        () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
+        () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
+        () -> -driverController.getTwist(), () -> true, false);
 
     driveModeSelector = new SendableChooser<>();
     driveModeSelector.setDefaultOption("AbsoluteDrive", absoluteDrive);
@@ -99,14 +101,13 @@ public class RobotContainer {
 
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
+   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary predicate, or via the
+   * named factories in {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
+   * {@link CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4}
+   * controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joysticks}.
    */
-  private void configureBindings() {
+  private void configureBindings()
+  {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
@@ -119,15 +120,19 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
+  public Command getAutonomousCommand()
+  {
     // An example command will be run in autonomous
     return Autos.driveAndSpin(drivebase);
   }
 
-  public void setDriveMode() {
+  public void setDriveMode()
+  {
     //drivebase.setDefaultCommand();
   }
-  public void setMotorBrake(boolean brake) {
+
+  public void setMotorBrake(boolean brake)
+  {
     drivebase.setMotorBrake(brake);
   }
 }

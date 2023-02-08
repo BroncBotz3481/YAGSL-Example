@@ -132,7 +132,7 @@ public class SwerveModuleConfiguration
 
 
   /**
-   * Calculate the meters per rotation for the integrated drive encoder.
+   * Calculate the meters per rotation for the integrated encoder.
    *
    * @return Meters per rotation for the drive motor.
    */
@@ -142,7 +142,7 @@ public class SwerveModuleConfiguration
   }
 
   /**
-   * Calculate the degrees per steering rotation for the integrated drive encoder.
+   * Calculate the degrees per steering rotation for the integrated encoder.
    *
    * @return Degrees per steering rotation for the angle motor.
    */

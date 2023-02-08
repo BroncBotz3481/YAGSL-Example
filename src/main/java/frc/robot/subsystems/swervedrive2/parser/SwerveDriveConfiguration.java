@@ -9,7 +9,7 @@ import frc.robot.Constants.Drivebase.Mod2BL;
 import frc.robot.Constants.Drivebase.Mod3BR;
 import frc.robot.Constants.Drivebase.ModuleLocations;
 import frc.robot.subsystems.swervedrive2.SwerveModule;
-import frc.robot.subsystems.swervedrive2.imu.PigeonSwerve;
+import frc.robot.subsystems.swervedrive2.imu.Pigeon2Swerve;
 import frc.robot.subsystems.swervedrive2.imu.SwerveIMU;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ public class SwerveDriveConfiguration
   /**
    * Swerve IMU
    */
-  public SwerveIMU       imu                   = new PigeonSwerve(Drivebase.PIGEON);
+  public SwerveIMU       imu                   = new Pigeon2Swerve(Drivebase.PIGEON, "canivore");
   /**
    * Max speed in meters per second.
    */

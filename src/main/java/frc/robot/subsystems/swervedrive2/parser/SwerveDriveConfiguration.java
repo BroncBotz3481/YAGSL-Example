@@ -11,7 +11,6 @@ import frc.robot.Constants.Drivebase.Mod2BL;
 import frc.robot.Constants.Drivebase.Mod3BR;
 import frc.robot.Constants.Drivebase.ModuleLocations;
 import frc.robot.subsystems.swervedrive2.SwerveModule;
-import frc.robot.subsystems.swervedrive2.SwerveModuleConstants;
 import frc.robot.subsystems.swervedrive2.imu.PigeonSwerve;
 import frc.robot.subsystems.swervedrive2.imu.SwerveIMU;
 import java.util.ArrayList;

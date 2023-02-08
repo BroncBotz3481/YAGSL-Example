@@ -16,6 +16,7 @@ import frc.robot.subsystems.swervedrive2.math.BetterSwerveModuleState;
 import frc.robot.subsystems.swervedrive2.motors.SparkMaxSwerve;
 import frc.robot.subsystems.swervedrive2.motors.SwerveMotor;
 import frc.robot.subsystems.swervedrive2.parser.SwerveDriveConfiguration;
+import frc.robot.subsystems.swervedrive2.parser.SwerveModuleConstants;
 
 public class SwerveModule
 {

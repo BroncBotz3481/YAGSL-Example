@@ -6,7 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.swervedrive2.SwerveModuleConstants;
+import frc.robot.subsystems.swervedrive2.parser.SwerveModuleConstants;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean constants. This

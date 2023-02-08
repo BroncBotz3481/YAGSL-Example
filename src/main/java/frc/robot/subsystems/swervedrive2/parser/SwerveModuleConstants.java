@@ -1,4 +1,4 @@
-package frc.robot.subsystems.swervedrive2;
+package frc.robot.subsystems.swervedrive2.parser;
 
 public class SwerveModuleConstants
 {

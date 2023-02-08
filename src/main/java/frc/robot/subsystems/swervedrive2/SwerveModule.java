@@ -6,9 +6,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants.Drivebase;
-import frc.robot.Constants.Drivebase.DrivetrainLimitations;
-import frc.robot.Constants.Drivebase.ModulePIDFGains;
 import frc.robot.Robot;
 import frc.robot.subsystems.swervedrive2.encoders.CANCoderSwerve;
 import frc.robot.subsystems.swervedrive2.encoders.SwerveAbsoluteEncoder;
@@ -16,7 +13,7 @@ import frc.robot.subsystems.swervedrive2.math.BetterSwerveModuleState;
 import frc.robot.subsystems.swervedrive2.motors.SparkMaxSwerve;
 import frc.robot.subsystems.swervedrive2.motors.SwerveMotor;
 import frc.robot.subsystems.swervedrive2.parser.SwerveDriveConfiguration;
-import frc.robot.subsystems.swervedrive2.parser.SwerveModuleConstants;
+import frc.robot.subsystems.swervedrive2.parser.SwerveModuleConfiguration;
 
 public class SwerveModule
 {
@@ -50,9 +47,13 @@ public class SwerveModule
    */
   private double angle, omega, speed, fakePos, lastTime, dt;
   /**
+   * Swerve module configuration options.
+   */
+  private final SwerveModuleConfiguration configuration;
+  /**
    * Timer for simulation.
    */
-  private Timer time;
+  private       Timer                     time;
 
   /**
    * Construct the swerve module and initialize the swerve module motors and absolute encoder.
@@ -60,13 +61,14 @@ public class SwerveModule
    * @param moduleNumber    Module number for kinematics.
    * @param moduleConstants Module constants containing CAN ID's and offsets.
    */
-  public SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants)
+  public SwerveModule(int moduleNumber, SwerveModuleConfiguration moduleConstants)
   {
     angle = 0;
     speed = 0;
     omega = 0;
     fakePos = 0;
     this.moduleNumber = moduleNumber;
+    configuration = moduleConstants;
     angleOffset = moduleConstants.angleOffset;
 
     angleMotor = new SparkMaxSwerve(moduleConstants.angleMotorID);
@@ -84,23 +86,23 @@ public class SwerveModule
 
     // Config angle motor/controller
     angleMotor.configurePIDF(false,
-                             ModulePIDFGains.MODULE_KP,
-                             ModulePIDFGains.MODULE_KI,
-                             ModulePIDFGains.MODULE_KD,
-                             ModulePIDFGains.MODULE_KF,
-                             ModulePIDFGains.MODULE_IZ);
+                             moduleConstants.angleKP,
+                             moduleConstants.angleKI,
+                             moduleConstants.angleKD,
+                             moduleConstants.angleKF,
+                             moduleConstants.angleKIZ);
     angleMotor.configurePIDWrapping(-180, 180);
     angleMotor.setMotorBrake(false);
 
     // Config drive motor/controller
     driveMotor.configureIntegratedEncoder(true);
     driveMotor.configurePIDF(true,
-                             ModulePIDFGains.VELOCITY_KP,
-                             ModulePIDFGains.VELOCITY_KI,
-                             ModulePIDFGains.VELOCITY_KD,
-                             ModulePIDFGains.VELOCITY_KF,
-                             ModulePIDFGains.VELOCITY_IZ);
-    driveMotor.setInverted(Drivebase.DRIVE_MOTOR_INVERT);
+                             moduleConstants.velocityKP,
+                             moduleConstants.velocityKI,
+                             moduleConstants.velocityKD,
+                             moduleConstants.velocityKF,
+                             moduleConstants.velocityKIZ);
+    driveMotor.setInverted(moduleConstants.driveMotorInverted);
     driveMotor.setMotorBrake(true);
 
     driveMotor.burnFlash();
@@ -135,7 +137,7 @@ public class SwerveModule
 
     if (isOpenLoop)
     {
-      double percentOutput = desiredState.speedMetersPerSecond / DrivetrainLimitations.MAX_SPEED;
+      double percentOutput = desiredState.speedMetersPerSecond / configuration.maxSpeed;
       driveMotor.set(percentOutput);
     } else
     {
@@ -144,10 +146,10 @@ public class SwerveModule
     }
 
     // Prevents module rotation if speed is less than 1%
-    double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (DrivetrainLimitations.MAX_SPEED * 0.01) ?
+    double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (configuration.maxSpeed * 0.01) ?
                     lastAngle :
                     desiredState.angle.getDegrees());
-    angleMotor.setReference(false, angle, Math.toDegrees(desiredState.omegaRadPerSecond) * ModulePIDFGains.MODULE_KV);
+    angleMotor.setReference(false, angle, Math.toDegrees(desiredState.omegaRadPerSecond) * configuration.angleKZ);
     lastAngle = angle;
 
     if (!Robot.isReal())

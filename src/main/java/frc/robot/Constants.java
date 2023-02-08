@@ -6,7 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.swervedrive2.parser.SwerveModuleConstants;
+import frc.robot.subsystems.swervedrive2.parser.SwerveModuleConfiguration;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean constants. This
@@ -167,49 +167,53 @@ public final class Constants
     public static final class Mod0FL
     { //Front Left
 
-      public static final int                   DRIVE_MOTOR_ID = 4;
-      public static final int                   ANGLE_MOTOR_ID = 3;
-      public static final int                   CANCODER_ID    = 9;
-      public static final double                ANGLE_OFFSET   = -114.609; //TODO Set Angle Offset
-      public static final SwerveModuleConstants CONSTANTS      = new SwerveModuleConstants(DRIVE_MOTOR_ID,
-                                                                                           ANGLE_MOTOR_ID, CANCODER_ID,
-                                                                                           ANGLE_OFFSET);
+      public static final int                       DRIVE_MOTOR_ID = 4;
+      public static final int                       ANGLE_MOTOR_ID = 3;
+      public static final int                       CANCODER_ID    = 9;
+      public static final double                    ANGLE_OFFSET   = -114.609; //TODO Set Angle Offset
+      public static final SwerveModuleConfiguration CONSTANTS      = new SwerveModuleConfiguration(DRIVE_MOTOR_ID,
+                                                                                                   ANGLE_MOTOR_ID,
+                                                                                                   CANCODER_ID,
+                                                                                                   ANGLE_OFFSET);
     }
 
     public static final class Mod1FR
     { //Front Right
 
-      public static final int                   DRIVE_MOTOR_ID = 2;
-      public static final int                   ANGLE_MOTOR_ID = 1;
-      public static final int                   CANCODER_ID    = 10;
-      public static final double                ANGLE_OFFSET   = -50.977; //TODO Set Angle Offset
-      public static final SwerveModuleConstants CONSTANTS      = new SwerveModuleConstants(DRIVE_MOTOR_ID,
-                                                                                           ANGLE_MOTOR_ID, CANCODER_ID,
-                                                                                           ANGLE_OFFSET);
+      public static final int                       DRIVE_MOTOR_ID = 2;
+      public static final int                       ANGLE_MOTOR_ID = 1;
+      public static final int                       CANCODER_ID    = 10;
+      public static final double                    ANGLE_OFFSET   = -50.977; //TODO Set Angle Offset
+      public static final SwerveModuleConfiguration CONSTANTS      = new SwerveModuleConfiguration(DRIVE_MOTOR_ID,
+                                                                                                   ANGLE_MOTOR_ID,
+                                                                                                   CANCODER_ID,
+                                                                                                   ANGLE_OFFSET);
     }
 
     public static final class Mod2BL
     { //Back Left
 
-      public static final int                   DRIVE_MOTOR_ID = 7;
-      public static final int                   ANGLE_MOTOR_ID = 8;
-      public static final int                   CANCODER_ID    = 12;
-      public static final double                ANGLE_OFFSET   = 6.504; //TODO Set Angle Offset
-      public static final SwerveModuleConstants CONSTANTS      = new SwerveModuleConstants(DRIVE_MOTOR_ID,
-                                                                                           ANGLE_MOTOR_ID, CANCODER_ID,
-                                                                                           ANGLE_OFFSET);
+      public static final int                       DRIVE_MOTOR_ID = 7;
+      public static final int                       ANGLE_MOTOR_ID = 8;
+      public static final int                       CANCODER_ID    = 12;
+      public static final double                    ANGLE_OFFSET   = 6.504; //TODO Set Angle Offset
+      public static final SwerveModuleConfiguration CONSTANTS      = new SwerveModuleConfiguration(DRIVE_MOTOR_ID,
+                                                                                                   ANGLE_MOTOR_ID,
+                                                                                                   CANCODER_ID,
+                                                                                                   ANGLE_OFFSET);
     }
 
     public static final class Mod3BR
     { //Back Right
 
-      public static final int                   DRIVE_MOTOR_ID = 5;
-      public static final int                   ANGLE_MOTOR_ID = 6;
-      public static final int                   CANCODER_ID    = 11;
-      public static final double                ANGLE_OFFSET   = -18.281; //TODO Set Angle Offset
-      public static final SwerveModuleConstants CONSTANTS      = new SwerveModuleConstants(DRIVE_MOTOR_ID,
-                                                                                           ANGLE_MOTOR_ID, CANCODER_ID,
-                                                                                           ANGLE_OFFSET);
+      public static final int                       DRIVE_MOTOR_ID = 5;
+      public static final int                       ANGLE_MOTOR_ID = 6;
+      public static final int                       CANCODER_ID    = 11;
+      public static final double                    ANGLE_OFFSET   = -18.281; //TODO Set Angle Offset
+      public static final SwerveModuleConfiguration CONSTANTS      = new SwerveModuleConfiguration(DRIVE_MOTOR_ID,
+                                                                                                   ANGLE_MOTOR_ID,
+                                                                                                   CANCODER_ID,
+                                                                                                   ANGLE_OFFSET);
     }
   }
 

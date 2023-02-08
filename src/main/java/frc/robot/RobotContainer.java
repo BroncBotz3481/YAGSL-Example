@@ -15,10 +15,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.swervedrive2.auto.Autos;
-import frc.robot.drivebase.AbsoluteDrive;
-import frc.robot.drivebase.TeleopDrive;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.swervedrive2.SwerveBase;
+import frc.robot.subsystems.swervedrive2.commands.drivebase.AbsoluteDrive;
+import frc.robot.subsystems.swervedrive2.commands.drivebase.TeleopDrive;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very

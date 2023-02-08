@@ -45,10 +45,10 @@ public class SwerveDriveConfiguration
   /**
    * Swerve Modules.
    */
-  public static SwerveModule[]  modules               = createModules(new SwerveModuleConstants[]{Mod0FL.CONSTANTS,
-                                                                                                  Mod1FR.CONSTANTS,
-                                                                                                  Mod2BL.CONSTANTS,
-                                                                                                  Mod3BR.CONSTANTS});
+  public static SwerveModule[]  modules               = createModules(new SwerveModuleConfiguration[]{Mod0FL.CONSTANTS,
+                                                                                                      Mod1FR.CONSTANTS,
+                                                                                                      Mod2BL.CONSTANTS,
+                                                                                                      Mod3BR.CONSTANTS});
 
   /**
    * Create the drive feedforward for swerve modules.
@@ -61,12 +61,12 @@ public class SwerveDriveConfiguration
   }
 
   /**
-   * Create modules based off of the SwerveModuleConstants.
+   * Create modules based off of the SwerveModuleConfiguration.
    *
    * @param swerves Swerve constants.
    * @return Swerve Modules.
    */
-  public static SwerveModule[] createModules(SwerveModuleConstants[] swerves)
+  public static SwerveModule[] createModules(SwerveModuleConfiguration[] swerves)
   {
     List<SwerveModule> mods   = new ArrayList<>();
     SwerveModule[]     modArr = new SwerveModule[swerves.length];

@@ -12,7 +12,6 @@ import frc.robot.subsystems.swervedrive2.encoders.SwerveAbsoluteEncoder;
 import frc.robot.subsystems.swervedrive2.math.BetterSwerveModuleState;
 import frc.robot.subsystems.swervedrive2.motors.SparkMaxSwerve;
 import frc.robot.subsystems.swervedrive2.motors.SwerveMotor;
-import frc.robot.subsystems.swervedrive2.parser.SwerveDriveConfiguration;
 import frc.robot.subsystems.swervedrive2.parser.SwerveModuleConfiguration;
 
 public class SwerveModule
@@ -29,31 +28,31 @@ public class SwerveModule
   /**
    * Absolute encoder for swerve drive.
    */
-  private final SwerveAbsoluteEncoder absoluteEncoder;
-  /**
-   * Module number for kinematics, usually 0 to 3. front left -> front right -> back left -> back right.
-   */
-  public        int                   moduleNumber;
-  /**
-   * Feedforward for drive motor during closed loop control.
-   */
-  SimpleMotorFeedforward feedforward = SwerveDriveConfiguration.createDriveFeedforward();
-  /**
-   * Last angle set for the swerve module.
-   */
-  private double lastAngle;
-  /**
-   * Current state.
-   */
-  private double angle, omega, speed, fakePos, lastTime, dt;
+  private final SwerveAbsoluteEncoder     absoluteEncoder;
   /**
    * Swerve module configuration options.
    */
   private final SwerveModuleConfiguration configuration;
   /**
+   * Module number for kinematics, usually 0 to 3. front left -> front right -> back left -> back right.
+   */
+  public        int                       moduleNumber;
+  /**
+   * Feedforward for drive motor during closed loop control.
+   */
+  public        SimpleMotorFeedforward    feedforward;
+  /**
+   * Last angle set for the swerve module.
+   */
+  private       double                    lastAngle;
+  /**
+   * Current state.
+   */
+  private       double                    angle, omega, speed, fakePos, lastTime, dt;
+  /**
    * Timer for simulation.
    */
-  private       Timer                     time;
+  private Timer time;
 
   /**
    * Construct the swerve module and initialize the swerve module motors and absolute encoder.
@@ -70,6 +69,9 @@ public class SwerveModule
     this.moduleNumber = moduleNumber;
     configuration = moduleConstants;
     angleOffset = moduleConstants.angleOffset;
+
+    // Initialize Feedforward for drive motor.
+    feedforward = configuration.createDriveFeedforward();
 
     angleMotor = new SparkMaxSwerve(moduleConstants.angleMotorID);
     driveMotor = new SparkMaxSwerve(moduleConstants.driveMotorID);

@@ -28,7 +28,7 @@ public class AbsoluteDrive extends CommandBase
   private final DoubleSupplier vY;
   private final DoubleSupplier headingHorizontal;
   private final DoubleSupplier headingVertical;
-  private final boolean isOpenLoop;
+  private final boolean        isOpenLoop;
   private       PIDController  thetaController;
   private       double         omega, angle, lastAngle, x, y;
 

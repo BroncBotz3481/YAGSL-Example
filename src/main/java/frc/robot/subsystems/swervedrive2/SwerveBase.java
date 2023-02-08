@@ -23,15 +23,15 @@ import frc.robot.subsystems.swervedrive2.parser.SwerveDriveConfiguration;
 public class SwerveBase extends SubsystemBase
 {
 
-  public final  Translation2d[]        swerveModuleLocations;
   //
   // Swerve base kinematics object
-  public final  BetterSwerveKinematics kinematics;
-  private final SwerveModule[]         swerveModules;
-  private final SwerveDriveOdometry    odometry;
-  public        Field2d                field = new Field2d();
-  private       SwerveIMU              imu;
-  private       double                 angle, lastTime;
+  public final  BetterSwerveKinematics   kinematics;
+  private final SwerveModule[]           swerveModules;
+  private final SwerveDriveOdometry      odometry;
+  private final SwerveDriveConfiguration swerveDriveConfiguration;
+  public        Field2d                  field = new Field2d();
+  private       SwerveIMU                imu;
+  private       double                   angle, lastTime;
   private Timer   timer;
   private boolean wasGyroReset;
 
@@ -41,11 +41,11 @@ public class SwerveBase extends SubsystemBase
    * field-centric and closed-loop velocity control. setModuleStates() takes a list of SwerveModuleStates and directly
    * passes them to the modules. This subsystem also handles odometry.
    */
-  public SwerveBase()
+  public SwerveBase(SwerveDriveConfiguration config)
   {
-    swerveModuleLocations = SwerveDriveConfiguration.moduleLocationsMeters;
+    swerveDriveConfiguration = config;
     // Create Kinematics from swerve module locations.
-    kinematics = new BetterSwerveKinematics(swerveModuleLocations);
+    kinematics = new BetterSwerveKinematics(config.moduleLocationsMeters);
 
     // Create an integrator for angle if the robot is being simulated to emulate an IMU
     // If the robot is real, instantiate the IMU instead.
@@ -56,11 +56,11 @@ public class SwerveBase extends SubsystemBase
       lastTime = 0;
     } else
     {
-      imu = SwerveDriveConfiguration.imu;
+      imu = config.imu;
       imu.factoryDefault();
     }
 
-    this.swerveModules = SwerveDriveConfiguration.modules;
+    this.swerveModules = config.modules;
 
     odometry = new SwerveDriveOdometry(kinematics, getYaw(), getModulePositions());
     zeroGyro();
@@ -110,7 +110,7 @@ public class SwerveBase extends SubsystemBase
   public void setModuleStates(BetterSwerveModuleState[] desiredStates, boolean isOpenLoop)
   {
     // Desaturates wheel speeds
-    BetterSwerveKinematics.desaturateWheelSpeeds(desiredStates, SwerveDriveConfiguration.maxSpeed);
+    BetterSwerveKinematics.desaturateWheelSpeeds(desiredStates, swerveDriveConfiguration.maxSpeed);
 
     // Sets states
     for (SwerveModule module : swerveModules)
@@ -188,7 +188,7 @@ public class SwerveBase extends SubsystemBase
    */
   public BetterSwerveModuleState[] getStates()
   {
-    BetterSwerveModuleState[] states = new BetterSwerveModuleState[SwerveDriveConfiguration.moduleCount];
+    BetterSwerveModuleState[] states = new BetterSwerveModuleState[swerveDriveConfiguration.moduleCount];
     for (SwerveModule module : swerveModules)
     {
       states[module.moduleNumber] = module.getState();
@@ -203,7 +203,7 @@ public class SwerveBase extends SubsystemBase
    */
   public SwerveModulePosition[] getModulePositions()
   {
-    SwerveModulePosition[] positions = new SwerveModulePosition[SwerveDriveConfiguration.moduleCount];
+    SwerveModulePosition[] positions = new SwerveModulePosition[swerveDriveConfiguration.moduleCount];
     for (SwerveModule module : swerveModules)
     {
       positions[module.moduleNumber] = module.getPosition();
@@ -287,7 +287,7 @@ public class SwerveBase extends SubsystemBase
     for (SwerveModule swerveModule : swerveModules)
     {
       swerveModule.setDesiredState(new BetterSwerveModuleState(0,
-                                                               swerveModuleLocations[swerveModule.moduleNumber].getAngle(),
+                                                               swerveDriveConfiguration.moduleLocationsMeters[swerveModule.moduleNumber].getAngle(),
                                                                0), true);
     }
   }

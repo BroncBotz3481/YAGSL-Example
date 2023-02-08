@@ -48,7 +48,6 @@ public class SwerveDriveConfiguration
                                                                                                Mod2BL.CONSTANTS,
                                                                                                Mod3BR.CONSTANTS});
 
-
   /**
    * Create modules based off of the SwerveModuleConfiguration.
    *
@@ -57,8 +56,9 @@ public class SwerveDriveConfiguration
    */
   public SwerveModule[] createModules(SwerveModuleConfiguration[] swerves)
   {
-    List<SwerveModule> mods   = new ArrayList<>();
-    SwerveModule[]     modArr = new SwerveModule[swerves.length];
+    List<SwerveModule> mods = new ArrayList<>();
+    moduleCount = swerves.length;
+    SwerveModule[] modArr = new SwerveModule[moduleCount];
 
     for (int i = 0; i < swerves.length; i++)
     {

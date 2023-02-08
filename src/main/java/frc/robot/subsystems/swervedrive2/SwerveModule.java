@@ -7,10 +7,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
-import frc.robot.subsystems.swervedrive2.encoders.CANCoderSwerve;
 import frc.robot.subsystems.swervedrive2.encoders.SwerveAbsoluteEncoder;
 import frc.robot.subsystems.swervedrive2.math.BetterSwerveModuleState;
-import frc.robot.subsystems.swervedrive2.motors.SparkMaxSwerve;
 import frc.robot.subsystems.swervedrive2.motors.SwerveMotor;
 import frc.robot.subsystems.swervedrive2.parser.SwerveModuleConfiguration;
 
@@ -73,27 +71,27 @@ public class SwerveModule
     // Initialize Feedforward for drive motor.
     feedforward = configuration.createDriveFeedforward();
 
-    angleMotor = new SparkMaxSwerve(moduleConstants.angleMotorID);
-    driveMotor = new SparkMaxSwerve(moduleConstants.driveMotorID);
+    angleMotor = moduleConstants.createAngleMotor();
+    driveMotor = moduleConstants.createDriveMotor();
     angleMotor.factoryDefaults();
     driveMotor.factoryDefaults();
 
     // Config angle encoders
-    absoluteEncoder = new CANCoderSwerve(moduleConstants.cancoderID);
+    absoluteEncoder = moduleConstants.createAbsoluteEncoder();
     absoluteEncoder.factoryDefault();
     absoluteEncoder.configure(moduleConstants.absoluteEncoderInverted);
 
-    angleMotor.configureIntegratedEncoder(false);
+    angleMotor.configureIntegratedEncoder();
     angleMotor.setPosition(absoluteEncoder.getAbsolutePosition() - angleOffset);
 
     // Config angle motor/controller
-    angleMotor.configurePIDF(false, moduleConstants.anglePIDF);
+    angleMotor.configurePIDF(moduleConstants.anglePIDF);
     angleMotor.configurePIDWrapping(-180, 180);
     angleMotor.setMotorBrake(false);
 
     // Config drive motor/controller
-    driveMotor.configureIntegratedEncoder(true);
-    driveMotor.configurePIDF(true, moduleConstants.velocityPIDF);
+    driveMotor.configureIntegratedEncoder();
+    driveMotor.configurePIDF(moduleConstants.velocityPIDF);
     driveMotor.setInverted(moduleConstants.driveMotorInverted);
     driveMotor.setMotorBrake(true);
 
@@ -134,14 +132,14 @@ public class SwerveModule
     } else
     {
       double velocity = desiredState.speedMetersPerSecond;
-      driveMotor.setReference(true, velocity, feedforward.calculate(velocity));
+      driveMotor.setReference(velocity, feedforward.calculate(velocity));
     }
 
     // Prevents module rotation if speed is less than 1%
     double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (configuration.maxSpeed * 0.01) ?
                     lastAngle :
                     desiredState.angle.getDegrees());
-    angleMotor.setReference(false, angle, Math.toDegrees(desiredState.omegaRadPerSecond) * configuration.angleKZ);
+    angleMotor.setReference(angle, Math.toDegrees(desiredState.omegaRadPerSecond) * configuration.angleKZ);
     lastAngle = angle;
 
     if (!Robot.isReal())

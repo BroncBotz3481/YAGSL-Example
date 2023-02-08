@@ -28,10 +28,12 @@ public class SparkMaxSwerve extends SwerveMotor
   /**
    * Initialize the swerve motor.
    *
-   * @param id CAN ID of the SparkMax
+   * @param id           CAN ID of the SparkMax
+   * @param isDriveMotor Is the motor being initialized a drive motor?
    */
-  public SparkMaxSwerve(int id)
+  public SparkMaxSwerve(int id, boolean isDriveMotor)
   {
+    this.isDriveMotor = isDriveMotor;
     motor = new CANSparkMax(id, MotorType.kBrushless);
     encoder = motor.getEncoder();
     pid = motor.getPIDController();
@@ -57,11 +59,9 @@ public class SparkMaxSwerve extends SwerveMotor
 
   /**
    * Configure the integrated encoder for the swerve module. Sets the conversion factors for position and velocity.
-   *
-   * @param isDriveMotor Is the SwerveModule a drive motor.
    */
   @Override
-  public void configureIntegratedEncoder(boolean isDriveMotor)
+  public void configureIntegratedEncoder()
   {
     if (isDriveMotor)
     {
@@ -77,11 +77,10 @@ public class SparkMaxSwerve extends SwerveMotor
   /**
    * Configure the PIDF values for the closed loop controller.
    *
-   * @param isDriveMotor Drive motor.
-   * @param config       Configuration class holding the PIDF values.
+   * @param config Configuration class holding the PIDF values.
    */
   @Override
-  public void configurePIDF(boolean isDriveMotor, PIDFConfig config)
+  public void configurePIDF(PIDFConfig config)
   {
     int pidSlot = isDriveMotor ? SparkMAX_slotIdx.Velocity.ordinal() : SparkMAX_slotIdx.Position.ordinal();
     pid.setP(config.kP, pidSlot);
@@ -150,12 +149,11 @@ public class SparkMaxSwerve extends SwerveMotor
   /**
    * Set the closed loop PID controller reference point.
    *
-   * @param isDriveMotor If the drive motor is set then the velocity else angle.
-   * @param setpoint     Setpoint in MPS or Angle in degrees.
-   * @param feedforward  Feedforward in volt-meter-per-second or kV.
+   * @param setpoint    Setpoint in MPS or Angle in degrees.
+   * @param feedforward Feedforward in volt-meter-per-second or kV.
    */
   @Override
-  public void setReference(boolean isDriveMotor, double setpoint, double feedforward)
+  public void setReference(double setpoint, double feedforward)
   {
     int pidSlot = isDriveMotor ? SparkMAX_slotIdx.Velocity.ordinal() : SparkMAX_slotIdx.Position.ordinal();
     pid.setReference(setpoint, isDriveMotor ? ControlType.kVelocity : ControlType.kPosition, pidSlot, feedforward);

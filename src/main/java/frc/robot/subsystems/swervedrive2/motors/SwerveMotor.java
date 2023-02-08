@@ -6,6 +6,11 @@ public abstract class SwerveMotor
 {
 
   /**
+   * Whether the swerve motor is a drive motor.
+   */
+  protected boolean isDriveMotor;
+
+  /**
    * Configure the factory defaults.
    */
   public abstract void factoryDefaults();
@@ -17,18 +22,15 @@ public abstract class SwerveMotor
 
   /**
    * Configure the integrated encoder for the swerve module. Sets the conversion factors for position and velocity.
-   *
-   * @param isDriveMotor Is the SwerveModule a drive motor.
    */
-  public abstract void configureIntegratedEncoder(boolean isDriveMotor);
+  public abstract void configureIntegratedEncoder();
 
   /**
    * Configure the PIDF values for the closed loop controller. 0 is disabled or off.
    *
-   * @param isDriveMotor Drive motor.
-   * @param config       Configuration class holding the PIDF values.
+   * @param config Configuration class holding the PIDF values.
    */
-  public abstract void configurePIDF(boolean isDriveMotor, PIDFConfig config);
+  public abstract void configurePIDF(PIDFConfig config);
 
   /**
    * Configure the PID wrapping for the position closed loop controller.
@@ -67,11 +69,10 @@ public abstract class SwerveMotor
   /**
    * Set the closed loop PID controller reference point.
    *
-   * @param isDriveMotor If the drive motor is set then the velocity else angle.
-   * @param setpoint     Setpoint in MPS or Angle in degrees.
-   * @param feedforward  Feedforward in volt-meter-per-second or kV.
+   * @param setpoint    Setpoint in MPS or Angle in degrees.
+   * @param feedforward Feedforward in volt-meter-per-second or kV.
    */
-  public abstract void setReference(boolean isDriveMotor, double setpoint, double feedforward);
+  public abstract void setReference(double setpoint, double feedforward);
 
   /**
    * Get the velocity of the integrated encoder.

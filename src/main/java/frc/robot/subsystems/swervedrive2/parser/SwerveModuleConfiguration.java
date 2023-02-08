@@ -13,7 +13,7 @@ import frc.robot.subsystems.swervedrive2.motors.SwerveMotor;
 public class SwerveModuleConfiguration
 {
 
-  public final double  wheelSize      = Units.inchesToMeters(4);
+  public final double  wheelDiameter  = Units.inchesToMeters(4);
   public final double  driveGearRatio = 6.75;
   public final double  angleGearRatio = 12.8;
   public final int     driveMotorID;
@@ -138,7 +138,7 @@ public class SwerveModuleConfiguration
    */
   public double calculateMetersPerRotation()
   {
-    return (Math.PI * wheelSize) / driveGearRatio;
+    return (Math.PI * wheelDiameter) / driveGearRatio;
   }
 
   /**

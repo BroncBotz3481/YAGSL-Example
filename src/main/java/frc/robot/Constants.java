@@ -104,8 +104,9 @@ public final class Constants
        * However, the drive is traction-limited, so the max acceleration is actually
        * <p>(wheel coefficient of friction * gravity)</p>
        */
-      public static final double MAX_ACCELERATION         =
-          1.19 * 9.81; // COF (blue nitrile on carpet) as reported by Studica
+      public static final double MAX_ACCELERATION         = 1.19 * 9.81;
+      // COF (blue nitrile on carpet) as reported by Studica
+      // https://studica.ca/en/blue-nitrile-roughtop-tread-1-in-wide-10-ft-long
       /**
        * max speed (RPM) / gear ratio, convert to deg/min, divide by 60 for deg/s
        */

@@ -24,13 +24,14 @@ public class SwerveModuleConfiguration
   public final double     driveGearRatio = 6.75;
   public final double     angleGearRatio = 12.8;
   public final double     maxSpeed       = DrivetrainLimitations.MAX_SPEED;
-  public       double     angleKV        = ModulePIDFGains.MODULE_KV;
   public       PIDFConfig anglePIDF      = new PIDFConfig(ModulePIDFGains.MODULE_KP, ModulePIDFGains.MODULE_KI,
                                                           ModulePIDFGains.MODULE_KD, ModulePIDFGains.MODULE_KF,
                                                           ModulePIDFGains.MODULE_IZ);
   public       PIDFConfig velocityPIDF   = new PIDFConfig(ModulePIDFGains.VELOCITY_KP, ModulePIDFGains.VELOCITY_KI,
                                                           ModulePIDFGains.VELOCITY_KD, ModulePIDFGains.VELOCITY_KF,
                                                           ModulePIDFGains.VELOCITY_IZ);
+  public       double     angleKV        = ModulePIDFGains.MODULE_KV;
+
 
   /**
    * Construct a configuration object for swerve modules.

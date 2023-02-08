@@ -4,17 +4,16 @@
 
 package frc.robot.subsystems.swervedrive2.commands.drivebase;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.Constants.Drivebase;
-import frc.robot.Constants.Drivebase.DrivetrainLimitations;
 import frc.robot.Constants.Drivebase.ModuleLocations;
 import frc.robot.subsystems.swervedrive2.SwerveBase;
+import frc.robot.subsystems.swervedrive2.SwerveController;
 import java.util.function.DoubleSupplier;
 
 /**
@@ -24,13 +23,10 @@ public class AbsoluteDrive extends CommandBase
 {
 
   private final SwerveBase     swerve;
-  private final DoubleSupplier vX;
-  private final DoubleSupplier vY;
-  private final DoubleSupplier headingHorizontal;
-  private final DoubleSupplier headingVertical;
-  private final boolean        isOpenLoop;
-  private       PIDController  thetaController;
-  private       double         omega, angle, lastAngle, x, y;
+  private final DoubleSupplier vX, vY;
+  private final DoubleSupplier headingHorizontal, headingVertical;
+  private final boolean          isOpenLoop;
+  private       SwerveController swerveController;
 
   /**
    * Used to drive a swerve robot in full field-centric mode.  vX and vY supply translation inputs, where x is
@@ -68,53 +64,31 @@ public class AbsoluteDrive extends CommandBase
   @Override
   public void initialize()
   {
-    thetaController = new PIDController(Drivebase.HEADING_KP, Drivebase.HEADING_KI, Drivebase.HEADING_KD);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
-    lastAngle = 0;
+    swerveController = new SwerveController();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute()
   {
-    // Checks if the gyro was reset, and, if so, sets the commanded heading to zero.
-    // This allows the field refrence frame (which way is away from the alliance wall) to be
-    // reset without the robot immediately rotating to the previously-commanded angle in the new
-    // refrence frame.  This currently does not override the joystick.
-    if (swerve.wasGyroReset())
-    {
-      lastAngle = 0;
-      swerve.clearGyroReset();
-    }
+    // Configure the last angle to be reset if the swerve drive had the angle reset.
+    swerveController.configureLastAngle(swerve);
 
-    // Converts the horizontal and vertical components to the commanded angle, in radians, unless
-    // the joystick is near the center (i. e. has been released), in which case the angle is held
-    // at the last valid joystick input (hold position when stick released).
-    if (Math.hypot(headingHorizontal.getAsDouble(), headingVertical.getAsDouble()) < 0.5)
-    {
-      angle = lastAngle;
-    } else
-    {
-      angle = Math.atan2(headingHorizontal.getAsDouble(), headingVertical.getAsDouble());
-    }
-    // Calculates an angular rate using a PIDController and the commanded angle.  This is then scaled by
-    // the drivebase's maximum angular velocity.
-    omega = thetaController.calculate(swerve.getYaw().getRadians(), angle) * DrivetrainLimitations.MAX_ANGULAR_VELOCITY;
-    // Convert joystick inputs to m/s by scaling by max linear speed.  Also uses a cubic function
-    // to allow for precise control and fast movement.
-    x = Math.pow(vX.getAsDouble(), 3) * DrivetrainLimitations.MAX_SPEED;
-    y = Math.pow(vY.getAsDouble(), 3) * DrivetrainLimitations.MAX_SPEED;
+    // Get the desired chassis speeds based on a 2 joystick module.
+    ChassisSpeeds desiredSpeeds = swerveController.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(),
+                                                                   headingHorizontal.getAsDouble(),
+                                                                   headingVertical.getAsDouble(),
+                                                                   swerve.getYaw().getRadians());
 
     // Limit velocity to prevent tippy
-    Translation2d translation = limitVelocity(new Translation2d(x, y));
+    Translation2d translation = SwerveController.getTranslation2d(desiredSpeeds);
+    translation = limitVelocity(translation);
     SmartDashboard.putNumber("LimitedTranslation", translation.getX());
-    SmartDashboard.putString("Translation", (new Translation2d(x, y)).toString());
+    SmartDashboard.putString("Translation", translation.toString());
 
     // Make the robot move
-    swerve.drive(translation, omega, true, isOpenLoop);
+    swerve.drive(translation, desiredSpeeds.omegaRadiansPerSecond, true, isOpenLoop);
 
-    // Used for the position hold feature
-    lastAngle = angle;
   }
 
   // Called once the command ends or is interrupted.
@@ -136,7 +110,7 @@ public class AbsoluteDrive extends CommandBase
    *
    * @param angle The direction in which to calculate max acceleration, as a Rotation2d. Note that this is
    *              robot-relative.
-   * @return
+   * @return Maximum acceleration allowed in the robot direction.
    */
   private double calcMaxAccel(Rotation2d angle)
   {

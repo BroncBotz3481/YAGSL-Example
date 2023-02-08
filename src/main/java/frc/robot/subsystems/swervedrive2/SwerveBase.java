@@ -6,6 +6,7 @@ package frc.robot.subsystems.swervedrive2;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -19,6 +20,8 @@ import frc.robot.subsystems.swervedrive2.imu.SwerveIMU;
 import frc.robot.subsystems.swervedrive2.math.BetterSwerveKinematics;
 import frc.robot.subsystems.swervedrive2.math.BetterSwerveModuleState;
 import frc.robot.subsystems.swervedrive2.parser.SwerveDriveConfiguration;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SwerveBase extends SubsystemBase
 {
@@ -292,6 +295,24 @@ public class SwerveBase extends SubsystemBase
     }
   }
 
+  /**
+   * Get the swerve module poses and on the field relative to the robot.
+   *
+   * @param robotPose Robot pose.
+   * @return Swerve module poses.
+   */
+  public Pose2d[] getSwerveModulePoses(Pose2d robotPose)
+  {
+    Pose2d[]     poseArr = new Pose2d[swerveDriveConfiguration.moduleCount];
+    List<Pose2d> poses   = new ArrayList<>();
+    for (SwerveModule module : swerveModules)
+    {
+      poses.add(robotPose.plus(new Transform2d(swerveDriveConfiguration.moduleLocationsMeters[module.moduleNumber],
+                                               module.getState().angle)));
+    }
+    return poses.toArray(poseArr);
+  }
+
   @Override
   public void periodic()
   {
@@ -303,6 +324,7 @@ public class SwerveBase extends SubsystemBase
     {
       angle += kinematics.toChassisSpeeds(getStates()).omegaRadiansPerSecond * (timer.get() - lastTime);
       lastTime = timer.get();
+      field.getObject("XModules").setPoses(getSwerveModulePoses(odometry.getPoseMeters()));
     }
 
     field.setRobotPose(odometry.getPoseMeters());

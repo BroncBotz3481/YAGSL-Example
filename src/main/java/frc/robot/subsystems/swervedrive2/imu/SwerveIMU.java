@@ -1,0 +1,34 @@
+package frc.robot.subsystems.swervedrive2.imu;
+
+public abstract class SwerveIMU
+{
+
+  /**
+   * If the gyro inverted.
+   */
+  public boolean inverted = false;
+
+  /**
+   * Reset IMU to factory default.
+   */
+  public abstract void factoryDefault();
+
+  /**
+   * Clear sticky faults on IMU.
+   */
+  public abstract void clearStickyFaults();
+
+  /**
+   * Set the yaw in degrees.
+   *
+   * @param yaw Yaw angle in degrees.
+   */
+  public abstract void setYaw(double yaw);
+
+  /**
+   * Fetch the yaw/pitch/roll from the IMU.
+   *
+   * @param yprArray Array which will be filled with {yaw, pitch, roll} in degrees.
+   */
+  public abstract void getYawPitchRoll(double[] yprArray);
+}

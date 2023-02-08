@@ -4,11 +4,9 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.swervedrive2.SwerveModuleConstants;
-import frc.robot.subsystems.swervedrive2.math.BetterSwerveKinematics;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean constants. This
@@ -69,10 +67,6 @@ public final class Constants
     public static final boolean INVERT_GYRO        = false;
 
 
-    // Swerve base kinematics object
-    public static final BetterSwerveKinematics KINEMATICS = new BetterSwerveKinematics(
-        ModuleLocations.MODULE_LOCATIONS);
-
     /**
      * Module locations, in meters, as distances to the center of the robot. Positive x is torwards the robot front, and
      * +y is torwards robot left.
@@ -88,10 +82,6 @@ public final class Constants
       public static final double          BACK_LEFT_X      = Units.inchesToMeters(-11);
       public static final double          BACK_RIGHT_X     = Units.inchesToMeters(-11);
       public static final double          BACK_RIGHT_Y     = Units.inchesToMeters(-11);
-      public static final Translation2d[] MODULE_LOCATIONS = {new Translation2d(FRONT_LEFT_X, FRONT_LEFT_Y),
-                                                              new Translation2d(FRONT_RIGHT_X, FRONT_RIGHT_Y),
-                                                              new Translation2d(BACK_LEFT_X, BACK_LEFT_Y),
-                                                              new Translation2d(BACK_RIGHT_X, BACK_RIGHT_Y)};
     }
 
     public static class DrivetrainLimitations
@@ -174,7 +164,7 @@ public final class Constants
     public static final int PIGEON      = 13;
 
     // Module specific constants
-    public static final class Mod0
+    public static final class Mod0FL
     { //Front Left
 
       public static final int                   DRIVE_MOTOR_ID = 4;
@@ -186,7 +176,7 @@ public final class Constants
                                                                                            ANGLE_OFFSET);
     }
 
-    public static final class Mod1
+    public static final class Mod1FR
     { //Front Right
 
       public static final int                   DRIVE_MOTOR_ID = 2;
@@ -198,7 +188,7 @@ public final class Constants
                                                                                            ANGLE_OFFSET);
     }
 
-    public static final class Mod2
+    public static final class Mod2BL
     { //Back Left
 
       public static final int                   DRIVE_MOTOR_ID = 7;
@@ -210,7 +200,7 @@ public final class Constants
                                                                                            ANGLE_OFFSET);
     }
 
-    public static final class Mod3
+    public static final class Mod3BR
     { //Back Right
 
       public static final int                   DRIVE_MOTOR_ID = 5;

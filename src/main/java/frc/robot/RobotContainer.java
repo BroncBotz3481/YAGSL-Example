@@ -29,8 +29,8 @@ public class RobotContainer
 {
 
   // The robot's subsystems and commands are defined here...
-  private final SwerveBase       drivebase          = new SwerveBase();
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  private final SwerveBase                   drivebase          = new SwerveBase();
+  private final ExampleSubsystem             m_exampleSubsystem = new ExampleSubsystem();
   private final SendableChooser<CommandBase> driveModeSelector;
   CommandJoystick rotationController = new CommandJoystick(1);
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -45,47 +45,71 @@ public class RobotContainer
     // Configure the trigger bindings
     configureBindings();
 
-    AbsoluteDrive absoluteDrive = new AbsoluteDrive(
-        drivebase,
-        // Applies deadbands and inverts controls because joysticks are back-right positive while robot
-        // controls are front-left positive
-        () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
-        () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
-        () -> -rotationController.getX(),
-        () -> -rotationController.getY(), true);
+    AbsoluteDrive absoluteDrive = new AbsoluteDrive(drivebase,
+                                                    // Applies deadbands and inverts controls because joysticks are back-right positive while robot
+                                                    // controls are front-left positive
+                                                    () -> (Math.abs(driverController.getY()) >
+                                                           OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY()
+                                                                                              : 0,
+                                                    () -> (Math.abs(driverController.getX()) >
+                                                           OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX()
+                                                                                              : 0,
+                                                    () -> -rotationController.getX(),
+                                                    () -> -rotationController.getY(),
+                                                    true);
 
-    AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(
-        drivebase,
-        // Applies deadbands and inverts controls because joysticks are back-right positive while robot
-        // controls are front-left positive
-        () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
-        () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
-        () -> -rotationController.getX(),
-        () -> -rotationController.getY(), false);
+    AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(drivebase,
+                                                          // Applies deadbands and inverts controls because joysticks are back-right positive while robot
+                                                          // controls are front-left positive
+                                                          () -> (Math.abs(driverController.getY()) >
+                                                                 OperatorConstants.LEFT_Y_DEADBAND)
+                                                                ? -driverController.getY() : 0,
+                                                          () -> (Math.abs(driverController.getX()) >
+                                                                 OperatorConstants.LEFT_X_DEADBAND)
+                                                                ? -driverController.getX() : 0,
+                                                          () -> -rotationController.getX(),
+                                                          () -> -rotationController.getY(),
+                                                          false);
 
-    TeleopDrive openRobotRel = new TeleopDrive(
-        drivebase,
-        () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
-        () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
-        () -> -driverController.getTwist(), () -> false, true);
+    TeleopDrive openRobotRel = new TeleopDrive(drivebase,
+                                               () -> (Math.abs(driverController.getY()) >
+                                                      OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
+                                               () -> (Math.abs(driverController.getX()) >
+                                                      OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
+                                               () -> -driverController.getTwist(),
+                                               () -> false,
+                                               true);
 
-    TeleopDrive closedRobotRel = new TeleopDrive(
-        drivebase,
-        () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
-        () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
-        () -> -driverController.getTwist(), () -> false, false);
+    TeleopDrive closedRobotRel = new TeleopDrive(drivebase,
+                                                 () -> (Math.abs(driverController.getY()) >
+                                                        OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY()
+                                                                                           : 0,
+                                                 () -> (Math.abs(driverController.getX()) >
+                                                        OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX()
+                                                                                           : 0,
+                                                 () -> -driverController.getTwist(),
+                                                 () -> false,
+                                                 false);
 
-    TeleopDrive openFieldRel = new TeleopDrive(
-        drivebase,
-        () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
-        () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
-        () -> -driverController.getTwist(), () -> true, true);
+    TeleopDrive openFieldRel = new TeleopDrive(drivebase,
+                                               () -> (Math.abs(driverController.getY()) >
+                                                      OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
+                                               () -> (Math.abs(driverController.getX()) >
+                                                      OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
+                                               () -> -driverController.getTwist(),
+                                               () -> true,
+                                               true);
 
-    TeleopDrive closedFieldRel = new TeleopDrive(
-        drivebase,
-        () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY() : 0,
-        () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX() : 0,
-        () -> -driverController.getTwist(), () -> true, false);
+    TeleopDrive closedFieldRel = new TeleopDrive(drivebase,
+                                                 () -> (Math.abs(driverController.getY()) >
+                                                        OperatorConstants.LEFT_Y_DEADBAND) ? -driverController.getY()
+                                                                                           : 0,
+                                                 () -> (Math.abs(driverController.getX()) >
+                                                        OperatorConstants.LEFT_X_DEADBAND) ? -driverController.getX()
+                                                                                           : 0,
+                                                 () -> -driverController.getTwist(),
+                                                 () -> true,
+                                                 false);
 
     driveModeSelector = new SendableChooser<>();
     driveModeSelector.setDefaultOption("AbsoluteDrive", absoluteDrive);
@@ -109,8 +133,7 @@ public class RobotContainer
   private void configureBindings()
   {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
+    new Trigger(m_exampleSubsystem::exampleCondition).onTrue(new ExampleCommand(m_exampleSubsystem));
 
     driverController.button(1).onTrue((new InstantCommand(drivebase::zeroGyro)));
   }

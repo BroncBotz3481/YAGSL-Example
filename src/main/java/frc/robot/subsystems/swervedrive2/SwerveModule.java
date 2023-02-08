@@ -1,15 +1,5 @@
 package frc.robot.subsystems.swervedrive2;
 
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.CANCoderConfiguration;
-import com.ctre.phoenix.sensors.SensorInitializationStrategy;
-import com.ctre.phoenix.sensors.SensorTimeBase;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -17,186 +7,228 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.Drivebase;
-import frc.robot.Constants.Drivebase.DriveFeedforwardGains;
 import frc.robot.Constants.Drivebase.DrivetrainLimitations;
-import frc.robot.Constants.Drivebase.EncoderConversions;
 import frc.robot.Constants.Drivebase.ModulePIDFGains;
 import frc.robot.Robot;
+import frc.robot.subsystems.swervedrive2.encoders.CANCoderSwerve;
+import frc.robot.subsystems.swervedrive2.encoders.SwerveAbsoluteEncoder;
 import frc.robot.subsystems.swervedrive2.math.BetterSwerveModuleState;
+import frc.robot.subsystems.swervedrive2.motors.SparkMaxSwerve;
+import frc.robot.subsystems.swervedrive2.motors.SwerveMotor;
+import frc.robot.subsystems.swervedrive2.parser.SwerveDriveConfiguration;
 
 public class SwerveModule
 {
 
-    public        int                   moduleNumber;
-    private final double                angleOffset;
-    private final CANSparkMax           angleMotor;
-    private final CANSparkMax           driveMotor;
-    private final CANCoder              absoluteEncoder;
-    private final RelativeEncoder       angleEncoder;
-    private final RelativeEncoder       driveEncoder;
-    private final SparkMaxPIDController angleController;
-    private final SparkMaxPIDController driveController;
-    SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(DriveFeedforwardGains.KS, DriveFeedforwardGains.KV,
-                                                                    DriveFeedforwardGains.KA);
-    private       double                lastAngle;
-    private       double                angle, omega, speed, fakePos, lastTime, dt;
-    private Timer time;
+  /**
+   * Angle offset from the absolute encoder.
+   */
+  private final double      angleOffset;
+  /**
+   * Swerve Motors.
+   */
+  private final SwerveMotor angleMotor, driveMotor;
+  /**
+   * Absolute encoder for swerve drive.
+   */
+  private final SwerveAbsoluteEncoder absoluteEncoder;
+  /**
+   * Module number for kinematics, usually 0 to 3. front left -> front right -> back left -> back right.
+   */
+  public        int                   moduleNumber;
+  /**
+   * Feedforward for drive motor during closed loop control.
+   */
+  SimpleMotorFeedforward feedforward = SwerveDriveConfiguration.createDriveFeedforward();
+  /**
+   * Last angle set for the swerve module.
+   */
+  private double lastAngle;
+  /**
+   * Current state.
+   */
+  private double angle, omega, speed, fakePos, lastTime, dt;
+  /**
+   * Timer for simulation.
+   */
+  private Timer time;
 
-    public SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants)
+  /**
+   * Construct the swerve module and initialize the swerve module motors and absolute encoder.
+   *
+   * @param moduleNumber    Module number for kinematics.
+   * @param moduleConstants Module constants containing CAN ID's and offsets.
+   */
+  public SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants)
+  {
+    angle = 0;
+    speed = 0;
+    omega = 0;
+    fakePos = 0;
+    this.moduleNumber = moduleNumber;
+    angleOffset = moduleConstants.angleOffset;
+
+    angleMotor = new SparkMaxSwerve(moduleConstants.angleMotorID);
+    driveMotor = new SparkMaxSwerve(moduleConstants.driveMotorID);
+    angleMotor.factoryDefaults();
+    driveMotor.factoryDefaults();
+
+    // Config angle encoders
+    absoluteEncoder = new CANCoderSwerve(moduleConstants.cancoderID);
+    absoluteEncoder.factoryDefault();
+    absoluteEncoder.configure(moduleConstants.absoluteEncoderInverted);
+
+    angleMotor.configureIntegratedEncoder(false);
+    angleMotor.setPosition(absoluteEncoder.getAbsolutePosition() - angleOffset);
+
+    // Config angle motor/controller
+    angleMotor.configurePIDF(false,
+                             ModulePIDFGains.MODULE_KP,
+                             ModulePIDFGains.MODULE_KI,
+                             ModulePIDFGains.MODULE_KD,
+                             ModulePIDFGains.MODULE_KF,
+                             ModulePIDFGains.MODULE_IZ);
+    angleMotor.configurePIDWrapping(-180, 180);
+    angleMotor.setMotorBrake(false);
+
+    // Config drive motor/controller
+    driveMotor.configureIntegratedEncoder(true);
+    driveMotor.configurePIDF(true,
+                             ModulePIDFGains.VELOCITY_KP,
+                             ModulePIDFGains.VELOCITY_KI,
+                             ModulePIDFGains.VELOCITY_KD,
+                             ModulePIDFGains.VELOCITY_KF,
+                             ModulePIDFGains.VELOCITY_IZ);
+    driveMotor.setInverted(Drivebase.DRIVE_MOTOR_INVERT);
+    driveMotor.setMotorBrake(true);
+
+    driveMotor.burnFlash();
+    angleMotor.burnFlash();
+
+    lastAngle = getState().angle.getDegrees();
+
+    if (!Robot.isReal())
     {
-        angle = 0;
-        speed = 0;
-        omega = 0;
-        fakePos = 0;
-        this.moduleNumber = moduleNumber;
-        angleOffset = moduleConstants.angleOffset;
+      time = new Timer();
+      time.start();
+      lastTime = time.get();
+    }
+  }
 
-        angleMotor = new CANSparkMax(moduleConstants.angleMotorID, MotorType.kBrushless);
-        driveMotor = new CANSparkMax(moduleConstants.driveMotorID, MotorType.kBrushless);
-        angleMotor.restoreFactoryDefaults();
-        driveMotor.restoreFactoryDefaults();
+  /**
+   * Set the desired state of the swerve module.
+   *
+   * @param desiredState Desired swerve module state.
+   * @param isOpenLoop   Whether to use open loop (direct percent) or direct velocity control.
+   */
+  public void setDesiredState(BetterSwerveModuleState desiredState, boolean isOpenLoop)
+  {
+    SwerveModuleState simpleState = new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
+    simpleState = SwerveModuleState.optimize(simpleState, getState().angle);
+    desiredState = new BetterSwerveModuleState(simpleState.speedMetersPerSecond, simpleState.angle,
+                                               desiredState.omegaRadPerSecond);
 
-        // Config angle encoders
-        absoluteEncoder = new CANCoder(moduleConstants.cancoderID);
-        absoluteEncoder.configFactoryDefault();
-        CANCoderConfiguration canCoderConfiguration = new CANCoderConfiguration();
-        canCoderConfiguration.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-        canCoderConfiguration.sensorDirection = Drivebase.CANCODER_INVERT;
-        canCoderConfiguration.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
-        canCoderConfiguration.sensorTimeBase = SensorTimeBase.PerSecond;
-        absoluteEncoder.configAllSettings(canCoderConfiguration);
+    SmartDashboard.putNumber("Optimized " + moduleNumber + " Speed Setpoint: ", desiredState.speedMetersPerSecond);
+    SmartDashboard.putNumber("Optimized " + moduleNumber + " Angle Setpoint: ", desiredState.angle.getDegrees());
+    SmartDashboard.putNumber("Module " + moduleNumber + " Omega: ", Math.toDegrees(desiredState.omegaRadPerSecond));
 
-        angleEncoder = angleMotor.getEncoder();
-        angleEncoder.setPositionConversionFactor(EncoderConversions.DEGREES_PER_STEERING_ROTATION);
-        angleEncoder.setVelocityConversionFactor(EncoderConversions.DEGREES_PER_STEERING_ROTATION / 60);
-        angleEncoder.setPosition(absoluteEncoder.getAbsolutePosition() - angleOffset);
-
-        // Config angle motor/controller
-        angleController = angleMotor.getPIDController();
-        angleController.setP(ModulePIDFGains.MODULE_KP);
-        angleController.setI(ModulePIDFGains.MODULE_KI);
-        angleController.setD(ModulePIDFGains.MODULE_KD);
-        angleController.setFF(ModulePIDFGains.MODULE_KF);
-        angleController.setIZone(ModulePIDFGains.MODULE_IZ);
-        angleController.setPositionPIDWrappingEnabled(true);
-        angleController.setPositionPIDWrappingMaxInput(180);
-        angleController.setPositionPIDWrappingMinInput(-180);
-        angleMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
-
-        // Config drive motor/controller
-        driveController = driveMotor.getPIDController();
-        driveEncoder = driveMotor.getEncoder();
-        driveEncoder.setPositionConversionFactor(EncoderConversions.METERS_PER_MOTOR_ROTATION);
-        driveEncoder.setVelocityConversionFactor(EncoderConversions.METERS_PER_MOTOR_ROTATION / 60);
-        driveController.setP(ModulePIDFGains.VELOCITY_KP);
-        driveController.setI(ModulePIDFGains.VELOCITY_KI);
-        driveController.setD(ModulePIDFGains.VELOCITY_KD);
-        driveController.setFF(ModulePIDFGains.VELOCITY_KF);
-        driveController.setIZone(ModulePIDFGains.VELOCITY_IZ);
-        driveMotor.setInverted(Drivebase.DRIVE_MOTOR_INVERT);
-        driveMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
-
-        driveMotor.burnFlash();
-        angleMotor.burnFlash();
-
-        lastAngle = getState().angle.getDegrees();
-
-        if (!Robot.isReal())
-        {
-            time = new Timer();
-            time.start();
-            lastTime = time.get();
-        }
+    if (isOpenLoop)
+    {
+      double percentOutput = desiredState.speedMetersPerSecond / DrivetrainLimitations.MAX_SPEED;
+      driveMotor.set(percentOutput);
+    } else
+    {
+      double velocity = desiredState.speedMetersPerSecond;
+      driveMotor.setReference(true, velocity, feedforward.calculate(velocity));
     }
 
-    public void setDesiredState(BetterSwerveModuleState desiredState, boolean isOpenLoop)
+    // Prevents module rotation if speed is less than 1%
+    double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (DrivetrainLimitations.MAX_SPEED * 0.01) ?
+                    lastAngle :
+                    desiredState.angle.getDegrees());
+    angleMotor.setReference(false, angle, Math.toDegrees(desiredState.omegaRadPerSecond) * ModulePIDFGains.MODULE_KV);
+    lastAngle = angle;
+
+    if (!Robot.isReal())
     {
-        SwerveModuleState simpleState = new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
-        simpleState = SwerveModuleState.optimize(simpleState, getState().angle);
-        desiredState = new BetterSwerveModuleState(simpleState.speedMetersPerSecond, simpleState.angle,
-                                                   desiredState.omegaRadPerSecond);
-
-        SmartDashboard.putNumber("Optimized " + moduleNumber + " Speed Setpoint: ", desiredState.speedMetersPerSecond);
-        SmartDashboard.putNumber("Optimized " + moduleNumber + " Angle Setpoint: ", desiredState.angle.getDegrees());
-        SmartDashboard.putNumber("Module " + moduleNumber + " Omega: ", Math.toDegrees(desiredState.omegaRadPerSecond));
-
-        if (isOpenLoop)
-        {
-            double percentOutput = desiredState.speedMetersPerSecond / DrivetrainLimitations.MAX_SPEED;
-            driveMotor.set(percentOutput);
-        } else
-        {
-            double velocity = desiredState.speedMetersPerSecond;
-            driveController.setReference(velocity, ControlType.kVelocity, 0, feedforward.calculate(velocity));
-        }
-
-        double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (DrivetrainLimitations.MAX_SPEED * 0.01) ?
-                        lastAngle :
-                        desiredState.angle.getDegrees()); // Prevents module rotation if speed is less than 1%
-        angleController.setReference(angle, ControlType.kPosition, 0,
-                                     Math.toDegrees(desiredState.omegaRadPerSecond) * ModulePIDFGains.MODULE_KV);
-        lastAngle = angle;
-
-        this.angle = desiredState.angle.getDegrees();
-        omega = desiredState.omegaRadPerSecond;
-        speed = desiredState.speedMetersPerSecond;
-
-        if (!Robot.isReal())
-        {
-            dt = time.get() - lastTime;
-            fakePos += (speed * dt);
-            lastTime = time.get();
-        }
+      dt = time.get() - lastTime;
+      fakePos += (speed * dt);
+      lastTime = time.get();
     }
 
-    public BetterSwerveModuleState getState()
-    {
-        double     velocity;
-        Rotation2d azimuth;
-        double     omega;
-        if (Robot.isReal())
-        {
-            velocity = driveEncoder.getVelocity();
-            azimuth = Rotation2d.fromDegrees(angleEncoder.getPosition());
-            omega = angleEncoder.getVelocity();
-        } else
-        {
-            velocity = speed;
-            azimuth = Rotation2d.fromDegrees(this.angle);
-            omega = this.omega;
-        }
-        return new BetterSwerveModuleState(velocity, azimuth, omega);
-    }
+    this.angle = desiredState.angle.getDegrees();
+    omega = desiredState.omegaRadPerSecond;
+    speed = desiredState.speedMetersPerSecond;
+  }
 
-    public SwerveModulePosition getPosition()
+  /**
+   * Get the Swerve Module state.
+   *
+   * @return Current SwerveModule state.
+   */
+  public BetterSwerveModuleState getState()
+  {
+    double     velocity;
+    Rotation2d azimuth;
+    double     omega;
+    if (Robot.isReal())
     {
-        double     position;
-        Rotation2d azimuth;
-        if (Robot.isReal())
-        {
-            position = driveEncoder.getPosition();
-            azimuth = Rotation2d.fromDegrees(angleEncoder.getPosition());
-        } else
-        {
-            position = fakePos;
-            azimuth = Rotation2d.fromDegrees(angle + (Math.toDegrees(omega) * dt));
-        }
-        SmartDashboard.putNumber("Module " + moduleNumber + "Angle", azimuth.getDegrees());
-        return new SwerveModulePosition(position, azimuth);
+      velocity = driveMotor.getVelocity();
+      azimuth = Rotation2d.fromDegrees(angleMotor.getPosition());
+      omega = angleMotor.getVelocity();
+    } else
+    {
+      velocity = speed;
+      azimuth = Rotation2d.fromDegrees(this.angle);
+      omega = this.omega;
     }
+    return new BetterSwerveModuleState(velocity, azimuth, omega);
+  }
 
-    public double getCANCoder()
+  public SwerveModulePosition getPosition()
+  {
+    double     position;
+    Rotation2d azimuth;
+    if (Robot.isReal())
     {
-        return absoluteEncoder.getAbsolutePosition();
+      position = driveMotor.getPosition();
+      azimuth = Rotation2d.fromDegrees(angleMotor.getPosition());
+    } else
+    {
+      position = fakePos;
+      azimuth = Rotation2d.fromDegrees(angle + (Math.toDegrees(omega) * dt));
     }
+    SmartDashboard.putNumber("Module " + moduleNumber + "Angle", azimuth.getDegrees());
+    return new SwerveModulePosition(position, azimuth);
+  }
 
-    public double getRelativeEncoder()
-    {
-        return angleEncoder.getPosition();
-    }
+  /**
+   * Get the CANCoder absolute position.
+   *
+   * @return Absolute encoder angle in degrees.
+   */
+  public double getCANCoder()
+  {
+    return absoluteEncoder.getAbsolutePosition();
+  }
 
-    public void setMotorBrake(boolean brake)
-    {
-        driveMotor.setIdleMode(brake ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
-    }
+  /**
+   * Get the relative encoder angle in degrees.
+   *
+   * @return Angle in degrees.
+   */
+  public double getRelativeEncoder()
+  {
+    return angleMotor.getPosition();
+  }
+
+  /**
+   * Set the brake mode.
+   *
+   * @param brake Set the brake mode.
+   */
+  public void setMotorBrake(boolean brake)
+  {
+    driveMotor.setMotorBrake(brake);
+  }
 }

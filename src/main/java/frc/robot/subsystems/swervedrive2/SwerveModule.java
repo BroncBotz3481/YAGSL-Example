@@ -139,7 +139,7 @@ public class SwerveModule
     double angle = (Math.abs(desiredState.speedMetersPerSecond) <= (configuration.maxSpeed * 0.01) ?
                     lastAngle :
                     desiredState.angle.getDegrees());
-    angleMotor.setReference(angle, Math.toDegrees(desiredState.omegaRadPerSecond) * configuration.angleKZ);
+    angleMotor.setReference(angle, Math.toDegrees(desiredState.omegaRadPerSecond) * configuration.angleKV);
     lastAngle = angle;
 
     if (!Robot.isReal())

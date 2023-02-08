@@ -1,5 +1,7 @@
 package frc.robot.subsystems.swervedrive2.motors;
 
+import frc.robot.subsystems.swervedrive2.parser.PIDFConfig;
+
 public abstract class SwerveMotor
 {
 
@@ -24,13 +26,9 @@ public abstract class SwerveMotor
    * Configure the PIDF values for the closed loop controller. 0 is disabled or off.
    *
    * @param isDriveMotor Drive motor.
-   * @param kP           P gain.
-   * @param kI           I gain.
-   * @param kD           D gain.
-   * @param kF           Feedforward.
-   * @param kIZ          Integral Zone.
+   * @param config       Configuration class holding the PIDF values.
    */
-  public abstract void configurePIDF(boolean isDriveMotor, double kP, double kI, double kD, double kF, double kIZ);
+  public abstract void configurePIDF(boolean isDriveMotor, PIDFConfig config);
 
   /**
    * Configure the PID wrapping for the position closed loop controller.

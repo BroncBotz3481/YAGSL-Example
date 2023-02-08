@@ -115,7 +115,7 @@ public class SwerveBase extends SubsystemBase
     // Sets states
     for (SwerveModule module : swerveModules)
     {
-      module.setDesiredState(desiredStates[module.moduleNumber], false);
+      module.setDesiredState(desiredStates[module.moduleNumber], false); // Todo: Send isOpenLoop
       SmartDashboard.putNumber("Module " + module.moduleNumber + " Speed Setpoint: ",
                                desiredStates[module.moduleNumber].speedMetersPerSecond);
       SmartDashboard.putNumber("Module " + module.moduleNumber + " Angle Setpoint: ",

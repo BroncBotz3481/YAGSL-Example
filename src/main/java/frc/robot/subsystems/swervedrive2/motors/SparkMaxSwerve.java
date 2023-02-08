@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import frc.robot.Constants.Drivebase.EncoderConversions;
+import frc.robot.subsystems.swervedrive2.parser.PIDFConfig;
 
 public class SparkMaxSwerve extends SwerveMotor
 {
@@ -77,21 +78,17 @@ public class SparkMaxSwerve extends SwerveMotor
    * Configure the PIDF values for the closed loop controller.
    *
    * @param isDriveMotor Drive motor.
-   * @param kP           P gain.
-   * @param kI           I gain.
-   * @param kD           D gain.
-   * @param kF           Feedforward.
-   * @param kIZ          Integral Zone.
+   * @param config       Configuration class holding the PIDF values.
    */
   @Override
-  public void configurePIDF(boolean isDriveMotor, double kP, double kI, double kD, double kF, double kIZ)
+  public void configurePIDF(boolean isDriveMotor, PIDFConfig config)
   {
     int pidSlot = isDriveMotor ? SparkMAX_slotIdx.Velocity.ordinal() : SparkMAX_slotIdx.Position.ordinal();
-    pid.setP(kP, pidSlot);
-    pid.setI(kI, pidSlot);
-    pid.setD(kD, pidSlot);
-    pid.setFF(kF, pidSlot);
-    pid.setIZone(kIZ, pidSlot);
+    pid.setP(config.kP, pidSlot);
+    pid.setI(config.kI, pidSlot);
+    pid.setD(config.kD, pidSlot);
+    pid.setFF(config.kF, pidSlot);
+    pid.setIZone(config.IZ, pidSlot);
   }
 
   /**

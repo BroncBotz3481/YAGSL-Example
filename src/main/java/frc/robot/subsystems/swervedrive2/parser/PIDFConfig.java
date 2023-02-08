@@ -1,5 +1,7 @@
 package frc.robot.subsystems.swervedrive2.parser;
 
+import edu.wpi.first.math.controller.PIDController;
+
 public class PIDFConfig
 {
 
@@ -60,5 +62,15 @@ public class PIDFConfig
   public PIDFConfig(double p, double d)
   {
     this(p, 0, d, 0, 0);
+  }
+
+  /**
+   * Create a PIDController from the PID values.
+   *
+   * @return PIDController.
+   */
+  public PIDController createPIDController()
+  {
+    return new PIDController(kP, kI, kD);
   }
 }

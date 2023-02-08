@@ -14,6 +14,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Drivebase.ModuleLocations;
 import frc.robot.subsystems.swervedrive2.SwerveBase;
 import frc.robot.subsystems.swervedrive2.SwerveController;
+import frc.robot.subsystems.swervedrive2.parser.SwerveControllerConfiguration;
 import java.util.function.DoubleSupplier;
 
 /**
@@ -64,7 +65,7 @@ public class AbsoluteDrive extends CommandBase
   @Override
   public void initialize()
   {
-    swerveController = new SwerveController();
+    swerveController = new SwerveController(new SwerveControllerConfiguration());
   }
 
   // Called every time the scheduler runs while the command is scheduled.

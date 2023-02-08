@@ -3,8 +3,7 @@ package frc.robot.subsystems.swervedrive2;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import frc.robot.Constants.Drivebase;
-import frc.robot.Constants.Drivebase.DrivetrainLimitations;
+import frc.robot.subsystems.swervedrive2.parser.SwerveControllerConfiguration;
 
 /**
  * Controller class used to convert raw inputs into robot speeds.
@@ -12,17 +11,18 @@ import frc.robot.Constants.Drivebase.DrivetrainLimitations;
 public class SwerveController
 {
 
-  private final PIDController thetaController;
-  private final double        hypotDeadband = 0.5; // Deadband for the minimum hypot for the heading joystick.
-  private       double        lastAngle;
+  private final PIDController                 thetaController;
+  private final SwerveControllerConfiguration config;
+  private       double                        lastAngle;
 
   /**
    * Construct the SwerveController object which is used for determining the speeds of the robot based on controller
    * input.
    */
-  public SwerveController()
+  public SwerveController(SwerveControllerConfiguration cfg)
   {
-    thetaController = new PIDController(Drivebase.HEADING_KP, Drivebase.HEADING_KI, Drivebase.HEADING_KD);
+    config = cfg;
+    thetaController = config.headingPIDF.createPIDController();
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
     lastAngle = 0;
   }
@@ -46,7 +46,7 @@ public class SwerveController
    */
   public boolean withinHypotDeadband(double x, double y)
   {
-    return Math.hypot(x, y) < hypotDeadband;
+    return Math.hypot(x, y) < config.hypotDeadband;
   }
 
   /**
@@ -62,12 +62,11 @@ public class SwerveController
   {
     // Calculates an angular rate using a PIDController and the commanded angle.  This is then scaled by
     // the drivebase's maximum angular velocity.
-    double omega = thetaController.calculate(currentHeadingAngleRadians, angle) *
-                   DrivetrainLimitations.MAX_ANGULAR_VELOCITY;
+    double omega = thetaController.calculate(currentHeadingAngleRadians, angle) * config.maxAngularVelocity;
     // Convert joystick inputs to m/s by scaling by max linear speed.  Also uses a cubic function
     // to allow for precise control and fast movement.
-    double x = Math.pow(xInput, 3) * DrivetrainLimitations.MAX_SPEED;
-    double y = Math.pow(yInput, 3) * DrivetrainLimitations.MAX_SPEED;
+    double x = Math.pow(xInput, 3) * config.maxSpeed;
+    double y = Math.pow(yInput, 3) * config.maxSpeed;
 
     return new ChassisSpeeds(x, y, omega);
   }

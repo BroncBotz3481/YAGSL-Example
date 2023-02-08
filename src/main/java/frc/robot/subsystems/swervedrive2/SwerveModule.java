@@ -80,7 +80,6 @@ public class SwerveModule
     absoluteEncoder = moduleConstants.createAbsoluteEncoder();
     absoluteEncoder.factoryDefault();
     absoluteEncoder.configure(moduleConstants.absoluteEncoderInverted);
-
     angleMotor.configureIntegratedEncoder(moduleConstants.getPositionEncoderConversion(false));
     angleMotor.setPosition(absoluteEncoder.getAbsolutePosition() - angleOffset);
 

@@ -81,7 +81,7 @@ public class SwerveModule
     absoluteEncoder.factoryDefault();
     absoluteEncoder.configure(moduleConstants.absoluteEncoderInverted);
 
-    angleMotor.configureIntegratedEncoder();
+    angleMotor.configureIntegratedEncoder(moduleConstants.getPositionEncoderConversion(false));
     angleMotor.setPosition(absoluteEncoder.getAbsolutePosition() - angleOffset);
 
     // Config angle motor/controller
@@ -90,7 +90,7 @@ public class SwerveModule
     angleMotor.setMotorBrake(false);
 
     // Config drive motor/controller
-    driveMotor.configureIntegratedEncoder();
+    driveMotor.configureIntegratedEncoder(moduleConstants.getPositionEncoderConversion(true));
     driveMotor.configurePIDF(moduleConstants.velocityPIDF);
     driveMotor.setInverted(moduleConstants.driveMotorInverted);
     driveMotor.setMotorBrake(true);

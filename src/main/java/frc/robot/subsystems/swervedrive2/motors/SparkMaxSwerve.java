@@ -6,7 +6,6 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import frc.robot.Constants.Drivebase.EncoderConversions;
 import frc.robot.subsystems.swervedrive2.parser.PIDFConfig;
 
 public class SparkMaxSwerve extends SwerveMotor
@@ -59,19 +58,14 @@ public class SparkMaxSwerve extends SwerveMotor
 
   /**
    * Configure the integrated encoder for the swerve module. Sets the conversion factors for position and velocity.
+   *
+   * @param positionConversionFactor The conversion factor to apply.
    */
   @Override
-  public void configureIntegratedEncoder()
+  public void configureIntegratedEncoder(double positionConversionFactor)
   {
-    if (isDriveMotor)
-    {
-      encoder.setPositionConversionFactor(EncoderConversions.METERS_PER_MOTOR_ROTATION);
-      encoder.setVelocityConversionFactor(EncoderConversions.METERS_PER_MOTOR_ROTATION / 60);
-    } else
-    {
-      encoder.setPositionConversionFactor(EncoderConversions.DEGREES_PER_STEERING_ROTATION);
-      encoder.setVelocityConversionFactor(EncoderConversions.DEGREES_PER_STEERING_ROTATION / 60);
-    }
+    encoder.setPositionConversionFactor(positionConversionFactor);
+    encoder.setVelocityConversionFactor(positionConversionFactor / 60);
   }
 
   /**

@@ -7,7 +7,7 @@ public class PIDFConfig
    * PIDF Values and integral zone.
    */
   public double kP, kI, kD, kF, IZ;
-  
+
   /**
    * PIDF Config constructor to contain the values.
    *

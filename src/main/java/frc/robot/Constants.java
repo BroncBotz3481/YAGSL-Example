@@ -74,14 +74,14 @@ public final class Constants
     public static class ModuleLocations
     {
 
-      public static final double          FRONT_LEFT_X     = Units.inchesToMeters(11);
-      public static final double          BACK_LEFT_Y      = Units.inchesToMeters(11);
-      public static final double          FRONT_LEFT_Y     = Units.inchesToMeters(11);
-      public static final double          FRONT_RIGHT_X    = Units.inchesToMeters(11);
-      public static final double          FRONT_RIGHT_Y    = Units.inchesToMeters(-11);
-      public static final double          BACK_LEFT_X      = Units.inchesToMeters(-11);
-      public static final double          BACK_RIGHT_X     = Units.inchesToMeters(-11);
-      public static final double          BACK_RIGHT_Y     = Units.inchesToMeters(-11);
+      public static final double FRONT_LEFT_X  = Units.inchesToMeters(11);
+      public static final double BACK_LEFT_Y   = Units.inchesToMeters(11);
+      public static final double FRONT_LEFT_Y  = Units.inchesToMeters(11);
+      public static final double FRONT_RIGHT_X = Units.inchesToMeters(11);
+      public static final double FRONT_RIGHT_Y = Units.inchesToMeters(-11);
+      public static final double BACK_LEFT_X   = Units.inchesToMeters(-11);
+      public static final double BACK_RIGHT_X  = Units.inchesToMeters(-11);
+      public static final double BACK_RIGHT_Y  = Units.inchesToMeters(-11);
     }
 
     public static class DrivetrainLimitations
@@ -149,12 +149,12 @@ public final class Constants
     {
 
       /**
-       * Encoder conversion values.  Drive converts motor rotations to linear wheel distance and steering converts motor
-       * rotations to module azimuth
+       * Calculation: 4in diameter wheels * pi [circumfrence] / gear ratio
        */
       public static final double METERS_PER_MOTOR_ROTATION     = (Math.PI * Units.inchesToMeters(4)) / 6.75;
       /**
-       * Calculation: 4in diameter wheels * pi [circumfrence] / gear ratio
+       * Encoder conversion values.  Drive converts motor rotations to linear wheel distance and steering converts motor
+       * rotations to module azimuth
        */
       public static final double DEGREES_PER_STEERING_ROTATION = 360 / 12.8;
     }

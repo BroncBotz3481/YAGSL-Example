@@ -1,6 +1,7 @@
 package frc.robot.subsystems.swervedrive2.parser;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.Drivebase.DriveFeedforwardGains;
 import frc.robot.Constants.Drivebase.DrivetrainLimitations;
 import frc.robot.Constants.Drivebase.ModulePIDFGains;
@@ -12,13 +13,16 @@ import frc.robot.subsystems.swervedrive2.motors.SwerveMotor;
 public class SwerveModuleConfiguration
 {
 
+  public final double  wheelSize      = Units.inchesToMeters(4);
+  public final double  driveGearRatio = 6.75;
+  public final double  angleGearRatio = 12.8;
   public final int     driveMotorID;
   public final int     angleMotorID;
   public final int     absoluteEncoderID;
   public final double  angleOffset;
   public final boolean absoluteEncoderInverted;
   public final boolean driveMotorInverted;
-  public final double  maxSpeed = DrivetrainLimitations.MAX_SPEED;
+  public final double  maxSpeed       = DrivetrainLimitations.MAX_SPEED;
   public final String  driveMotorCANBus, angleMotorCANBus, absoluteEncoderCANBus;
   public double     angleKZ      = ModulePIDFGains.MODULE_KV;
   public PIDFConfig anglePIDF    = new PIDFConfig(ModulePIDFGains.MODULE_KP, ModulePIDFGains.MODULE_KI,
@@ -124,5 +128,38 @@ public class SwerveModuleConfiguration
   public SwerveAbsoluteEncoder createAbsoluteEncoder()
   {
     return new CANCoderSwerve(absoluteEncoderID);
+  }
+
+
+  /**
+   * Calculate the meters per rotation for the integrated drive encoder.
+   *
+   * @return Meters per rotation for the drive motor.
+   */
+  public double calculateMetersPerRotation()
+  {
+    return (Math.PI * wheelSize) / driveGearRatio;
+  }
+
+  /**
+   * Calculate the degrees per steering rotation for the integrated drive encoder.
+   *
+   * @return Degrees per steering rotation for the angle motor.
+   */
+  public double calculateDegreesPerSteeringRotation()
+  {
+    return 360 / angleGearRatio;
+  }
+
+  /**
+   * Get the encoder conversion for position encoders.
+   *
+   * @param isDriveMotor For the drive motor.
+   * @return Position encoder conversion factor.
+   */
+  public double getPositionEncoderConversion(boolean isDriveMotor)
+  {
+    return isDriveMotor ? calculateMetersPerRotation()
+                        : calculateDegreesPerSteeringRotation();
   }
 }

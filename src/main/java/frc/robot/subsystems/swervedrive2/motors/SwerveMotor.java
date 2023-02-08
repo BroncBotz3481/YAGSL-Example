@@ -22,8 +22,10 @@ public abstract class SwerveMotor
 
   /**
    * Configure the integrated encoder for the swerve module. Sets the conversion factors for position and velocity.
+   *
+   * @param positionConversionFactor The conversion factor to apply for position.
    */
-  public abstract void configureIntegratedEncoder();
+  public abstract void configureIntegratedEncoder(double positionConversionFactor);
 
   /**
    * Configure the PIDF values for the closed loop controller. 0 is disabled or off.

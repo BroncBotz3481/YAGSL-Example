@@ -32,27 +32,27 @@ public class SwerveModuleConfiguration
   /**
    * PIDF configuration options for the angle motor closed-loop PID controller.
    */
-  public PIDFConfig                          anglePIDF;
+  public       PIDFConfig                          anglePIDF;
   /**
    * PIDF configuration options for the drive motor closed-loop PID controller.
    */
-  public PIDFConfig                          velocityPIDF;
+  public       PIDFConfig                          velocityPIDF;
   /**
    * Angle volt-meter-per-second.
    */
-  public double                              angleKV;
+  public       double                              angleKV;
   /**
    * Swerve module location relative to the robot.
    */
-  public Translation2d                       moduleLocation;
+  public       Translation2d                       moduleLocation;
   /**
    * Physical characteristics of the swerve module.
    */
-  public SwerveModulePhysicalCharacteristics physicalCharacteristics;
+  public       SwerveModulePhysicalCharacteristics physicalCharacteristics;
   /**
    * The drive motor and angle motor of this swerve module.
    */
-  public SwerveMotor                         driveMotor, angleMotor;
+  public       SwerveMotor                         driveMotor, angleMotor;
   /**
    * The Absolute Encoder for the swerve module.
    */
@@ -93,7 +93,7 @@ public class SwerveModuleConfiguration
     this.velocityPIDF = velocityPIDF;
     this.maxSpeed = maxSpeed;
     this.angleKV = calculateAngleKV(physicalCharacteristics.optimalVoltage,
-                                    physicalCharacteristics.motorFreeSpeedRPM,
+                                    physicalCharacteristics.angleMotorFreeSpeedRPM,
                                     physicalCharacteristics.angleGearRatio);
     this.physicalCharacteristics = physicalCharacteristics;
 

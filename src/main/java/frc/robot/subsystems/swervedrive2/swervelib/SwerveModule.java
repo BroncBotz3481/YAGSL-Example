@@ -117,6 +117,14 @@ public class SwerveModule
   }
 
   /**
+   * Synchronize the integrated angle encoder with the absolute encoder.
+   */
+  public void synchronizeEncoders()
+  {
+    angleMotor.setPosition(absoluteEncoder.getAbsolutePosition() - angleOffset);
+  }
+
+  /**
    * Set the desired state of the swerve module.
    *
    * @param desiredState Desired swerve module state.

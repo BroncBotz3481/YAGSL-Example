@@ -34,8 +34,8 @@ public class SwerveControllerConfiguration
   {
     this.maxSpeed = driveCfg.maxSpeed;
     this.maxAngularVelocity = calculateMaxAngularVelocity(driveCfg.maxSpeed,
-                                                          driveCfg.moduleLocationsMeters[0].getX(),
-                                                          driveCfg.moduleLocationsMeters[0].getY());
+                                                          Math.abs(driveCfg.moduleLocationsMeters[0].getX()),
+                                                          Math.abs(driveCfg.moduleLocationsMeters[0].getY()));
     this.headingPIDF = headingPIDF;
     this.angleJoyStickRadiusDeadband = angleJoyStickRadiusDeadband;
   }

@@ -12,8 +12,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.subsystems.swervedrive2.swervelib.imu.SwerveIMU;
-import frc.robot.subsystems.swervedrive2.swervelib.math.BetterSwerveKinematics;
-import frc.robot.subsystems.swervedrive2.swervelib.math.BetterSwerveModuleState;
+import frc.robot.subsystems.swervedrive2.swervelib.math.SwerveKinematics2;
+import frc.robot.subsystems.swervedrive2.swervelib.math.SwerveModuleState2;
 import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveControllerConfiguration;
 import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveDriveConfiguration;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class SwerveDrive
 
   //
   // Swerve base kinematics object
-  public final  BetterSwerveKinematics   kinematics;
+  public final  SwerveKinematics2        kinematics;
   public final  SwerveDriveConfiguration swerveDriveConfiguration;
   private final SwerveModule[]           swerveModules;
   private final SwerveDriveOdometry      odometry;
@@ -45,7 +45,7 @@ public class SwerveDrive
     swerveDriveConfiguration = config;
     swerveController = new SwerveController(controllerConfig);
     // Create Kinematics from swerve module locations.
-    kinematics = new BetterSwerveKinematics(config.moduleLocationsMeters);
+    kinematics = new SwerveKinematics2(config.moduleLocationsMeters);
 
     // Create an integrator for angle if the robot is being simulated to emulate an IMU
     // If the robot is real, instantiate the IMU instead.
@@ -96,7 +96,7 @@ public class SwerveDrive
     SmartDashboard.putString("RobotVelocity", velocity.toString());
 
     // Calculate required module states via kinematics
-    BetterSwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(velocity);
+    SwerveModuleState2[] swerveModuleStates = kinematics.toSwerveModuleStates(velocity);
 
     setModuleStates(swerveModuleStates, isOpenLoop);
   }
@@ -107,10 +107,10 @@ public class SwerveDrive
    * @param desiredStates A list of SwerveModuleStates to send to the modules.
    * @param isOpenLoop    Whether to use closed-loop velocity control.  Set to true to disable closed-loop.
    */
-  public void setModuleStates(BetterSwerveModuleState[] desiredStates, boolean isOpenLoop)
+  public void setModuleStates(SwerveModuleState2[] desiredStates, boolean isOpenLoop)
   {
     // Desaturates wheel speeds
-    BetterSwerveKinematics.desaturateWheelSpeeds(desiredStates, swerveDriveConfiguration.maxSpeed);
+    SwerveKinematics2.desaturateWheelSpeeds(desiredStates, swerveDriveConfiguration.maxSpeed);
 
     // Sets states
     for (SwerveModule module : swerveModules)
@@ -186,9 +186,9 @@ public class SwerveDrive
    *
    * @return A list of SwerveModuleStates containing the current module states
    */
-  public BetterSwerveModuleState[] getStates()
+  public SwerveModuleState2[] getStates()
   {
-    BetterSwerveModuleState[] states = new BetterSwerveModuleState[swerveDriveConfiguration.moduleCount];
+    SwerveModuleState2[] states = new SwerveModuleState2[swerveDriveConfiguration.moduleCount];
     for (SwerveModule module : swerveModules)
     {
       states[module.moduleNumber] = module.getState();
@@ -267,9 +267,9 @@ public class SwerveDrive
   {
     for (SwerveModule swerveModule : swerveModules)
     {
-      swerveModule.setDesiredState(new BetterSwerveModuleState(0,
-                                                               swerveModule.configuration.moduleLocation.getAngle(),
-                                                               0), true);
+      swerveModule.setDesiredState(new SwerveModuleState2(0,
+                                                          swerveModule.configuration.moduleLocation.getAngle(),
+                                                          0), true);
     }
   }
 

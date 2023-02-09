@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.subsystems.swervedrive2.swervelib.encoders.SwerveAbsoluteEncoder;
-import frc.robot.subsystems.swervedrive2.swervelib.math.BetterSwerveModuleState;
+import frc.robot.subsystems.swervedrive2.swervelib.math.SwerveModuleState2;
 import frc.robot.subsystems.swervedrive2.swervelib.motors.SwerveMotor;
 import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveModuleConfiguration;
 
@@ -113,12 +113,12 @@ public class SwerveModule
    * @param desiredState Desired swerve module state.
    * @param isOpenLoop   Whether to use open loop (direct percent) or direct velocity control.
    */
-  public void setDesiredState(BetterSwerveModuleState desiredState, boolean isOpenLoop)
+  public void setDesiredState(SwerveModuleState2 desiredState, boolean isOpenLoop)
   {
     SwerveModuleState simpleState = new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
     simpleState = SwerveModuleState.optimize(simpleState, getState().angle);
-    desiredState = new BetterSwerveModuleState(simpleState.speedMetersPerSecond, simpleState.angle,
-                                               desiredState.omegaRadPerSecond);
+    desiredState = new SwerveModuleState2(simpleState.speedMetersPerSecond, simpleState.angle,
+                                          desiredState.omegaRadPerSecond);
 
     SmartDashboard.putNumber("Optimized " + moduleNumber + " Speed Setpoint: ", desiredState.speedMetersPerSecond);
     SmartDashboard.putNumber("Optimized " + moduleNumber + " Angle Setpoint: ", desiredState.angle.getDegrees());
@@ -158,7 +158,7 @@ public class SwerveModule
    *
    * @return Current SwerveModule state.
    */
-  public BetterSwerveModuleState getState()
+  public SwerveModuleState2 getState()
   {
     double     velocity;
     Rotation2d azimuth;
@@ -174,7 +174,7 @@ public class SwerveModule
       azimuth = Rotation2d.fromDegrees(this.angle);
       omega = this.omega;
     }
-    return new BetterSwerveModuleState(velocity, azimuth, omega);
+    return new SwerveModuleState2(velocity, azimuth, omega);
   }
 
   public SwerveModulePosition getPosition()

@@ -3,7 +3,7 @@ package frc.robot.subsystems.swervedrive2.swervelib.math;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
-public class BetterSwerveModuleState extends SwerveModuleState
+public class SwerveModuleState2 extends SwerveModuleState
 {
 
   public double speedMetersPerSecond;
@@ -18,7 +18,7 @@ public class BetterSwerveModuleState extends SwerveModuleState
   /**
    * Constructs a SwerveModuleState with zeros for speed and angle.
    */
-  public BetterSwerveModuleState()
+  public SwerveModuleState2()
   {
   }
 
@@ -29,7 +29,7 @@ public class BetterSwerveModuleState extends SwerveModuleState
    * @param angle                The angle of the module.
    * @param omegaRadPerSecond    The angular velocity of the module.
    */
-  public BetterSwerveModuleState(double speedMetersPerSecond, Rotation2d angle, double omegaRadPerSecond)
+  public SwerveModuleState2(double speedMetersPerSecond, Rotation2d angle, double omegaRadPerSecond)
   {
     this.speedMetersPerSecond = speedMetersPerSecond;
     this.angle = angle;

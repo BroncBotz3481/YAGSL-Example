@@ -18,20 +18,19 @@ import org.ejml.simple.SimpleMatrix;
  * speed.
  * <p></p>
  * <p>
- * Makes use of {@link BetterSwerveModuleState} to add the angular velocity that is required of the module as an
- * output.
+ * Makes use of {@link SwerveModuleState2} to add the angular velocity that is required of the module as an output.
  */
-public class BetterSwerveKinematics extends SwerveDriveKinematics
+public class SwerveKinematics2 extends SwerveDriveKinematics
 {
 
   private final SimpleMatrix m_inverseKinematics;
   private final SimpleMatrix m_forwardKinematics;
   private final SimpleMatrix bigInverseKinematics;
 
-  private final int                       m_numModules;
-  private final Translation2d[]           m_modules;
-  private final BetterSwerveModuleState[] m_moduleStates;
-  private       Translation2d             m_prevCoR = new Translation2d();
+  private final int                  m_numModules;
+  private final Translation2d[]      m_modules;
+  private final SwerveModuleState2[] m_moduleStates;
+  private       Translation2d        m_prevCoR = new Translation2d();
 
   /**
    * Constructs a swerve drive kinematics object. This takes in a variable number of wheel locations as Translation2ds.
@@ -41,7 +40,7 @@ public class BetterSwerveKinematics extends SwerveDriveKinematics
    *
    * @param wheelsMeters The locations of the wheels relative to the physical center of the robot.
    */
-  public BetterSwerveKinematics(Translation2d... wheelsMeters)
+  public SwerveKinematics2(Translation2d... wheelsMeters)
   {
     super(wheelsMeters);
     if (wheelsMeters.length < 2)
@@ -50,8 +49,8 @@ public class BetterSwerveKinematics extends SwerveDriveKinematics
     }
     m_numModules = wheelsMeters.length;
     m_modules = Arrays.copyOf(wheelsMeters, m_numModules);
-    m_moduleStates = new BetterSwerveModuleState[m_numModules];
-    Arrays.fill(m_moduleStates, new BetterSwerveModuleState());
+    m_moduleStates = new SwerveModuleState2[m_numModules];
+    Arrays.fill(m_moduleStates, new SwerveModuleState2());
     m_inverseKinematics = new SimpleMatrix(m_numModules * 2, 3);
     bigInverseKinematics = new SimpleMatrix(m_numModules * 2, 4);
 
@@ -80,7 +79,7 @@ public class BetterSwerveKinematics extends SwerveDriveKinematics
    * @param attainableMaxSpeedMetersPerSecond The absolute max speed that a module can reach.
    */
   public static void desaturateWheelSpeeds(
-      BetterSwerveModuleState[] moduleStates, double attainableMaxSpeedMetersPerSecond)
+      SwerveModuleState2[] moduleStates, double attainableMaxSpeedMetersPerSecond)
   {
     double realMaxSpeed = Collections.max(Arrays.asList(moduleStates)).speedMetersPerSecond;
     if (realMaxSpeed > attainableMaxSpeedMetersPerSecond)
@@ -111,7 +110,7 @@ public class BetterSwerveKinematics extends SwerveDriveKinematics
    * @param attainableMaxRotationalVelocityRadiansPerSecond The absolute max speed the robot can reach while rotating
    */
   public static void desaturateWheelSpeeds(
-      BetterSwerveModuleState[] moduleStates,
+      SwerveModuleState2[] moduleStates,
       ChassisSpeeds currentChassisSpeed,
       double attainableMaxModuleSpeedMetersPerSecond,
       double attainableMaxTranslationalSpeedMetersPerSecond,
@@ -157,11 +156,11 @@ public class BetterSwerveKinematics extends SwerveDriveKinematics
    *                               will rotate around that corner.
    * @return An array containing the module states. Use caution because these module states are not normalized.
    * Sometimes, a user input may cause one of the module speeds to go above the attainable max velocity. Use the
-   * {@link #desaturateWheelSpeeds(BetterSwerveModuleState[], double) DesaturateWheelSpeeds} function to rectify this
+   * {@link #desaturateWheelSpeeds(SwerveModuleState2[], double) DesaturateWheelSpeeds} function to rectify this
    * issue.
    */
   @SuppressWarnings("PMD.MethodReturnsInternalArray")
-  public BetterSwerveModuleState[] toSwerveModuleStates(
+  public SwerveModuleState2[] toSwerveModuleStates(
       ChassisSpeeds chassisSpeeds, Translation2d centerOfRotationMeters)
   {
     if (chassisSpeeds.vxMetersPerSecond == 0.0
@@ -268,7 +267,7 @@ public class BetterSwerveKinematics extends SwerveDriveKinematics
       var omegaVector = trigThetaAngle.mult(accelVector);
 
       double omega = (omegaVector.get(1, 0) / speed) - chassisSpeeds.omegaRadiansPerSecond;
-      m_moduleStates[i] = new BetterSwerveModuleState(speed, angle, omega);
+      m_moduleStates[i] = new SwerveModuleState2(speed, angle, omega);
     }
 
     return m_moduleStates;
@@ -281,7 +280,7 @@ public class BetterSwerveKinematics extends SwerveDriveKinematics
    * @param chassisSpeeds The desired chassis speed.
    * @return An array containing the module states.
    */
-  public BetterSwerveModuleState[] toSwerveModuleStates(ChassisSpeeds chassisSpeeds)
+  public SwerveModuleState2[] toSwerveModuleStates(ChassisSpeeds chassisSpeeds)
   {
     return toSwerveModuleStates(chassisSpeeds, new Translation2d());
   }
@@ -296,7 +295,7 @@ public class BetterSwerveKinematics extends SwerveDriveKinematics
    *                    this class.
    * @return The resulting chassis speed.
    */
-  public ChassisSpeeds toChassisSpeeds(BetterSwerveModuleState... wheelStates)
+  public ChassisSpeeds toChassisSpeeds(SwerveModuleState2... wheelStates)
   {
     if (wheelStates.length != m_numModules)
     {

@@ -6,6 +6,8 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.swervedrive2.swervelib.encoders.CANCoderSwerve;
+import frc.robot.subsystems.swervedrive2.swervelib.motors.SparkMaxSwerve;
 import frc.robot.subsystems.swervedrive2.swervelib.parser.PIDFConfig;
 import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveModuleConfiguration;
 import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveModulePhysicalCharacteristics;
@@ -130,61 +132,65 @@ public final class Constants
     public static final class Mod0FL
     { //Front Left
 
-      public static final SwerveModuleConfiguration CONSTANTS = new SwerveModuleConfiguration(4,
-                                                                                              3,
-                                                                                              9,
-                                                                                              -114.609,
-                                                                                              ModuleLocations.FRONT_LEFT_X,
-                                                                                              ModuleLocations.FRONT_LEFT_Y,
-                                                                                              ModulePIDFGains.anglePIDF,
-                                                                                              ModulePIDFGains.velocityPIDF,
-                                                                                              DrivetrainLimitations.MAX_SPEED,
-                                                                                              MODULE_PHYSICAL_CHARACTERISTICS);
+      public static final SwerveModuleConfiguration CONSTANTS = new SwerveModuleConfiguration(
+          new SparkMaxSwerve(4, true),
+          new SparkMaxSwerve(3, false),
+          new CANCoderSwerve(9),
+          -114.609,
+          ModuleLocations.FRONT_LEFT_X,
+          ModuleLocations.FRONT_LEFT_Y,
+          ModulePIDFGains.anglePIDF,
+          ModulePIDFGains.velocityPIDF,
+          DrivetrainLimitations.MAX_SPEED,
+          MODULE_PHYSICAL_CHARACTERISTICS);
     }
 
     public static final class Mod1FR
     { //Front Right
 
-      public static final SwerveModuleConfiguration CONSTANTS = new SwerveModuleConfiguration(2,
-                                                                                              1,
-                                                                                              10,
-                                                                                              -50.977,
-                                                                                              ModuleLocations.FRONT_RIGHT_X,
-                                                                                              ModuleLocations.FRONT_RIGHT_Y,
-                                                                                              ModulePIDFGains.anglePIDF,
-                                                                                              ModulePIDFGains.velocityPIDF,
-                                                                                              DrivetrainLimitations.MAX_SPEED,
-                                                                                              MODULE_PHYSICAL_CHARACTERISTICS);
+      public static final SwerveModuleConfiguration CONSTANTS = new SwerveModuleConfiguration(
+          new SparkMaxSwerve(2, true),
+          new SparkMaxSwerve(1, false),
+          new CANCoderSwerve(10),
+          -50.977,
+          ModuleLocations.FRONT_RIGHT_X,
+          ModuleLocations.FRONT_RIGHT_Y,
+          ModulePIDFGains.anglePIDF,
+          ModulePIDFGains.velocityPIDF,
+          DrivetrainLimitations.MAX_SPEED,
+          MODULE_PHYSICAL_CHARACTERISTICS);
     }
 
     public static final class Mod2BL
     { //Back Left
 
-      public static final SwerveModuleConfiguration CONSTANTS = new SwerveModuleConfiguration(7,
-                                                                                              8,
-                                                                                              12,
-                                                                                              6.504,
-                                                                                              ModuleLocations.BACK_LEFT_X,
-                                                                                              ModuleLocations.BACK_LEFT_Y,
-                                                                                              ModulePIDFGains.anglePIDF,
-                                                                                              ModulePIDFGains.velocityPIDF,
-                                                                                              DrivetrainLimitations.MAX_SPEED,
-                                                                                              MODULE_PHYSICAL_CHARACTERISTICS);
+      public static final SwerveModuleConfiguration CONSTANTS = new SwerveModuleConfiguration(
+          new SparkMaxSwerve(7, true),
+          new SparkMaxSwerve(8, false),
+          new CANCoderSwerve(12),
+          6.504,
+          ModuleLocations.BACK_LEFT_X,
+          ModuleLocations.BACK_LEFT_Y,
+          ModulePIDFGains.anglePIDF,
+          ModulePIDFGains.velocityPIDF,
+          DrivetrainLimitations.MAX_SPEED,
+          MODULE_PHYSICAL_CHARACTERISTICS);
     }
 
     public static final class Mod3BR
     { //Back Right
 
-      public static final SwerveModuleConfiguration CONSTANTS = new SwerveModuleConfiguration(5,
-                                                                                              6,
-                                                                                              11,
-                                                                                              -18.281,
-                                                                                              ModuleLocations.BACK_RIGHT_X,
-                                                                                              ModuleLocations.BACK_RIGHT_Y,
-                                                                                              ModulePIDFGains.anglePIDF,
-                                                                                              ModulePIDFGains.velocityPIDF,
-                                                                                              DrivetrainLimitations.MAX_SPEED,
-                                                                                              MODULE_PHYSICAL_CHARACTERISTICS);
+      public static final SwerveModuleConfiguration CONSTANTS = new SwerveModuleConfiguration(
+          new SparkMaxSwerve(5, true),
+          new SparkMaxSwerve(6, false),
+          new CANCoderSwerve(11),
+          -18.281,
+          ModuleLocations.BACK_RIGHT_X,
+          ModuleLocations.BACK_RIGHT_Y,
+          ModulePIDFGains.anglePIDF,
+          ModulePIDFGains.velocityPIDF,
+          DrivetrainLimitations.MAX_SPEED,
+          MODULE_PHYSICAL_CHARACTERISTICS);
     }
   }
 

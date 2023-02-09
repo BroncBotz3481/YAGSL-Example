@@ -7,30 +7,12 @@ import static frc.robot.subsystems.swervedrive2.swervelib.math.SwerveMath.calcul
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
-import frc.robot.subsystems.swervedrive2.swervelib.encoders.CANCoderSwerve;
 import frc.robot.subsystems.swervedrive2.swervelib.encoders.SwerveAbsoluteEncoder;
-import frc.robot.subsystems.swervedrive2.swervelib.motors.SparkMaxSwerve;
 import frc.robot.subsystems.swervedrive2.swervelib.motors.SwerveMotor;
 
 public class SwerveModuleConfiguration
 {
 
-  /**
-   * Drive motor CAN ID or pin ID.
-   */
-  public final int    driveMotorID;
-  /**
-   * Angle motor CAN ID or pin ID.
-   */
-  public final int    angleMotorID;
-  /**
-   * Absolute encoder CAN ID or pin ID.
-   */
-  public final int    absoluteEncoderID;
-  /**
-   * CAN bus name for the drive/angle motor, or absolute encoder.
-   */
-  public final String driveMotorCANBus, angleMotorCANBus, absoluteEncoderCANBus;
   /**
    * Angle offset in degrees for the Swerve Module.
    */
@@ -50,37 +32,42 @@ public class SwerveModuleConfiguration
   /**
    * PIDF configuration options for the angle motor closed-loop PID controller.
    */
-  public       PIDFConfig                          anglePIDF;
+  public PIDFConfig                          anglePIDF;
   /**
    * PIDF configuration options for the drive motor closed-loop PID controller.
    */
-  public       PIDFConfig                          velocityPIDF;
+  public PIDFConfig                          velocityPIDF;
   /**
    * Angle volt-meter-per-second.
    */
-  public       double                              angleKV;
+  public double                              angleKV;
   /**
    * Swerve module location relative to the robot.
    */
-  public       Translation2d                       moduleLocation;
+  public Translation2d                       moduleLocation;
   /**
    * Physical characteristics of the swerve module.
    */
-  public       SwerveModulePhysicalCharacteristics physicalCharacteristics;
+  public SwerveModulePhysicalCharacteristics physicalCharacteristics;
+  /**
+   * The drive motor and angle motor of this swerve module.
+   */
+  public SwerveMotor                         driveMotor, angleMotor;
+  /**
+   * The Absolute Encoder for the swerve module.
+   */
+  public SwerveAbsoluteEncoder absoluteEncoder;
 
 
   /**
    * Construct a configuration object for swerve modules.
    *
-   * @param driveMotorID            Drive motor CAN ID or pin ID.
-   * @param angleMotorID            Angle motor CAN ID or pin ID.
-   * @param absoluteEncoderID       Absolute encoder CAN ID or pin ID.
+   * @param driveMotor              Drive {@link SwerveMotor}.
+   * @param angleMotor              Angle {@link SwerveMotor}
+   * @param absoluteEncoder         Absolute encoder {@link SwerveAbsoluteEncoder}.
    * @param angleOffset             Absolute angle offset to 0.
    * @param absoluteEncoderInverted Absolute encoder inverted.
    * @param driveMotorInverted      Drive motor inverted.
-   * @param absoluteEncoderCANBus   CAN Bus name where absolute encoder is attached. Can be null if none.
-   * @param angleMotorCANBus        CAN Bus name where the angle motor is attached. Can be null if none.
-   * @param driveMotorCANBus        CAN Bus name where the drive motor is attached. Can be null if none.
    * @param xMeters                 Module location in meters from the center horizontally.
    * @param yMeters                 Module location in meters from center vertically.
    * @param anglePIDF               Angle PIDF configuration.
@@ -88,21 +75,19 @@ public class SwerveModuleConfiguration
    * @param maxSpeed                Maximum speed in meters per second.
    * @param physicalCharacteristics Physical characteristics of the swerve module.
    */
-  public SwerveModuleConfiguration(int driveMotorID, int angleMotorID, int absoluteEncoderID, double angleOffset,
-                                   boolean absoluteEncoderInverted, boolean driveMotorInverted, String driveMotorCANBus,
-                                   String angleMotorCANBus, String absoluteEncoderCANBus, double xMeters,
+  public SwerveModuleConfiguration(SwerveMotor driveMotor, SwerveMotor angleMotor,
+                                   SwerveAbsoluteEncoder absoluteEncoder, double angleOffset,
+                                   double xMeters,
                                    double yMeters, PIDFConfig anglePIDF, PIDFConfig velocityPIDF, double maxSpeed,
-                                   SwerveModulePhysicalCharacteristics physicalCharacteristics)
+                                   SwerveModulePhysicalCharacteristics physicalCharacteristics,
+                                   boolean absoluteEncoderInverted, boolean driveMotorInverted)
   {
-    this.driveMotorID = driveMotorID;
-    this.angleMotorID = angleMotorID;
-    this.absoluteEncoderID = absoluteEncoderID;
+    this.driveMotor = driveMotor;
+    this.angleMotor = angleMotor;
+    this.absoluteEncoder = absoluteEncoder;
     this.angleOffset = angleOffset;
     this.absoluteEncoderInverted = absoluteEncoderInverted;
     this.driveMotorInverted = driveMotorInverted;
-    this.driveMotorCANBus = driveMotorCANBus;
-    this.angleMotorCANBus = angleMotorCANBus;
-    this.absoluteEncoderCANBus = absoluteEncoderCANBus;
     this.moduleLocation = new Translation2d(xMeters, yMeters);
     this.anglePIDF = anglePIDF;
     this.velocityPIDF = velocityPIDF;
@@ -115,11 +100,12 @@ public class SwerveModuleConfiguration
   }
 
   /**
-   * Construct a configuration object for swerve modules.
+   * Construct a configuration object for swerve modules. Assumes the absolute encoder and drive motor are not
+   * inverted.
    *
-   * @param driveMotorID            Drive motor CAN ID or pin ID.
-   * @param angleMotorID            Angle motor CAN ID or pin ID.
-   * @param absoluteEncoderID       Absolute encoder CAN ID or pin ID.
+   * @param driveMotor              Drive {@link SwerveMotor}.
+   * @param angleMotor              Angle {@link SwerveMotor}
+   * @param absoluteEncoder         Absolute encoder {@link SwerveAbsoluteEncoder}.
    * @param angleOffset             Absolute angle offset to 0.
    * @param xMeters                 Module location in meters from the center horizontally.
    * @param yMeters                 Module location in meters from center vertically.
@@ -128,25 +114,23 @@ public class SwerveModuleConfiguration
    * @param maxSpeed                Maximum robot speed in meters per second.
    * @param physicalCharacteristics Physical characteristics of the swerve module.
    */
-  public SwerveModuleConfiguration(int driveMotorID, int angleMotorID, int absoluteEncoderID, double angleOffset,
+  public SwerveModuleConfiguration(SwerveMotor driveMotor, SwerveMotor angleMotor,
+                                   SwerveAbsoluteEncoder absoluteEncoder, double angleOffset,
                                    double xMeters, double yMeters, PIDFConfig anglePIDF, PIDFConfig velocityPIDF,
                                    double maxSpeed, SwerveModulePhysicalCharacteristics physicalCharacteristics)
   {
-    this(driveMotorID,
-         angleMotorID,
-         absoluteEncoderID,
+    this(driveMotor,
+         angleMotor,
+         absoluteEncoder,
          angleOffset,
-         false,
-         false,
-         null,
-         null,
-         null,
          xMeters,
          yMeters,
          anglePIDF,
          velocityPIDF,
          maxSpeed,
-         physicalCharacteristics);
+         physicalCharacteristics,
+         false,
+         false);
   }
 
 
@@ -164,39 +148,6 @@ public class SwerveModuleConfiguration
     ///^ Volt-seconds^2 per meter (max voltage divided by max accel)
     return new SimpleMotorFeedforward(0, kv, ka);
   }
-
-  /**
-   * Create the {@link SwerveMotor} for the drive motor.
-   *
-   * @return Instantiated SwerveMotor.
-   */
-  public SwerveMotor createDriveMotor()
-  {
-    SwerveMotor motor = new SparkMaxSwerve(driveMotorID, true);
-    return motor;
-  }
-
-  /**
-   * Create the {@link SwerveMotor} for the drive motor.
-   *
-   * @return Instantiated SwerveMotor.
-   */
-  public SwerveMotor createAngleMotor()
-  {
-    SwerveMotor motor = new SparkMaxSwerve(angleMotorID, false);
-    return motor;
-  }
-
-  /**
-   * Create the {@link SwerveAbsoluteEncoder} for the given configuration.
-   *
-   * @return Instantiated Absolute encoder.
-   */
-  public SwerveAbsoluteEncoder createAbsoluteEncoder()
-  {
-    return new CANCoderSwerve(absoluteEncoderID);
-  }
-
 
   /**
    * Get the encoder conversion for position encoders.

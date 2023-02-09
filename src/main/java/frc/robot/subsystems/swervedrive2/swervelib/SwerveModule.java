@@ -72,8 +72,8 @@ public class SwerveModule
     feedforward = configuration.createDriveFeedforward();
 
     // Create motors from configuration and reset them to defaults.
-    angleMotor = moduleConfiguration.createAngleMotor();
-    driveMotor = moduleConfiguration.createDriveMotor();
+    angleMotor = moduleConfiguration.angleMotor;
+    driveMotor = moduleConfiguration.driveMotor;
     angleMotor.factoryDefaults();
     driveMotor.factoryDefaults();
 
@@ -86,7 +86,7 @@ public class SwerveModule
     driveMotor.setLoopRampRate(configuration.physicalCharacteristics.driveMotorRampRate);
 
     // Config angle encoders
-    absoluteEncoder = moduleConfiguration.createAbsoluteEncoder();
+    absoluteEncoder = moduleConfiguration.absoluteEncoder;
     absoluteEncoder.factoryDefault();
     absoluteEncoder.configure(moduleConfiguration.absoluteEncoderInverted);
     angleMotor.configureIntegratedEncoder(moduleConfiguration.getPositionEncoderConversion(false));

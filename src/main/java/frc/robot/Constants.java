@@ -69,7 +69,11 @@ public final class Constants
     public static final boolean                             INVERT_GYRO                     = false;
     public static final int                                 NUM_MODULES                     = 4;
     public static final int                                 PIGEON                          = 13;
-    public static       SwerveModulePhysicalCharacteristics MODULE_PHYSICAL_CHARACTERISTICS = new SwerveModulePhysicalCharacteristics();
+    public static       SwerveModulePhysicalCharacteristics MODULE_PHYSICAL_CHARACTERISTICS = new SwerveModulePhysicalCharacteristics(
+        6.75,
+        12.8,
+        5676,
+        Units.inchesToMeters(4));
 
     /**
      * Module locations, in meters, as distances to the center of the robot. Positive x is torwards the robot front, and

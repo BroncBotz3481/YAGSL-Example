@@ -11,8 +11,8 @@ import frc.robot.subsystems.swervedrive2.parser.SwerveControllerConfiguration;
 public class SwerveController
 {
 
+  public final  SwerveControllerConfiguration config;
   private final PIDController                 thetaController;
-  private final SwerveControllerConfiguration config;
   public        double                        lastAngle;
 
   /**

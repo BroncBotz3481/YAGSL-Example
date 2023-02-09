@@ -13,7 +13,8 @@ public class SwerveMath
    */
   public static double calculateAngleKV(double optimalVoltage, double motorFreeSpeedRPM, double angleGearRatio)
   {
-    return optimalVoltage / (360 * (motorFreeSpeedRPM / angleGearRatio) / 60);
+    double maxAngularVelocity = 360 * (motorFreeSpeedRPM / angleGearRatio) / 60; // deg/s
+    return optimalVoltage / maxAngularVelocity;
   }
 
   /**
@@ -40,10 +41,23 @@ public class SwerveMath
   }
 
   /**
+   * Calculate the maximum angular velocity.
+   *
+   * @param maxSpeed        Max speed of the robot in meters per second.
+   * @param furthestModuleX X of the furthest module in meters.
+   * @param furthestModuleY Y of the furthest module in meters.
+   * @return Maximum angular velocity in rad/s.
+   */
+  public static double calculateMaxAngularVelocity(double maxSpeed, double furthestModuleX, double furthestModuleY)
+  {
+    return maxSpeed / Math.hypot(furthestModuleX, furthestModuleY);
+  }
+
+  /**
    * Calculate the practical maximum acceleration of the robot using the wheel coefficient of friction.
    *
    * @param cof Coefficient of Friction of the wheel grip tape.
-   * @return Practical maximum acceleration.
+   * @return Practical maximum acceleration in m/s/s.
    */
   public static double calculateMaxAcceleration(double cof)
   {
@@ -58,7 +72,7 @@ public class SwerveMath
    * @param moduleCount   Number of swerve modules.
    * @param wheelDiameter Wheel diameter in meters.
    * @param robotMass     Mass of the robot in kg.
-   * @return Theoretical maximum acceleration.
+   * @return Theoretical maximum acceleration in m/s/s.
    */
   public static double calculateMaxAcceleration(double stallTorqueNm, double gearRatio, double moduleCount,
                                                 double wheelDiameter, double robotMass)

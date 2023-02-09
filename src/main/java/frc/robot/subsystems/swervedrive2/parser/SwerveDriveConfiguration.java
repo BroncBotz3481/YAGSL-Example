@@ -39,7 +39,7 @@ public class SwerveDriveConfiguration
   /**
    * Number of modules on the robot.
    */
-  public int             moduleCount           = Drivebase.NUM_MODULES;
+  public int             moduleCount;
   /**
    * Swerve Modules.
    */

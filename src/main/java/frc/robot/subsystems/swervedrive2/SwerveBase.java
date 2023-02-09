@@ -139,4 +139,14 @@ public class SwerveBase extends SubsystemBase
   {
     return swerveDrive.getFieldVelocity();
   }
+
+  /**
+   * Get the {@link SwerveController} in the swerve drive.
+   *
+   * @return {@link SwerveController} from the {@link SwerveDrive}.
+   */
+  public SwerveController getSwerveController()
+  {
+    return swerveDrive.swerveController;
+  }
 }

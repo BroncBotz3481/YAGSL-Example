@@ -25,9 +25,9 @@ public class SwerveDrive
   //
   // Swerve base kinematics object
   public final  BetterSwerveKinematics   kinematics;
+  public final  SwerveDriveConfiguration swerveDriveConfiguration;
   private final SwerveModule[]           swerveModules;
   private final SwerveDriveOdometry      odometry;
-  private final SwerveDriveConfiguration swerveDriveConfiguration;
   public        Field2d                  field = new Field2d();
   public        SwerveController         swerveController;
   private       SwerveIMU                imu;

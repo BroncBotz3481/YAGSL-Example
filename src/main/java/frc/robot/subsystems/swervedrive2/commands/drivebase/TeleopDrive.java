@@ -7,8 +7,8 @@ package frc.robot.subsystems.swervedrive2.commands.drivebase;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.Drivebase.DrivetrainLimitations;
 import frc.robot.subsystems.swervedrive2.SwerveBase;
+import frc.robot.subsystems.swervedrive2.SwerveController;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -18,12 +18,14 @@ import java.util.function.DoubleSupplier;
 public class TeleopDrive extends CommandBase
 {
 
-  private final SwerveBase      swerve;
-  private final DoubleSupplier  vX;
-  private final DoubleSupplier  vY;
-  private final DoubleSupplier  omega;
-  private final BooleanSupplier driveMode;
-  private final boolean         isOpenLoop;
+  private final SwerveBase       swerve;
+  private final DoubleSupplier   vX;
+  private final DoubleSupplier   vY;
+  private final DoubleSupplier   omega;
+  private final BooleanSupplier  driveMode;
+  private final boolean          isOpenLoop;
+  private final SwerveController controller;
+
 
   /**
    * Creates a new ExampleCommand.
@@ -39,6 +41,7 @@ public class TeleopDrive extends CommandBase
     this.omega = omega;
     this.driveMode = driveMode;
     this.isOpenLoop = isOpenLoop;
+    this.controller = swerve.getSwerveController();
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(swerve);
   }
@@ -53,9 +56,9 @@ public class TeleopDrive extends CommandBase
   @Override
   public void execute()
   {
-    double xVelocity   = Math.pow(vX.getAsDouble(), 3) * DrivetrainLimitations.MAX_SPEED;
-    double yVelocity   = Math.pow(vY.getAsDouble(), 3) * DrivetrainLimitations.MAX_SPEED;
-    double angVelocity = Math.pow(omega.getAsDouble(), 3) * DrivetrainLimitations.MAX_ANGULAR_VELOCITY;
+    double xVelocity   = Math.pow(vX.getAsDouble(), 3) * controller.config.maxSpeed;
+    double yVelocity   = Math.pow(vY.getAsDouble(), 3) * controller.config.maxSpeed;
+    double angVelocity = Math.pow(omega.getAsDouble(), 3) * controller.config.maxAngularVelocity;
     SmartDashboard.putNumber("vX", xVelocity);
     SmartDashboard.putNumber("vY", yVelocity);
     SmartDashboard.putNumber("omega", angVelocity);

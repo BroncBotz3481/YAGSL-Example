@@ -40,7 +40,7 @@ public class SparkMaxSwerve extends SwerveMotor
     this.isDriveMotor = isDriveMotor;
     motor = new CANSparkMax(id, MotorType.kBrushless);
     factoryDefaults();
-    motor.clearFaults();
+    clearStickyFaults();
 
     encoder = motor.getEncoder();
     pid = motor.getPIDController();

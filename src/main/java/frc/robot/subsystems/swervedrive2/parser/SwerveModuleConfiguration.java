@@ -52,6 +52,9 @@ public class SwerveModuleConfiguration
    * @param driveMotorCANBus        CAN Bus name where the drive motor is attached.
    * @param xMeters                 Module location in meters from the center horizontally.
    * @param yMeters                 Module location in meters from center vertically.
+   * @param anglePIDF               Angle PIDF configuration.
+   * @param velocityPIDF            Velocity PIDF configuration.
+   * @param maxSpeed                Maximum speed in meters per second.
    */
   public SwerveModuleConfiguration(int driveMotorID, int angleMotorID, int absoluteEncoderID, double angleOffset,
                                    boolean absoluteEncoderInverted, boolean driveMotorInverted, String driveMotorCANBus,

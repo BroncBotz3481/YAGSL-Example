@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.swervedrive2.swervelib.SwerveController;
 import frc.robot.subsystems.swervedrive2.swervelib.SwerveDrive;
@@ -23,11 +22,16 @@ public class SwerveSubsystem extends SubsystemBase
 
   private final SwerveDrive swerveDrive;
 
-  public SwerveSubsystem()
+  /**
+   * Initialize {@link SwerveDrive} with the directory provided.
+   *
+   * @param directory
+   */
+  public SwerveSubsystem(File directory)
   {
     try
     {
-      swerveDrive = new SwerveParser(new File(Filesystem.getDeployDirectory(), "swerve")).createSwerveDrive();
+      swerveDrive = new SwerveParser(directory).createSwerveDrive();
     } catch (Exception e)
     {
       throw new RuntimeException(e);

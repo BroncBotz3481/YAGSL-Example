@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.swervedrive2.swervelib.SwerveDrive;
+import frc.robot.subsystems.swervedrive2.swervelib.SwerveModule;
 import frc.robot.subsystems.swervedrive2.swervelib.parser.json.ControllerPropertiesJson;
 import frc.robot.subsystems.swervedrive2.swervelib.parser.json.ModuleJson;
 import frc.robot.subsystems.swervedrive2.swervelib.parser.json.PIDFPropertiesJson;
@@ -68,16 +69,16 @@ public class SwerveParser
   }
 
   /**
-   * Get the swerve module configuration by the json name.
+   * Get the swerve module by the json name.
    *
    * @param name               JSON name.
    * @param driveConfiguration {@link SwerveDriveConfiguration} to pull from.
    * @return {@link SwerveModuleConfiguration} based on the file.
    */
-  public static SwerveModuleConfiguration getModuleConfigurationByName(String name,
-                                                                       SwerveDriveConfiguration driveConfiguration)
+  public static SwerveModule getModuleConfigurationByName(String name,
+                                                          SwerveDriveConfiguration driveConfiguration)
   {
-    return driveConfiguration.modules[moduleConfigs.get(name + ".json")].configuration;
+    return driveConfiguration.modules[moduleConfigs.get(name + ".json")];
   }
 
   /**

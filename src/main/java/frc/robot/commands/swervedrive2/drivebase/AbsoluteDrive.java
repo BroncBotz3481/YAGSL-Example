@@ -133,25 +133,25 @@ public class AbsoluteDrive extends CommandBase
     SwerveDriveConfiguration config = swerve.getSwerveDriveConfiguration();
     if (angDeg <= 45 && angDeg >= -45)
     {
-      SwerveModuleConfiguration conf = SwerveParser.getModuleConfigurationByName("frontleft", config);
+      SwerveModuleConfiguration conf = SwerveParser.getModuleConfigurationByName("frontleft", config).configuration;
       projectedWheelbaseEdge = new Translation2d(conf.moduleLocation.getX(),
                                                  conf.moduleLocation.getX() * angle.getTan());
     } else if (135 >= angDeg && angDeg > 45)
     {
-      SwerveModuleConfiguration conf = SwerveParser.getModuleConfigurationByName("frontleft", config);
+      SwerveModuleConfiguration conf = SwerveParser.getModuleConfigurationByName("frontleft", config).configuration;
 
       projectedWheelbaseEdge = new Translation2d(
           conf.moduleLocation.getY() / angle.getTan(),
           conf.moduleLocation.getY());
     } else if (-135 <= angDeg && angDeg < -45)
     {
-      SwerveModuleConfiguration conf = SwerveParser.getModuleConfigurationByName("frontright", config);
+      SwerveModuleConfiguration conf = SwerveParser.getModuleConfigurationByName("frontright", config).configuration;
       projectedWheelbaseEdge = new Translation2d(
           conf.moduleLocation.getY() / angle.getTan(),
           conf.moduleLocation.getY());
     } else
     {
-      SwerveModuleConfiguration conf = SwerveParser.getModuleConfigurationByName("backleft", config);
+      SwerveModuleConfiguration conf = SwerveParser.getModuleConfigurationByName("backleft", config).configuration;
       projectedWheelbaseEdge = new Translation2d(
           conf.moduleLocation.getX(),
           conf.moduleLocation.getX() * angle.getTan());

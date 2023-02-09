@@ -6,6 +6,7 @@ import static frc.robot.subsystems.swervedrive2.math.SwerveMath.calculateMaxAcce
 import static frc.robot.subsystems.swervedrive2.math.SwerveMath.calculateMetersPerRotation;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.Drivebase.DrivetrainLimitations;
 import frc.robot.Constants.Drivebase.ModulePIDFGains;
@@ -21,29 +22,30 @@ public class SwerveModuleConfiguration
   public final int    angleMotorID;
   public final int    absoluteEncoderID;
   public final String driveMotorCANBus, angleMotorCANBus, absoluteEncoderCANBus;
-  public final double     angleOffset;
-  public final boolean    absoluteEncoderInverted;
-  public final boolean    driveMotorInverted;
-  public final double     wheelDiameter                  = Units.inchesToMeters(4);
-  public final double     driveGearRatio                 = 6.75;
-  public final double     angleGearRatio                 = 12.8;
-  public final double     maxSpeed                       = DrivetrainLimitations.MAX_SPEED;
-  public final double     optimalVoltage                 = 12;
-  public final double     wheelGripCoefficientOfFriction = 1.19;
-  public final double     motorFreeSpeedRPM              = 5676;
-  public       PIDFConfig anglePIDF                      = new PIDFConfig(ModulePIDFGains.MODULE_KP,
-                                                                          ModulePIDFGains.MODULE_KI,
-                                                                          ModulePIDFGains.MODULE_KD,
-                                                                          ModulePIDFGains.MODULE_KF,
-                                                                          ModulePIDFGains.MODULE_IZ);
-  public       PIDFConfig velocityPIDF                   = new PIDFConfig(ModulePIDFGains.VELOCITY_KP,
-                                                                          ModulePIDFGains.VELOCITY_KI,
-                                                                          ModulePIDFGains.VELOCITY_KD,
-                                                                          ModulePIDFGains.VELOCITY_KF,
-                                                                          ModulePIDFGains.VELOCITY_IZ);
-  public       double     angleKV                        = calculateAngleKV(optimalVoltage,
-                                                                            motorFreeSpeedRPM,
-                                                                            angleGearRatio);
+  public final double        angleOffset;
+  public final boolean       absoluteEncoderInverted;
+  public final boolean       driveMotorInverted;
+  public final double        wheelDiameter                  = Units.inchesToMeters(4);
+  public final double        driveGearRatio                 = 6.75;
+  public final double        angleGearRatio                 = 12.8;
+  public final double        maxSpeed                       = DrivetrainLimitations.MAX_SPEED;
+  public final double        optimalVoltage                 = 12;
+  public final double        wheelGripCoefficientOfFriction = 1.19;
+  public final double        motorFreeSpeedRPM              = 5676;
+  public       PIDFConfig    anglePIDF                      = new PIDFConfig(ModulePIDFGains.MODULE_KP,
+                                                                             ModulePIDFGains.MODULE_KI,
+                                                                             ModulePIDFGains.MODULE_KD,
+                                                                             ModulePIDFGains.MODULE_KF,
+                                                                             ModulePIDFGains.MODULE_IZ);
+  public       PIDFConfig    velocityPIDF                   = new PIDFConfig(ModulePIDFGains.VELOCITY_KP,
+                                                                             ModulePIDFGains.VELOCITY_KI,
+                                                                             ModulePIDFGains.VELOCITY_KD,
+                                                                             ModulePIDFGains.VELOCITY_KF,
+                                                                             ModulePIDFGains.VELOCITY_IZ);
+  public       double        angleKV                        = calculateAngleKV(optimalVoltage,
+                                                                               motorFreeSpeedRPM,
+                                                                               angleGearRatio);
+  public       Translation2d moduleLocation;
 
 
   /**
@@ -58,10 +60,13 @@ public class SwerveModuleConfiguration
    * @param absoluteEncoderCANBus   CAN Bus name where absolute encoder is attached.
    * @param angleMotorCANBus        CAN Bus name where the angle motor is attached.
    * @param driveMotorCANBus        CAN Bus name where the drive motor is attached.
+   * @param xMeters                 Module location in meters from the center horizontally.
+   * @param yMeters                 Module location in meters from center vertically.
    */
   public SwerveModuleConfiguration(int driveMotorID, int angleMotorID, int absoluteEncoderID, double angleOffset,
                                    boolean absoluteEncoderInverted, boolean driveMotorInverted, String driveMotorCANBus,
-                                   String angleMotorCANBus, String absoluteEncoderCANBus)
+                                   String angleMotorCANBus, String absoluteEncoderCANBus, double xMeters,
+                                   double yMeters)
   {
     this.driveMotorID = driveMotorID;
     this.angleMotorID = angleMotorID;
@@ -72,6 +77,7 @@ public class SwerveModuleConfiguration
     this.driveMotorCANBus = driveMotorCANBus;
     this.angleMotorCANBus = angleMotorCANBus;
     this.absoluteEncoderCANBus = absoluteEncoderCANBus;
+    this.moduleLocation = new Translation2d(xMeters, yMeters);
   }
 
   /**
@@ -88,7 +94,7 @@ public class SwerveModuleConfiguration
                                    boolean absoluteEncoderInverted, boolean driveMotorInverted)
   {
     this(driveMotorID, angleMotorID, absoluteEncoderID, angleOffset, absoluteEncoderInverted, driveMotorInverted, null,
-         null, null);
+         null, null, 0, 0);
   }
 
   /**
@@ -98,10 +104,13 @@ public class SwerveModuleConfiguration
    * @param angleMotorID      Angle motor CAN ID or pin ID.
    * @param absoluteEncoderID Absolute encoder CAN ID or pin ID.
    * @param angleOffset       Absolute angle offset to 0.
+   * @param xMeters           Module location in meters from the center horizontally.
+   * @param yMeters           Module location in meters from center vertically.
    */
-  public SwerveModuleConfiguration(int driveMotorID, int angleMotorID, int absoluteEncoderID, double angleOffset)
+  public SwerveModuleConfiguration(int driveMotorID, int angleMotorID, int absoluteEncoderID, double angleOffset,
+                                   double xMeters, double yMeters)
   {
-    this(driveMotorID, angleMotorID, absoluteEncoderID, angleOffset, false, false, null, null, null);
+    this(driveMotorID, angleMotorID, absoluteEncoderID, angleOffset, false, false, null, null, null, xMeters, yMeters);
   }
 
 

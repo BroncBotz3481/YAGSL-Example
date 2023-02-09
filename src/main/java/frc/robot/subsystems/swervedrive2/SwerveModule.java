@@ -16,37 +16,37 @@ public class SwerveModule
 {
 
   /**
+   * Swerve module configuration options.
+   */
+  public final  SwerveModuleConfiguration configuration;
+  /**
    * Angle offset from the absolute encoder.
    */
-  private final double      angleOffset;
+  private final double                    angleOffset;
   /**
    * Swerve Motors.
    */
-  private final SwerveMotor angleMotor, driveMotor;
+  private final SwerveMotor               angleMotor, driveMotor;
   /**
    * Absolute encoder for swerve drive.
    */
-  private final SwerveAbsoluteEncoder     absoluteEncoder;
-  /**
-   * Swerve module configuration options.
-   */
-  private final SwerveModuleConfiguration configuration;
+  private final SwerveAbsoluteEncoder  absoluteEncoder;
   /**
    * Module number for kinematics, usually 0 to 3. front left -> front right -> back left -> back right.
    */
-  public        int                       moduleNumber;
+  public        int                    moduleNumber;
   /**
    * Feedforward for drive motor during closed loop control.
    */
-  public        SimpleMotorFeedforward    feedforward;
+  public        SimpleMotorFeedforward feedforward;
   /**
    * Last angle set for the swerve module.
    */
-  private       double                    lastAngle;
+  private       double                 lastAngle;
   /**
    * Current state.
    */
-  private       double                    angle, omega, speed, fakePos, lastTime, dt;
+  private       double                 angle, omega, speed, fakePos, lastTime, dt;
   /**
    * Timer for simulation.
    */

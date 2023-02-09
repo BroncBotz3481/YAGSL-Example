@@ -175,7 +175,9 @@ public final class Constants
       public static final SwerveModuleConfiguration CONSTANTS      = new SwerveModuleConfiguration(DRIVE_MOTOR_ID,
                                                                                                    ANGLE_MOTOR_ID,
                                                                                                    CANCODER_ID,
-                                                                                                   ANGLE_OFFSET);
+                                                                                                   ANGLE_OFFSET,
+                                                                                                   ModuleLocations.FRONT_LEFT_X,
+                                                                                                   ModuleLocations.FRONT_LEFT_Y);
     }
 
     public static final class Mod1FR
@@ -188,7 +190,9 @@ public final class Constants
       public static final SwerveModuleConfiguration CONSTANTS      = new SwerveModuleConfiguration(DRIVE_MOTOR_ID,
                                                                                                    ANGLE_MOTOR_ID,
                                                                                                    CANCODER_ID,
-                                                                                                   ANGLE_OFFSET);
+                                                                                                   ANGLE_OFFSET,
+                                                                                                   ModuleLocations.FRONT_RIGHT_X,
+                                                                                                   ModuleLocations.FRONT_RIGHT_Y);
     }
 
     public static final class Mod2BL
@@ -201,7 +205,9 @@ public final class Constants
       public static final SwerveModuleConfiguration CONSTANTS      = new SwerveModuleConfiguration(DRIVE_MOTOR_ID,
                                                                                                    ANGLE_MOTOR_ID,
                                                                                                    CANCODER_ID,
-                                                                                                   ANGLE_OFFSET);
+                                                                                                   ANGLE_OFFSET,
+                                                                                                   ModuleLocations.BACK_LEFT_X,
+                                                                                                   ModuleLocations.BACK_LEFT_Y);
     }
 
     public static final class Mod3BR
@@ -214,7 +220,9 @@ public final class Constants
       public static final SwerveModuleConfiguration CONSTANTS      = new SwerveModuleConfiguration(DRIVE_MOTOR_ID,
                                                                                                    ANGLE_MOTOR_ID,
                                                                                                    CANCODER_ID,
-                                                                                                   ANGLE_OFFSET);
+                                                                                                   ANGLE_OFFSET,
+                                                                                                   ModuleLocations.BACK_RIGHT_X,
+                                                                                                   ModuleLocations.BACK_RIGHT_Y);
     }
   }
 

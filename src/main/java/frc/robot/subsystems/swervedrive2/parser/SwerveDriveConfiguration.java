@@ -1,15 +1,7 @@
 package frc.robot.subsystems.swervedrive2.parser;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import frc.robot.Constants.Drivebase;
-import frc.robot.Constants.Drivebase.DrivetrainLimitations;
-import frc.robot.Constants.Drivebase.Mod0FL;
-import frc.robot.Constants.Drivebase.Mod1FR;
-import frc.robot.Constants.Drivebase.Mod2BL;
-import frc.robot.Constants.Drivebase.Mod3BR;
-import frc.robot.Constants.Drivebase.ModuleLocations;
 import frc.robot.subsystems.swervedrive2.SwerveModule;
-import frc.robot.subsystems.swervedrive2.imu.Pigeon2Swerve;
 import frc.robot.subsystems.swervedrive2.imu.SwerveIMU;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,19 +15,15 @@ public class SwerveDriveConfiguration
   /**
    * Swerve Module locations.
    */
-  public Translation2d[] moduleLocationsMeters = new Translation2d[]{
-      new Translation2d(ModuleLocations.FRONT_LEFT_X, ModuleLocations.FRONT_LEFT_Y),
-      new Translation2d(ModuleLocations.FRONT_RIGHT_X, ModuleLocations.FRONT_RIGHT_Y),
-      new Translation2d(ModuleLocations.BACK_LEFT_X, ModuleLocations.BACK_LEFT_Y),
-      new Translation2d(ModuleLocations.BACK_RIGHT_X, ModuleLocations.BACK_RIGHT_Y)};
+  public Translation2d[] moduleLocationsMeters;
   /**
    * Swerve IMU
    */
-  public SwerveIMU       imu                   = new Pigeon2Swerve(Drivebase.PIGEON, "canivore");
+  public SwerveIMU       imu;
   /**
    * Max speed in meters per second.
    */
-  public double          maxSpeed              = DrivetrainLimitations.MAX_SPEED;
+  public double          maxSpeed;
   /**
    * Number of modules on the robot.
    */
@@ -43,10 +31,27 @@ public class SwerveDriveConfiguration
   /**
    * Swerve Modules.
    */
-  public SwerveModule[]  modules               = createModules(new SwerveModuleConfiguration[]{Mod0FL.CONSTANTS,
-                                                                                               Mod1FR.CONSTANTS,
-                                                                                               Mod2BL.CONSTANTS,
-                                                                                               Mod3BR.CONSTANTS});
+  public SwerveModule[]  modules;
+
+  /**
+   * Create swerve drive configuration.
+   *
+   * @param moduleConfigs Module configuration.
+   * @param swerveIMU     Swerve IMU.
+   * @param maxSpeed      Max speed of the robot in meters per second.
+   */
+  public SwerveDriveConfiguration(SwerveModuleConfiguration[] moduleConfigs, SwerveIMU swerveIMU, double maxSpeed)
+  {
+    this.moduleCount = moduleConfigs.length;
+    this.imu = swerveIMU;
+    this.maxSpeed = maxSpeed;
+    this.modules = createModules(moduleConfigs);
+    this.moduleLocationsMeters = new Translation2d[moduleConfigs.length];
+    for (SwerveModule module : modules)
+    {
+      this.moduleLocationsMeters[module.moduleNumber] = module.configuration.moduleLocation;
+    }
+  }
 
   /**
    * Create modules based off of the SwerveModuleConfiguration.
@@ -56,9 +61,8 @@ public class SwerveDriveConfiguration
    */
   public SwerveModule[] createModules(SwerveModuleConfiguration[] swerves)
   {
-    List<SwerveModule> mods = new ArrayList<>();
-    moduleCount = swerves.length;
-    SwerveModule[] modArr = new SwerveModule[moduleCount];
+    List<SwerveModule> mods   = new ArrayList<>();
+    SwerveModule[]     modArr = new SwerveModule[moduleCount];
 
     for (int i = 0; i < swerves.length; i++)
     {

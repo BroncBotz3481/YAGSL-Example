@@ -268,7 +268,7 @@ public class SwerveDrive
     for (SwerveModule swerveModule : swerveModules)
     {
       swerveModule.setDesiredState(new BetterSwerveModuleState(0,
-                                                               swerveDriveConfiguration.moduleLocationsMeters[swerveModule.moduleNumber].getAngle(),
+                                                               swerveModule.configuration.moduleLocation.getAngle(),
                                                                0), true);
     }
   }
@@ -285,8 +285,7 @@ public class SwerveDrive
     List<Pose2d> poses   = new ArrayList<>();
     for (SwerveModule module : swerveModules)
     {
-      poses.add(robotPose.plus(new Transform2d(swerveDriveConfiguration.moduleLocationsMeters[module.moduleNumber],
-                                               module.getState().angle)));
+      poses.add(robotPose.plus(new Transform2d(module.configuration.moduleLocation, module.getState().angle)));
     }
     return poses.toArray(poseArr);
   }

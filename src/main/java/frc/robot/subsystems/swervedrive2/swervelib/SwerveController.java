@@ -46,7 +46,7 @@ public class SwerveController
    */
   public boolean withinHypotDeadband(double x, double y)
   {
-    return Math.hypot(x, y) < config.hypotDeadband;
+    return Math.hypot(x, y) < config.angleJoyStickRadiusDeadband;
   }
 
   /**

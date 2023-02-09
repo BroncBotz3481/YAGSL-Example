@@ -20,23 +20,24 @@ public class SwerveControllerConfiguration
   /**
    * hypotenuse deadband for the robot angle control joystick.
    */
-  public final double     hypotDeadband; // Deadband for the minimum hypot for the heading joystick.
+  public final double     angleJoyStickRadiusDeadband; // Deadband for the minimum hypot for the heading joystick.
 
   /**
    * Construct the swerve controller configuration.
    *
-   * @param driveCfg      Drive configuration.
-   * @param headingPIDF   Heading PIDF configuration.
-   * @param hypotDeadband Deadband on radius of angle joystick.
+   * @param driveCfg                    Drive configuration.
+   * @param headingPIDF                 Heading PIDF configuration.
+   * @param angleJoyStickRadiusDeadband Deadband on radius of angle joystick.
    */
-  public SwerveControllerConfiguration(SwerveDriveConfiguration driveCfg, PIDFConfig headingPIDF, double hypotDeadband)
+  public SwerveControllerConfiguration(SwerveDriveConfiguration driveCfg, PIDFConfig headingPIDF,
+                                       double angleJoyStickRadiusDeadband)
   {
     this.maxSpeed = driveCfg.maxSpeed;
     this.maxAngularVelocity = calculateMaxAngularVelocity(driveCfg.maxSpeed,
                                                           driveCfg.moduleLocationsMeters[0].getX(),
                                                           driveCfg.moduleLocationsMeters[0].getY());
     this.headingPIDF = headingPIDF;
-    this.hypotDeadband = hypotDeadband;
+    this.angleJoyStickRadiusDeadband = angleJoyStickRadiusDeadband;
   }
 
   /**

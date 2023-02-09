@@ -3,8 +3,6 @@ package frc.robot.subsystems.swervedrive2.swervelib.parser;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.subsystems.swervedrive2.swervelib.SwerveModule;
 import frc.robot.subsystems.swervedrive2.swervelib.imu.SwerveIMU;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Swerve drive configurations used during SwerveDrive construction.
@@ -61,13 +59,11 @@ public class SwerveDriveConfiguration
    */
   public SwerveModule[] createModules(SwerveModuleConfiguration[] swerves)
   {
-    List<SwerveModule> mods   = new ArrayList<>();
-    SwerveModule[]     modArr = new SwerveModule[moduleCount];
-
+    SwerveModule[] modArr = new SwerveModule[swerves.length];
     for (int i = 0; i < swerves.length; i++)
     {
-      mods.add(new SwerveModule(i, swerves[i]));
+      modArr[i] = new SwerveModule(i, swerves[i]);
     }
-    return mods.toArray(modArr);
+    return modArr;
   }
 }

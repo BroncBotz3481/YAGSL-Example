@@ -176,4 +176,14 @@ public class SwerveSubsystem extends SubsystemBase
   {
     return swerveDrive.swerveController;
   }
+
+  /**
+   * Get the {@link SwerveDriveConfiguration} object.
+   *
+   * @return The {@link SwerveDriveConfiguration} fpr the current drive.
+   */
+  public SwerveDriveConfiguration getSwerveDriveConfiguration()
+  {
+    return swerveDrive.swerveDriveConfiguration;
+  }
 }

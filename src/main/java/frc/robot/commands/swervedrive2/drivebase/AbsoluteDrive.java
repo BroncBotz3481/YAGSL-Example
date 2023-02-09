@@ -11,9 +11,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.Constants.Drivebase.ModuleLocations;
 import frc.robot.subsystems.swervedrive2.SwerveSubsystem;
 import frc.robot.subsystems.swervedrive2.swervelib.SwerveController;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveDriveConfiguration;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveModuleConfiguration;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveParser;
 import java.util.function.DoubleSupplier;
 
 /**
@@ -110,20 +112,11 @@ public class AbsoluteDrive extends CommandBase
    */
   private double calcMaxAccel(Rotation2d angle)
   {
-    // Get the position of the arm from NetworkTables 
-    double armHeight    = SmartDashboard.getNumber("armHeight", Constants.dummyArmHieght);
-    double armExtension = SmartDashboard.getNumber("armExtension", Constants.dummyArmX);
-
-    double xMoment =
-        (armExtension * Constants.MANIPULATOR_MASS) + (Constants.CHASSIS_CG.getX() * Constants.CHASSIS_MASS);
-    double yMoment =
-        (Constants.ARM_Y_POS * Constants.MANIPULATOR_MASS) + (Constants.CHASSIS_CG.getY() * Constants.CHASSIS_MASS);
+    double xMoment = (Constants.CHASSIS_CG.getX() * Constants.CHASSIS_MASS);
+    double yMoment = (Constants.CHASSIS_CG.getY() * Constants.CHASSIS_MASS);
     // Calculate the vertical mass moment using the floor as the datum.  This will be used later to calculate max
     // acceleration
-    double zMoment =
-        (armHeight * Constants.MANIPULATOR_MASS)
-        + (Constants.CHASSIS_CG.getZ() * (Constants.CHASSIS_MASS));
-
+    double        zMoment      = (Constants.CHASSIS_CG.getZ() * (Constants.CHASSIS_MASS));
     Translation3d robotCG      = new Translation3d(xMoment, yMoment, zMoment).div(Constants.ROBOT_MASS);
     Translation2d horizontalCG = robotCG.toTranslation2d();
 
@@ -135,32 +128,37 @@ public class AbsoluteDrive extends CommandBase
     // Projects the edge of the wheelbase onto the direction line.  Assumes the wheelbase is rectangular.
     // Because a line is being projected, rather than a point, one of the coordinates of the projected point is
     // already known.
-    Translation2d projectedWheelbaseEdge;
-    double        angDeg = angle.getDegrees();
+    Translation2d            projectedWheelbaseEdge;
+    double                   angDeg = angle.getDegrees();
+    SwerveDriveConfiguration config = swerve.getSwerveDriveConfiguration();
     if (angDeg <= 45 && angDeg >= -45)
     {
-      projectedWheelbaseEdge = new Translation2d(
-          ModuleLocations.FRONT_LEFT_X,
-          ModuleLocations.FRONT_LEFT_X * angle.getTan());
+      SwerveModuleConfiguration conf = SwerveParser.getModuleConfigurationByName("frontleft", config);
+      projectedWheelbaseEdge = new Translation2d(conf.moduleLocation.getX(),
+                                                 conf.moduleLocation.getX() * angle.getTan());
     } else if (135 >= angDeg && angDeg > 45)
     {
+      SwerveModuleConfiguration conf = SwerveParser.getModuleConfigurationByName("frontleft", config);
+
       projectedWheelbaseEdge = new Translation2d(
-          ModuleLocations.FRONT_LEFT_Y / angle.getTan(),
-          ModuleLocations.FRONT_LEFT_Y);
+          conf.moduleLocation.getY() / angle.getTan(),
+          conf.moduleLocation.getY());
     } else if (-135 <= angDeg && angDeg < -45)
     {
+      SwerveModuleConfiguration conf = SwerveParser.getModuleConfigurationByName("frontright", config);
       projectedWheelbaseEdge = new Translation2d(
-          ModuleLocations.FRONT_RIGHT_Y / angle.getTan(),
-          ModuleLocations.FRONT_RIGHT_Y);
+          conf.moduleLocation.getY() / angle.getTan(),
+          conf.moduleLocation.getY());
     } else
     {
+      SwerveModuleConfiguration conf = SwerveParser.getModuleConfigurationByName("backleft", config);
       projectedWheelbaseEdge = new Translation2d(
-          ModuleLocations.BACK_LEFT_X,
-          ModuleLocations.BACK_LEFT_X * angle.getTan());
+          conf.moduleLocation.getX(),
+          conf.moduleLocation.getX() * angle.getTan());
     }
 
     double horizontalDistance = projectedHorizontalCg.plus(projectedWheelbaseEdge).getNorm();
-    double maxAccel           = Constants.GRAVITY * horizontalDistance / robotCG.getZ();
+    double maxAccel           = 9.81 * horizontalDistance / robotCG.getZ();
 
     SmartDashboard.putNumber("calcMaxAccel", maxAccel);
     return maxAccel;

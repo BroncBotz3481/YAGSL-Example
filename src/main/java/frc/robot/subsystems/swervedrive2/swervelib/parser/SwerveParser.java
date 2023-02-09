@@ -11,6 +11,7 @@ import frc.robot.subsystems.swervedrive2.swervelib.parser.json.PhysicalPropertie
 import frc.robot.subsystems.swervedrive2.swervelib.parser.json.SwerveDriveJson;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * Helper class used to parse the JSON directory with specified configuration options.
@@ -18,26 +19,28 @@ import java.io.IOException;
 public class SwerveParser
 {
 
+  private static final HashMap<String, Integer> moduleConfigs = new HashMap<>();
   /**
    * Parsed swervedrive.json
    */
-  private final SwerveDriveJson          swerveDriveJson;
+  public static        SwerveDriveJson          swerveDriveJson;
   /**
    * Parsed controllerproperties.json
    */
-  private final ControllerPropertiesJson controllerPropertiesJson;
+  public static        ControllerPropertiesJson controllerPropertiesJson;
   /**
    * Parsed modules/pidfproperties.json
    */
-  private final PIDFPropertiesJson       pidfPropertiesJson;
+  public static        PIDFPropertiesJson       pidfPropertiesJson;
   /**
    * Parsed modules/physicalproperties.json
    */
-  private final PhysicalPropertiesJson   physicalPropertiesJson;
+  public static        PhysicalPropertiesJson   physicalPropertiesJson;
   /**
    * Array holding the module jsons given in {@link SwerveDriveJson}.
    */
-  private final ModuleJson[]             moduleJsons;
+  public static        ModuleJson[]             moduleJsons;
+
 
   /**
    * Construct a swerve parser. Will throw an error if there is a missing file.
@@ -57,10 +60,24 @@ public class SwerveParser
     moduleJsons = new ModuleJson[swerveDriveJson.modules.length];
     for (int i = 0; i < moduleJsons.length; i++)
     {
+      moduleConfigs.put(swerveDriveJson.modules[i], i);
       File moduleFile = new File(directory, "modules/" + swerveDriveJson.modules[i]);
       assert moduleFile.exists();
       moduleJsons[i] = new ObjectMapper().readValue(moduleFile, ModuleJson.class);
     }
+  }
+
+  /**
+   * Get the swerve module configuration by the json name.
+   *
+   * @param name               JSON name.
+   * @param driveConfiguration {@link SwerveDriveConfiguration} to pull from.
+   * @return {@link SwerveModuleConfiguration} based on the file.
+   */
+  public static SwerveModuleConfiguration getModuleConfigurationByName(String name,
+                                                                       SwerveDriveConfiguration driveConfiguration)
+  {
+    return driveConfiguration.modules[moduleConfigs.get(name + ".json")].configuration;
   }
 
   /**

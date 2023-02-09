@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.swervedrive2.swervelib.SwerveController;
 import frc.robot.subsystems.swervedrive2.swervelib.SwerveDrive;
+import frc.robot.subsystems.swervedrive2.swervelib.math.SwerveKinematics2;
 import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveControllerConfiguration;
 import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveDriveConfiguration;
 
@@ -53,6 +54,16 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void simulationPeriodic()
   {
+  }
+
+  /**
+   * Get the swerve drive kinematics object.
+   *
+   * @return {@link SwerveKinematics2} of the swerve drive.
+   */
+  public SwerveKinematics2 getKinematics()
+  {
+    return swerveDrive.kinematics;
   }
 
   /**

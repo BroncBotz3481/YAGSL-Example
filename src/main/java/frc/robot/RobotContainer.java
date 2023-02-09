@@ -35,12 +35,13 @@ public class RobotContainer
 {
 
   // The robot's subsystems and commands are defined here...
-  private final SwerveDriveConfiguration      swerveDriveConfiguration      = new SwerveDriveConfiguration(new SwerveModuleConfiguration[]{
-      Mod0FL.CONSTANTS, Mod1FR.CONSTANTS, Mod2BL.CONSTANTS, Mod3BR.CONSTANTS},
-                                                                                                           new Pigeon2Swerve(
-                                                                                                               Drivebase.PIGEON,
-                                                                                                               "canivore"),
-                                                                                                           DrivetrainLimitations.MAX_SPEED);
+  private final SwerveDriveConfiguration      swerveDriveConfiguration      = new SwerveDriveConfiguration(
+      new SwerveModuleConfiguration[]{
+          Mod0FL.CONSTANTS, Mod1FR.CONSTANTS, Mod2BL.CONSTANTS, Mod3BR.CONSTANTS},
+      new Pigeon2Swerve(
+          Drivebase.PIGEON,
+          "canivore"),
+      DrivetrainLimitations.MAX_SPEED);
   private final SwerveControllerConfiguration swerveControllerConfiguration = new SwerveControllerConfiguration(
       swerveDriveConfiguration,
       Constants.Drivebase.DrivetrainLimitations.MAX_SPEED,
@@ -62,7 +63,8 @@ public class RobotContainer
     configureBindings();
 
     AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(drivebase,
-                                                          // Applies deadbands and inverts controls because joysticks are back-right positive while robot
+                                                          // Applies deadbands and inverts controls because joysticks
+                                                          // are back-right positive while robot
                                                           // controls are front-left positive
                                                           () -> (Math.abs(driverXbox.getLeftY()) >
                                                                  OperatorConstants.LEFT_Y_DEADBAND)

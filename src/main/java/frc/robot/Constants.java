@@ -35,17 +35,9 @@ public final class Constants
   public static final class Auton
   {
 
-    public static final double X_KP = 0.7;
-    public static final double X_KI = 0;
-    public static final double X_KD = 0;
-
-    public static final double Y_KP = 0.7;
-    public static final double Y_KI = 0;
-    public static final double Y_KD = 0;
-
-    public static final double ANG_KP = 0.4;
-    public static final double ANG_KI = 0;
-    public static final double ANG_KD = 0.01;
+    public static final PIDFConfig xAutoPID     = new PIDFConfig(0.7, 0, 0);
+    public static final PIDFConfig yAutoPID     = new PIDFConfig(0.7, 0, 0);
+    public static final PIDFConfig angleAutoPID = new PIDFConfig(0.4, 0, 0.01);
 
     public static final double MAX_SPEED        = 4;
     public static final double MAX_ACCELERATION = 2;
@@ -63,17 +55,13 @@ public final class Constants
     public static final double HEADING_KD = 0.01;
 
     // Motor and encoder inversions
-    public static final boolean                             CANCODER_INVERT                 = false;
-    public static final boolean                             DRIVE_MOTOR_INVERT              = false;
-    public static final boolean                             ANGLE_MOTOR_INVERT              = false;
-    public static final boolean                             INVERT_GYRO                     = false;
-    public static final int                                 NUM_MODULES                     = 4;
     public static final int                                 PIGEON                          = 13;
-    public static       SwerveModulePhysicalCharacteristics MODULE_PHYSICAL_CHARACTERISTICS = new SwerveModulePhysicalCharacteristics(
-        6.75,
-        12.8,
-        5676,
-        Units.inchesToMeters(4));
+    public static       SwerveModulePhysicalCharacteristics MODULE_PHYSICAL_CHARACTERISTICS =
+        new SwerveModulePhysicalCharacteristics(
+            6.75,
+            12.8,
+            5676,
+            Units.inchesToMeters(4), .25, .25);
 
     /**
      * Module locations, in meters, as distances to the center of the robot. Positive x is torwards the robot front, and
@@ -126,141 +114,82 @@ public final class Constants
     {
 
       // Module PIDF gains
-      public static final double     MODULE_KP    = 0.01;
-      public static final double     MODULE_KI    = 0;
-      public static final double     MODULE_KD    = 0;
-      public static final double     MODULE_IZ    = 0;
-      public static final double     MODULE_KF    = 0;
-      public static final PIDFConfig anglePIDF    = new PIDFConfig(MODULE_KP,
-                                                                   MODULE_KI,
-                                                                   MODULE_KD,
-                                                                   MODULE_KF,
-                                                                   MODULE_IZ);
-      // Volt * seconds / degree.  Equal to (maxVolts) / (maxSpeed)
-      public static final double     MODULE_KV    = 12 / DrivetrainLimitations.MAX_MODULE_ANGULAR_SPEED;
-      public static final double     VELOCITY_KP  = 0.0020645; // kp from SysId, eventually
-      public static final double     VELOCITY_KI  = 0; // Leave all of these zero to disable them
-      public static final double     VELOCITY_KD  = 0;
-      public static final double     VELOCITY_IZ  = 0;
-      public static final double     VELOCITY_KF  = 0;
-      public static final PIDFConfig velocityPIDF = new PIDFConfig(VELOCITY_KP,
-                                                                   VELOCITY_KI,
-                                                                   VELOCITY_KD,
-                                                                   VELOCITY_KF,
-                                                                   VELOCITY_IZ);
-    }
-
-    // Drive feedforward gains
-    public static class DriveFeedforwardGains
-    {
-
-      public static final double KS = 0;
-      /**
-       * Volt-seconds per meter (max voltage divided by max speed)
-       */
-      public static final double KV = 12 / DrivetrainLimitations.MAX_SPEED;
-      /**
-       * Volt-seconds^2 per meter (max voltage divided by max accel)
-       */
-      public static final double KA = 12 / DrivetrainLimitations.MAX_ACCELERATION;
-    }
-
-    public static class EncoderConversions
-    {
-
-      /**
-       * Calculation: 4in diameter wheels * pi [circumfrence] / gear ratio
-       */
-      public static final double METERS_PER_MOTOR_ROTATION     = (Math.PI * Units.inchesToMeters(4)) / 6.75;
-      /**
-       * Encoder conversion values.  Drive converts motor rotations to linear wheel distance and steering converts motor
-       * rotations to module azimuth
-       */
-      public static final double DEGREES_PER_STEERING_ROTATION = 360 / 12.8;
+      public static final PIDFConfig anglePIDF    = new PIDFConfig(0.01,
+                                                                   0,
+                                                                   0,
+                                                                   0,
+                                                                   0);
+      public static final PIDFConfig velocityPIDF = new PIDFConfig(0.0020645, // kP from sysid eventually.
+                                                                   0,
+                                                                   0,
+                                                                   0,
+                                                                   0);
     }
 
     // Module specific constants
     public static final class Mod0FL
     { //Front Left
 
-      public static final int                       DRIVE_MOTOR_ID = 4;
-      public static final int                       ANGLE_MOTOR_ID = 3;
-      public static final int                       CANCODER_ID    = 9;
-      public static final double                    ANGLE_OFFSET   = -114.609; //TODO Set Angle Offset
-      public static final SwerveModuleConfiguration CONSTANTS      = new SwerveModuleConfiguration(DRIVE_MOTOR_ID,
-                                                                                                   ANGLE_MOTOR_ID,
-                                                                                                   CANCODER_ID,
-                                                                                                   ANGLE_OFFSET,
-                                                                                                   ModuleLocations.FRONT_LEFT_X,
-                                                                                                   ModuleLocations.FRONT_LEFT_Y,
-                                                                                                   ModulePIDFGains.anglePIDF,
-                                                                                                   ModulePIDFGains.velocityPIDF,
-                                                                                                   DrivetrainLimitations.MAX_SPEED,
-                                                                                                   MODULE_PHYSICAL_CHARACTERISTICS);
+      public static final SwerveModuleConfiguration CONSTANTS = new SwerveModuleConfiguration(4,
+                                                                                              3,
+                                                                                              9,
+                                                                                              -114.609,
+                                                                                              ModuleLocations.FRONT_LEFT_X,
+                                                                                              ModuleLocations.FRONT_LEFT_Y,
+                                                                                              ModulePIDFGains.anglePIDF,
+                                                                                              ModulePIDFGains.velocityPIDF,
+                                                                                              DrivetrainLimitations.MAX_SPEED,
+                                                                                              MODULE_PHYSICAL_CHARACTERISTICS);
     }
 
     public static final class Mod1FR
     { //Front Right
 
-      public static final int                       DRIVE_MOTOR_ID = 2;
-      public static final int                       ANGLE_MOTOR_ID = 1;
-      public static final int                       CANCODER_ID    = 10;
-      public static final double                    ANGLE_OFFSET   = -50.977; //TODO Set Angle Offset
-      public static final SwerveModuleConfiguration CONSTANTS      = new SwerveModuleConfiguration(DRIVE_MOTOR_ID,
-                                                                                                   ANGLE_MOTOR_ID,
-                                                                                                   CANCODER_ID,
-                                                                                                   ANGLE_OFFSET,
-                                                                                                   ModuleLocations.FRONT_RIGHT_X,
-                                                                                                   ModuleLocations.FRONT_RIGHT_Y,
-                                                                                                   ModulePIDFGains.anglePIDF,
-                                                                                                   ModulePIDFGains.velocityPIDF,
-                                                                                                   DrivetrainLimitations.MAX_SPEED,
-                                                                                                   MODULE_PHYSICAL_CHARACTERISTICS);
+      public static final SwerveModuleConfiguration CONSTANTS = new SwerveModuleConfiguration(2,
+                                                                                              1,
+                                                                                              10,
+                                                                                              -50.977,
+                                                                                              ModuleLocations.FRONT_RIGHT_X,
+                                                                                              ModuleLocations.FRONT_RIGHT_Y,
+                                                                                              ModulePIDFGains.anglePIDF,
+                                                                                              ModulePIDFGains.velocityPIDF,
+                                                                                              DrivetrainLimitations.MAX_SPEED,
+                                                                                              MODULE_PHYSICAL_CHARACTERISTICS);
     }
 
     public static final class Mod2BL
     { //Back Left
 
-      public static final int                       DRIVE_MOTOR_ID = 7;
-      public static final int                       ANGLE_MOTOR_ID = 8;
-      public static final int                       CANCODER_ID    = 12;
-      public static final double                    ANGLE_OFFSET   = 6.504; //TODO Set Angle Offset
-      public static final SwerveModuleConfiguration CONSTANTS      = new SwerveModuleConfiguration(DRIVE_MOTOR_ID,
-                                                                                                   ANGLE_MOTOR_ID,
-                                                                                                   CANCODER_ID,
-                                                                                                   ANGLE_OFFSET,
-                                                                                                   ModuleLocations.BACK_LEFT_X,
-                                                                                                   ModuleLocations.BACK_LEFT_Y,
-                                                                                                   ModulePIDFGains.anglePIDF,
-                                                                                                   ModulePIDFGains.velocityPIDF,
-                                                                                                   DrivetrainLimitations.MAX_SPEED,
-                                                                                                   MODULE_PHYSICAL_CHARACTERISTICS);
+      public static final SwerveModuleConfiguration CONSTANTS = new SwerveModuleConfiguration(7,
+                                                                                              8,
+                                                                                              12,
+                                                                                              6.504,
+                                                                                              ModuleLocations.BACK_LEFT_X,
+                                                                                              ModuleLocations.BACK_LEFT_Y,
+                                                                                              ModulePIDFGains.anglePIDF,
+                                                                                              ModulePIDFGains.velocityPIDF,
+                                                                                              DrivetrainLimitations.MAX_SPEED,
+                                                                                              MODULE_PHYSICAL_CHARACTERISTICS);
     }
 
     public static final class Mod3BR
     { //Back Right
 
-      public static final int                       DRIVE_MOTOR_ID = 5;
-      public static final int                       ANGLE_MOTOR_ID = 6;
-      public static final int                       CANCODER_ID    = 11;
-      public static final double                    ANGLE_OFFSET   = -18.281; //TODO Set Angle Offset
-      public static final SwerveModuleConfiguration CONSTANTS      = new SwerveModuleConfiguration(DRIVE_MOTOR_ID,
-                                                                                                   ANGLE_MOTOR_ID,
-                                                                                                   CANCODER_ID,
-                                                                                                   ANGLE_OFFSET,
-                                                                                                   ModuleLocations.BACK_RIGHT_X,
-                                                                                                   ModuleLocations.BACK_RIGHT_Y,
-                                                                                                   ModulePIDFGains.anglePIDF,
-                                                                                                   ModulePIDFGains.velocityPIDF,
-                                                                                                   DrivetrainLimitations.MAX_SPEED,
-                                                                                                   MODULE_PHYSICAL_CHARACTERISTICS);
+      public static final SwerveModuleConfiguration CONSTANTS = new SwerveModuleConfiguration(5,
+                                                                                              6,
+                                                                                              11,
+                                                                                              -18.281,
+                                                                                              ModuleLocations.BACK_RIGHT_X,
+                                                                                              ModuleLocations.BACK_RIGHT_Y,
+                                                                                              ModulePIDFGains.anglePIDF,
+                                                                                              ModulePIDFGains.velocityPIDF,
+                                                                                              DrivetrainLimitations.MAX_SPEED,
+                                                                                              MODULE_PHYSICAL_CHARACTERISTICS);
     }
   }
 
   public static class OperatorConstants
   {
-
-    public static final int DRIVER_CONTROLLER_PORT = 0;
 
     // Joystick Deadband
     public static final double LEFT_X_DEADBAND = 0.01;

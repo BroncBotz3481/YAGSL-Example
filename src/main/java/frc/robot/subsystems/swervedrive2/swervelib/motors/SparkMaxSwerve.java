@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import frc.robot.subsystems.swervedrive2.swervelib.parser.PIDFConfig;
@@ -14,15 +15,19 @@ public class SparkMaxSwerve extends SwerveMotor
   /**
    * SparkMAX Instance.
    */
-  public CANSparkMax           motor;
+  public  CANSparkMax           motor;
   /**
    * Integrated encoder.
    */
-  public RelativeEncoder       encoder;
+  public  RelativeEncoder       encoder;
   /**
    * Closed-loop PID controller.
    */
-  public SparkMaxPIDController pid;
+  public  SparkMaxPIDController pid;
+  /**
+   * Factory default already occurred.
+   */
+  private boolean               factoryDefaultOccurred = false;
 
   /**
    * Initialize the swerve motor.
@@ -34,10 +39,15 @@ public class SparkMaxSwerve extends SwerveMotor
   {
     this.isDriveMotor = isDriveMotor;
     motor = new CANSparkMax(id, MotorType.kBrushless);
+    factoryDefaults();
+    motor.clearFaults();
+
     encoder = motor.getEncoder();
     pid = motor.getPIDController();
-
     pid.setFeedbackDevice(encoder); // Configure feedback of the PID controller as the integrated encoder.
+
+    // Taken from https://github.com/frc3512/SwerveBot-2022/blob/9d31afd05df6c630d5acb4ec2cf5d734c9093bf8/src/main/java/frc/lib/util/CANSparkMaxUtil.java#L67
+    configureCANStatusFrames(10, 20, 20, 500, 500);
 
     motor.setCANTimeout(0); // Spin off configurations in a different thread.
   }
@@ -83,7 +93,11 @@ public class SparkMaxSwerve extends SwerveMotor
   @Override
   public void factoryDefaults()
   {
-    motor.restoreFactoryDefaults();
+    if (!factoryDefaultOccurred)
+    {
+      motor.restoreFactoryDefaults();
+      factoryDefaultOccurred = true;
+    }
   }
 
   /**
@@ -135,6 +149,26 @@ public class SparkMaxSwerve extends SwerveMotor
     pid.setPositionPIDWrappingEnabled(true);
     pid.setPositionPIDWrappingMinInput(minInput);
     pid.setPositionPIDWrappingMaxInput(maxInput);
+  }
+
+  /**
+   * Set the CAN status frames.
+   *
+   * @param CANStatus0 Applied Output, Faults, Sticky Faults, Is Follower
+   * @param CANStatus1 Motor Velocity, Motor Temperature, Motor Voltage, Motor Current
+   * @param CANStatus2 Motor Position
+   * @param CANStatus3 Analog Sensor Voltage, Analog Sensor Velocity, Analog Sensor Position
+   * @param CANStatus4 Alternate Encoder Velocity, Alternate Encoder Position
+   */
+  public void configureCANStatusFrames(int CANStatus0, int CANStatus1, int CANStatus2, int CANStatus3, int CANStatus4)
+  {
+    motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, CANStatus0);
+    motor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, CANStatus1);
+    motor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, CANStatus2);
+    motor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, CANStatus3);
+    motor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, CANStatus4);
+    // TODO: Configure Status Frame 5 and 6 if necessary
+    //  https://docs.revrobotics.com/sparkmax/operating-modes/control-interfaces
   }
 
   /**

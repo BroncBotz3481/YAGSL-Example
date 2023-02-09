@@ -12,7 +12,7 @@ public class SwerveController
 {
 
   public final  SwerveControllerConfiguration config;
-  private final PIDController                 thetaController;
+  private final PIDController                 thetaController; // TODO: Switch to ProfilePIDController
   public        double                        lastAngle;
 
   /**

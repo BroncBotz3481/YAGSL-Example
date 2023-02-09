@@ -4,7 +4,8 @@ public class SwerveMath
 {
 
   /**
-   * Calculate the angle kV which will be multiplied by the radians per second for the feedforward.
+   * Calculate the angle kV which will be multiplied by the radians per second for the feedforward. Volt * seconds /
+   * degree <=> (maxVolts) / (maxSpeed)
    *
    * @param optimalVoltage    Optimal voltage to use when calculating the angle kV.
    * @param motorFreeSpeedRPM Motor free speed in Rotations per Minute.
@@ -18,7 +19,8 @@ public class SwerveMath
   }
 
   /**
-   * Calculate the meters per rotation for the integrated encoder.
+   * Calculate the meters per rotation for the integrated encoder. Calculation: 4in diameter wheels * pi [circumfrence]
+   * / gear ratio.
    *
    * @param wheelDiameter  Wheel diameter in meters.
    * @param driveGearRatio The gear ratio of the drive motor.
@@ -30,7 +32,8 @@ public class SwerveMath
   }
 
   /**
-   * Calculate the degrees per steering rotation for the integrated encoder.
+   * Calculate the degrees per steering rotation for the integrated encoder. Encoder conversion values.  Drive converts
+   * motor rotations to linear wheel distance and steering converts motor rotations to module azimuth.
    *
    * @param angleGearRatio The gear ratio of the steering motor.
    * @return Degrees per steering rotation for the angle motor.

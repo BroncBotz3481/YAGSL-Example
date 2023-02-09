@@ -2,11 +2,11 @@ package frc.robot.subsystems.swervedrive2.parser;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
-import frc.robot.Constants.Drivebase.DriveFeedforwardGains;
 import frc.robot.Constants.Drivebase.DrivetrainLimitations;
 import frc.robot.Constants.Drivebase.ModulePIDFGains;
 import frc.robot.subsystems.swervedrive2.encoders.CANCoderSwerve;
 import frc.robot.subsystems.swervedrive2.encoders.SwerveAbsoluteEncoder;
+import frc.robot.subsystems.swervedrive2.math.BetterSwerveKinematics;
 import frc.robot.subsystems.swervedrive2.motors.SparkMaxSwerve;
 import frc.robot.subsystems.swervedrive2.motors.SwerveMotor;
 
@@ -20,17 +20,24 @@ public class SwerveModuleConfiguration
   public final double     angleOffset;
   public final boolean    absoluteEncoderInverted;
   public final boolean    driveMotorInverted;
-  public final double     wheelDiameter  = Units.inchesToMeters(4);
-  public final double     driveGearRatio = 6.75;
-  public final double     angleGearRatio = 12.8;
-  public final double     maxSpeed       = DrivetrainLimitations.MAX_SPEED;
-  public       PIDFConfig anglePIDF      = new PIDFConfig(ModulePIDFGains.MODULE_KP, ModulePIDFGains.MODULE_KI,
-                                                          ModulePIDFGains.MODULE_KD, ModulePIDFGains.MODULE_KF,
-                                                          ModulePIDFGains.MODULE_IZ);
-  public       PIDFConfig velocityPIDF   = new PIDFConfig(ModulePIDFGains.VELOCITY_KP, ModulePIDFGains.VELOCITY_KI,
-                                                          ModulePIDFGains.VELOCITY_KD, ModulePIDFGains.VELOCITY_KF,
-                                                          ModulePIDFGains.VELOCITY_IZ);
-  public       double     angleKV        = ModulePIDFGains.MODULE_KV;
+  public final double     wheelDiameter                  = Units.inchesToMeters(4);
+  public final double     driveGearRatio                 = 6.75;
+  public final double     angleGearRatio                 = 12.8;
+  public final double     maxSpeed                       = DrivetrainLimitations.MAX_SPEED;
+  public final double     optimalVoltage                 = 12;
+  public final double     wheelGripCoefficientOfFriction = 1.19;
+  public final double     motorFreeSpeedRPM              = 5676;
+  public       PIDFConfig anglePIDF                      = new PIDFConfig(ModulePIDFGains.MODULE_KP,
+                                                                          ModulePIDFGains.MODULE_KI,
+                                                                          ModulePIDFGains.MODULE_KD,
+                                                                          ModulePIDFGains.MODULE_KF,
+                                                                          ModulePIDFGains.MODULE_IZ);
+  public       PIDFConfig velocityPIDF                   = new PIDFConfig(ModulePIDFGains.VELOCITY_KP,
+                                                                          ModulePIDFGains.VELOCITY_KI,
+                                                                          ModulePIDFGains.VELOCITY_KD,
+                                                                          ModulePIDFGains.VELOCITY_KF,
+                                                                          ModulePIDFGains.VELOCITY_IZ);
+  public       double     angleKV                        = calculateAngleKV();
 
 
   /**
@@ -92,13 +99,25 @@ public class SwerveModuleConfiguration
   }
 
   /**
+   * Calculate the angle kV which will be multiplied by the radians per second for the feedforward.
+   *
+   * @return angle kV for feedforward.
+   */
+  public double calculateAngleKV()
+  {
+    return optimalVoltage / (360 * (motorFreeSpeedRPM / angleGearRatio) / 60);
+  }
+
+  /**
    * Create the drive feedforward for swerve modules.
    *
    * @return Drive feedforward for drive motor on a swerve module.
    */
   public SimpleMotorFeedforward createDriveFeedforward()
   {
-    return new SimpleMotorFeedforward(DriveFeedforwardGains.KS, DriveFeedforwardGains.KV, DriveFeedforwardGains.KA);
+    double kv = optimalVoltage / maxSpeed;
+    double ka = optimalVoltage / BetterSwerveKinematics.calculateMaxAcceleration(wheelGripCoefficientOfFriction);
+    return new SimpleMotorFeedforward(0, kv, ka);
   }
 
   /**

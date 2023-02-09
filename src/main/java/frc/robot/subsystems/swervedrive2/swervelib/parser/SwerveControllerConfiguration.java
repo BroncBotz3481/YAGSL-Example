@@ -26,13 +26,12 @@ public class SwerveControllerConfiguration
    * Construct the swerve controller configuration.
    *
    * @param driveCfg    Drive configuration.
-   * @param maxSpeed    Maximum robot speed in meters per second.
    * @param headingPIDF Heading PIDF configuration.
    */
-  public SwerveControllerConfiguration(SwerveDriveConfiguration driveCfg, double maxSpeed, PIDFConfig headingPIDF)
+  public SwerveControllerConfiguration(SwerveDriveConfiguration driveCfg, PIDFConfig headingPIDF)
   {
-    this.maxSpeed = maxSpeed;
-    this.maxAngularVelocity = calculateMaxAngularVelocity(maxSpeed,
+    this.maxSpeed = driveCfg.maxSpeed;
+    this.maxAngularVelocity = calculateMaxAngularVelocity(driveCfg.maxSpeed,
                                                           driveCfg.moduleLocationsMeters[0].getX(),
                                                           driveCfg.moduleLocationsMeters[0].getY());
     this.headingPIDF = headingPIDF;

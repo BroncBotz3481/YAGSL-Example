@@ -44,7 +44,6 @@ public class RobotContainer
       DrivetrainLimitations.MAX_SPEED);
   private final SwerveControllerConfiguration swerveControllerConfiguration = new SwerveControllerConfiguration(
       swerveDriveConfiguration,
-      Constants.Drivebase.DrivetrainLimitations.MAX_SPEED,
       new PIDFConfig(Drivebase.HEADING_KP, Drivebase.HEADING_KI, Drivebase.HEADING_KD));
   private final SwerveSubsystem               drivebase                     = new SwerveSubsystem(
       swerveDriveConfiguration,

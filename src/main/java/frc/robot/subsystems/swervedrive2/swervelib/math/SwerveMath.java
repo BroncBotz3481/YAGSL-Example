@@ -1,5 +1,16 @@
 package frc.robot.subsystems.swervedrive2.swervelib.math;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.swervedrive2.swervelib.SwerveController;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveDriveConfiguration;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveModuleConfiguration;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveParser;
+
 public class SwerveMath
 {
 
@@ -83,4 +94,122 @@ public class SwerveMath
     return (stallTorqueNm * gearRatio * moduleCount) / ((wheelDiameter / 2) * robotMass);
   }
 
+  /**
+   * Calculates the maximum acceleration allowed in a direction without tipping the robot. Reads arm position from
+   * NetworkTables and is passed the direction in question.
+   *
+   * @param angle                  The direction in which to calculate max acceleration, as a Rotation2d. Note that this
+   *                               is robot-relative.
+   * @param chassisMass            Chassis mass in kg. (The weight of just the chassis not anything else)
+   * @param robotMass              The weight of the robot in kg. (Including manipulators, etc).
+   * @param chassisCenterOfGravity Chassis center of gravity.
+   * @param config                 The swerve drive configuration.
+   * @return Maximum acceleration allowed in the robot direction.
+   */
+  private static double calcMaxAccel(Rotation2d angle, double chassisMass, double robotMass,
+                                     Translation3d chassisCenterOfGravity, SwerveDriveConfiguration config)
+  {
+    double xMoment = (chassisCenterOfGravity.getX() * chassisMass);
+    double yMoment = (chassisCenterOfGravity.getY() * chassisMass);
+    // Calculate the vertical mass moment using the floor as the datum.  This will be used later to calculate max
+    // acceleration
+    double        zMoment      = (chassisCenterOfGravity.getZ() * (chassisMass));
+    Translation3d robotCG      = new Translation3d(xMoment, yMoment, zMoment).div(robotMass);
+    Translation2d horizontalCG = robotCG.toTranslation2d();
+
+    Translation2d projectedHorizontalCg = new Translation2d(
+        (angle.getSin() * angle.getCos() * horizontalCG.getY()) + (Math.pow(angle.getCos(), 2) * horizontalCG.getX()),
+        (angle.getSin() * angle.getCos() * horizontalCG.getX()) + (Math.pow(angle.getSin(), 2) * horizontalCG.getY())
+    );
+
+    // Projects the edge of the wheelbase onto the direction line.  Assumes the wheelbase is rectangular.
+    // Because a line is being projected, rather than a point, one of the coordinates of the projected point is
+    // already known.
+    Translation2d projectedWheelbaseEdge;
+    double        angDeg = angle.getDegrees();
+    if (angDeg <= 45 && angDeg >= -45)
+    {
+      SwerveModuleConfiguration conf = SwerveParser.getModuleConfigurationByName("frontleft", config).configuration;
+      projectedWheelbaseEdge = new Translation2d(conf.moduleLocation.getX(),
+                                                 conf.moduleLocation.getX() * angle.getTan());
+    } else if (135 >= angDeg && angDeg > 45)
+    {
+      SwerveModuleConfiguration conf = SwerveParser.getModuleConfigurationByName("frontleft", config).configuration;
+
+      projectedWheelbaseEdge = new Translation2d(
+          conf.moduleLocation.getY() / angle.getTan(),
+          conf.moduleLocation.getY());
+    } else if (-135 <= angDeg && angDeg < -45)
+    {
+      SwerveModuleConfiguration conf = SwerveParser.getModuleConfigurationByName("frontright", config).configuration;
+      projectedWheelbaseEdge = new Translation2d(
+          conf.moduleLocation.getY() / angle.getTan(),
+          conf.moduleLocation.getY());
+    } else
+    {
+      SwerveModuleConfiguration conf = SwerveParser.getModuleConfigurationByName("backleft", config).configuration;
+      projectedWheelbaseEdge = new Translation2d(
+          conf.moduleLocation.getX(),
+          conf.moduleLocation.getX() * angle.getTan());
+    }
+
+    double horizontalDistance = projectedHorizontalCg.plus(projectedWheelbaseEdge).getNorm();
+    double maxAccel           = 9.81 * horizontalDistance / robotCG.getZ();
+
+    SmartDashboard.putNumber("calcMaxAccel", maxAccel);
+    return maxAccel;
+  }
+
+  /**
+   * Limits a commanded velocity to prevent exceeding the maximum acceleration given by
+   * {@link SwerveMath#calcMaxAccel(Rotation2d, double, double, Translation3d, SwerveDriveConfiguration)}.  Note that
+   * this takes and returns field-relative velocities.
+   *
+   * @param commandedVelocity      The desired velocity
+   * @param fieldVelocity          The velocity of the robot within a field relative state.
+   * @param robotPose              The current pose of the robot.
+   * @param loopTime               The time it takes to update the velocity in seconds. <b>Note: this should include the
+   *                               100ms that it takes for a SparkMax velocity to update.</b>
+   * @param chassisMass            Chassis mass in kg. (The weight of just the chassis not anything else)
+   * @param robotMass              The weight of the robot in kg. (Including manipulators, etc).
+   * @param chassisCenterOfGravity Chassis center of gravity.
+   * @param config                 The swerve drive configuration.
+   * @return The limited velocity.  This is either the commanded velocity, if attainable, or the closest attainable
+   * velocity.
+   */
+  public static Translation2d limitVelocity(Translation2d commandedVelocity, ChassisSpeeds fieldVelocity,
+                                            Pose2d robotPose, double loopTime, double chassisMass, double robotMass,
+                                            Translation3d chassisCenterOfGravity, SwerveDriveConfiguration config)
+  {
+    // Get the robot's current field-relative velocity
+    Translation2d currentVelocity = SwerveController.getTranslation2d(fieldVelocity);
+    SmartDashboard.putNumber("currentVelocity", currentVelocity.getX());
+
+    // Calculate the commanded change in velocity by subtracting current velocity
+    // from commanded velocity
+    Translation2d deltaV = commandedVelocity.minus(currentVelocity);
+    SmartDashboard.putNumber("deltaV", deltaV.getX());
+
+    // Creates an acceleration vector with the direction of delta V and a magnitude
+    // of the maximum allowed acceleration in that direction
+    Translation2d maxAccel = new Translation2d(
+        calcMaxAccel(deltaV
+                         // Rotates the velocity vector to convert from field-relative to robot-relative
+                         .rotateBy(robotPose.getRotation().unaryMinus())
+                         .getAngle(), chassisMass, robotMass, chassisCenterOfGravity, config),
+        deltaV.getAngle());
+
+    // Calculate the maximum achievable velocity by the next loop cycle.
+    // delta V = Vf - Vi = at
+    Translation2d maxAchievableDeltaVelocity = maxAccel.times(loopTime);
+
+    if (deltaV.getNorm() > maxAchievableDeltaVelocity.getNorm())
+    {
+      return maxAchievableDeltaVelocity.plus(currentVelocity);
+    } else
+    {
+      // If the commanded velocity is attainable, use that.
+      return commandedVelocity;
+    }
+  }
 }

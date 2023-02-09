@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.swervedrive2.parser.PIDFConfig;
 import frc.robot.subsystems.swervedrive2.parser.SwerveModuleConfiguration;
 
 /**
@@ -117,18 +118,28 @@ public final class Constants
     {
 
       // Module PIDF gains
-      public static final double MODULE_KP   = 0.01;
-      public static final double MODULE_KI   = 0;
-      public static final double MODULE_KD   = 0;
-      public static final double MODULE_IZ   = 0;
-      public static final double MODULE_KF   = 0;
+      public static final double     MODULE_KP    = 0.01;
+      public static final double     MODULE_KI    = 0;
+      public static final double     MODULE_KD    = 0;
+      public static final double     MODULE_IZ    = 0;
+      public static final double     MODULE_KF    = 0;
+      public static final PIDFConfig anglePIDF    = new PIDFConfig(MODULE_KP,
+                                                                   MODULE_KI,
+                                                                   MODULE_KD,
+                                                                   MODULE_KF,
+                                                                   MODULE_IZ);
       // Volt * seconds / degree.  Equal to (maxVolts) / (maxSpeed)
-      public static final double MODULE_KV   = 12 / DrivetrainLimitations.MAX_MODULE_ANGULAR_SPEED;
-      public static final double VELOCITY_KP = 0.0020645; // kp from SysId, eventually
-      public static final double VELOCITY_KI = 0; // Leave all of these zero to disable them
-      public static final double VELOCITY_KD = 0;
-      public static final double VELOCITY_IZ = 0;
-      public static final double VELOCITY_KF = 0;
+      public static final double     MODULE_KV    = 12 / DrivetrainLimitations.MAX_MODULE_ANGULAR_SPEED;
+      public static final double     VELOCITY_KP  = 0.0020645; // kp from SysId, eventually
+      public static final double     VELOCITY_KI  = 0; // Leave all of these zero to disable them
+      public static final double     VELOCITY_KD  = 0;
+      public static final double     VELOCITY_IZ  = 0;
+      public static final double     VELOCITY_KF  = 0;
+      public static final PIDFConfig velocityPIDF = new PIDFConfig(VELOCITY_KP,
+                                                                   VELOCITY_KI,
+                                                                   VELOCITY_KD,
+                                                                   VELOCITY_KF,
+                                                                   VELOCITY_IZ);
     }
 
     // Drive feedforward gains
@@ -177,7 +188,10 @@ public final class Constants
                                                                                                    CANCODER_ID,
                                                                                                    ANGLE_OFFSET,
                                                                                                    ModuleLocations.FRONT_LEFT_X,
-                                                                                                   ModuleLocations.FRONT_LEFT_Y);
+                                                                                                   ModuleLocations.FRONT_LEFT_Y,
+                                                                                                   ModulePIDFGains.anglePIDF,
+                                                                                                   ModulePIDFGains.velocityPIDF,
+                                                                                                   DrivetrainLimitations.MAX_SPEED);
     }
 
     public static final class Mod1FR
@@ -192,7 +206,10 @@ public final class Constants
                                                                                                    CANCODER_ID,
                                                                                                    ANGLE_OFFSET,
                                                                                                    ModuleLocations.FRONT_RIGHT_X,
-                                                                                                   ModuleLocations.FRONT_RIGHT_Y);
+                                                                                                   ModuleLocations.FRONT_RIGHT_Y,
+                                                                                                   ModulePIDFGains.anglePIDF,
+                                                                                                   ModulePIDFGains.velocityPIDF,
+                                                                                                   DrivetrainLimitations.MAX_SPEED);
     }
 
     public static final class Mod2BL
@@ -207,7 +224,10 @@ public final class Constants
                                                                                                    CANCODER_ID,
                                                                                                    ANGLE_OFFSET,
                                                                                                    ModuleLocations.BACK_LEFT_X,
-                                                                                                   ModuleLocations.BACK_LEFT_Y);
+                                                                                                   ModuleLocations.BACK_LEFT_Y,
+                                                                                                   ModulePIDFGains.anglePIDF,
+                                                                                                   ModulePIDFGains.velocityPIDF,
+                                                                                                   DrivetrainLimitations.MAX_SPEED);
     }
 
     public static final class Mod3BR
@@ -222,7 +242,10 @@ public final class Constants
                                                                                                    CANCODER_ID,
                                                                                                    ANGLE_OFFSET,
                                                                                                    ModuleLocations.BACK_RIGHT_X,
-                                                                                                   ModuleLocations.BACK_RIGHT_Y);
+                                                                                                   ModuleLocations.BACK_RIGHT_Y,
+                                                                                                   ModulePIDFGains.anglePIDF,
+                                                                                                   ModulePIDFGains.velocityPIDF,
+                                                                                                   DrivetrainLimitations.MAX_SPEED);
     }
   }
 

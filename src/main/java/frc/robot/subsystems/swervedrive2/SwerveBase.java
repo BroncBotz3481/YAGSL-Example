@@ -19,6 +19,7 @@ import frc.robot.Robot;
 import frc.robot.subsystems.swervedrive2.imu.SwerveIMU;
 import frc.robot.subsystems.swervedrive2.math.BetterSwerveKinematics;
 import frc.robot.subsystems.swervedrive2.math.BetterSwerveModuleState;
+import frc.robot.subsystems.swervedrive2.parser.SwerveControllerConfiguration;
 import frc.robot.subsystems.swervedrive2.parser.SwerveDriveConfiguration;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class SwerveBase extends SubsystemBase
   private final SwerveDriveOdometry      odometry;
   private final SwerveDriveConfiguration swerveDriveConfiguration;
   public        Field2d                  field = new Field2d();
+  public        SwerveController         swerveController;
   private       SwerveIMU                imu;
   private       double                   angle, lastTime;
   private Timer   timer;
@@ -44,9 +46,10 @@ public class SwerveBase extends SubsystemBase
    * field-centric and closed-loop velocity control. setModuleStates() takes a list of SwerveModuleStates and directly
    * passes them to the modules. This subsystem also handles odometry.
    */
-  public SwerveBase(SwerveDriveConfiguration config)
+  public SwerveBase(SwerveDriveConfiguration config, SwerveControllerConfiguration controllerConfig)
   {
     swerveDriveConfiguration = config;
+    swerveController = new SwerveController(controllerConfig);
     // Create Kinematics from swerve module locations.
     kinematics = new BetterSwerveKinematics(config.moduleLocationsMeters);
 
@@ -215,24 +218,6 @@ public class SwerveBase extends SubsystemBase
   }
 
   /**
-   * A public method to allow other systems to determine if the gyro was reset by accessing the wasGyroReset flag.
-   *
-   * @return The boolean value of wasGyroReset
-   */
-  public boolean wasGyroReset()
-  {
-    return wasGyroReset;
-  }
-
-  /**
-   * Sets wasGyroReset to false.  Should be called after all systems that need to know have called wasGyroReset.
-   */
-  public void clearGyroReset()
-  {
-    wasGyroReset = false;
-  }
-
-  /**
    * Resets the gyro angle to zero and resets odometry to the same position, but facing toward 0. Also sets the
    * wasGyroReset flag to true.
    */
@@ -246,7 +231,7 @@ public class SwerveBase extends SubsystemBase
     {
       angle = 0;
     }
-    wasGyroReset = true;
+    swerveController.lastAngle = 0;
     resetOdometry(new Pose2d(getPose().getTranslation(), new Rotation2d()));
   }
 

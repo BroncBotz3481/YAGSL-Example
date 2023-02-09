@@ -14,7 +14,6 @@ import frc.robot.Constants;
 import frc.robot.Constants.Drivebase.ModuleLocations;
 import frc.robot.subsystems.swervedrive2.SwerveBase;
 import frc.robot.subsystems.swervedrive2.SwerveController;
-import frc.robot.subsystems.swervedrive2.parser.SwerveControllerConfiguration;
 import java.util.function.DoubleSupplier;
 
 /**
@@ -26,8 +25,7 @@ public class AbsoluteDrive extends CommandBase
   private final SwerveBase     swerve;
   private final DoubleSupplier vX, vY;
   private final DoubleSupplier headingHorizontal, headingVertical;
-  private final boolean          isOpenLoop;
-  private       SwerveController swerveController;
+  private final boolean isOpenLoop;
 
   /**
    * Used to drive a swerve robot in full field-centric mode.  vX and vY supply translation inputs, where x is
@@ -65,21 +63,18 @@ public class AbsoluteDrive extends CommandBase
   @Override
   public void initialize()
   {
-    swerveController = new SwerveController(new SwerveControllerConfiguration());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute()
   {
-    // Configure the last angle to be reset if the swerve drive had the angle reset.
-    swerveController.configureLastAngle(swerve);
 
     // Get the desired chassis speeds based on a 2 joystick module.
-    ChassisSpeeds desiredSpeeds = swerveController.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(),
-                                                                   headingHorizontal.getAsDouble(),
-                                                                   headingVertical.getAsDouble(),
-                                                                   swerve.getYaw().getRadians());
+    ChassisSpeeds desiredSpeeds = swerve.swerveController.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(),
+                                                                          headingHorizontal.getAsDouble(),
+                                                                          headingVertical.getAsDouble(),
+                                                                          swerve.getYaw().getRadians());
 
     // Limit velocity to prevent tippy
     Translation2d translation = SwerveController.getTranslation2d(desiredSpeeds);

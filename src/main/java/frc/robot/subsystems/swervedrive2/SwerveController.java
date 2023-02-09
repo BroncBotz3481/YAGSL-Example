@@ -13,7 +13,7 @@ public class SwerveController
 
   private final PIDController                 thetaController;
   private final SwerveControllerConfiguration config;
-  private       double                        lastAngle;
+  public        double                        lastAngle;
 
   /**
    * Construct the SwerveController object which is used for determining the speeds of the robot based on controller
@@ -95,19 +95,5 @@ public class SwerveController
     lastAngle = angle;
 
     return speeds;
-  }
-
-  /**
-   * Checks if the gyro was reset, and, if so, sets the commanded heading to zero. This allows the field reference frame
-   * (which way is away from the alliance wall) to be reset without the robot immediately rotating to the
-   * previously-commanded angle in the new reference frame.  This currently does not override the joystick.
-   */
-  public void configureLastAngle(SwerveBase swerve)
-  {
-    if (swerve.wasGyroReset())
-    {
-      lastAngle = 0;
-      swerve.clearGyroReset();
-    }
   }
 }

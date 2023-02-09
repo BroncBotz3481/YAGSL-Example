@@ -19,6 +19,7 @@ import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.swervedrive2.SwerveBase;
 import frc.robot.subsystems.swervedrive2.commands.drivebase.AbsoluteDrive;
 import frc.robot.subsystems.swervedrive2.commands.drivebase.TeleopDrive;
+import frc.robot.subsystems.swervedrive2.parser.SwerveControllerConfiguration;
 import frc.robot.subsystems.swervedrive2.parser.SwerveDriveConfiguration;
 
 /**
@@ -30,7 +31,8 @@ public class RobotContainer
 {
 
   // The robot's subsystems and commands are defined here...
-  private final SwerveBase                   drivebase          = new SwerveBase(new SwerveDriveConfiguration());
+  private final SwerveBase                   drivebase          = new SwerveBase(new SwerveDriveConfiguration(),
+                                                                                 new SwerveControllerConfiguration());
   private final ExampleSubsystem             m_exampleSubsystem = new ExampleSubsystem();
   private final SendableChooser<CommandBase> driveModeSelector;
   CommandJoystick rotationController = new CommandJoystick(1);

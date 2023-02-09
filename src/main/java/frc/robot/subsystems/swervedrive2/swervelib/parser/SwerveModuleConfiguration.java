@@ -161,26 +161,24 @@ public class SwerveModuleConfiguration
   }
 
   /**
-   * Create the {@link SwerveMotor} for the drive motor, and reset it to factory defaults.
+   * Create the {@link SwerveMotor} for the drive motor.
    *
    * @return Instantiated SwerveMotor.
    */
   public SwerveMotor createDriveMotor()
   {
     SwerveMotor motor = new SparkMaxSwerve(driveMotorID, true);
-    motor.factoryDefaults();
     return motor;
   }
 
   /**
-   * Create the {@link SwerveMotor} for the drive motor, and reset it to factory defaults.
+   * Create the {@link SwerveMotor} for the drive motor.
    *
    * @return Instantiated SwerveMotor.
    */
   public SwerveMotor createAngleMotor()
   {
     SwerveMotor motor = new SparkMaxSwerve(angleMotorID, false);
-    motor.factoryDefaults();
     return motor;
   }
 

@@ -74,6 +74,8 @@ public class SwerveModule
     // Create motors from configuration.
     angleMotor = moduleConfiguration.createAngleMotor();
     driveMotor = moduleConfiguration.createDriveMotor();
+    angleMotor.factoryDefaults();
+    driveMotor.factoryDefaults();
 
     // Config angle encoders
     absoluteEncoder = moduleConfiguration.createAbsoluteEncoder();

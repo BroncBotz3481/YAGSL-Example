@@ -10,21 +10,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.Drivebase;
-import frc.robot.Constants.Drivebase.DrivetrainLimitations;
-import frc.robot.Constants.Drivebase.Mod0FL;
-import frc.robot.Constants.Drivebase.Mod1FR;
-import frc.robot.Constants.Drivebase.Mod2BL;
-import frc.robot.Constants.Drivebase.Mod3BR;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.swervedrive2.auto.Autos;
 import frc.robot.commands.swervedrive2.drivebase.AbsoluteDrive;
 import frc.robot.subsystems.swervedrive2.SwerveSubsystem;
-import frc.robot.subsystems.swervedrive2.swervelib.imu.Pigeon2Swerve;
-import frc.robot.subsystems.swervedrive2.swervelib.parser.PIDFConfig;
-import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveControllerConfiguration;
-import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveDriveConfiguration;
-import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveModuleConfiguration;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -35,19 +24,17 @@ public class RobotContainer
 {
 
   // The robot's subsystems and commands are defined here...
-  private final SwerveDriveConfiguration      swerveDriveConfiguration      = new SwerveDriveConfiguration(
-      new SwerveModuleConfiguration[]{
-          Mod0FL.CONSTANTS, Mod1FR.CONSTANTS, Mod2BL.CONSTANTS, Mod3BR.CONSTANTS},
-      new Pigeon2Swerve(
-          Drivebase.PIGEON,
-          "canivore"),
-      DrivetrainLimitations.MAX_SPEED);
-  private final SwerveControllerConfiguration swerveControllerConfiguration = new SwerveControllerConfiguration(
-      swerveDriveConfiguration,
-      new PIDFConfig(Drivebase.HEADING_KP, Drivebase.HEADING_KI, Drivebase.HEADING_KD));
-  private final SwerveSubsystem               drivebase                     = new SwerveSubsystem(
-      swerveDriveConfiguration,
-      swerveControllerConfiguration);
+//  private final SwerveDriveConfiguration      swerveDriveConfiguration      = new SwerveDriveConfiguration(
+//      new SwerveModuleConfiguration[]{
+//          Mod0FL.CONSTANTS, Mod1FR.CONSTANTS, Mod2BL.CONSTANTS, Mod3BR.CONSTANTS},
+//      new Pigeon2Swerve(
+//          Drivebase.PIGEON,
+//          "canivore"),
+//      DrivetrainLimitations.MAX_SPEED);
+//  private final SwerveControllerConfiguration swerveControllerConfiguration = new SwerveControllerConfiguration(
+//      swerveDriveConfiguration,
+//      new PIDFConfig(Drivebase.HEADING_KP, Drivebase.HEADING_KI, Drivebase.HEADING_KD));
+  private final SwerveSubsystem drivebase = new SwerveSubsystem();
   // CommandJoystick rotationController = new CommandJoystick(1);
   // Replace with CommandPS4Controller or CommandJoystick if needed
   // CommandJoystick driverController   = new CommandJoystick(3);//(OperatorConstants.DRIVER_CONTROLLER_PORT);

@@ -130,11 +130,11 @@ public class SparkMaxSwerve extends SwerveMotor
   public void configurePIDF(PIDFConfig config)
   {
     int pidSlot = isDriveMotor ? SparkMAX_slotIdx.Velocity.ordinal() : SparkMAX_slotIdx.Position.ordinal();
-    pid.setP(config.kP, pidSlot);
-    pid.setI(config.kI, pidSlot);
-    pid.setD(config.kD, pidSlot);
-    pid.setFF(config.kF, pidSlot);
-    pid.setIZone(config.IZ, pidSlot);
+    pid.setP(config.p, pidSlot);
+    pid.setI(config.i, pidSlot);
+    pid.setD(config.d, pidSlot);
+    pid.setFF(config.f, pidSlot);
+    pid.setIZone(config.iz, pidSlot);
   }
 
   /**

@@ -2,13 +2,23 @@ package frc.robot.subsystems.swervedrive2.swervelib.parser;
 
 import edu.wpi.first.math.controller.PIDController;
 
+/**
+ * Hold the PIDF and Integral Zone values for a PID.
+ */
 public class PIDFConfig
 {
 
   /**
    * PIDF Values and integral zone.
    */
-  public double kP, kI, kD, kF, IZ;
+  public double p, i, d, f, iz;
+
+  /**
+   * Used when parsing PIDF values from JSON.
+   */
+  public PIDFConfig()
+  {
+  }
 
   /**
    * PIDF Config constructor to contain the values.
@@ -21,11 +31,11 @@ public class PIDFConfig
    */
   public PIDFConfig(double p, double i, double d, double f, double iz)
   {
-    kP = p;
-    kI = i;
-    kD = d;
-    kF = f;
-    IZ = iz;
+    this.p = p;
+    this.i = i;
+    this.d = d;
+    this.f = f;
+    this.iz = iz;
   }
 
   /**
@@ -71,6 +81,6 @@ public class PIDFConfig
    */
   public PIDController createPIDController()
   {
-    return new PIDController(kP, kI, kD);
+    return new PIDController(p, i, d);
   }
 }

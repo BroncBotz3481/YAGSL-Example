@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.swervedrive2.parser.PIDFConfig;
 import frc.robot.subsystems.swervedrive2.parser.SwerveModuleConfiguration;
+import frc.robot.subsystems.swervedrive2.parser.SwerveModulePhysicalCharacteristics;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean constants. This
@@ -172,8 +173,9 @@ public final class Constants
     }
     // degrees per rotation / gear ratio between module and motor
 
-    public static final int NUM_MODULES = 4;
-    public static final int PIGEON      = 13;
+    public static final int                                 NUM_MODULES                     = 4;
+    public static final int                                 PIGEON                          = 13;
+    public static       SwerveModulePhysicalCharacteristics MODULE_PHYSICAL_CHARACTERISTICS = new SwerveModulePhysicalCharacteristics();
 
     // Module specific constants
     public static final class Mod0FL
@@ -191,7 +193,8 @@ public final class Constants
                                                                                                    ModuleLocations.FRONT_LEFT_Y,
                                                                                                    ModulePIDFGains.anglePIDF,
                                                                                                    ModulePIDFGains.velocityPIDF,
-                                                                                                   DrivetrainLimitations.MAX_SPEED);
+                                                                                                   DrivetrainLimitations.MAX_SPEED,
+                                                                                                   MODULE_PHYSICAL_CHARACTERISTICS);
     }
 
     public static final class Mod1FR
@@ -209,7 +212,8 @@ public final class Constants
                                                                                                    ModuleLocations.FRONT_RIGHT_Y,
                                                                                                    ModulePIDFGains.anglePIDF,
                                                                                                    ModulePIDFGains.velocityPIDF,
-                                                                                                   DrivetrainLimitations.MAX_SPEED);
+                                                                                                   DrivetrainLimitations.MAX_SPEED,
+                                                                                                   MODULE_PHYSICAL_CHARACTERISTICS);
     }
 
     public static final class Mod2BL
@@ -227,7 +231,8 @@ public final class Constants
                                                                                                    ModuleLocations.BACK_LEFT_Y,
                                                                                                    ModulePIDFGains.anglePIDF,
                                                                                                    ModulePIDFGains.velocityPIDF,
-                                                                                                   DrivetrainLimitations.MAX_SPEED);
+                                                                                                   DrivetrainLimitations.MAX_SPEED,
+                                                                                                   MODULE_PHYSICAL_CHARACTERISTICS);
     }
 
     public static final class Mod3BR
@@ -245,7 +250,8 @@ public final class Constants
                                                                                                    ModuleLocations.BACK_RIGHT_Y,
                                                                                                    ModulePIDFGains.anglePIDF,
                                                                                                    ModulePIDFGains.velocityPIDF,
-                                                                                                   DrivetrainLimitations.MAX_SPEED);
+                                                                                                   DrivetrainLimitations.MAX_SPEED,
+                                                                                                   MODULE_PHYSICAL_CHARACTERISTICS);
     }
   }
 

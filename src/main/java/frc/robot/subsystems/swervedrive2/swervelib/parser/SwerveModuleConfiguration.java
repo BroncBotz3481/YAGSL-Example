@@ -78,9 +78,9 @@ public class SwerveModuleConfiguration
    * @param angleOffset             Absolute angle offset to 0.
    * @param absoluteEncoderInverted Absolute encoder inverted.
    * @param driveMotorInverted      Drive motor inverted.
-   * @param absoluteEncoderCANBus   CAN Bus name where absolute encoder is attached.
-   * @param angleMotorCANBus        CAN Bus name where the angle motor is attached.
-   * @param driveMotorCANBus        CAN Bus name where the drive motor is attached.
+   * @param absoluteEncoderCANBus   CAN Bus name where absolute encoder is attached. Can be null if none.
+   * @param angleMotorCANBus        CAN Bus name where the angle motor is attached. Can be null if none.
+   * @param driveMotorCANBus        CAN Bus name where the drive motor is attached. Can be null if none.
    * @param xMeters                 Module location in meters from the center horizontally.
    * @param yMeters                 Module location in meters from center vertically.
    * @param anglePIDF               Angle PIDF configuration.

@@ -63,6 +63,9 @@ public class SwerveModuleConfiguration
    * Swerve module location relative to the robot.
    */
   public       Translation2d                       moduleLocation;
+  /**
+   * Physical characteristics of the swerve module.
+   */
   public       SwerveModulePhysicalCharacteristics physicalCharacteristics;
 
 

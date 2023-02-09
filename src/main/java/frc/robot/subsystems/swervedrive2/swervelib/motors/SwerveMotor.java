@@ -96,4 +96,26 @@ public abstract class SwerveMotor
    * @param position Integrated encoder position. Should be angle in degrees or meters per second.
    */
   public abstract void setPosition(double position);
+
+  /**
+   * Set the voltage compensation for the swerve module motor.
+   *
+   * @param nominalVoltage Nominal voltage for operation to output to.
+   */
+  public abstract void setVoltageCompensation(double nominalVoltage);
+
+  /**
+   * Set the current limit for the swerve drive motor, remember this may cause jumping if used in conjunction with
+   * voltage compensation. This is useful to protect the motor from current spikes.
+   *
+   * @param currentLimit Current limit in AMPS at free speed.
+   */
+  public abstract void setCurrentLimit(int currentLimit);
+
+  /**
+   * Set the maximum rate the open/closed loop output can change by.
+   *
+   * @param rampRate Time in seconds to go from 0 to full throttle.
+   */
+  public abstract void setLoopRampRate(double rampRate);
 }

@@ -20,6 +20,10 @@ public class SwerveModulePhysicalCharacteristics
    */
   public final double optimalVoltage;
   /**
+   * Current limits for the Swerve Module.
+   */
+  public final int    driveMotorCurrentLimit, angleMotorCurrentLimit;
+  /**
    * Wheel grip tape coefficient of friction on carpet, as described by the vendor.
    */
   public final double wheelGripCoefficientOfFriction;
@@ -38,10 +42,13 @@ public class SwerveModulePhysicalCharacteristics
    * @param wheelDiameter                  Wheel diameter in meters.
    * @param wheelGripCoefficientOfFriction Wheel grip coefficient of friction on carpet given by manufacturer.
    * @param optimalVoltage                 Optimal robot voltage.
+   * @param driveMotorCurrentLimit         Current limit for the drive motor.
+   * @param angleMotorCurrentLimit         Current limit for the angle motor.
    */
   public SwerveModulePhysicalCharacteristics(double driveGearRatio, double angleGearRatio, double motorFreeSpeedRPM,
                                              double wheelDiameter, double wheelGripCoefficientOfFriction,
-                                             double optimalVoltage)
+                                             double optimalVoltage, int driveMotorCurrentLimit,
+                                             int angleMotorCurrentLimit)
   {
     this.wheelGripCoefficientOfFriction = wheelGripCoefficientOfFriction;
     this.optimalVoltage = optimalVoltage;
@@ -50,11 +57,13 @@ public class SwerveModulePhysicalCharacteristics
     this.angleGearRatio = angleGearRatio;
     this.driveGearRatio = driveGearRatio;
     this.wheelDiameter = wheelDiameter;
+    this.driveMotorCurrentLimit = driveMotorCurrentLimit;
+    this.angleMotorCurrentLimit = angleMotorCurrentLimit;
   }
 
   /**
    * Construct the swerve module physical characteristics. Assume coefficient of friction is 1.19 and optimal voltage is
-   * 12v.
+   * 12v. Assumes the drive motor current limit is 40A, and the angle motor current limit is 20A.
    *
    * @param driveGearRatio    Gear ratio of the drive motor. Number of motor rotations to rotate the wheel.
    * @param angleGearRatio    Gear ratio of the angle motor. Number of motor rotations to spin the wheel.
@@ -64,6 +73,8 @@ public class SwerveModulePhysicalCharacteristics
   public SwerveModulePhysicalCharacteristics(double driveGearRatio, double angleGearRatio, double motorFreeSpeedRPM,
                                              double wheelDiameter)
   {
-    this(driveGearRatio, angleGearRatio, motorFreeSpeedRPM, wheelDiameter, 1.19, 12);
+    this(driveGearRatio, angleGearRatio, motorFreeSpeedRPM, wheelDiameter, 1.19, 12,
+         40,
+         20);
   }
 }

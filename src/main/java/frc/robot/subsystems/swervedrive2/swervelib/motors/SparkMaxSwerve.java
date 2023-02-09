@@ -36,6 +36,45 @@ public class SparkMaxSwerve extends SwerveMotor
     motor = new CANSparkMax(id, MotorType.kBrushless);
     encoder = motor.getEncoder();
     pid = motor.getPIDController();
+
+    pid.setFeedbackDevice(encoder); // Configure feedback of the PID controller as the integrated encoder.
+
+    motor.setCANTimeout(0); // Spin off configurations in a different thread.
+  }
+
+  /**
+   * Set the voltage compensation for the swerve module motor.
+   *
+   * @param nominalVoltage Nominal voltage for operation to output to.
+   */
+  @Override
+  public void setVoltageCompensation(double nominalVoltage)
+  {
+    motor.enableVoltageCompensation(nominalVoltage);
+  }
+
+  /**
+   * Set the current limit for the swerve drive motor, remember this may cause jumping if used in conjunction with
+   * voltage compensation. This is useful to protect the motor from current spikes.
+   *
+   * @param currentLimit Current limit in AMPS at free speed.
+   */
+  @Override
+  public void setCurrentLimit(int currentLimit)
+  {
+    motor.setSmartCurrentLimit(currentLimit);
+  }
+
+  /**
+   * Set the maximum rate the open/closed loop output can change by.
+   *
+   * @param rampRate Time in seconds to go from 0 to full throttle.
+   */
+  @Override
+  public void setLoopRampRate(double rampRate)
+  {
+    motor.setOpenLoopRampRate(rampRate);
+    motor.setClosedLoopRampRate(rampRate);
   }
 
   /**

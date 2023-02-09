@@ -71,11 +71,19 @@ public class SwerveModule
     // Initialize Feedforward for drive motor.
     feedforward = configuration.createDriveFeedforward();
 
-    // Create motors from configuration.
+    // Create motors from configuration and reset them to defaults.
     angleMotor = moduleConfiguration.createAngleMotor();
     driveMotor = moduleConfiguration.createDriveMotor();
     angleMotor.factoryDefaults();
     driveMotor.factoryDefaults();
+
+    // Configure voltage comp, current limit, and ramp rate.
+    angleMotor.setVoltageCompensation(configuration.physicalCharacteristics.optimalVoltage);
+    driveMotor.setVoltageCompensation(configuration.physicalCharacteristics.optimalVoltage);
+    angleMotor.setCurrentLimit(configuration.physicalCharacteristics.angleMotorCurrentLimit);
+    driveMotor.setCurrentLimit(configuration.physicalCharacteristics.driveMotorCurrentLimit);
+    angleMotor.setLoopRampRate(0.25);
+    driveMotor.setLoopRampRate(0.25);
 
     // Config angle encoders
     absoluteEncoder = moduleConfiguration.createAbsoluteEncoder();

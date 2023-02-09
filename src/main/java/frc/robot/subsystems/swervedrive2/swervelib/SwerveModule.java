@@ -55,43 +55,42 @@ public class SwerveModule
   /**
    * Construct the swerve module and initialize the swerve module motors and absolute encoder.
    *
-   * @param moduleNumber    Module number for kinematics.
-   * @param moduleConstants Module constants containing CAN ID's and offsets.
+   * @param moduleNumber        Module number for kinematics.
+   * @param moduleConfiguration Module constants containing CAN ID's and offsets.
    */
-  public SwerveModule(int moduleNumber, SwerveModuleConfiguration moduleConstants)
+  public SwerveModule(int moduleNumber, SwerveModuleConfiguration moduleConfiguration)
   {
     angle = 0;
     speed = 0;
     omega = 0;
     fakePos = 0;
     this.moduleNumber = moduleNumber;
-    configuration = moduleConstants;
-    angleOffset = moduleConstants.angleOffset;
+    configuration = moduleConfiguration;
+    angleOffset = moduleConfiguration.angleOffset;
 
     // Initialize Feedforward for drive motor.
     feedforward = configuration.createDriveFeedforward();
 
-    angleMotor = moduleConstants.createAngleMotor();
-    driveMotor = moduleConstants.createDriveMotor();
-    angleMotor.factoryDefaults();
-    driveMotor.factoryDefaults();
+    // Create motors from configuration.
+    angleMotor = moduleConfiguration.createAngleMotor();
+    driveMotor = moduleConfiguration.createDriveMotor();
 
     // Config angle encoders
-    absoluteEncoder = moduleConstants.createAbsoluteEncoder();
+    absoluteEncoder = moduleConfiguration.createAbsoluteEncoder();
     absoluteEncoder.factoryDefault();
-    absoluteEncoder.configure(moduleConstants.absoluteEncoderInverted);
-    angleMotor.configureIntegratedEncoder(moduleConstants.getPositionEncoderConversion(false));
+    absoluteEncoder.configure(moduleConfiguration.absoluteEncoderInverted);
+    angleMotor.configureIntegratedEncoder(moduleConfiguration.getPositionEncoderConversion(false));
     angleMotor.setPosition(absoluteEncoder.getAbsolutePosition() - angleOffset);
 
     // Config angle motor/controller
-    angleMotor.configurePIDF(moduleConstants.anglePIDF);
+    angleMotor.configurePIDF(moduleConfiguration.anglePIDF);
     angleMotor.configurePIDWrapping(-180, 180);
     angleMotor.setMotorBrake(false);
 
     // Config drive motor/controller
-    driveMotor.configureIntegratedEncoder(moduleConstants.getPositionEncoderConversion(true));
-    driveMotor.configurePIDF(moduleConstants.velocityPIDF);
-    driveMotor.setInverted(moduleConstants.driveMotorInverted);
+    driveMotor.configureIntegratedEncoder(moduleConfiguration.getPositionEncoderConversion(true));
+    driveMotor.configurePIDF(moduleConfiguration.velocityPIDF);
+    driveMotor.setInverted(moduleConfiguration.driveMotorInverted);
     driveMotor.setMotorBrake(true);
 
     driveMotor.burnFlash();

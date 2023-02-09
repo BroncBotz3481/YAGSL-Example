@@ -71,10 +71,10 @@ public class AbsoluteDrive extends CommandBase
   {
 
     // Get the desired chassis speeds based on a 2 joystick module.
-    ChassisSpeeds desiredSpeeds = swerve.swerveController.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(),
-                                                                          headingHorizontal.getAsDouble(),
-                                                                          headingVertical.getAsDouble(),
-                                                                          swerve.getYaw().getRadians());
+    ChassisSpeeds desiredSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(),
+                                                         headingHorizontal.getAsDouble(),
+                                                         headingVertical.getAsDouble(),
+                                                         swerve.getYaw().getRadians());
 
     // Limit velocity to prevent tippy
     Translation2d translation = SwerveController.getTranslation2d(desiredSpeeds);
@@ -177,9 +177,7 @@ public class AbsoluteDrive extends CommandBase
   private Translation2d limitVelocity(Translation2d commandedVelocity)
   {
     // Get the robot's current field-relative velocity
-    Translation2d currentVelocity = new Translation2d(
-        swerve.getFieldVelocity().vxMetersPerSecond,
-        swerve.getFieldVelocity().vyMetersPerSecond);
+    Translation2d currentVelocity = SwerveController.getTranslation2d(swerve.getFieldVelocity());
     SmartDashboard.putNumber("currentVelocity", currentVelocity.getX());
 
     // Calculate the commanded change in velocity by subtracting current velocity

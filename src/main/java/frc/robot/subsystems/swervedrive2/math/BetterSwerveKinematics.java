@@ -94,33 +94,6 @@ public class BetterSwerveKinematics extends SwerveDriveKinematics
   }
 
   /**
-   * Calculate the practical maximum acceleration of the robot using the wheel coefficient of friction.
-   *
-   * @param cof Coefficient of Friction of the wheel grip tape.
-   * @return Practical maximum acceleration.
-   */
-  public static double calculateMaxAcceleration(double cof)
-  {
-    return cof * 9.81;
-  }
-
-  /**
-   * Calculate the maximum theoretical acceleration without friction.
-   *
-   * @param stallTorqueNm Stall torque of driving motor in nM.
-   * @param gearRatio     Gear ratio for driving motor number of motor rotations until one wheel rotation.
-   * @param moduleCount   Number of swerve modules.
-   * @param wheelDiameter Wheel diameter in meters.
-   * @param robotMass     Mass of the robot in kg.
-   * @return Theoretical maximum acceleration.
-   */
-  public static double calculateMaxAcceleration(double stallTorqueNm, double gearRatio, double moduleCount,
-                                                double wheelDiameter, double robotMass)
-  {
-    return (stallTorqueNm * gearRatio * moduleCount) / ((wheelDiameter / 2) * robotMass);
-  }
-
-  /**
    * Renormalizes the wheel speeds if any individual speed is above the specified maximum, as well as getting rid of
    * joystick saturation at edges of joystick.
    *

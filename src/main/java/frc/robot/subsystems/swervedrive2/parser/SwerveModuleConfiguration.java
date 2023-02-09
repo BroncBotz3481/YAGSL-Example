@@ -1,12 +1,16 @@
 package frc.robot.subsystems.swervedrive2.parser;
 
+import static frc.robot.subsystems.swervedrive2.math.SwerveMath.calculateAngleKV;
+import static frc.robot.subsystems.swervedrive2.math.SwerveMath.calculateDegreesPerSteeringRotation;
+import static frc.robot.subsystems.swervedrive2.math.SwerveMath.calculateMaxAcceleration;
+import static frc.robot.subsystems.swervedrive2.math.SwerveMath.calculateMetersPerRotation;
+
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.Drivebase.DrivetrainLimitations;
 import frc.robot.Constants.Drivebase.ModulePIDFGains;
 import frc.robot.subsystems.swervedrive2.encoders.CANCoderSwerve;
 import frc.robot.subsystems.swervedrive2.encoders.SwerveAbsoluteEncoder;
-import frc.robot.subsystems.swervedrive2.math.BetterSwerveKinematics;
 import frc.robot.subsystems.swervedrive2.motors.SparkMaxSwerve;
 import frc.robot.subsystems.swervedrive2.motors.SwerveMotor;
 
@@ -37,7 +41,9 @@ public class SwerveModuleConfiguration
                                                                           ModulePIDFGains.VELOCITY_KD,
                                                                           ModulePIDFGains.VELOCITY_KF,
                                                                           ModulePIDFGains.VELOCITY_IZ);
-  public       double     angleKV                        = calculateAngleKV();
+  public       double     angleKV                        = calculateAngleKV(optimalVoltage,
+                                                                            motorFreeSpeedRPM,
+                                                                            angleGearRatio);
 
 
   /**
@@ -98,15 +104,6 @@ public class SwerveModuleConfiguration
     this(driveMotorID, angleMotorID, absoluteEncoderID, angleOffset, false, false, null, null, null);
   }
 
-  /**
-   * Calculate the angle kV which will be multiplied by the radians per second for the feedforward.
-   *
-   * @return angle kV for feedforward.
-   */
-  public double calculateAngleKV()
-  {
-    return optimalVoltage / (360 * (motorFreeSpeedRPM / angleGearRatio) / 60);
-  }
 
   /**
    * Create the drive feedforward for swerve modules.
@@ -116,7 +113,7 @@ public class SwerveModuleConfiguration
   public SimpleMotorFeedforward createDriveFeedforward()
   {
     double kv = optimalVoltage / maxSpeed;
-    double ka = optimalVoltage / BetterSwerveKinematics.calculateMaxAcceleration(wheelGripCoefficientOfFriction);
+    double ka = optimalVoltage / calculateMaxAcceleration(wheelGripCoefficientOfFriction);
     return new SimpleMotorFeedforward(0, kv, ka);
   }
 
@@ -152,26 +149,6 @@ public class SwerveModuleConfiguration
 
 
   /**
-   * Calculate the meters per rotation for the integrated encoder.
-   *
-   * @return Meters per rotation for the drive motor.
-   */
-  public double calculateMetersPerRotation()
-  {
-    return (Math.PI * wheelDiameter) / driveGearRatio;
-  }
-
-  /**
-   * Calculate the degrees per steering rotation for the integrated encoder.
-   *
-   * @return Degrees per steering rotation for the angle motor.
-   */
-  public double calculateDegreesPerSteeringRotation()
-  {
-    return 360 / angleGearRatio;
-  }
-
-  /**
    * Get the encoder conversion for position encoders.
    *
    * @param isDriveMotor For the drive motor.
@@ -179,7 +156,7 @@ public class SwerveModuleConfiguration
    */
   public double getPositionEncoderConversion(boolean isDriveMotor)
   {
-    return isDriveMotor ? calculateMetersPerRotation()
-                        : calculateDegreesPerSteeringRotation();
+    return isDriveMotor ? calculateMetersPerRotation(wheelDiameter, driveGearRatio)
+                        : calculateDegreesPerSteeringRotation(angleGearRatio);
   }
 }

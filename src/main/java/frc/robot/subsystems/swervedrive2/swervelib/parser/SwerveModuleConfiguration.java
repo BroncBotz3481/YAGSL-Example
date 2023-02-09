@@ -1,16 +1,16 @@
-package frc.robot.subsystems.swervedrive2.parser;
+package frc.robot.subsystems.swervedrive2.swervelib.parser;
 
-import static frc.robot.subsystems.swervedrive2.math.SwerveMath.calculateAngleKV;
-import static frc.robot.subsystems.swervedrive2.math.SwerveMath.calculateDegreesPerSteeringRotation;
-import static frc.robot.subsystems.swervedrive2.math.SwerveMath.calculateMaxAcceleration;
-import static frc.robot.subsystems.swervedrive2.math.SwerveMath.calculateMetersPerRotation;
+import static frc.robot.subsystems.swervedrive2.swervelib.math.SwerveMath.calculateAngleKV;
+import static frc.robot.subsystems.swervedrive2.swervelib.math.SwerveMath.calculateDegreesPerSteeringRotation;
+import static frc.robot.subsystems.swervedrive2.swervelib.math.SwerveMath.calculateMaxAcceleration;
+import static frc.robot.subsystems.swervedrive2.swervelib.math.SwerveMath.calculateMetersPerRotation;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
-import frc.robot.subsystems.swervedrive2.encoders.CANCoderSwerve;
-import frc.robot.subsystems.swervedrive2.encoders.SwerveAbsoluteEncoder;
-import frc.robot.subsystems.swervedrive2.motors.SparkMaxSwerve;
-import frc.robot.subsystems.swervedrive2.motors.SwerveMotor;
+import frc.robot.subsystems.swervedrive2.swervelib.encoders.CANCoderSwerve;
+import frc.robot.subsystems.swervedrive2.swervelib.encoders.SwerveAbsoluteEncoder;
+import frc.robot.subsystems.swervedrive2.swervelib.motors.SparkMaxSwerve;
+import frc.robot.subsystems.swervedrive2.swervelib.motors.SwerveMotor;
 
 public class SwerveModuleConfiguration
 {

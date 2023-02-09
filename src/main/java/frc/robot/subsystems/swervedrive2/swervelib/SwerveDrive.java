@@ -1,4 +1,4 @@
-package frc.robot.subsystems.swervedrive2;
+package frc.robot.subsystems.swervedrive2.swervelib;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -11,11 +11,11 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
-import frc.robot.subsystems.swervedrive2.imu.SwerveIMU;
-import frc.robot.subsystems.swervedrive2.math.BetterSwerveKinematics;
-import frc.robot.subsystems.swervedrive2.math.BetterSwerveModuleState;
-import frc.robot.subsystems.swervedrive2.parser.SwerveControllerConfiguration;
-import frc.robot.subsystems.swervedrive2.parser.SwerveDriveConfiguration;
+import frc.robot.subsystems.swervedrive2.swervelib.imu.SwerveIMU;
+import frc.robot.subsystems.swervedrive2.swervelib.math.BetterSwerveKinematics;
+import frc.robot.subsystems.swervedrive2.swervelib.math.BetterSwerveModuleState;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveControllerConfiguration;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveDriveConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,6 +1,6 @@
-package frc.robot.subsystems.swervedrive2.motors;
+package frc.robot.subsystems.swervedrive2.swervelib.motors;
 
-import frc.robot.subsystems.swervedrive2.parser.PIDFConfig;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.PIDFConfig;
 
 public abstract class SwerveMotor
 {

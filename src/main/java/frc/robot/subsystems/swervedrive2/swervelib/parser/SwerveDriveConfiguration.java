@@ -1,8 +1,8 @@
-package frc.robot.subsystems.swervedrive2.parser;
+package frc.robot.subsystems.swervedrive2.swervelib.parser;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import frc.robot.subsystems.swervedrive2.SwerveModule;
-import frc.robot.subsystems.swervedrive2.imu.SwerveIMU;
+import frc.robot.subsystems.swervedrive2.swervelib.SwerveModule;
+import frc.robot.subsystems.swervedrive2.swervelib.imu.SwerveIMU;
 import java.util.ArrayList;
 import java.util.List;
 

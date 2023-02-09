@@ -1,6 +1,6 @@
-package frc.robot.subsystems.swervedrive2.parser;
+package frc.robot.subsystems.swervedrive2.swervelib.parser;
 
-import static frc.robot.subsystems.swervedrive2.math.SwerveMath.calculateMaxAngularVelocity;
+import static frc.robot.subsystems.swervedrive2.swervelib.math.SwerveMath.calculateMaxAngularVelocity;
 
 public class SwerveControllerConfiguration
 {

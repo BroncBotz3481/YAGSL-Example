@@ -1,4 +1,4 @@
-package frc.robot.subsystems.swervedrive2.imu;
+package frc.robot.subsystems.swervedrive2.swervelib.imu;
 
 public abstract class SwerveIMU
 {

@@ -1,32 +1,20 @@
-package frc.robot.subsystems.swervedrive2.imu;
+package frc.robot.subsystems.swervedrive2.swervelib.imu;
 
-import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
-public class Pigeon2Swerve extends SwerveIMU
+public class PigeonSwerve extends SwerveIMU
 {
 
-  WPI_Pigeon2 imu;
-
-
-  /**
-   * Generate the SwerveIMU for pigeon.
-   *
-   * @param canid  CAN ID for the pigeon
-   * @param canbus CAN Bus name the pigeon resides on.
-   */
-  public Pigeon2Swerve(int canid, String canbus)
-  {
-    imu = new WPI_Pigeon2(canid, canbus);
-  }
+  WPI_PigeonIMU imu;
 
   /**
    * Generate the SwerveIMU for pigeon.
    *
-   * @param canid CAN ID for the pigeon
+   * @param canid CAN ID for the pigeon, does not support CANBus.
    */
-  public Pigeon2Swerve(int canid)
+  public PigeonSwerve(int canid)
   {
-    this(canid, "");
+    imu = new WPI_PigeonIMU(canid);
   }
 
   /**

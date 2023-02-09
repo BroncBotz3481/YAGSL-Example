@@ -1,4 +1,4 @@
-package frc.robot.subsystems.swervedrive2.motors;
+package frc.robot.subsystems.swervedrive2.swervelib.motors;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
@@ -6,7 +6,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import frc.robot.subsystems.swervedrive2.parser.PIDFConfig;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.PIDFConfig;
 
 public class SparkMaxSwerve extends SwerveMotor
 {

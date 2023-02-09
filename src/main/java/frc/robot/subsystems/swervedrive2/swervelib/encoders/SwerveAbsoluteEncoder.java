@@ -1,4 +1,4 @@
-package frc.robot.subsystems.swervedrive2.encoders;
+package frc.robot.subsystems.swervedrive2.swervelib.encoders;
 
 public abstract class SwerveAbsoluteEncoder
 {

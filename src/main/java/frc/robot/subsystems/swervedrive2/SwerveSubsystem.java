@@ -9,15 +9,17 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.swervedrive2.parser.SwerveControllerConfiguration;
-import frc.robot.subsystems.swervedrive2.parser.SwerveDriveConfiguration;
+import frc.robot.subsystems.swervedrive2.swervelib.SwerveController;
+import frc.robot.subsystems.swervedrive2.swervelib.SwerveDrive;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveControllerConfiguration;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveDriveConfiguration;
 
-public class SwerveBase extends SubsystemBase
+public class SwerveSubsystem extends SubsystemBase
 {
 
   private final SwerveDrive swerveDrive;
 
-  public SwerveBase(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg)
+  public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg)
   {
     swerveDrive = new SwerveDrive(driveCfg, controllerCfg);
   }

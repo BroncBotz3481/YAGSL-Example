@@ -19,17 +19,15 @@ import frc.robot.Constants.Drivebase.Mod1FR;
 import frc.robot.Constants.Drivebase.Mod2BL;
 import frc.robot.Constants.Drivebase.Mod3BR;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.swervedrive2.auto.Autos;
-import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.swervedrive2.SwerveBase;
-import frc.robot.subsystems.swervedrive2.commands.drivebase.AbsoluteDrive;
-import frc.robot.subsystems.swervedrive2.commands.drivebase.TeleopDrive;
-import frc.robot.subsystems.swervedrive2.imu.Pigeon2Swerve;
-import frc.robot.subsystems.swervedrive2.parser.PIDFConfig;
-import frc.robot.subsystems.swervedrive2.parser.SwerveControllerConfiguration;
-import frc.robot.subsystems.swervedrive2.parser.SwerveDriveConfiguration;
-import frc.robot.subsystems.swervedrive2.parser.SwerveModuleConfiguration;
+import frc.robot.commands.swervedrive2.drivebase.AbsoluteDrive;
+import frc.robot.commands.swervedrive2.drivebase.TeleopDrive;
+import frc.robot.subsystems.swervedrive2.SwerveSubsystem;
+import frc.robot.subsystems.swervedrive2.swervelib.imu.Pigeon2Swerve;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.PIDFConfig;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveControllerConfiguration;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveDriveConfiguration;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveModuleConfiguration;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -50,9 +48,9 @@ public class RobotContainer
       swerveDriveConfiguration,
       Constants.Drivebase.DrivetrainLimitations.MAX_SPEED,
       new PIDFConfig(Drivebase.HEADING_KP, Drivebase.HEADING_KI, Drivebase.HEADING_KD));
-  private final SwerveBase                    drivebase                     = new SwerveBase(swerveDriveConfiguration,
-                                                                                             swerveControllerConfiguration);
-  private final ExampleSubsystem              m_exampleSubsystem            = new ExampleSubsystem();
+  private final SwerveSubsystem               drivebase                     = new SwerveSubsystem(
+      swerveDriveConfiguration,
+      swerveControllerConfiguration);
   private final SendableChooser<CommandBase>  driveModeSelector;
   CommandJoystick rotationController = new CommandJoystick(1);
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -155,7 +153,6 @@ public class RobotContainer
   private void configureBindings()
   {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition).onTrue(new ExampleCommand(m_exampleSubsystem));
 
     driverController.button(1).onTrue((new InstantCommand(drivebase::zeroGyro)));
   }

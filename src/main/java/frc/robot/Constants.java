@@ -6,9 +6,9 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.swervedrive2.parser.PIDFConfig;
-import frc.robot.subsystems.swervedrive2.parser.SwerveModuleConfiguration;
-import frc.robot.subsystems.swervedrive2.parser.SwerveModulePhysicalCharacteristics;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.PIDFConfig;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveModuleConfiguration;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveModulePhysicalCharacteristics;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean constants. This
@@ -63,11 +63,13 @@ public final class Constants
     public static final double HEADING_KD = 0.01;
 
     // Motor and encoder inversions
-    public static final boolean CANCODER_INVERT    = false;
-    public static final boolean DRIVE_MOTOR_INVERT = false;
-    public static final boolean ANGLE_MOTOR_INVERT = false;
-    public static final boolean INVERT_GYRO        = false;
-
+    public static final boolean                             CANCODER_INVERT                 = false;
+    public static final boolean                             DRIVE_MOTOR_INVERT              = false;
+    public static final boolean                             ANGLE_MOTOR_INVERT              = false;
+    public static final boolean                             INVERT_GYRO                     = false;
+    public static final int                                 NUM_MODULES                     = 4;
+    public static final int                                 PIGEON                          = 13;
+    public static       SwerveModulePhysicalCharacteristics MODULE_PHYSICAL_CHARACTERISTICS = new SwerveModulePhysicalCharacteristics();
 
     /**
      * Module locations, in meters, as distances to the center of the robot. Positive x is torwards the robot front, and
@@ -114,6 +116,7 @@ public final class Constants
        */
       public static final double MAX_MODULE_ANGULAR_SPEED = 360 * (5676 / 12.8) / 60; // deg/s
     }
+    // degrees per rotation / gear ratio between module and motor
 
     public static class ModulePIDFGains
     {
@@ -171,11 +174,6 @@ public final class Constants
        */
       public static final double DEGREES_PER_STEERING_ROTATION = 360 / 12.8;
     }
-    // degrees per rotation / gear ratio between module and motor
-
-    public static final int                                 NUM_MODULES                     = 4;
-    public static final int                                 PIGEON                          = 13;
-    public static       SwerveModulePhysicalCharacteristics MODULE_PHYSICAL_CHARACTERISTICS = new SwerveModulePhysicalCharacteristics();
 
     // Module specific constants
     public static final class Mod0FL

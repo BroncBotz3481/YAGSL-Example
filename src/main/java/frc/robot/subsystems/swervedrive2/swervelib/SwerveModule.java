@@ -1,4 +1,4 @@
-package frc.robot.subsystems.swervedrive2;
+package frc.robot.subsystems.swervedrive2.swervelib;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -7,10 +7,10 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
-import frc.robot.subsystems.swervedrive2.encoders.SwerveAbsoluteEncoder;
-import frc.robot.subsystems.swervedrive2.math.BetterSwerveModuleState;
-import frc.robot.subsystems.swervedrive2.motors.SwerveMotor;
-import frc.robot.subsystems.swervedrive2.parser.SwerveModuleConfiguration;
+import frc.robot.subsystems.swervedrive2.swervelib.encoders.SwerveAbsoluteEncoder;
+import frc.robot.subsystems.swervedrive2.swervelib.math.BetterSwerveModuleState;
+import frc.robot.subsystems.swervedrive2.swervelib.motors.SwerveMotor;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveModuleConfiguration;
 
 public class SwerveModule
 {

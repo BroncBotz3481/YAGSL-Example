@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.swervedrive2.commands.drivebase;
+package frc.robot.commands.swervedrive2.drivebase;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -12,8 +12,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Constants.Drivebase.ModuleLocations;
-import frc.robot.subsystems.swervedrive2.SwerveBase;
-import frc.robot.subsystems.swervedrive2.SwerveController;
+import frc.robot.subsystems.swervedrive2.SwerveSubsystem;
+import frc.robot.subsystems.swervedrive2.swervelib.SwerveController;
 import java.util.function.DoubleSupplier;
 
 /**
@@ -22,8 +22,8 @@ import java.util.function.DoubleSupplier;
 public class AbsoluteDrive extends CommandBase
 {
 
-  private final SwerveBase     swerve;
-  private final DoubleSupplier vX, vY;
+  private final SwerveSubsystem swerve;
+  private final DoubleSupplier  vX, vY;
   private final DoubleSupplier headingHorizontal, headingVertical;
   private final boolean isOpenLoop;
 
@@ -47,7 +47,7 @@ public class AbsoluteDrive extends CommandBase
    *                          robot coordinate system, this is along the same axis as vX.  Should range from -1 to 1
    *                          with no deadband. Positive is away from the alliance wall.
    */
-  public AbsoluteDrive(SwerveBase swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier headingHorizontal,
+  public AbsoluteDrive(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier headingHorizontal,
                        DoubleSupplier headingVertical, boolean isOpenLoop)
   {
     this.swerve = swerve;

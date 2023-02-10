@@ -1,5 +1,6 @@
 package frc.robot.subsystems.swervedrive2.swervelib;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -315,6 +316,19 @@ public class SwerveDrive
       poses.add(robotPose.plus(new Transform2d(module.configuration.moduleLocation, module.getState().angle)));
     }
     return poses.toArray(poseArr);
+  }
+
+  /**
+   * Setup the swerve module feedforward.
+   *
+   * @param feedforward Feedforward for the drive motor on swerve modules.
+   */
+  public void replaceSwerveModuleFeedforward(SimpleMotorFeedforward feedforward)
+  {
+    for (SwerveModule swerveModule : swerveModules)
+    {
+      swerveModule.feedforward = feedforward;
+    }
   }
 
   /**

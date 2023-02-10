@@ -24,14 +24,41 @@ public class SwerveDrive
 
   //
   // Swerve base kinematics object
+  /**
+   * Swerve Kinematics object utilizing second order kinematics.
+   */
   public final  SwerveKinematics2        kinematics;
+  /**
+   * Swerve drive configuration.
+   */
   public final  SwerveDriveConfiguration swerveDriveConfiguration;
+  /**
+   * Swerve modules.
+   */
   private final SwerveModule[]           swerveModules;
+  /**
+   * Swerve odometry.
+   */
   private final SwerveDriveOdometry      odometry;
+  /**
+   * Field object.
+   */
   public        Field2d                  field = new Field2d();
+  /**
+   * Swerve controller for controlling heading of the robot.
+   */
   public        SwerveController         swerveController;
+  /**
+   * Swerve IMU device for sensing the heading of the robot.
+   */
   private       SwerveIMU                imu;
+  /**
+   * The current angle of the robot and last time odometry during simulations.
+   */
   private       double                   angle, lastTime;
+  /**
+   * Time during simulations.
+   */
   private Timer timer;
 
   /**

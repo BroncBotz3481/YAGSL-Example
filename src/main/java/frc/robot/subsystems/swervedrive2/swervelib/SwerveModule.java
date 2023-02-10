@@ -42,11 +42,11 @@ public class SwerveModule
   /**
    * Last angle set for the swerve module.
    */
-  private       double                 lastAngle;
+  public        double                 lastAngle;
   /**
    * Current state.
    */
-  private       double                 angle, omega, speed, fakePos, lastTime, dt;
+  public        double                 angle, omega, speed, fakePos, lastTime, dt;
   /**
    * Timer for simulation.
    */
@@ -168,6 +168,18 @@ public class SwerveModule
     this.angle = desiredState.angle.getDegrees();
     omega = desiredState.omegaRadPerSecond;
     speed = desiredState.speedMetersPerSecond;
+  }
+
+  /**
+   * Set the angle for the module.
+   *
+   * @param angle Angle in degrees.
+   */
+  public void setAngle(double angle)
+  {
+    lastAngle = this.angle;
+    this.angle = angle;
+    angleMotor.setReference(angle, 1 * configuration.angleKV);
   }
 
   /**

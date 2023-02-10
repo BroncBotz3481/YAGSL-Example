@@ -20,12 +20,15 @@ import java.io.File;
 public class SwerveSubsystem extends SubsystemBase
 {
 
+  /**
+   * Swerve drive object.
+   */
   private final SwerveDrive swerveDrive;
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
    *
-   * @param directory
+   * @param directory Directory of swerve drive config files.
    */
   public SwerveSubsystem(File directory)
   {
@@ -38,6 +41,12 @@ public class SwerveSubsystem extends SubsystemBase
     }
   }
 
+  /**
+   * Construct the swerve drive.
+   *
+   * @param driveCfg      SwerveDriveConfiguration for the swerve.
+   * @param controllerCfg Swerve Controller.
+   */
   public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg)
   {
     swerveDrive = new SwerveDrive(driveCfg, controllerCfg);

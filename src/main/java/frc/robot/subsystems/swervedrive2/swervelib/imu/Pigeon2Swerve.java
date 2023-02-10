@@ -1,10 +1,13 @@
 package frc.robot.subsystems.swervedrive2.swervelib.imu;
 
+import com.ctre.phoenix.sensors.Pigeon2Configuration;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
 public class Pigeon2Swerve extends SwerveIMU
 {
-
+  /**
+   * Pigeon2 IMU device.
+   */
   WPI_Pigeon2 imu;
 
 
@@ -17,6 +20,8 @@ public class Pigeon2Swerve extends SwerveIMU
   public Pigeon2Swerve(int canid, String canbus)
   {
     imu = new WPI_Pigeon2(canid, canbus);
+    Pigeon2Configuration config = new Pigeon2Configuration();
+    imu.configAllSettings(config);
   }
 
   /**
@@ -67,12 +72,5 @@ public class Pigeon2Swerve extends SwerveIMU
   public void getYawPitchRoll(double[] yprArray)
   {
     imu.getYawPitchRoll(yprArray);
-    if (inverted)
-    {
-      for (int i = 0; i < yprArray.length; i++)
-      {
-        yprArray[i] = 360 - yprArray[i];
-      }
-    }
   }
 }

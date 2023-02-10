@@ -240,7 +240,7 @@ public class SwerveDrive
     {
       double[] ypr = new double[3];
       imu.getYawPitchRoll(ypr);
-      return Rotation2d.fromDegrees(ypr[0]);
+      return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[0] : ypr[0]);
     } else
     {
       return new Rotation2d(angle);

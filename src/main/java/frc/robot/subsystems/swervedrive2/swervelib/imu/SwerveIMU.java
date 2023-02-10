@@ -4,11 +4,6 @@ public abstract class SwerveIMU
 {
 
   /**
-   * If the gyro inverted.
-   */
-  public boolean inverted = false;
-
-  /**
    * Reset IMU to factory default.
    */
   public abstract void factoryDefault();

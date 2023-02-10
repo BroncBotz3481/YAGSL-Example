@@ -55,12 +55,5 @@ public class PigeonSwerve extends SwerveIMU
   public void getYawPitchRoll(double[] yprArray)
   {
     imu.getYawPitchRoll(yprArray);
-    if (inverted)
-    {
-      for (int i = 0; i < yprArray.length; i++)
-      {
-        yprArray[i] = 360 - yprArray[i];
-      }
-    }
   }
 }

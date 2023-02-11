@@ -33,23 +33,25 @@ public class SwerveMath
    * Calculate the meters per rotation for the integrated encoder. Calculation: 4in diameter wheels * pi [circumfrence]
    * / gear ratio.
    *
-   * @param wheelDiameter  Wheel diameter in meters.
-   * @param driveGearRatio The gear ratio of the drive motor.
+   * @param wheelDiameter    Wheel diameter in meters.
+   * @param driveGearRatio   The gear ratio of the drive motor.
+   * @param pulsePerRotation The number of encoder pulses per rotation. 1 if using an integrated encoder.
    * @return Meters per rotation for the drive motor.
    */
-  public static double calculateMetersPerRotation(double wheelDiameter, double driveGearRatio)
+  public static double calculateMetersPerRotation(double wheelDiameter, double driveGearRatio, double pulsePerRotation)
   {
-    return (Math.PI * wheelDiameter) / driveGearRatio;
+    return (Math.PI * wheelDiameter) / (driveGearRatio * pulsePerRotation);
   }
 
   /**
    * Calculate the degrees per steering rotation for the integrated encoder. Encoder conversion values.  Drive converts
    * motor rotations to linear wheel distance and steering converts motor rotations to module azimuth.
    *
-   * @param angleGearRatio The gear ratio of the steering motor.
+   * @param angleGearRatio   The gear ratio of the steering motor.
+   * @param pulsePerRotation The number of pulses in a complete rotation for the encoder, 1 if integrated.
    * @return Degrees per steering rotation for the angle motor.
    */
-  public static double calculateDegreesPerSteeringRotation(double angleGearRatio)
+  public static double calculateDegreesPerSteeringRotation(double angleGearRatio, double pulsePerRotation)
   {
     return 360 / angleGearRatio;
   }

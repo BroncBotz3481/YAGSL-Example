@@ -148,7 +148,7 @@ public class SwerveSubsystem extends SubsystemBase
    *
    * @return The yaw angle
    */
-  public Rotation2d getYaw()
+  public Rotation2d getHeading()
   {
     return swerveDrive.getYaw();
   }

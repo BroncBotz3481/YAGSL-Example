@@ -72,7 +72,7 @@ public class AbsoluteDrive extends CommandBase
     ChassisSpeeds desiredSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(),
                                                          headingHorizontal.getAsDouble(),
                                                          headingVertical.getAsDouble(),
-                                                         swerve.getYaw().getRadians());
+                                                         swerve.getHeading().getRadians());
 
     // Limit velocity to prevent tippy
     Translation2d translation = SwerveController.getTranslation2d(desiredSpeeds);

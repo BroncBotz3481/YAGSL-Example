@@ -2,6 +2,7 @@ package frc.robot.subsystems.swervedrive2.swervelib.parser.json;
 
 import frc.robot.subsystems.swervedrive2.swervelib.encoders.CANCoderSwerve;
 import frc.robot.subsystems.swervedrive2.swervelib.encoders.SwerveAbsoluteEncoder;
+import frc.robot.subsystems.swervedrive2.swervelib.imu.NavXSwerve;
 import frc.robot.subsystems.swervedrive2.swervelib.imu.Pigeon2Swerve;
 import frc.robot.subsystems.swervedrive2.swervelib.imu.PigeonSwerve;
 import frc.robot.subsystems.swervedrive2.swervelib.imu.SwerveIMU;
@@ -54,6 +55,8 @@ public class DeviceJson
   {
     switch (type)
     {
+      case "navx":
+        return new NavXSwerve();
       case "pigeon":
         return new PigeonSwerve(id);
       case "pigeon2":

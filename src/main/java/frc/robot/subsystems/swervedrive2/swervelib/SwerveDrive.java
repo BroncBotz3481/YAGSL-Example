@@ -259,7 +259,7 @@ public class SwerveDrive
   /**
    * Gets the current yaw angle of the robot, as reported by the imu.  CCW positive, not wrapped.
    *
-   * @return The yaw angle
+   * @return The yaw as a {@link Rotation2d} angle
    */
   public Rotation2d getYaw()
   {
@@ -269,6 +269,25 @@ public class SwerveDrive
       double[] ypr = new double[3];
       imu.getYawPitchRoll(ypr);
       return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[0] : ypr[0]);
+    } else
+    {
+      return new Rotation2d(angle);
+    }
+  }
+
+  /**
+   * Gets the current yaw angle of the robot, as reported by the imu.  CCW positive, not wrapped.
+   *
+   * @return The heading as a {@link Rotation2d} angle
+   */
+  public Rotation2d getPitch()
+  {
+    // Read the imu if the robot is real or the accumulator if the robot is simulated.
+    if (Robot.isReal())
+    {
+      double[] ypr = new double[3];
+      imu.getYawPitchRoll(ypr);
+      return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[1] : ypr[1]);
     } else
     {
       return new Rotation2d(angle);

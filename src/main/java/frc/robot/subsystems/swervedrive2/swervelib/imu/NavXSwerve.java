@@ -76,7 +76,7 @@ public class NavXSwerve extends SwerveIMU
   @Override
   public void getYawPitchRoll(double[] yprArray)
   {
-    yprArray[0] = gyro.getYaw();
+    yprArray[0] = gyro.getYaw() - yawOffset;
     yprArray[1] = gyro.getPitch();
     yprArray[2] = gyro.getRoll();
   }

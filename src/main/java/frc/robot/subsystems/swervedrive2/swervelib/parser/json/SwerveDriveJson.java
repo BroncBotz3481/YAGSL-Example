@@ -22,7 +22,7 @@ public class SwerveDriveJson
   /**
    * Invert the IMU of the robot.
    */
-  public boolean invertedIMU;
+  public boolean    invertedIMU;
   /**
    * Module JSONs in order clockwise order starting from front left.
    */

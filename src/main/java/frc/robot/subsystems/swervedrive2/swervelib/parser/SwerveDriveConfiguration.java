@@ -21,7 +21,7 @@ public class SwerveDriveConfiguration
   /**
    * Invert the imu measurements.
    */
-  public boolean invertedIMU = false;
+  public boolean         invertedIMU = false;
   /**
    * Max speed in meters per second.
    */
@@ -43,7 +43,8 @@ public class SwerveDriveConfiguration
    * @param maxSpeed      Max speed of the robot in meters per second.
    * @param invertedIMU   Invert the IMU.
    */
-  public SwerveDriveConfiguration(SwerveModuleConfiguration[] moduleConfigs, SwerveIMU swerveIMU, double maxSpeed, boolean invertedIMU)
+  public SwerveDriveConfiguration(SwerveModuleConfiguration[] moduleConfigs, SwerveIMU swerveIMU, double maxSpeed,
+                                  boolean invertedIMU)
   {
     this.moduleCount = moduleConfigs.length;
     this.imu = swerveIMU;

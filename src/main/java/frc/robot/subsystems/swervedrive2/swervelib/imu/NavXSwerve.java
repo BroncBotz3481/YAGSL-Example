@@ -42,7 +42,8 @@ public class NavXSwerve extends SwerveIMU
   @Override
   public void factoryDefault()
   {
-    gyro.reset();
+    // gyro.reset(); // Reported to be slow
+    yawOffset = gyro.getYaw();
   }
 
   /**
@@ -61,10 +62,10 @@ public class NavXSwerve extends SwerveIMU
   @Override
   public void setYaw(double yaw)
   {
-    gyro.reset();
+    // gyro.reset(); // Reported to be slow using the offset.
     if (yaw != 0)
     {
-      yawOffset = yaw;
+      yawOffset = yaw + gyro.getYaw();
     }
   }
 

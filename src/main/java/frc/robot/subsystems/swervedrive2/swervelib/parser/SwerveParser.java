@@ -131,7 +131,8 @@ public class SwerveParser
     }
     SwerveDriveConfiguration swerveDriveConfiguration = new SwerveDriveConfiguration(moduleConfigurations,
                                                                                      swerveDriveJson.imu.createIMU(),
-                                                                                     maxSpeedMPS, swerveDriveJson.invertedIMU);
+                                                                                     maxSpeedMPS,
+                                                                                     swerveDriveJson.invertedIMU);
 
     return new SwerveDrive(swerveDriveConfiguration,
                            controllerPropertiesJson.createControllerConfiguration(swerveDriveConfiguration));

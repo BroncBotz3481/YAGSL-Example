@@ -5,6 +5,7 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
 public class Pigeon2Swerve extends SwerveIMU
 {
+
   /**
    * Pigeon2 IMU device.
    */

@@ -44,6 +44,20 @@ public class SwerveMath
   }
 
   /**
+   * Algebraically apply a deadband using a piece wise function.
+   *
+   * @param value    value to apply deadband to.
+   * @param scaled   Use algebra to determine deadband by starting the value at 0 past deadband.
+   * @param deadband The deadbnad to apply.
+   * @return Value with deadband applied.
+   */
+  public static double applyDeadband(double value, boolean scaled, double deadband)
+  {
+    value = Math.abs(value) > deadband ? value : 0;
+    return scaled ? ((1 / (1 - deadband)) * (Math.abs(value) - deadband)) * Math.signum(value) : value;
+  }
+
+  /**
    * Calculate the degrees per steering rotation for the integrated encoder. Encoder conversion values.  Drive converts
    * motor rotations to linear wheel distance and steering converts motor rotations to module azimuth.
    *

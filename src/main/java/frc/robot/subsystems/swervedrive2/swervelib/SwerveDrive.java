@@ -1,12 +1,13 @@
 package frc.robot.subsystems.swervedrive2.swervelib;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -40,7 +41,7 @@ public class SwerveDrive
   /**
    * Swerve odometry.
    */
-  private final SwerveDriveOdometry      odometry;
+  public final  SwerveDrivePoseEstimator swerveDrivePoseEstimator;
   /**
    * Field object.
    */
@@ -90,7 +91,15 @@ public class SwerveDrive
 
     this.swerveModules = config.modules;
 
-    odometry = new SwerveDriveOdometry(kinematics, getYaw(), getModulePositions());
+//    odometry = new SwerveDriveOdometry(kinematics, getYaw(), getModulePositions());
+    swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(
+        kinematics,
+        getYaw(),
+        getModulePositions(),
+        new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0)),
+        VecBuilder.fill(0.1, 0.1, 0.1), // x,y,heading in radians; state std dev, higher=less weight
+        VecBuilder.fill(0.9, 1.0, 0.9)); // x,y,heading in radians; Vision measurement std dev, higher=less weight
+
     zeroGyro();
   }
 
@@ -170,7 +179,7 @@ public class SwerveDrive
    */
   public Pose2d getPose()
   {
-    return odometry.getPoseMeters();
+    return swerveDrivePoseEstimator.getEstimatedPosition();
   }
 
   /**
@@ -206,7 +215,7 @@ public class SwerveDrive
    */
   public void resetOdometry(Pose2d pose)
   {
-    odometry.resetPosition(getYaw(), getModulePositions(), pose);
+    swerveDrivePoseEstimator.resetPosition(getYaw(), getModulePositions(), pose);
   }
 
   /**
@@ -356,17 +365,17 @@ public class SwerveDrive
   public void updateOdometry()
   {
     // Update odometry
-    odometry.update(getYaw(), getModulePositions());
+    swerveDrivePoseEstimator.update(getYaw(), getModulePositions());
 
     // Update angle accumulator if the robot is simulated
     if (!Robot.isReal())
     {
       angle += kinematics.toChassisSpeeds(getStates()).omegaRadiansPerSecond * (timer.get() - lastTime);
       lastTime = timer.get();
-      field.getObject("XModules").setPoses(getSwerveModulePoses(odometry.getPoseMeters()));
+      field.getObject("XModules").setPoses(getSwerveModulePoses(swerveDrivePoseEstimator.getEstimatedPosition()));
     }
 
-    field.setRobotPose(odometry.getPoseMeters());
+    field.setRobotPose(swerveDrivePoseEstimator.getEstimatedPosition());
     SmartDashboard.putData("Field", field);
 
     double[] moduleStates = new double[8];

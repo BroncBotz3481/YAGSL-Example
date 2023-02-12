@@ -101,6 +101,7 @@ public class SwerveDrive
         VecBuilder.fill(0.9, 1.0, 0.9)); // x,y,heading in radians; Vision measurement std dev, higher=less weight
 
     zeroGyro();
+    SmartDashboard.putData("Field", field);
   }
 
   /**
@@ -376,7 +377,6 @@ public class SwerveDrive
     }
 
     field.setRobotPose(swerveDrivePoseEstimator.getEstimatedPosition());
-    SmartDashboard.putData("Field", field);
 
     double[] moduleStates = new double[8];
     for (SwerveModule module : swerveModules)

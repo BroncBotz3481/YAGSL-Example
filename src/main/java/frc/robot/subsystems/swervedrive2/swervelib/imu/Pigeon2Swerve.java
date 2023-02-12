@@ -2,6 +2,7 @@ package frc.robot.subsystems.swervedrive2.swervelib.imu;
 
 import com.ctre.phoenix.sensors.Pigeon2Configuration;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Pigeon2Swerve extends SwerveIMU
 {
@@ -23,6 +24,7 @@ public class Pigeon2Swerve extends SwerveIMU
     imu = new WPI_Pigeon2(canid, canbus);
     Pigeon2Configuration config = new Pigeon2Configuration();
     imu.configAllSettings(config);
+    SmartDashboard.putData(imu);
   }
 
   /**

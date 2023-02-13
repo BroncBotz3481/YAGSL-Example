@@ -9,13 +9,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.swervedrive2.swervelib.SwerveController;
-import frc.robot.subsystems.swervedrive2.swervelib.SwerveDrive;
-import frc.robot.subsystems.swervedrive2.swervelib.math.SwerveKinematics2;
-import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveControllerConfiguration;
-import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveDriveConfiguration;
-import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveParser;
 import java.io.File;
+import swervelib.SwerveController;
+import swervelib.SwerveDrive;
+import swervelib.math.SwerveKinematics2;
+import swervelib.parser.SwerveControllerConfiguration;
+import swervelib.parser.SwerveDriveConfiguration;
+import swervelib.parser.SwerveParser;
 
 public class SwerveSubsystem extends SubsystemBase
 {

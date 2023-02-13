@@ -16,11 +16,11 @@ programming.
 ```java
 import java.io.File;
 import edu.wpi.first.wpilibj.Filesystem;
-import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveParser;
-import frc.robot.subsystems.swervedrive2.swervelib.SwerveDrive;
+import swervelib.parser.SwerveParser;
+import swervelib.SwerveDrive;
 
 File swerveJsonDirectory=new File(Filesystem.getDeployDirectory(),"swerve");
-    SwerveDrive swerveDrive=new SwerveParser(swerveJsonDirectory).createSwerveDrive();
+        SwerveDrive swerveDrive=new SwerveParser(swerveJsonDirectory).createSwerveDrive();
 ```
 
 This way is fast and easy, no more large unmaintainable and daunting constants file to worry about!

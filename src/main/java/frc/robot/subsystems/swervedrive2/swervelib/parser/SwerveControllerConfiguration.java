@@ -2,6 +2,10 @@ package frc.robot.subsystems.swervedrive2.swervelib.parser;
 
 import static frc.robot.subsystems.swervedrive2.swervelib.math.SwerveMath.calculateMaxAngularVelocity;
 
+/**
+ * Swerve Controller configuration class which is used to configure
+ * {@link frc.robot.subsystems.swervedrive2.swervelib.SwerveController}.
+ */
 public class SwerveControllerConfiguration
 {
 

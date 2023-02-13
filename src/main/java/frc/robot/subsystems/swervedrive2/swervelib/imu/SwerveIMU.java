@@ -1,5 +1,8 @@
 package frc.robot.subsystems.swervedrive2.swervelib.imu;
 
+/**
+ * Swerve IMU abstraction to define a standard interface with a swerve drive.
+ */
 public abstract class SwerveIMU
 {
 

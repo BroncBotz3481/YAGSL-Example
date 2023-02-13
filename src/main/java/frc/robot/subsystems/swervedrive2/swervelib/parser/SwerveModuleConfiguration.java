@@ -10,6 +10,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.subsystems.swervedrive2.swervelib.encoders.SwerveAbsoluteEncoder;
 import frc.robot.subsystems.swervedrive2.swervelib.motors.SwerveMotor;
 
+/**
+ * Swerve Module configuration class which is used to configure
+ * {@link frc.robot.subsystems.swervedrive2.swervelib.SwerveModule}.
+ */
 public class SwerveModuleConfiguration
 {
 

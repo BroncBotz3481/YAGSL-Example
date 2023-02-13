@@ -12,6 +12,9 @@ import frc.robot.subsystems.swervedrive2.swervelib.math.SwerveModuleState2;
 import frc.robot.subsystems.swervedrive2.swervelib.motors.SwerveMotor;
 import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveModuleConfiguration;
 
+/**
+ * The Swerve Module class which represents and controls Swerve Modules for the swerve drive.
+ */
 public class SwerveModule
 {
 

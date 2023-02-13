@@ -3,6 +3,9 @@ package frc.robot.subsystems.swervedrive2.swervelib.math;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
+/**
+ * Second order kinematics swerve module state.
+ */
 public class SwerveModuleState2 extends SwerveModuleState
 {
 

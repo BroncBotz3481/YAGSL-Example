@@ -11,6 +11,9 @@ import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveDriveConfigurati
 import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveModuleConfiguration;
 import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveParser;
 
+/**
+ * Mathematical functions which pertain to swerve drive.
+ */
 public class SwerveMath
 {
 

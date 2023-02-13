@@ -1,5 +1,8 @@
 package frc.robot.subsystems.swervedrive2.swervelib.encoders;
 
+/**
+ * Swerve abstraction class to define a standard interface with absolute encoders for swerve modules..
+ */
 public abstract class SwerveAbsoluteEncoder
 {
 

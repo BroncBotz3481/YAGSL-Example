@@ -12,7 +12,7 @@ import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.parser.PIDFConfig;
 
 /**
- * {@link com.ctre.phoenix.motorcontrol.can.TalonFX} Swerve Motor.
+ * {@link com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX} Swerve Motor.
  */
 public class TalonSRXSwerve extends SwerveMotor
 {
@@ -22,7 +22,7 @@ public class TalonSRXSwerve extends SwerveMotor
    */
   private final boolean factoryDefaultOccurred   = false;
   /**
-   * TalonFX motor controller.
+   * TalonSRX motor controller.
    */
   WPI_TalonSRX motor;
   /**
@@ -35,7 +35,7 @@ public class TalonSRXSwerve extends SwerveMotor
   private       double  positionConversionFactor = 1;
 
   /**
-   * Constructor for TalonFX swerve motor.
+   * Constructor for TalonSRX swerve motor.
    *
    * @param motor        Motor to use.
    * @param isDriveMotor Whether this motor is a drive motor.
@@ -51,9 +51,9 @@ public class TalonSRXSwerve extends SwerveMotor
   }
 
   /**
-   * Construct the TalonFX swerve motor given the ID.
+   * Construct the TalonSRX swerve motor given the ID.
    *
-   * @param id           ID of the TalonFX on the canbus.
+   * @param id           ID of the TalonSRX on the canbus.
    * @param isDriveMotor Whether the motor is a drive or steering motor.
    */
   public TalonSRXSwerve(int id, boolean isDriveMotor)

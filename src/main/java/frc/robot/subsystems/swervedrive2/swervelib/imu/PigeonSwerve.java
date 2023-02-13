@@ -3,6 +3,9 @@ package frc.robot.subsystems.swervedrive2.swervelib.imu;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+/**
+ * SwerveIMU interface for the Pigeon.
+ */
 public class PigeonSwerve extends SwerveIMU
 {
 

@@ -16,39 +16,39 @@ public class SwerveModuleConfiguration
   /**
    * Angle offset in degrees for the Swerve Module.
    */
-  public final double        angleOffset;
+  public final double                              angleOffset;
   /**
    * Whether the absolute encoder is inverted.
    */
-  public final boolean       absoluteEncoderInverted;
+  public final boolean                             absoluteEncoderInverted;
   /**
    * State of inversion of the drive motor.
    */
-  public final boolean       driveMotorInverted;
+  public final boolean                             driveMotorInverted;
   /**
    * State of inversion of the angle motor.
    */
-  public final boolean       angleMotorInverted;
+  public final boolean                             angleMotorInverted;
   /**
    * Maximum robot speed in meters per second.
    */
-  public final double        maxSpeed;
+  public final double                              maxSpeed;
   /**
    * PIDF configuration options for the angle motor closed-loop PID controller.
    */
-  public       PIDFConfig    anglePIDF;
+  public       PIDFConfig                          anglePIDF;
   /**
    * PIDF configuration options for the drive motor closed-loop PID controller.
    */
-  public       PIDFConfig    velocityPIDF;
+  public       PIDFConfig                          velocityPIDF;
   /**
    * Angle volt-meter-per-second.
    */
-  public       double        angleKV;
+  public       double                              angleKV;
   /**
    * Swerve module location relative to the robot.
    */
-  public       Translation2d moduleLocation;
+  public       Translation2d                       moduleLocation;
   /**
    * Physical characteristics of the swerve module.
    */

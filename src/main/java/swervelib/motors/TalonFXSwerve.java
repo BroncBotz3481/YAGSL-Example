@@ -8,6 +8,8 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import swervelib.encoders.SwerveAbsoluteEncoder;
+import swervelib.motors.TalonSRXSwerve.CTRE_remoteSensor;
+import swervelib.motors.TalonSRXSwerve.CTRE_slotIdx;
 import swervelib.parser.PIDFConfig;
 
 /**
@@ -307,27 +309,4 @@ public class TalonFXSwerve extends SwerveMotor
     return absoluteEncoder;
   }
 
-  /**
-   * The Talon SRX Slot profile used to configure the motor to use for the PID.
-   */
-  enum CTRE_slotIdx
-  {
-    Distance, Turning, Velocity, MotionProfile
-  }
-
-  /**
-   * The Talon PID to use onboard.
-   */
-  enum CTRE_pidIdx
-  {
-    PRIMARY_PID, AUXILIARY_PID, THIRD_PID, FOURTH_PID
-  }
-
-  /**
-   * The remote sensor.
-   */
-  enum CTRE_remoteSensor
-  {
-    REMOTE_SENSOR_0, REMOTE_SENSOR_1
-  }
 }

@@ -6,7 +6,7 @@ import frc.robot.subsystems.swervedrive2.swervelib.motors.SwerveMotor;
 import frc.robot.subsystems.swervedrive2.swervelib.parser.PIDFConfig;
 import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveModuleConfiguration;
 import frc.robot.subsystems.swervedrive2.swervelib.parser.SwerveModulePhysicalCharacteristics;
-import frc.robot.subsystems.swervedrive2.swervelib.parser.json.modules.InvertedMotorJson;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.json.modules.BoolMotorJson;
 import frc.robot.subsystems.swervedrive2.swervelib.parser.json.modules.LocationJson;
 
 /**
@@ -18,27 +18,31 @@ public class ModuleJson
   /**
    * Drive motor device configuration.
    */
-  public DeviceJson        drive;
+  public DeviceJson    drive;
   /**
    * Angle motor device configuration.
    */
-  public DeviceJson        angle;
+  public DeviceJson    angle;
   /**
    * Absolute encoder device configuration.
    */
-  public DeviceJson        encoder;
+  public DeviceJson    encoder;
   /**
    * Defines which motors are inverted.
    */
-  public InvertedMotorJson inverted;
+  public BoolMotorJson inverted;
   /**
    * Absolute encoder offset from 0 in degrees.
    */
-  public double            absoluteEncoderOffset;
+  public double        absoluteEncoderOffset;
+  /**
+   * Absolute encoder inversion state.
+   */
+  public boolean       absoluteEncoderInverted = false;
   /**
    * The location of the swerve module from the center of the robot in inches.
    */
-  public LocationJson      location;
+  public LocationJson  location;
 
   /**
    * Create the swerve module configuration based off of parsed data.
@@ -66,6 +70,7 @@ public class ModuleJson
     return new SwerveModuleConfiguration(drive.createMotor(true), angleMotor, absEncoder,
                                          absoluteEncoderOffset, Units.inchesToMeters(location.x),
                                          Units.inchesToMeters(location.y), anglePIDF, velocityPIDF, maxSpeed,
-                                         physicalCharacteristics);
+                                         physicalCharacteristics, absoluteEncoderInverted, inverted.drive,
+                                         inverted.angle);
   }
 }

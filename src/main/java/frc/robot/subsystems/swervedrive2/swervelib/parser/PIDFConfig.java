@@ -1,6 +1,7 @@
 package frc.robot.subsystems.swervedrive2.swervelib.parser;
 
 import edu.wpi.first.math.controller.PIDController;
+import frc.robot.subsystems.swervedrive2.swervelib.parser.deserializer.PIDFRange;
 
 /**
  * Hold the PIDF and Integral Zone values for a PID.
@@ -9,9 +10,30 @@ public class PIDFConfig
 {
 
   /**
-   * PIDF Values and integral zone.
+   * Proportional Gain for PID.
    */
-  public double p, i, d, f, iz;
+  public double p;
+  /**
+   * Integral Gain for PID.
+   */
+  public double i;
+  /**
+   * Derivative Gain for PID.
+   */
+  public double d;
+  /**
+   * Feedforward value for PID.
+   */
+  public double f;
+  /**
+   * Integral zone of the PID.
+   */
+  public double iz;
+
+  /**
+   * The PIDF output range.
+   */
+  public PIDFRange output = new PIDFRange();
 
   /**
    * Used when parsing PIDF values from JSON.
@@ -84,3 +106,4 @@ public class PIDFConfig
     return new PIDController(p, i, d);
   }
 }
+

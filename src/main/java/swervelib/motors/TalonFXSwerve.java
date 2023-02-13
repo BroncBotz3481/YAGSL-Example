@@ -23,11 +23,15 @@ public class TalonFXSwerve extends SwerveMotor
   /**
    * Factory default already occurred.
    */
-  private final boolean factoryDefaultOccurred = false;
+  private final boolean factoryDefaultOccurred   = false;
   /**
    * Whether the absolute encoder is integrated.
    */
-  private       boolean absoluteEncoder        = false;
+  private       boolean absoluteEncoder          = false;
+  /**
+   * The position conversion factor.
+   */
+  private       double  positionConversionFactor = 1;
 
   /**
    * Constructor for TalonFX swerve motor.
@@ -42,7 +46,6 @@ public class TalonFXSwerve extends SwerveMotor
 
     factoryDefaults();
     clearStickyFaults();
-
   }
 
   /**
@@ -116,6 +119,7 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public void configureIntegratedEncoder(double positionConversionFactor)
   {
+    this.positionConversionFactor = positionConversionFactor;
     motor.configSelectedFeedbackCoefficient(positionConversionFactor);
   }
 
@@ -213,7 +217,8 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public double getVelocity()
   {
-    return isDriveMotor ? motor.getSelectedSensorVelocity() * 100 : motor.getSelectedSensorVelocity();
+    return (isDriveMotor ? motor.getSelectedSensorVelocity() * 100 : motor.getSelectedSensorVelocity()) *
+           (positionConversionFactor / 60);
   }
 
   /**
@@ -224,7 +229,7 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public double getPosition()
   {
-    return motor.getSelectedSensorPosition();
+    return motor.getSelectedSensorPosition() * positionConversionFactor;
   }
 
   /**

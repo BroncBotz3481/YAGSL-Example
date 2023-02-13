@@ -145,6 +145,7 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public void configurePIDWrapping(double minInput, double maxInput)
   {
+    motor.configFeedbackNotContinuous(true, 100);
     // Do nothing
   }
 

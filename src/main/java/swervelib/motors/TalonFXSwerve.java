@@ -200,7 +200,8 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public void setReference(double setpoint, double feedforward)
   {
-    motor.set(isDriveMotor ? ControlMode.Velocity : ControlMode.Position, setpoint, DemandType.ArbitraryFeedForward,
+    motor.set(isDriveMotor ? ControlMode.Velocity : ControlMode.Position, isDriveMotor ? setpoint * .1 : setpoint,
+              DemandType.ArbitraryFeedForward,
               feedforward);
   }
 

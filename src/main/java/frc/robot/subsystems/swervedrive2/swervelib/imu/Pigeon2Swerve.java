@@ -79,4 +79,15 @@ public class Pigeon2Swerve extends SwerveIMU
   {
     imu.getYawPitchRoll(yprArray);
   }
+
+  /**
+   * Get the instantiated IMU object.
+   *
+   * @return IMU object.
+   */
+  @Override
+  public Object getIMU()
+  {
+    return imu;
+  }
 }

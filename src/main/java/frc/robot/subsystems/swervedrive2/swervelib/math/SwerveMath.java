@@ -67,7 +67,7 @@ public class SwerveMath
    */
   public static double calculateDegreesPerSteeringRotation(double angleGearRatio, double pulsePerRotation)
   {
-    return 360 / angleGearRatio;
+    return 360 / (angleGearRatio * pulsePerRotation);
   }
 
   /**

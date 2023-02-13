@@ -35,13 +35,13 @@ public class SwerveDrive
    */
   public final  SwerveDriveConfiguration swerveDriveConfiguration;
   /**
-   * Swerve modules.
-   */
-  private final SwerveModule[]           swerveModules;
-  /**
    * Swerve odometry.
    */
   public final  SwerveDrivePoseEstimator swerveDrivePoseEstimator;
+  /**
+   * Swerve modules.
+   */
+  private final SwerveModule[]           swerveModules;
   /**
    * Field object.
    */

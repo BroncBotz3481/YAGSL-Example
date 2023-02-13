@@ -26,4 +26,11 @@ public abstract class SwerveIMU
    * @param yprArray Array which will be filled with {yaw, pitch, roll} in degrees.
    */
   public abstract void getYawPitchRoll(double[] yprArray);
+
+  /**
+   * Get the instantiated IMU object.
+   *
+   * @return IMU object.
+   */
+  public abstract Object getIMU();
 }

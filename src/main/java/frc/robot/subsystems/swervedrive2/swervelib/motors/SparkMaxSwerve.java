@@ -1,5 +1,6 @@
 package frc.robot.subsystems.swervedrive2.swervelib.motors;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -7,6 +8,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import frc.robot.subsystems.swervedrive2.swervelib.encoders.SwerveAbsoluteEncoder;
 import frc.robot.subsystems.swervedrive2.swervelib.parser.PIDFConfig;
 
 public class SparkMaxSwerve extends SwerveMotor
@@ -21,6 +23,10 @@ public class SparkMaxSwerve extends SwerveMotor
    */
   public  RelativeEncoder       encoder;
   /**
+   * Absolute encoder attached to the SparkMax (if exists)
+   */
+  public  AbsoluteEncoder       absoluteEncoder;
+  /**
    * Closed-loop PID controller.
    */
   public  SparkMaxPIDController pid;
@@ -29,16 +35,17 @@ public class SparkMaxSwerve extends SwerveMotor
    */
   private boolean               factoryDefaultOccurred = false;
 
+
   /**
    * Initialize the swerve motor.
    *
-   * @param id           CAN ID of the SparkMax
+   * @param motor        The SwerveMotor as a SparkMax object.
    * @param isDriveMotor Is the motor being initialized a drive motor?
    */
-  public SparkMaxSwerve(int id, boolean isDriveMotor)
+  public SparkMaxSwerve(CANSparkMax motor, boolean isDriveMotor)
   {
+    this.motor = motor;
     this.isDriveMotor = isDriveMotor;
-    motor = new CANSparkMax(id, MotorType.kBrushless);
     factoryDefaults();
     clearStickyFaults();
 
@@ -46,10 +53,18 @@ public class SparkMaxSwerve extends SwerveMotor
     pid = motor.getPIDController();
     pid.setFeedbackDevice(encoder); // Configure feedback of the PID controller as the integrated encoder.
 
-    // Taken from https://github.com/frc3512/SwerveBot-2022/blob/9d31afd05df6c630d5acb4ec2cf5d734c9093bf8/src/main/java/frc/lib/util/CANSparkMaxUtil.java#L67
-    configureCANStatusFrames(10, 20, 20, 500, 500);
-
     motor.setCANTimeout(0); // Spin off configurations in a different thread.
+  }
+
+  /**
+   * Initialize the {@link SwerveMotor} as a {@link CANSparkMax} connected to a Brushless Motor.
+   *
+   * @param id           CAN ID of the SparkMax.
+   * @param isDriveMotor Is the motor being initialized a drive motor?
+   */
+  public SparkMaxSwerve(int id, boolean isDriveMotor)
+  {
+    this(new CANSparkMax(id, MotorType.kBrushless), isDriveMotor);
   }
 
   /**
@@ -88,6 +103,28 @@ public class SparkMaxSwerve extends SwerveMotor
   }
 
   /**
+   * Get the motor object from the module.
+   *
+   * @return Motor object.
+   */
+  @Override
+  public Object getMotor()
+  {
+    return motor;
+  }
+
+  /**
+   * Queries whether the absolute encoder is directly attached to the motor controller.
+   *
+   * @return connected absolute encoder state.
+   */
+  @Override
+  public boolean isAttachedAbsoluteEncoder()
+  {
+    return absoluteEncoder != null;
+  }
+
+  /**
    * Configure the factory defaults.
    */
   @Override
@@ -110,6 +147,23 @@ public class SparkMaxSwerve extends SwerveMotor
   }
 
   /**
+   * Set the absolute encoder to be a compatible absolute encoder.
+   *
+   * @param encoder The encoder to use.
+   * @return The {@link SwerveMotor} for easy instantiation.
+   */
+  @Override
+  public SwerveMotor setAbsoluteEncoder(SwerveAbsoluteEncoder encoder)
+  {
+    if (encoder.getAbsoluteEncoder() instanceof AbsoluteEncoder)
+    {
+      absoluteEncoder = (AbsoluteEncoder) encoder.getAbsoluteEncoder();
+      pid.setFeedbackDevice(absoluteEncoder);
+    }
+    return this;
+  }
+
+  /**
    * Configure the integrated encoder for the swerve module. Sets the conversion factors for position and velocity.
    *
    * @param positionConversionFactor The conversion factor to apply.
@@ -117,8 +171,18 @@ public class SparkMaxSwerve extends SwerveMotor
   @Override
   public void configureIntegratedEncoder(double positionConversionFactor)
   {
-    encoder.setPositionConversionFactor(positionConversionFactor);
-    encoder.setVelocityConversionFactor(positionConversionFactor / 60);
+    if (absoluteEncoder == null)
+    {
+      encoder.setPositionConversionFactor(positionConversionFactor);
+      encoder.setVelocityConversionFactor(positionConversionFactor / 60);
+
+      // Taken from https://github.com/frc3512/SwerveBot-2022/blob/9d31afd05df6c630d5acb4ec2cf5d734c9093bf8/src/main/java/frc/lib/util/CANSparkMaxUtil.java#L67
+      configureCANStatusFrames(10, 20, 20, 500, 500);
+    } else
+    {
+      absoluteEncoder.setPositionConversionFactor(positionConversionFactor);
+      absoluteEncoder.setVelocityConversionFactor(positionConversionFactor / 60);
+    }
   }
 
   /**
@@ -234,7 +298,7 @@ public class SparkMaxSwerve extends SwerveMotor
   @Override
   public double getVelocity()
   {
-    return encoder.getVelocity();
+    return absoluteEncoder == null ? encoder.getVelocity() : absoluteEncoder.getVelocity();
   }
 
   /**
@@ -245,7 +309,7 @@ public class SparkMaxSwerve extends SwerveMotor
   @Override
   public double getPosition()
   {
-    return encoder.getPosition();
+    return absoluteEncoder == null ? encoder.getPosition() : absoluteEncoder.getPosition();
   }
 
   /**
@@ -256,7 +320,10 @@ public class SparkMaxSwerve extends SwerveMotor
   @Override
   public void setPosition(double position)
   {
-    encoder.setPosition(position);
+    if (absoluteEncoder == null)
+    {
+      encoder.setPosition(position);
+    }
   }
 
   /**

@@ -26,4 +26,11 @@ public abstract class SwerveAbsoluteEncoder
    * @return Absolute position in degrees from [0, 360).
    */
   public abstract double getAbsolutePosition();
+
+  /**
+   * Get the instantiated absolute encoder Object.
+   *
+   * @return Absolute encoder object.
+   */
+  public abstract Object getAbsoluteEncoder();
 }

@@ -160,7 +160,8 @@ public class SwerveModuleConfiguration
     return isDriveMotor ? calculateMetersPerRotation(physicalCharacteristics.wheelDiameter,
                                                      physicalCharacteristics.driveGearRatio,
                                                      physicalCharacteristics.driveEncoderPulsePerRotation)
-                        : calculateDegreesPerSteeringRotation(physicalCharacteristics.angleGearRatio,
-                                                              physicalCharacteristics.angleEncoderPulsePerRotation);
+                        : calculateDegreesPerSteeringRotation(
+                            angleMotor.isAttachedAbsoluteEncoder() ? 1 : physicalCharacteristics.angleGearRatio,
+                            physicalCharacteristics.angleEncoderPulsePerRotation);
   }
 }

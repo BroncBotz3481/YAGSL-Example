@@ -9,6 +9,7 @@ import swervelib.imu.PigeonSwerve;
 import swervelib.imu.SwerveIMU;
 import swervelib.motors.SparkMaxSwerve;
 import swervelib.motors.SwerveMotor;
+import swervelib.motors.TalonFXSwerve;
 
 /**
  * Device JSON parsed class. Used to access the JSON data.
@@ -76,11 +77,17 @@ public class DeviceJson
    */
   public SwerveMotor createMotor(boolean isDriveMotor)
   {
-    if (type.equals("sparkmax"))
+    switch (type)
     {
-      return new SparkMaxSwerve(id, isDriveMotor);
+      case "sparkmax":
+        return new SparkMaxSwerve(id, isDriveMotor);
+      case "falcon":
+      case "talonfx":
+        return new TalonFXSwerve(id, canbus != null ? canbus : "", isDriveMotor);
+      default:
+        throw new RuntimeException(type + " is not a recognized absolute encoder type.");
+
     }
-    throw new RuntimeException(type + " is not a recognized absolute encoder type.");
   }
 
   /**

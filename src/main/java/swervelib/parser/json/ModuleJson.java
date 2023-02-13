@@ -5,6 +5,7 @@ import swervelib.encoders.CANCoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.motors.SwerveMotor;
 import swervelib.motors.TalonFXSwerve;
+import swervelib.motors.TalonSRXSwerve;
 import swervelib.parser.PIDFConfig;
 import swervelib.parser.SwerveModuleConfiguration;
 import swervelib.parser.SwerveModulePhysicalCharacteristics;
@@ -67,7 +68,8 @@ public class ModuleJson
     {
       absEncoder = angle.createIntegratedEncoder(angleMotor);
       angleMotor.setAbsoluteEncoder(absEncoder);
-    } else if (angleMotor instanceof TalonFXSwerve && absEncoder instanceof CANCoderSwerve)
+    } else if ((angleMotor instanceof TalonFXSwerve || angleMotor instanceof TalonSRXSwerve) &&
+               absEncoder instanceof CANCoderSwerve)
     {
       angleMotor.setAbsoluteEncoder(absEncoder);
     }

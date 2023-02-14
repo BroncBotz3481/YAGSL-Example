@@ -13,7 +13,6 @@ import java.io.File;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.math.SwerveKinematics2;
-import swervelib.math.SwerveModuleState2;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
@@ -206,12 +205,6 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public void lock()
   {
-    double[]             angles        = new double[]{45, -45, -45, 45};
-    SwerveModuleState2[] moduleState2s = new SwerveModuleState2[swerveDrive.getStates().length];
-    for (int i = 0; i < moduleState2s.length; i++)
-    {
-      moduleState2s[i] = new SwerveModuleState2(0, Rotation2d.fromDegrees(angles[i % 4]), 0);
-    }
-    swerveDrive.setModuleStates(moduleState2s, false);
+    swerveDrive.lock();
   }
 }

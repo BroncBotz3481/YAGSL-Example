@@ -89,7 +89,7 @@ public class RobotContainer
   public Command getAutonomousCommand()
   {
     // An example command will be run in autonomous
-    return Autos.driveAndSpin(drivebase);
+    return Autos.exampleAuto(drivebase);
   }
 
   public void setDriveMode()

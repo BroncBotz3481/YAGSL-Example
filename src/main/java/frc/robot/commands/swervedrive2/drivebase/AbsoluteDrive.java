@@ -69,10 +69,10 @@ public class AbsoluteDrive extends CommandBase
   {
 
     // Get the desired chassis speeds based on a 2 joystick module.
+
     ChassisSpeeds desiredSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(),
                                                          headingHorizontal.getAsDouble(),
-                                                         headingVertical.getAsDouble(),
-                                                         swerve.getHeading().getRadians());
+                                                         headingVertical.getAsDouble());
 
     // Limit velocity to prevent tippy
     Translation2d translation = SwerveController.getTranslation2d(desiredSpeeds);

@@ -27,8 +27,6 @@ import swervelib.parser.SwerveDriveConfiguration;
 public class SwerveDrive
 {
 
-  //
-  // Swerve base kinematics object
   /**
    * Swerve Kinematics object utilizing second order kinematics.
    */

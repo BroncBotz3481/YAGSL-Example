@@ -405,4 +405,14 @@ public class SwerveDrive
     SmartDashboard.putNumberArray("moduleStates", moduleStates);
   }
 
+  /**
+   * Synchronize angle motor integrated encoders with data from absolute encoders.
+   */
+  public void synchronizeModuleEncoders()
+  {
+    for (SwerveModule module : swerveModules)
+    {
+      module.synchronizeEncoders();
+    }
+  }
 }

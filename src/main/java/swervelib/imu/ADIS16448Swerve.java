@@ -1,29 +1,29 @@
 package swervelib.imu;
 
-import edu.wpi.first.wpilibj.ADIS16470_IMU;
+import edu.wpi.first.wpilibj.ADIS16448_IMU;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
- * IMU Swerve class for the {@link ADIS16470_IMU} device.
+ * IMU Swerve class for the {@link ADIS16448_IMU} device.
  */
-public class ADIS16470Swerve extends SwerveIMU
+public class ADIS16448Swerve extends SwerveIMU
 {
 
   /**
-   * {@link ADIS16470_IMU} device to read the current headings from.
+   * {@link ADIS16448_IMU} device to read the current headings from.
    */
-  private final ADIS16470_IMU imu;
+  private final ADIS16448_IMU imu;
   /**
-   * Offset for the ADIS16470 yaw reading.
+   * Offset for the ADIS16448 yaw reading.
    */
   private       double        yawOffset = 0;
 
   /**
-   * Construct the ADIS16470 imu and reset default configurations. Publish the gyro to the SmartDashboard.
+   * Construct the ADIS16448 imu and reset default configurations. Publish the gyro to the SmartDashboard.
    */
-  public ADIS16470Swerve()
+  public ADIS16448Swerve()
   {
-    imu = new ADIS16470_IMU();
+    imu = new ADIS16448_IMU();
     factoryDefault();
     SmartDashboard.putData(imu);
   }
@@ -81,3 +81,4 @@ public class ADIS16470Swerve extends SwerveIMU
     return imu;
   }
 }
+

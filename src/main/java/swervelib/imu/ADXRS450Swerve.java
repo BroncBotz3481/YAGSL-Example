@@ -1,29 +1,29 @@
 package swervelib.imu;
 
-import edu.wpi.first.wpilibj.ADIS16470_IMU;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
- * IMU Swerve class for the {@link ADIS16470_IMU} device.
+ * IMU Swerve class for the {@link ADXRS450_Gyro} device.
  */
-public class ADIS16470Swerve extends SwerveIMU
+public class ADXRS450Swerve extends SwerveIMU
 {
 
   /**
-   * {@link ADIS16470_IMU} device to read the current headings from.
+   * {@link ADXRS450_Gyro} device to read the current headings from.
    */
-  private final ADIS16470_IMU imu;
+  private final ADXRS450_Gyro imu;
   /**
-   * Offset for the ADIS16470 yaw reading.
+   * Offset for the ADXRS450 yaw reading.
    */
   private       double        yawOffset = 0;
 
   /**
-   * Construct the ADIS16470 imu and reset default configurations. Publish the gyro to the SmartDashboard.
+   * Construct the ADXRS450 imu and reset default configurations. Publish the gyro to the SmartDashboard.
    */
-  public ADIS16470Swerve()
+  public ADXRS450Swerve()
   {
-    imu = new ADIS16470_IMU();
+    imu = new ADXRS450_Gyro();
     factoryDefault();
     SmartDashboard.putData(imu);
   }
@@ -66,8 +66,8 @@ public class ADIS16470Swerve extends SwerveIMU
   public void getYawPitchRoll(double[] yprArray)
   {
     yprArray[0] = (imu.getAngle() % 360) - yawOffset;
-    yprArray[1] = imu.getXComplementaryAngle() % 360;
-    yprArray[2] = imu.getYComplementaryAngle() % 360;
+    yprArray[1] = 0;
+    yprArray[2] = 0;
   }
 
   /**
@@ -80,4 +80,5 @@ public class ADIS16470Swerve extends SwerveIMU
   {
     return imu;
   }
+
 }

@@ -86,6 +86,7 @@ public class TalonFXSwerve extends SwerveMotor
     double lowerBound;
     double upperBound;
     double lowerOffset = scopeReference % 360;
+    // Create the interval from the reference angle. 
     if (lowerOffset >= 0) {
       lowerBound = scopeReference - lowerOffset;
       upperBound = scopeReference + (360 - lowerOffset);
@@ -93,12 +94,14 @@ public class TalonFXSwerve extends SwerveMotor
       upperBound = scopeReference - lowerOffset;
       lowerBound = scopeReference - (360 + lowerOffset);
     }
+    // Put the angle in the reference bounds.
     while (newAngle < lowerBound) {
       newAngle += 360;
     }
     while (newAngle > upperBound) {
       newAngle -= 360;
     }
+    // Smooth the transition between interval boundaries.
     if (newAngle - scopeReference > 180) {
       newAngle -= 360;
     } else if (newAngle - scopeReference < -180) {

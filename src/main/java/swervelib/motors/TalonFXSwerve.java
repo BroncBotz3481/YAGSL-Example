@@ -218,7 +218,7 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public double getVelocity()
   {
-    return motor.getSelectedSensorVelocity() * (100 * positionConversionFactor);
+    return motor.getSelectedSensorVelocity() * (10 * positionConversionFactor);
   }
 
   /**

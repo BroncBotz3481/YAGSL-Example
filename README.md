@@ -27,3 +27,5 @@ We will be actively montoring this and fix any issues when we can!
 ### My robot is heavy.
 
 * Implement momentum velocity limitations in SwerveMath.
+
+### Ensure the IMU is centered on the robot

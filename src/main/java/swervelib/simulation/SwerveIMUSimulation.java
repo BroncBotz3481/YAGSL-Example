@@ -9,9 +9,9 @@ import swervelib.math.SwerveKinematics2;
 import swervelib.math.SwerveModuleState2;
 
 /**
- * Simulation for {@link swervelib.SwerveDrive}.
+ * Simulation for {@link swervelib.SwerveDrive} IMU.
  */
-public class SwerveDriveSimulation
+public class SwerveIMUSimulation
 {
 
   /**
@@ -28,9 +28,9 @@ public class SwerveDriveSimulation
   private       double angle;
 
   /**
-   * Create the swerve drive simulation.
+   * Create the swerve drive IMU simulation.
    */
-  public SwerveDriveSimulation()
+  public SwerveIMUSimulation()
   {
     timer = new Timer();
     timer.start();

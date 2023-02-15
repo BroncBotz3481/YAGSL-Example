@@ -22,7 +22,7 @@ import swervelib.math.SwerveKinematics2;
 import swervelib.math.SwerveModuleState2;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
-import swervelib.simulation.SwerveDriveSimulation;
+import swervelib.simulation.SwerveIMUSimulation;
 
 /**
  * Swerve Drive class representing and controlling the swerve drive.
@@ -61,7 +61,7 @@ public class SwerveDrive
   /**
    * Simulation of the swerve drive.
    */
-  private       SwerveDriveSimulation    simDrive;
+  private       SwerveIMUSimulation      simIMU;
   /**
    * Counter to synchronize the modules relative encoder with absolute encoder when not moving.
    */
@@ -89,7 +89,7 @@ public class SwerveDrive
     // If the robot is real, instantiate the IMU instead.
     if (!Robot.isReal())
     {
-      simDrive = new SwerveDriveSimulation();
+      simIMU = new SwerveIMUSimulation();
     } else
     {
       imu = config.imu;
@@ -276,7 +276,7 @@ public class SwerveDrive
       imu.setYaw(0);
     } else
     {
-      simDrive.setAngle(0);
+      simIMU.setAngle(0);
     }
     swerveController.lastAngle = 0;
     resetOdometry(new Pose2d(getPose().getTranslation(), new Rotation2d()));
@@ -297,7 +297,7 @@ public class SwerveDrive
       return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[0] : ypr[0]);
     } else
     {
-      return simDrive.getYaw();
+      return simIMU.getYaw();
     }
   }
 
@@ -316,7 +316,7 @@ public class SwerveDrive
       return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[1] : ypr[1]);
     } else
     {
-      return simDrive.getPitch();
+      return simIMU.getPitch();
     }
   }
 
@@ -335,7 +335,7 @@ public class SwerveDrive
       return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[2] : ypr[2]);
     } else
     {
-      return simDrive.getRoll();
+      return simIMU.getRoll();
     }
   }
 
@@ -357,7 +357,7 @@ public class SwerveDrive
           Math.toRadians(swerveDriveConfiguration.invertedIMU ? 360 - ypr[0] : ypr[0]));
     } else
     {
-      return simDrive.getGyroRotation3d();
+      return simIMU.getGyroRotation3d();
     }
   }
 
@@ -431,8 +431,8 @@ public class SwerveDrive
     // Update angle accumulator if the robot is simulated
     if (!Robot.isReal())
     {
-      simDrive.updateOdometry(kinematics, getStates(),
-                              getSwerveModulePoses(swerveDrivePoseEstimator.getEstimatedPosition()), field);
+      simIMU.updateOdometry(kinematics, getStates(),
+                            getSwerveModulePoses(swerveDrivePoseEstimator.getEstimatedPosition()), field);
     }
 
     field.setRobotPose(swerveDrivePoseEstimator.getEstimatedPosition());
@@ -501,7 +501,7 @@ public class SwerveDrive
       // Yaw reset recommended by Team 1622
     } else
     {
-      simDrive.setAngle(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getRadians());
+      simIMU.setAngle(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getRadians());
     }
   }
 }

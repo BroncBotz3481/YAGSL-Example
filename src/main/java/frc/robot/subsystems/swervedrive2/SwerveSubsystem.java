@@ -216,6 +216,6 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public void lock()
   {
-    swerveDrive.lock();
+    swerveDrive.setDriveBrake();
   }
 }

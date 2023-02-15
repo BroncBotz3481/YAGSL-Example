@@ -340,6 +340,28 @@ public class SwerveDrive
   }
 
   /**
+   * Gets the current gyro Rotation3d of the robot, as reported by the imu.
+   *
+   * @return The heading as a {@link Rotation2d} angle
+   */
+  public Rotation3d getGyroRotation3d()
+  {
+    // Read the imu if the robot is real or the accumulator if the robot is simulated.
+    if (Robot.isReal())
+    {
+      double[] ypr = new double[3];
+      imu.getYawPitchRoll(ypr);
+      return new Rotation3d(
+        Math.toRadians(swerveDriveConfiguration.invertedIMU ? 360 - ypr[0] : ypr[0]),
+        Math.toRadians(swerveDriveConfiguration.invertedIMU ? 360 - ypr[1] : ypr[1]),
+        Math.toRadians(swerveDriveConfiguration.invertedIMU ? 360 - ypr[2] : ypr[2]));
+    } else
+    {
+      return new Rotation3d(angle, 0, 0);
+    }
+  }
+
+  /**
    * Sets the drive motors to brake/coast mode.
    *
    * @param brake True to set motors to brake mode, false for coast.

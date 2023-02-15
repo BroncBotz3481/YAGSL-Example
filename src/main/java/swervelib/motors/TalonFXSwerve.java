@@ -50,6 +50,38 @@ public class TalonFXSwerve extends SwerveMotor
     clearStickyFaults();
   }
 
+  /**
+   * Construct the TalonFX swerve motor given the ID and CANBus.
+   *
+   * @param id           ID of the TalonFX on the CANBus.
+   * @param canbus       CANBus on which the TalonFX is on.
+   * @param isDriveMotor Whether the motor is a drive or steering motor.
+   */
+  public TalonFXSwerve(int id, String canbus, boolean isDriveMotor)
+  {
+    this(new WPI_TalonFX(id, canbus), isDriveMotor);
+  }
+
+  /**
+   * Construct the TalonFX swerve motor given the ID.
+   *
+   * @param id           ID of the TalonFX on the canbus.
+   * @param isDriveMotor Whether the motor is a drive or steering motor.
+   */
+  public TalonFXSwerve(int id, boolean isDriveMotor)
+  {
+    this(new WPI_TalonFX(id), isDriveMotor);
+  }
+
+  /**
+   * Put an angle within the the 360 deg scope of a reference. For example, given a scope reference
+   * of 756 degrees, assumes the full scope is (720-1080), and places an angle of 22 degrees into
+   * it, returning 742 deg.
+   *
+   * @param scopeReference Current Angle (deg)
+   * @param newAngle Target Angle (deg)
+   * @return Closest angle within scope (deg)
+   */
   private double placeInAppropriate0To360Scope(double scopeReference, double newAngle) {
     double lowerBound;
     double upperBound;
@@ -73,29 +105,6 @@ public class TalonFXSwerve extends SwerveMotor
       newAngle += 360;
     }
     return newAngle;
-  }
-
-  /**
-   * Construct the TalonFX swerve motor given the ID and CANBus.
-   *
-   * @param id           ID of the TalonFX on the CANBus.
-   * @param canbus       CANBus on which the TalonFX is on.
-   * @param isDriveMotor Whether the motor is a drive or steering motor.
-   */
-  public TalonFXSwerve(int id, String canbus, boolean isDriveMotor)
-  {
-    this(new WPI_TalonFX(id, canbus), isDriveMotor);
-  }
-
-  /**
-   * Construct the TalonFX swerve motor given the ID.
-   *
-   * @param id           ID of the TalonFX on the canbus.
-   * @param isDriveMotor Whether the motor is a drive or steering motor.
-   */
-  public TalonFXSwerve(int id, boolean isDriveMotor)
-  {
-    this(new WPI_TalonFX(id), isDriveMotor);
   }
 
   /**

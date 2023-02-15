@@ -302,7 +302,7 @@ public class SwerveDrive
   }
 
   /**
-   * Gets the current yaw angle of the robot, as reported by the imu.  CCW positive, not wrapped.
+   * Gets the current pitch angle of the robot, as reported by the imu.
    *
    * @return The heading as a {@link Rotation2d} angle
    */

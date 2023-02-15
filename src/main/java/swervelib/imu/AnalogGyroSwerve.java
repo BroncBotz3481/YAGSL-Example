@@ -60,7 +60,7 @@ public class AnalogGyroSwerve extends SwerveIMU
   @Override
   public void setYaw(double yaw)
   {
-    yawOffset = yaw + (gyro.getAngle() % 360);
+    yawOffset = (yaw % 360) + (gyro.getAngle() % 360);
   }
 
   /**

@@ -110,7 +110,7 @@ public class SwerveDrive
         getModulePositions(),
         new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0)),
         VecBuilder.fill(0.1, 0.1, 0.1), // x,y,heading in radians; state std dev, higher=less weight
-        VecBuilder.fill(0.9, 1.0, 0.9)); // x,y,heading in radians; Vision measurement std dev, higher=less weight
+        VecBuilder.fill(0.9, 0.9, 0.9)); // x,y,heading in radians; Vision measurement std dev, higher=less weight
 
     zeroGyro();
     SmartDashboard.putData("Field", field);
@@ -479,8 +479,8 @@ public class SwerveDrive
   }
 
   /**
-   * Add a vision measurement to the {@link SwerveDrivePoseEstimator} with the given timestamp of the vision
-   * measurement. <b>THIS WILL BREAK IF UPDATED TOO OFTEN.</b>
+   * Add a vision measurement to the {@link SwerveDrivePoseEstimator} and update the {@link SwerveIMU} gyro reading with
+   * the given timestamp of the vision measurement. <b>THIS WILL BREAK IF UPDATED TOO OFTEN.</b>
    *
    * @param robotPose Robot {@link Pose2d} as measured by vision.
    * @param timestamp Timestamp the measurement was taken as time since FPGATimestamp, could be taken from
@@ -489,5 +489,6 @@ public class SwerveDrive
   public void addVisionMeasurement(Pose2d robotPose, double timestamp)
   {
     swerveDrivePoseEstimator.addVisionMeasurement(robotPose, timestamp);
+    imu.setYaw(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees());
   }
 }

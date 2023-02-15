@@ -65,7 +65,7 @@ public class NavXSwerve extends SwerveIMU
   public void setYaw(double yaw)
   {
     // gyro.reset(); // Reported to be slow using the offset.
-    yawOffset = yaw + (gyro.getYaw() % 360);
+    yawOffset = (yaw % 360) + (gyro.getYaw() % 360);
   }
 
   /**

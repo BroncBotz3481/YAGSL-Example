@@ -54,7 +54,7 @@ public class ADXRS450Swerve extends SwerveIMU
   @Override
   public void setYaw(double yaw)
   {
-    yawOffset = yaw + (imu.getAngle() % 360);
+    yawOffset = (yaw % 360) + (imu.getAngle() % 360);
   }
 
   /**

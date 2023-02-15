@@ -321,6 +321,25 @@ public class SwerveDrive
   }
 
   /**
+   * Gets the current roll angle of the robot, as reported by the imu.
+   *
+   * @return The heading as a {@link Rotation2d} angle
+   */
+  public Rotation2d getRoll()
+  {
+    // Read the imu if the robot is real or the accumulator if the robot is simulated.
+    if (Robot.isReal())
+    {
+      double[] ypr = new double[3];
+      imu.getYawPitchRoll(ypr);
+      return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[1] : ypr[1]);
+    } else
+    {
+      return new Rotation2d();
+    }
+  }
+
+  /**
    * Sets the drive motors to brake/coast mode.
    *
    * @param brake True to set motors to brake mode, false for coast.

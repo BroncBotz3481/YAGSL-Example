@@ -488,7 +488,15 @@ public class SwerveDrive
    */
   public void addVisionMeasurement(Pose2d robotPose, double timestamp)
   {
-    swerveDrivePoseEstimator.addVisionMeasurement(robotPose, timestamp);
-    imu.setYaw(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees()); // Recommended by Team 1622
+    if (Robot.isReal())
+    {
+      swerveDrivePoseEstimator.addVisionMeasurement(robotPose, timestamp);
+      imu.setYaw(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees());
+      // Yaw reset recommended by Team 1622
+    } else
+    {
+      swerveDrivePoseEstimator.resetPosition(robotPose.getRotation(), getModulePositions(), robotPose);
+      angle = swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getRadians();
+    }
   }
 }

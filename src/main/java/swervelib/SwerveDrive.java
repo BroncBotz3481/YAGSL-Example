@@ -380,9 +380,10 @@ public class SwerveDrive
   }
 
   /**
-   * Point all modules toward the robot center, thus making the robot very difficult to move.
+   * Point all modules toward the robot center, thus making the robot very difficult to move. Forcing the robot to keep
+   * the current pose.
    */
-  public void setDriveBrake()
+  public void lockPose()
   {
     for (SwerveModule swerveModule : swerveModules)
     {

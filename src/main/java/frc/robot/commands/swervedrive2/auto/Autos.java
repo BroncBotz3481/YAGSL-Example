@@ -47,7 +47,7 @@ public final class Autos
     {
       example = PathPlanner.loadPath("SamplePath", new PathConstraints(4, 3));
     }
-    swerve.postTrajectory(example);
+//    swerve.postTrajectory(example);
     return Commands.sequence(new FollowTrajectory(swerve, example, true));
   }
 

@@ -19,13 +19,13 @@ public class TalonFXSwerve extends SwerveMotor
 {
 
   /**
+   * Factory default already occurred.
+   */
+  private final boolean factoryDefaultOccurred = false;
+  /**
    * TalonFX motor controller.
    */
   WPI_TalonFX motor;
-  /**
-   * Factory default already occurred.
-   */
-  private final boolean factoryDefaultOccurred   = false;
   /**
    * Whether the absolute encoder is integrated.
    */

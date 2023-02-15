@@ -483,10 +483,12 @@ public class SwerveDrive
    * the given timestamp of the vision measurement. <b>THIS WILL BREAK IF UPDATED TOO OFTEN.</b>
    *
    * @param robotPose Robot {@link Pose2d} as measured by vision.
+   * @param timestamp Timestamp the measurement was taken as time since startup, should be taken from
+   *                  {@link Timer#getFPGATimestamp()} or similar sources.
    */
-  public void addVisionMeasurement(Pose2d robotPose)
+  public void addVisionMeasurement(Pose2d robotPose, double timestamp)
   {
-    swerveDrivePoseEstimator.addVisionMeasurement(robotPose, Timer.getFPGATimestamp());
-    imu.setYaw(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees());
+    swerveDrivePoseEstimator.addVisionMeasurement(robotPose, timestamp);
+    imu.setYaw(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees()); // Recommended by Team 1622
   }
 }

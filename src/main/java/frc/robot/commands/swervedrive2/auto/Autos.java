@@ -38,16 +38,16 @@ public final class Autos
           new PathConstraints(4, 3),
           new PathPoint(new Translation2d(0, 0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
 // position, heading(direction of travel), holonomic rotation
-          new PathPoint(new Translation2d(1.0, 1.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
+          new PathPoint(new Translation2d(3, 5), Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90)),
 // position, heading(direction of travel), holonomic rotation
-          new PathPoint(new Translation2d(3.0, 3.0), Rotation2d.fromDegrees(45), Rotation2d.fromDegrees(-90))
+          new PathPoint(new Translation2d(5, 5), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0))
           // position, heading(direction of travel), holonomic rotation
                                         );
     } else
     {
       example = PathPlanner.loadPath("SamplePath", new PathConstraints(4, 3));
     }
-
+    swerve.postTrajectory(example);
     return Commands.sequence(new FollowTrajectory(swerve, example, true));
   }
 

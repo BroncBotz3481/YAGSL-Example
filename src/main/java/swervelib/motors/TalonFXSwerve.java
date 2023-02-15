@@ -79,32 +79,39 @@ public class TalonFXSwerve extends SwerveMotor
    * it, returning 742 deg.
    *
    * @param scopeReference Current Angle (deg)
-   * @param newAngle Target Angle (deg)
-   * @return Closest angle within scope (deg)
+   * @param newAngle       Target Angle (deg)
+   * @return               Closest angle within scope (deg)
    */
   private double placeInAppropriate0To360Scope(double scopeReference, double newAngle) {
     double lowerBound;
     double upperBound;
     double lowerOffset = scopeReference % 360;
+
     // Create the interval from the reference angle. 
-    if (lowerOffset >= 0) {
+    if (lowerOffset >= 0) 
+    {
       lowerBound = scopeReference - lowerOffset;
       upperBound = scopeReference + (360 - lowerOffset);
-    } else {
+    } else 
+    {
       upperBound = scopeReference - lowerOffset;
       lowerBound = scopeReference - (360 + lowerOffset);
     }
-    // Put the angle in the reference bounds.
-    while (newAngle < lowerBound) {
+    // Put the angle in the interval.
+    while (newAngle < lowerBound) 
+    {
       newAngle += 360;
     }
-    while (newAngle > upperBound) {
+    while (newAngle > upperBound) 
+    {
       newAngle -= 360;
     }
     // Smooth the transition between interval boundaries.
-    if (newAngle - scopeReference > 180) {
+    if (newAngle - scopeReference > 180) 
+    {
       newAngle -= 360;
-    } else if (newAngle - scopeReference < -180) {
+    } else if (newAngle - scopeReference < -180) 
+    {
       newAngle += 360;
     }
     return newAngle;

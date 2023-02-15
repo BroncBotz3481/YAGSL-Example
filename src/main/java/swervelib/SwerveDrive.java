@@ -65,12 +65,17 @@ public class SwerveDrive
    * Time during simulations.
    */
   private Timer timer;
+  /**
+   * Counter to synchronize the modules relative encoder with absolute encoder when not moving.
+   */
+  private int   moduleSynchronizationCounter = 0;
 
   /**
-   * Creates a new swerve drivebase subsystem.  Robot is controlled via the drive() method, or via the setModuleStates()
-   * method.  The drive() method incorporates kinematics— it takes a translation and rotation, as well as parameters for
-   * field-centric and closed-loop velocity control. setModuleStates() takes a list of SwerveModuleStates and directly
-   * passes them to the modules. This subsystem also handles odometry.
+   * Creates a new swerve drivebase subsystem.  Robot is controlled via the {@link SwerveDrive#drive} method, or via the
+   * {@link SwerveDrive#setModuleStates} method.  The {@link SwerveDrive#drive} method incorporates kinematics— it takes
+   * a translation and rotation, as well as parameters for field-centric and closed-loop velocity control.
+   * {@link SwerveDrive#setModuleStates} takes a list of SwerveModuleStates and directly passes them to the modules.
+   * This subsystem also handles odometry.
    *
    * @param config           The {@link SwerveDriveConfiguration} configuration to base the swerve drive off of.
    * @param controllerConfig The {@link SwerveControllerConfiguration} to use when creating the
@@ -418,7 +423,9 @@ public class SwerveDrive
   }
 
   /**
-   * Update odometry should be run every loop.
+   * Update odometry should be run every loop. Synchronizes module absolute encoders with relative encoders
+   * periodically. In simulation mode will also post the pose of each module. Updates SmartDashboard with module encoder
+   * readings and states.
    */
   public void updateOdometry()
   {
@@ -436,14 +443,27 @@ public class SwerveDrive
     field.setRobotPose(swerveDrivePoseEstimator.getEstimatedPosition());
 
     double[] moduleStates = new double[swerveModules.length * 2];
+    double   sumOmega     = 0;
     for (SwerveModule module : swerveModules)
     {
-      SmartDashboard.putNumber("Module" + module.moduleNumber + "Absolute Encoder", module.getAbsolutePosition());
+      SwerveModuleState2 moduleState = module.getState();
+      moduleStates[module.moduleNumber] = moduleState.angle.getDegrees();
+      moduleStates[module.moduleNumber + 1] = moduleState.speedMetersPerSecond;
+      sumOmega += Math.abs(moduleState.omegaRadPerSecond);
+
       SmartDashboard.putNumber("Module" + module.moduleNumber + "Relative Encoder", module.getRelativePosition());
-      moduleStates[module.moduleNumber] = module.getState().angle.getDegrees();
-      moduleStates[module.moduleNumber + 1] = module.getState().speedMetersPerSecond;
+      SmartDashboard.putNumber("Module" + module.moduleNumber + "Absolute Encoder", module.getAbsolutePosition());
     }
     SmartDashboard.putNumberArray("moduleStates", moduleStates);
+
+    // If the robot isn't moving synchronize the encoders every 100ms (Inspired by democrat's SDS lib)
+    // To ensure that everytime we initialize it works.
+    if (sumOmega <= .01 && ++moduleSynchronizationCounter > 5)
+    {
+      synchronizeModuleEncoders();
+      moduleSynchronizationCounter = 0;
+    }
+
   }
 
   /**

@@ -22,6 +22,7 @@ import swervelib.math.SwerveKinematics2;
 import swervelib.math.SwerveModuleState2;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
+import swervelib.simulation.SwerveDriveSimulation;
 
 /**
  * Swerve Drive class representing and controlling the swerve drive.
@@ -48,7 +49,7 @@ public class SwerveDrive
   /**
    * Field object.
    */
-  public        Field2d                  field = new Field2d();
+  public        Field2d                  field                        = new Field2d();
   /**
    * Swerve controller for controlling heading of the robot.
    */
@@ -58,17 +59,13 @@ public class SwerveDrive
    */
   private       SwerveIMU                imu;
   /**
-   * The current angle of the robot and last time odometry during simulations.
+   * Simulation of the swerve drive.
    */
-  private       double                   angle, lastTime;
-  /**
-   * Time during simulations.
-   */
-  private Timer timer;
+  private       SwerveDriveSimulation    simDrive;
   /**
    * Counter to synchronize the modules relative encoder with absolute encoder when not moving.
    */
-  private int   moduleSynchronizationCounter = 0;
+  private       int                      moduleSynchronizationCounter = 0;
 
   /**
    * Creates a new swerve drivebase subsystem.  Robot is controlled via the {@link SwerveDrive#drive} method, or via the
@@ -92,9 +89,7 @@ public class SwerveDrive
     // If the robot is real, instantiate the IMU instead.
     if (!Robot.isReal())
     {
-      timer = new Timer();
-      timer.start();
-      lastTime = 0;
+      simDrive = new SwerveDriveSimulation();
     } else
     {
       imu = config.imu;
@@ -281,7 +276,7 @@ public class SwerveDrive
       imu.setYaw(0);
     } else
     {
-      angle = 0;
+      simDrive.setAngle(0);
     }
     swerveController.lastAngle = 0;
     resetOdometry(new Pose2d(getPose().getTranslation(), new Rotation2d()));
@@ -302,7 +297,7 @@ public class SwerveDrive
       return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[0] : ypr[0]);
     } else
     {
-      return new Rotation2d(angle);
+      return simDrive.getYaw();
     }
   }
 
@@ -321,7 +316,7 @@ public class SwerveDrive
       return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[1] : ypr[1]);
     } else
     {
-      return new Rotation2d();
+      return simDrive.getPitch();
     }
   }
 
@@ -340,12 +335,12 @@ public class SwerveDrive
       return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[2] : ypr[2]);
     } else
     {
-      return new Rotation2d();
+      return simDrive.getRoll();
     }
   }
 
   /**
-   * Gets the current gyro Rotation3d of the robot, as reported by the imu.
+   * Gets the current gyro {@link Rotation3d} of the robot, as reported by the imu.
    *
    * @return The heading as a {@link Rotation3d} angle
    */
@@ -362,7 +357,7 @@ public class SwerveDrive
           Math.toRadians(swerveDriveConfiguration.invertedIMU ? 360 - ypr[0] : ypr[0]));
     } else
     {
-      return new Rotation3d(angle, 0, 0);
+      return simDrive.getGyroRotation3d();
     }
   }
 
@@ -436,9 +431,8 @@ public class SwerveDrive
     // Update angle accumulator if the robot is simulated
     if (!Robot.isReal())
     {
-      angle += kinematics.toChassisSpeeds(getStates()).omegaRadiansPerSecond * (timer.get() - lastTime);
-      lastTime = timer.get();
-      field.getObject("XModules").setPoses(getSwerveModulePoses(swerveDrivePoseEstimator.getEstimatedPosition()));
+      simDrive.updateOdometry(kinematics, getStates(),
+                              getSwerveModulePoses(swerveDrivePoseEstimator.getEstimatedPosition()), field);
     }
 
     field.setRobotPose(swerveDrivePoseEstimator.getEstimatedPosition());
@@ -507,7 +501,7 @@ public class SwerveDrive
       // Yaw reset recommended by Team 1622
     } else
     {
-      angle = swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getRadians();
+      simDrive.setAngle(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getRadians());
     }
   }
 }

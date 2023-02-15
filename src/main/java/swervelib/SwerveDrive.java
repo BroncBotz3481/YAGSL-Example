@@ -343,7 +343,7 @@ public class SwerveDrive
   /**
    * Gets the current gyro Rotation3d of the robot, as reported by the imu.
    *
-   * @return The heading as a {@link Rotation2d} angle
+   * @return The heading as a {@link Rotation3d} angle
    */
   public Rotation3d getGyroRotation3d()
   {

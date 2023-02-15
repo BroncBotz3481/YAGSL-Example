@@ -485,17 +485,28 @@ public class SwerveDrive
    * @param robotPose Robot {@link Pose2d} as measured by vision.
    * @param timestamp Timestamp the measurement was taken as time since startup, should be taken from
    *                  {@link Timer#getFPGATimestamp()} or similar sources.
+   * @param soft      Add vision estimate using the
+   *                  {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double)} function, or hard reset
+   *                  odometry with the given position with
+   *                  {@link edu.wpi.first.math.kinematics.SwerveDriveOdometry#resetPosition(Rotation2d,
+   *                  SwerveModulePosition[], Pose2d)}.
    */
-  public void addVisionMeasurement(Pose2d robotPose, double timestamp)
+  public void addVisionMeasurement(Pose2d robotPose, double timestamp, boolean soft)
   {
-    if (Robot.isReal())
+    if (soft)
     {
       swerveDrivePoseEstimator.addVisionMeasurement(robotPose, timestamp);
+    } else
+    {
+      swerveDrivePoseEstimator.resetPosition(robotPose.getRotation(), getModulePositions(), robotPose);
+    }
+
+    if (Robot.isReal())
+    {
       imu.setYaw(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees());
       // Yaw reset recommended by Team 1622
     } else
     {
-      swerveDrivePoseEstimator.resetPosition(robotPose.getRotation(), getModulePositions(), robotPose);
       angle = swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getRadians();
     }
   }

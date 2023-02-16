@@ -4,13 +4,13 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.math.SwerveModuleState2;
 import swervelib.motors.SwerveMotor;
 import swervelib.parser.SwerveModuleConfiguration;
+import swervelib.simulation.SwerveModuleSimulation;
 
 /**
  * The Swerve Module class which represents and controls Swerve Modules for the swerve drive.
@@ -47,13 +47,9 @@ public class SwerveModule
    */
   public        double                 lastAngle;
   /**
-   * Current state.
+   * Simulated swerve module.
    */
-  public        double                 angle, omega, speed, fakePos, lastTime, dt;
-  /**
-   * Timer for simulation.
-   */
-  private Timer time;
+  private       SwerveModuleSimulation simModule;
 
   /**
    * Construct the swerve module and initialize the swerve module motors and absolute encoder.
@@ -63,10 +59,10 @@ public class SwerveModule
    */
   public SwerveModule(int moduleNumber, SwerveModuleConfiguration moduleConfiguration)
   {
-    angle = 0;
-    speed = 0;
-    omega = 0;
-    fakePos = 0;
+//    angle = 0;
+//    speed = 0;
+//    omega = 0;
+//    fakePos = 0;
     this.moduleNumber = moduleNumber;
     configuration = moduleConfiguration;
     angleOffset = moduleConfiguration.angleOffset;
@@ -110,14 +106,12 @@ public class SwerveModule
     driveMotor.burnFlash();
     angleMotor.burnFlash();
 
-    lastAngle = getState().angle.getDegrees();
-
     if (!Robot.isReal())
     {
-      time = new Timer();
-      time.start();
-      lastTime = time.get();
+      simModule = new SwerveModuleSimulation();
     }
+
+    lastAngle = getState().angle.getDegrees();
   }
 
   /**
@@ -164,14 +158,9 @@ public class SwerveModule
 
     if (!Robot.isReal())
     {
-      dt = time.get() - lastTime;
-      fakePos += (speed * dt);
-      lastTime = time.get();
+      simModule.updateStateAndPosition(desiredState);
     }
 
-    this.angle = desiredState.angle.getDegrees();
-    omega = desiredState.omegaRadPerSecond;
-    speed = desiredState.speedMetersPerSecond;
   }
 
   /**
@@ -181,9 +170,8 @@ public class SwerveModule
    */
   public void setAngle(double angle)
   {
-    lastAngle = this.angle;
-    this.angle = angle;
     angleMotor.setReference(angle, 1 * configuration.angleKV);
+    lastAngle = angle;
   }
 
   /**
@@ -200,16 +188,19 @@ public class SwerveModule
     {
       velocity = driveMotor.getVelocity();
       azimuth = Rotation2d.fromDegrees(angleMotor.getPosition());
-      omega = angleMotor.getVelocity();
+      omega = Math.toRadians(angleMotor.getVelocity());
     } else
     {
-      velocity = speed;
-      azimuth = Rotation2d.fromDegrees(this.angle);
-      omega = this.omega;
+      return simModule.getState();
     }
     return new SwerveModuleState2(velocity, azimuth, omega);
   }
 
+  /**
+   * Get the position of the swerve module.
+   *
+   * @return {@link SwerveModulePosition} of the swerve module.
+   */
   public SwerveModulePosition getPosition()
   {
     double     position;
@@ -220,29 +211,28 @@ public class SwerveModule
       azimuth = Rotation2d.fromDegrees(angleMotor.getPosition());
     } else
     {
-      position = fakePos;
-      azimuth = Rotation2d.fromDegrees(angle + (Math.toDegrees(omega) * dt));
+      return simModule.getPosition();
     }
     SmartDashboard.putNumber("Module " + moduleNumber + "Angle", azimuth.getDegrees());
     return new SwerveModulePosition(position, azimuth);
   }
 
   /**
-   * Get the CANCoder absolute position.
+   * Get the absolute position.
    *
    * @return Absolute encoder angle in degrees.
    */
-  public double getCANCoder()
+  public double getAbsolutePosition()
   {
     return absoluteEncoder.getAbsolutePosition();
   }
 
   /**
-   * Get the relative encoder angle in degrees.
+   * Get the relative angle in degrees.
    *
    * @return Angle in degrees.
    */
-  public double getRelativeEncoder()
+  public double getRelativePosition()
   {
     return angleMotor.getPosition();
   }

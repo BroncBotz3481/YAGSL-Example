@@ -172,7 +172,8 @@ public class SwerveModuleConfiguration
                                                      physicalCharacteristics.driveGearRatio,
                                                      physicalCharacteristics.driveEncoderPulsePerRotation)
                         : calculateDegreesPerSteeringRotation(
-                            angleMotor.isAttachedAbsoluteEncoder() ? 1 : physicalCharacteristics.angleGearRatio,
+//                            angleMotor.isAttachedAbsoluteEncoder() ? 1 : physicalCharacteristics.angleGearRatio, // Seems to break Talon's
+                            physicalCharacteristics.angleGearRatio,
                             physicalCharacteristics.angleEncoderPulsePerRotation);
   }
 }

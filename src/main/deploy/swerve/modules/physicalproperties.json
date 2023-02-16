@@ -14,7 +14,7 @@
   },
   "encoderPulsePerRotation": {
     "drive": 2048,
-    "angle": 4096
+    "angle": 2048
   },
   "wheelGripCoefficientOfFriction": 1.19,
   "angleMotorFreeSpeedRPM": 5676

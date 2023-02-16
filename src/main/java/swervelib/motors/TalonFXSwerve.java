@@ -54,6 +54,7 @@ public class TalonFXSwerve extends SwerveMotor
 
     factoryDefaults();
     clearStickyFaults();
+
     if (!Robot.isReal())
     {
       PhysicsSim.getInstance().addTalonFX(motor, .5, 6800);
@@ -131,7 +132,15 @@ public class TalonFXSwerve extends SwerveMotor
   /**
    * Configure the integrated encoder for the swerve module. Sets the conversion factors for position and velocity.
    *
-   * @param positionConversionFactor The conversion factor to apply for position.
+   * @param positionConversionFactor The conversion factor to apply for position. <p><br /> Degrees: <br />
+   *                                 <code>
+   *                                 360 / (angleGearRatio * encoderTicksPerRotation)
+   *                                 </code><br /></p>
+   *                                 <p><br />Meters:<br />
+   *                                 <code>
+   *                                 (Math.PI * wheelDiameter) / (driveGearRatio * encoderTicksPerRotation)
+   *                                 </code>
+   *                                 </p>
    */
   @Override
   public void configureIntegratedEncoder(double positionConversionFactor)
@@ -258,7 +267,11 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public void burnFlash()
   {
-    // Do nothing
+    if (configChanged)
+    {
+      motor.configAllSettings(configuration);
+      configChanged = false;
+    }
   }
 
   /**
@@ -275,11 +288,12 @@ public class TalonFXSwerve extends SwerveMotor
   /**
    * Convert the setpoint into native sensor units.
    *
-   * @param setpoint Setpoint to mutate.
-   * @return Setpoint as native sensor units.
+   * @param setpoint Setpoint to mutate. In meters per second or degrees.
+   * @return Setpoint as native sensor units. Encoder ticks per 100ms, or Encoder tick.
    */
   public double convertToNativeSensorUnits(double setpoint)
   {
+    setpoint = isDriveMotor ? (setpoint * .1) : setpoint;
     return setpoint / positionConversionFactor;
   }
 
@@ -297,11 +311,7 @@ public class TalonFXSwerve extends SwerveMotor
       PhysicsSim.getInstance().run();
     }
 
-    if (configChanged)
-    {
-      motor.configAllSettings(configuration);
-      configChanged = false;
-    }
+    burnFlash();
 
     if (!isDriveMotor)
     {
@@ -317,7 +327,7 @@ public class TalonFXSwerve extends SwerveMotor
     }
 
     motor.set(isDriveMotor ? ControlMode.Velocity : ControlMode.Position,
-              convertToNativeSensorUnits(isDriveMotor ? (setpoint * .1) : setpoint),
+              convertToNativeSensorUnits(setpoint),
               DemandType.ArbitraryFeedForward,
               feedforward);
   }
@@ -325,7 +335,7 @@ public class TalonFXSwerve extends SwerveMotor
   /**
    * Get the velocity of the integrated encoder.
    *
-   * @return velocity
+   * @return velocity in Meters Per Second, or Degrees per Second.
    */
   @Override
   public double getVelocity()
@@ -337,7 +347,7 @@ public class TalonFXSwerve extends SwerveMotor
   /**
    * Get the position of the integrated encoder.
    *
-   * @return Position
+   * @return Position in Meters or Degrees.
    */
   @Override
   public double getPosition()
@@ -348,7 +358,7 @@ public class TalonFXSwerve extends SwerveMotor
   /**
    * Set the integrated encoder position.
    *
-   * @param position Integrated encoder position. Should be angle in degrees or meters per second.
+   * @param position Integrated encoder position. Should be angle in degrees or meters.
    */
   @Override
   public void setPosition(double position)

@@ -5,8 +5,10 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Robot;
 import swervelib.encoders.SwerveAbsoluteEncoder;
+import swervelib.math.SwerveMath;
 import swervelib.parser.PIDFConfig;
 import swervelib.simulation.ctre.PhysicsSim;
 
@@ -57,7 +59,7 @@ public class TalonFXSwerve extends SwerveMotor
 
     if (!Robot.isReal())
     {
-      PhysicsSim.getInstance().addTalonFX(motor, .5, 6800);
+      PhysicsSim.getInstance().addTalonFX(motor, .00001, 6800 * 10);
     }
   }
 
@@ -149,57 +151,6 @@ public class TalonFXSwerve extends SwerveMotor
 //    configuration.primaryPID.selectedFeedbackCoefficient = positionConversionFactor;
 //    configChanged = true;
 //    motor.configSelectedFeedbackCoefficient(positionConversionFactor);
-  }
-
-  /**
-   * Put an angle within the the 360 deg scope of a reference. For example, given a scope reference of 756 degrees,
-   * assumes the full scope is (720-1080), and places an angle of 22 degrees into it, returning 742 deg.
-   *
-   * @param scopeReference Current Angle (deg)
-   * @param newAngle       Target Angle (deg)
-   * @return Closest angle within scope (deg)
-   */
-  private double placeInAppropriate0To360Scope(double scopeReference, double newAngle)
-  {
-//    for (; scopeReference < 0 && absoluteEncoder; scopeReference += 360)
-//      ;
-
-    double lowerBound;
-    double upperBound;
-    double lowerOffset = scopeReference % 360;
-
-    // Create the interval from the reference angle.
-    if (lowerOffset >= 0)
-    {
-      lowerBound = scopeReference - lowerOffset;
-      upperBound = scopeReference + (360 - lowerOffset);
-    } else
-    {
-      upperBound = scopeReference - lowerOffset;
-      lowerBound = scopeReference - (360 + lowerOffset);
-    }
-    // Put the angle in the interval.
-    while (newAngle < lowerBound)
-    {
-      newAngle += 360;
-    }
-    while (newAngle > upperBound)
-    {
-      newAngle -= 360;
-    }
-    // Smooth the transition between interval boundaries.
-    if (newAngle - scopeReference > 180)
-    {
-      newAngle -= 360;
-    } else if (newAngle - scopeReference < -180)
-    {
-      newAngle += 360;
-    }
-
-//    for (; newAngle < 0 && absoluteEncoder; newAngle += 360)
-//      ;
-
-    return newAngle % 360;
   }
 
   /**
@@ -298,6 +249,17 @@ public class TalonFXSwerve extends SwerveMotor
   }
 
   /**
+   * Normalize the given value depending on the module. If angle motor then value will be normalized.
+   *
+   * @param value Meters or Degrees
+   * @return Normalized value.
+   */
+  public double normalize(double value)
+  {
+    return isDriveMotor ? value : (SwerveMath.normalizeAngle(value));
+  }
+
+  /**
    * Set the closed loop PID controller reference point.
    *
    * @param setpoint    Setpoint in MPS or Angle in degrees.
@@ -315,15 +277,20 @@ public class TalonFXSwerve extends SwerveMotor
 
     if (!isDriveMotor)
     {
-      System.out.println("THe angle motor is " + motor.getDeviceID());
-      System.out.println("Setpoint " + setpoint + " => " + convertToNativeSensorUnits(setpoint));
-      System.out.println("Current point " + motor.getSelectedSensorPosition());
-      System.out.println("Adjusted point " + getPosition());
+      System.out.println("The angle motor is " + motor.getDeviceID());
+      System.out.println("Setpoint " + normalize(setpoint));
+      System.out.println("Current point " + (getPosition()));
 
-      System.out.println("Scoped point " + convertToNativeSensorUnits(placeInAppropriate0To360Scope(getPosition(),
-                                                                                                    setpoint)));
-//                         placeInAppropriate0To360Scope(motor.getSelectedSensorPosition() * positionConversionFactor,
-//                                                       setpoint));
+      // Credit to Team 3538!
+      // Inspired from https://github.com/FRC-Team3538/FRC2023-beta/blob/java/src/main/java/io/robojackets/subsystems/SwerveModule.java#L176-L199
+      Rotation2d normalized_target_angle = Rotation2d.fromDegrees(SwerveMath.normalizeAngle(setpoint));
+      Rotation2d actual_current_angle    = Rotation2d.fromDegrees(getRawPosition());
+      Rotation2d normalized_actual_current_angle = Rotation2d.fromDegrees(
+          SwerveMath.normalizeAngle(actual_current_angle.getDegrees()));
+
+      Rotation2d target_diff = normalized_target_angle.minus(normalized_actual_current_angle);
+
+      setpoint = Math.toDegrees(actual_current_angle.getRadians() + target_diff.getRadians());
     }
 
     motor.set(isDriveMotor ? ControlMode.Velocity : ControlMode.Position,
@@ -340,8 +307,18 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public double getVelocity()
   {
-    return (isDriveMotor ? motor.getSelectedSensorVelocity() * 10
-                         : motor.getSelectedSensorVelocity()) * positionConversionFactor;
+    return normalize((isDriveMotor ? motor.getSelectedSensorVelocity() * 10
+                                   : motor.getSelectedSensorVelocity()) * positionConversionFactor);
+  }
+
+  /**
+   * Get the raw position.
+   *
+   * @return Position in meters or degrees.
+   */
+  public double getRawPosition()
+  {
+    return motor.getSelectedSensorPosition() * positionConversionFactor;
   }
 
   /**
@@ -352,7 +329,7 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public double getPosition()
   {
-    return motor.getSelectedSensorPosition() * positionConversionFactor;
+    return normalize(getRawPosition());
   }
 
   /**
@@ -363,7 +340,7 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public void setPosition(double position)
   {
-    if (!absoluteEncoder)
+    if (!absoluteEncoder && Robot.isReal())
     {
       motor.setSelectedSensorPosition(convertToNativeSensorUnits(position));
     }

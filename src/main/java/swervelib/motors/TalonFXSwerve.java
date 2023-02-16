@@ -278,8 +278,8 @@ public class TalonFXSwerve extends SwerveMotor
     if (!isDriveMotor)
     {
       System.out.println("The angle motor is " + motor.getDeviceID());
-      System.out.println("Setpoint " + normalize(setpoint));
-      System.out.println("Current point " + (getPosition()));
+      System.out.println("Setpoint " + Math.round(normalize(setpoint)));
+      System.out.println("Current point " + Math.round(getPosition()));
 
       // Credit to Team 3538!
       // Inspired from https://github.com/FRC-Team3538/FRC2023-beta/blob/java/src/main/java/io/robojackets/subsystems/SwerveModule.java#L176-L199
@@ -297,6 +297,12 @@ public class TalonFXSwerve extends SwerveMotor
               convertToNativeSensorUnits(setpoint),
               DemandType.ArbitraryFeedForward,
               feedforward);
+
+//    if(!Robot.isReal() && !isDriveMotor)
+//    {
+//      motor.setSelectedSensorPosition(convertToNativeSensorUnits(setpoint)); // If only, if only...
+//    }
+
   }
 
   /**

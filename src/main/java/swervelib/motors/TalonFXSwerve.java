@@ -137,8 +137,8 @@ public class TalonFXSwerve extends SwerveMotor
   public void configureIntegratedEncoder(double positionConversionFactor)
   {
     this.positionConversionFactor = positionConversionFactor;
-    configuration.primaryPID.selectedFeedbackCoefficient = positionConversionFactor;
-    configChanged = true;
+//    configuration.primaryPID.selectedFeedbackCoefficient = positionConversionFactor;
+//    configChanged = true;
 //    motor.configSelectedFeedbackCoefficient(positionConversionFactor);
   }
 
@@ -295,18 +295,20 @@ public class TalonFXSwerve extends SwerveMotor
     if (!isDriveMotor)
     {
       System.out.println("THe angle motor is " + motor.getDeviceID());
-      System.out.println("Setpoint " + setpoint);
+      System.out.println("Setpoint " + setpoint + " => " + setpoint / positionConversionFactor);
       System.out.println("Current point " + motor.getSelectedSensorPosition());
       System.out.println("Adjusted point " + motor.getSelectedSensorPosition() * positionConversionFactor);
 
-      System.out.println("Scoped point " + placeInAppropriate0To360Scope(motor.getSelectedSensorPosition(), setpoint));
+      System.out.println("Scoped point " +
+                         placeInAppropriate0To360Scope(motor.getSelectedSensorPosition() * positionConversionFactor,
+                                                       setpoint) / positionConversionFactor);
 //                         placeInAppropriate0To360Scope(motor.getSelectedSensorPosition() * positionConversionFactor,
 //                                                       setpoint));
     }
 
     motor.set(isDriveMotor ? ControlMode.Velocity : ControlMode.Position,
-              isDriveMotor ? setpoint * .1 :
-              setpoint,
+              isDriveMotor ? (setpoint * .1) / positionConversionFactor :
+              setpoint / positionConversionFactor,
               DemandType.ArbitraryFeedForward,
               feedforward);
   }
@@ -319,8 +321,8 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public double getVelocity()
   {
-    return isDriveMotor ? motor.getSelectedSensorVelocity() * 10
-                        : motor.getSelectedSensorVelocity();
+    return (isDriveMotor ? motor.getSelectedSensorVelocity() * 10
+                         : motor.getSelectedSensorVelocity()) * positionConversionFactor;
   }
 
   /**
@@ -331,7 +333,7 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public double getPosition()
   {
-    return motor.getSelectedSensorPosition();
+    return motor.getSelectedSensorPosition() * positionConversionFactor;
   }
 
   /**
@@ -344,7 +346,7 @@ public class TalonFXSwerve extends SwerveMotor
   {
     if (!absoluteEncoder)
     {
-      motor.setSelectedSensorPosition(position);
+      motor.setSelectedSensorPosition(position / positionConversionFactor);
     }
   }
 

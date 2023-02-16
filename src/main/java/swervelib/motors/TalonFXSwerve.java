@@ -33,7 +33,7 @@ public class TalonFXSwerve extends SwerveMotor
    */
   private final boolean              absoluteEncoder          = false;
   /**
-   * The position conversion factor.
+   * The position conversion factor to convert raw sensor units to Meters Per 100ms, or Ticks to Degrees.
    */
   private       double               positionConversionFactor = 1;
   /**

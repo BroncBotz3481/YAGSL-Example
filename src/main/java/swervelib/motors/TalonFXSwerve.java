@@ -273,6 +273,17 @@ public class TalonFXSwerve extends SwerveMotor
   }
 
   /**
+   * Convert the setpoint into native sensor units.
+   *
+   * @param setpoint Setpoint to mutate.
+   * @return Setpoint as native sensor units.
+   */
+  public double convertToNativeSensorUnits(double setpoint)
+  {
+    return setpoint / positionConversionFactor;
+  }
+
+  /**
    * Set the closed loop PID controller reference point.
    *
    * @param setpoint    Setpoint in MPS or Angle in degrees.
@@ -295,20 +306,18 @@ public class TalonFXSwerve extends SwerveMotor
     if (!isDriveMotor)
     {
       System.out.println("THe angle motor is " + motor.getDeviceID());
-      System.out.println("Setpoint " + setpoint + " => " + setpoint / positionConversionFactor);
+      System.out.println("Setpoint " + setpoint + " => " + convertToNativeSensorUnits(setpoint));
       System.out.println("Current point " + motor.getSelectedSensorPosition());
-      System.out.println("Adjusted point " + motor.getSelectedSensorPosition() * positionConversionFactor);
+      System.out.println("Adjusted point " + getPosition());
 
-      System.out.println("Scoped point " +
-                         placeInAppropriate0To360Scope(motor.getSelectedSensorPosition() * positionConversionFactor,
-                                                       setpoint) / positionConversionFactor);
+      System.out.println("Scoped point " + convertToNativeSensorUnits(
+          placeInAppropriate0To360Scope(getPosition(), setpoint)));
 //                         placeInAppropriate0To360Scope(motor.getSelectedSensorPosition() * positionConversionFactor,
 //                                                       setpoint));
     }
 
     motor.set(isDriveMotor ? ControlMode.Velocity : ControlMode.Position,
-              isDriveMotor ? (setpoint * .1) / positionConversionFactor :
-              setpoint / positionConversionFactor,
+              convertToNativeSensorUnits(isDriveMotor ? (setpoint * .1) : setpoint),
               DemandType.ArbitraryFeedForward,
               feedforward);
   }
@@ -346,7 +355,7 @@ public class TalonFXSwerve extends SwerveMotor
   {
     if (!absoluteEncoder)
     {
-      motor.setSelectedSensorPosition(position / positionConversionFactor);
+      motor.setSelectedSensorPosition(convertToNativeSensorUnits(position));
     }
   }
 

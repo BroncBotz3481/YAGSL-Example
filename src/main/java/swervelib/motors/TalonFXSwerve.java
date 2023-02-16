@@ -320,8 +320,8 @@ public class TalonFXSwerve extends SwerveMotor
       System.out.println("Current point " + motor.getSelectedSensorPosition());
       System.out.println("Adjusted point " + getPosition());
 
-      System.out.println("Scoped point " + convertToNativeSensorUnits(
-          placeInAppropriate0To360Scope(getPosition(), setpoint)));
+      System.out.println("Scoped point " + convertToNativeSensorUnits(placeInAppropriate0To360Scope(getPosition(),
+                                                                                                    setpoint)));
 //                         placeInAppropriate0To360Scope(motor.getSelectedSensorPosition() * positionConversionFactor,
 //                                                       setpoint));
     }

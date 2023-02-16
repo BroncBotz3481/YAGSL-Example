@@ -8,8 +8,10 @@ import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
+import frc.robot.Robot;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.parser.PIDFConfig;
+import swervelib.simulation.ctre.PhysicsSim;
 
 /**
  * {@link com.ctre.phoenix.motorcontrol.can.TalonFX} Swerve Motor.
@@ -55,6 +57,10 @@ public class TalonFXSwerve extends SwerveMotor
 
     factoryDefaults();
     clearStickyFaults();
+    if (!Robot.isReal())
+    {
+      PhysicsSim.getInstance().addTalonFX(motor, .5, 6800);
+    }
   }
 
   /**
@@ -151,6 +157,7 @@ public class TalonFXSwerve extends SwerveMotor
   {
     for (; scopeReference < 0 && absoluteEncoder; scopeReference += 360)
       ;
+
     double lowerBound;
     double upperBound;
     double lowerOffset = scopeReference % 360;
@@ -185,7 +192,8 @@ public class TalonFXSwerve extends SwerveMotor
 
     for (; newAngle < 0 && absoluteEncoder; newAngle += 360)
       ;
-    return newAngle;
+
+    return newAngle % 360;
   }
 
   /**
@@ -276,6 +284,11 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public void setReference(double setpoint, double feedforward)
   {
+    if (!Robot.isReal())
+    {
+      PhysicsSim.getInstance().run();
+    }
+
     if (configChanged)
     {
       motor.configAllSettings(configuration);
@@ -291,8 +304,6 @@ public class TalonFXSwerve extends SwerveMotor
       System.out.println("Scoped point " + placeInAppropriate0To360Scope(motor.getSelectedSensorPosition(), setpoint));
 //                         placeInAppropriate0To360Scope(motor.getSelectedSensorPosition() * positionConversionFactor,
 //                                                       setpoint));
-
-//      motor.set(.5);
     }
 
     motor.set(isDriveMotor ? ControlMode.Velocity : ControlMode.Position,

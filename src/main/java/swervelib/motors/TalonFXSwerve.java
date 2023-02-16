@@ -2,12 +2,9 @@ package swervelib.motors;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.sensors.CANCoder;
 import frc.robot.Robot;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.parser.PIDFConfig;
@@ -34,7 +31,7 @@ public class TalonFXSwerve extends SwerveMotor
   /**
    * Whether the absolute encoder is integrated.
    */
-  private       boolean              absoluteEncoder          = false;
+  private final boolean              absoluteEncoder          = false;
   /**
    * The position conversion factor.
    */
@@ -117,7 +114,7 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public SwerveMotor setAbsoluteEncoder(SwerveAbsoluteEncoder encoder)
   {
-    if (encoder.getAbsoluteEncoder() instanceof CANCoder)
+    /*if (encoder.getAbsoluteEncoder() instanceof CANCoder)
     {
       configuration.primaryPID.selectedFeedbackSensor = FeedbackDevice.RemoteSensor0;
       configuration.remoteFilter0.remoteSensorDeviceID = ((CANCoder) encoder.getAbsoluteEncoder()).getDeviceID();
@@ -127,7 +124,7 @@ public class TalonFXSwerve extends SwerveMotor
 //                                       CTRE_remoteSensor.REMOTE_SENSOR_0.ordinal());
       configChanged = true;
       absoluteEncoder = true;
-    }
+    }*/
     return this;
   }
 
@@ -155,8 +152,8 @@ public class TalonFXSwerve extends SwerveMotor
    */
   private double placeInAppropriate0To360Scope(double scopeReference, double newAngle)
   {
-    for (; scopeReference < 0 && absoluteEncoder; scopeReference += 360)
-      ;
+//    for (; scopeReference < 0 && absoluteEncoder; scopeReference += 360)
+//      ;
 
     double lowerBound;
     double upperBound;
@@ -190,8 +187,8 @@ public class TalonFXSwerve extends SwerveMotor
       newAngle += 360;
     }
 
-    for (; newAngle < 0 && absoluteEncoder; newAngle += 360)
-      ;
+//    for (; newAngle < 0 && absoluteEncoder; newAngle += 360)
+//      ;
 
     return newAngle % 360;
   }
@@ -294,7 +291,8 @@ public class TalonFXSwerve extends SwerveMotor
       motor.configAllSettings(configuration);
       configChanged = false;
     }
-    if (!isDriveMotor && placeInAppropriate0To360Scope(motor.getSelectedSensorPosition(), setpoint) < 0)
+
+    if (!isDriveMotor)
     {
       System.out.println("THe angle motor is " + motor.getDeviceID());
       System.out.println("Setpoint " + setpoint);
@@ -308,7 +306,7 @@ public class TalonFXSwerve extends SwerveMotor
 
     motor.set(isDriveMotor ? ControlMode.Velocity : ControlMode.Position,
               isDriveMotor ? setpoint * .1 :
-              placeInAppropriate0To360Scope(motor.getSelectedSensorPosition(), setpoint),
+              setpoint,
               DemandType.ArbitraryFeedForward,
               feedforward);
   }

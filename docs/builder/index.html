@@ -55,7 +55,8 @@
       </div>
     </td>
     <td>
-      <h3>swervedrive.json</h3>
+      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Drive">swervedrive.json</a>
+      </h3>
       <code id="swervedrivejson">
         function (a, b) {
         sum = a + b;
@@ -127,7 +128,8 @@
       </div>
     </td>
     <td>
-      <h3>physicalproperties.json</h3>
+      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module-Physical-Properties">physicalproperties.json</a>
+      </h3>
       <code id="physicalpropertiesjson">
         function (a, b) {
         sum = a + b;
@@ -221,7 +223,8 @@
       </div>
     </td>
     <td>
-      <h3>frontleft.json</h3>
+      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module">frontleft.json</a>
+      </h3>
       <code id="frontleftjson">
         function (a, b) {
         sum = a + b;
@@ -409,7 +412,7 @@
       </div>
     </td>
     <td>
-      <h3>backleft.json</h3>
+      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module">backleft.json</a></h3>
       <code id="backleftjson">
         function (a, b) {
         sum = a + b;
@@ -503,7 +506,8 @@
       </div>
     </td>
     <td>
-      <h3>backright.json</h3>
+      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module">backright.json</a>
+      </h3>
       <code id="backrightjson">
         function (a, b) {
         sum = a + b;
@@ -540,7 +544,8 @@
       </form>
     </td>
     <td>
-      <h3>controllerproperties.json</h3>
+      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Controller-Properties">controllerproperties.json</a>
+      </h3>
       <code id="controllerpropertiesjson">
         function (a, b) {
         sum = a + b;
@@ -607,7 +612,8 @@
       </form>
     </td>
     <td>
-      <h3>pidfproperties.json</h3>
+      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module-PIDF-Properties">pidfproperties.json </a>
+      </h3>
       <code id="pidfpropertiesjson">
         function (a, b) {
         sum = a + b;
@@ -658,6 +664,14 @@
         data[value.name] = isNumeric(value.value) ? parseFloat(value.value) : (value.value === ""
             ? null : value.value);
       }
+    }
+    if (formname == "swervedrive") {
+      data['modules'] = [
+        "frontleft.json",
+        "frontright.json",
+        "backleft.json",
+        "backright.json"
+      ]
     }
     return JSON.stringify(data, null, 2);
   }

@@ -11,7 +11,7 @@ import swervelib.parser.PIDFConfig;
 import swervelib.simulation.ctre.PhysicsSim;
 
 /**
- * {@link com.ctre.phoenix.motorcontrol.can.TalonFX} Swerve Motor.
+ * {@link com.ctre.phoenix.motorcontrol.can.TalonFX} Swerve Motor. Made by Team 1466 WebbRobotics.
  */
 public class TalonFXSwerve extends SwerveMotor
 {

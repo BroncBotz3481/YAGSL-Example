@@ -73,7 +73,7 @@ public class RobotContainer
         () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? driverController.getX() : 0,
         () -> -driverController.getRawAxis(3), () -> true, false);
 
-    drivebase.setDefaultCommand(closedAbsoluteDrive);
+    drivebase.setDefaultCommand(Robot.isReal() ? closedAbsoluteDrive : closedFieldAbsoluteDrive);
   }
 
   /**

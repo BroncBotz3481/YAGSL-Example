@@ -19,27 +19,27 @@ public class TalonFXSwerve extends SwerveMotor
   /**
    * Factory default already occurred.
    */
-  private final boolean factoryDefaultOccurred = false;
+  private final boolean              factoryDefaultOccurred = false;
+  /**
+   * Current TalonFX configuration.
+   */
+  private final TalonFXConfiguration configuration          = new TalonFXConfiguration();
+  /**
+   * Whether the absolute encoder is integrated.
+   */
+  private final boolean              absoluteEncoder        = false;
   /**
    * TalonFX motor controller.
    */
   WPI_TalonFX motor;
   /**
-   * Current TalonFX configuration.
-   */
-  private final TalonFXConfiguration configuration            = new TalonFXConfiguration();
-  /**
-   * Whether the absolute encoder is integrated.
-   */
-  private final boolean              absoluteEncoder          = false;
-  /**
    * The position conversion factor to convert raw sensor units to Meters Per 100ms, or Ticks to Degrees.
    */
-  private       double               positionConversionFactor = 1;
+  private double  positionConversionFactor = 1;
   /**
    * If the TalonFX configuration has changed.
    */
-  private       boolean              configChanged            = true;
+  private boolean configChanged            = true;
 
   /**
    * Constructor for TalonFX swerve motor.
@@ -57,7 +57,7 @@ public class TalonFXSwerve extends SwerveMotor
 
     if (!Robot.isReal())
     {
-      PhysicsSim.getInstance().addTalonFX(motor, .00001, 6800 * 10);
+      PhysicsSim.getInstance().addTalonFX(motor, .25, 6800);
     }
   }
 
@@ -286,13 +286,6 @@ public class TalonFXSwerve extends SwerveMotor
     }
 
     burnFlash();
-
-    if (!isDriveMotor && !Robot.isReal())
-    {
-      System.out.println("The angle motor is " + motor.getDeviceID());
-      System.out.println("Current point " + Math.round(getPosition()));
-
-    }
 
     motor.set(isDriveMotor ? ControlMode.Velocity : ControlMode.Position,
               convertToNativeSensorUnits(setpoint),

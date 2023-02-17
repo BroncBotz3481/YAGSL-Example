@@ -348,8 +348,6 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public void setVoltageCompensation(double nominalVoltage)
   {
-//    motor.enableVoltageCompensation(true);
-//    motor.configVoltageCompSaturation(nominalVoltage);
     configuration.voltageCompSaturation = nominalVoltage;
     configChanged = true;
   }

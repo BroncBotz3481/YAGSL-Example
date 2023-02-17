@@ -41,7 +41,7 @@
           </label>
           <label>
             IMU ID
-            <input name="imu_id" type="number">
+            <input name="imu_id" style="width: 50%;" type="number">
           </label>
           <label>
             IMU CAN Bus
@@ -55,7 +55,7 @@
       </div>
     </td>
     <td>
-      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Drive">swervedrive.json</a>
+      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Drive">deploy/swerve/swervedrive.json</a>
       </h3>
       <code id="swervedrivejson">
         function (a, b) {
@@ -129,7 +129,7 @@
       </div>
     </td>
     <td>
-      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module-Physical-Properties">physicalproperties.json</a>
+      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module-Physical-Properties">deploy/swerve<br/>/modules/physicalproperties.json</a>
       </h3>
       <code id="physicalpropertiesjson">
         function (a, b) {
@@ -209,11 +209,11 @@
           </label>
           <label>
             Absolute Encoder ID
-            <input name="encoder_id" style="width: 40%" type="number">
+            <input name="encoder_id" style="width: 30%" type="number">
           </label>
           <label>
             Absolute Encoder CAN Bus
-            <input name="encoder_canbus" style="width: 20%" type="text">
+            <input name="encoder_canbus" placeholder="canbus" style="width: 50%" type="text">
           </label>
           <label>
             Absolute Encoder Inverted
@@ -224,7 +224,7 @@
       </div>
     </td>
     <td>
-      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module">frontleft.json</a>
+      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module">deploy/swerve<br/>/modules/frontleft.json</a>
       </h3>
       <code id="frontleftjson">
         function (a, b) {
@@ -304,11 +304,11 @@
           </label>
           <label>
             Absolute Encoder ID
-            <input name="encoder_id" style="width: 40%" type="number">
+            <input name="encoder_id" style="width: 30%" type="number">
           </label>
           <label>
             Absolute Encoder CAN Bus
-            <input name="encoder_canbus" style="width: 20%" type="text">
+            <input name="encoder_canbus" placeholder="canbus" style="width: 50%" type="text">
           </label>
           <label>
             Absolute Encoder Inverted
@@ -319,7 +319,7 @@
       </div>
     </td>
     <td>
-      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module">frontright.json</a>
+      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module">deploy/swerve<br/>/modules/frontright.json</a>
       </h3>
       <code id="frontrightjson">
         function (a, b) {
@@ -399,11 +399,11 @@
           </label>
           <label>
             Absolute Encoder ID
-            <input name="encoder_id" style="width: 40%" type="number">
+            <input name="encoder_id" style="width: 30%" type="number">
           </label>
           <label>
             Absolute Encoder CAN Bus
-            <input name="encoder_canbus" style="width: 20%" type="text">
+            <input name="encoder_canbus" placeholder="canbus" style="width: 50%" type="text">
           </label>
           <label>
             Absolute Encoder Inverted
@@ -414,7 +414,8 @@
       </div>
     </td>
     <td>
-      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module">backleft.json</a></h3>
+      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module">deploy/swerve<br/>/modules/backleft.json</a>
+      </h3>
       <code id="backleftjson">
         function (a, b) {
         sum = a + b;
@@ -493,11 +494,11 @@
           </label>
           <label>
             Absolute Encoder ID
-            <input name="encoder_id" style="width: 40%" type="number">
+            <input name="encoder_id" style="width: 30%" type="number">
           </label>
           <label>
             Absolute Encoder CAN Bus
-            <input name="encoder_canbus" style="width: 20%" type="text">
+            <input name="encoder_canbus" placeholder="canbus" style="width: 50%" type="text">
           </label>
           <label>
             Absolute Encoder Inverted
@@ -508,7 +509,7 @@
       </div>
     </td>
     <td>
-      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module">backright.json</a>
+      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module">deploy/swerve<br/>/modules/backright.json</a>
       </h3>
       <code id="backrightjson">
         function (a, b) {
@@ -546,7 +547,8 @@
       </form>
     </td>
     <td>
-      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Controller-Properties">controllerproperties.json</a>
+      <h3><a
+          href="https://github.com/BroncBotz3481/YAGSL/wiki/Controller-Properties">deploy/swerve<br/>/controllerproperties.json</a>
       </h3>
       <code id="controllerpropertiesjson">
         function (a, b) {
@@ -608,13 +610,14 @@
         </label>
         <label>
           Angle Integral Zone
-          <input max="100" min="0" name="angle_iz" step="0.01" type="number"
+          <input max="100" min="0" name="angle_iz" step="0.01" style="width: 30%" type="number"
                  value="0">
         </label>
       </form>
     </td>
     <td>
-      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module-PIDF-Properties">pidfproperties.json </a>
+      <h3><a href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module-PIDF-Properties">deploy/swerve<br/>/modules/pidfproperties.json
+      </a>
       </h3>
       <code id="pidfpropertiesjson">
         function (a, b) {
@@ -633,7 +636,7 @@
   }
 
   td {
-    width: 50%;
+    max-width: 50%;
   }
 
   code {

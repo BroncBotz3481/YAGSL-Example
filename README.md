@@ -13,6 +13,34 @@ used in both TimedRobot and Command-Based Robot templates.
 
 We will be actively montoring this and fix any issues when we can!
 
+### TL;DR Make your configuration [here](https://broncbotz3481.github.io/YAGSL-Example/) and put it into the structure bellow.
+
+```text
+deploy
+└── swerve
+    ├── controllerproperties.json
+    ├── modules
+    │   ├── backleft.json
+    │   ├── backright.json
+    │   ├── frontleft.json
+    │   ├── frontright.json
+    │   ├── physicalproperties.json
+    │   └── pidfproperties.json
+    └── swervedrive.json
+```
+
+### Then create your SwerveDrive object like this.
+
+```java
+import java.io.File;
+import edu.wpi.first.wpilibj.Filesystem;
+import swervelib.parser.SwerveParser;
+import swervelib.SwerveDrive;
+
+File swerveJsonDirectory=new File(Filesystem.getDeployDirectory(),"swerve");
+    SwerveDrive swerveDrive=new SwerveParser(swerveJsonDirectory).createSwerveDrive();
+```
+
 ### Falcon Support would not have been possible without support from Team 1466 Webb Robotics!
 
 # Configuration Tips

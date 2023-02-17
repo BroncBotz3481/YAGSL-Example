@@ -12,6 +12,10 @@
     "drive": 0.25,
     "angle": 0.25
   },
+  "encoderPulsePerRotation": {
+    "drive": 1,
+    "angle": 1
+  },
   "wheelGripCoefficientOfFriction": 1.19,
   "angleMotorFreeSpeedRPM": 5676
 }

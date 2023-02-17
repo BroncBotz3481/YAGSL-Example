@@ -13,6 +13,8 @@ used in both TimedRobot and Command-Based Robot templates.
 
 We will be actively montoring this and fix any issues when we can!
 
+### Falcon Support would not have been possible without support from Team 1466 Webb Robotics!
+
 # Configuration Tips
 
 ### My Robot Spins around uncontrollably during autonomous or when attempting to set the heading!

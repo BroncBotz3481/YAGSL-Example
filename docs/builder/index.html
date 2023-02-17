@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Build Swerve Drive Configuration</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+</head>
+<body>
+<table style="width: 100%">
+  <thead>
+  <tr>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>
+      <div>
+        <h1>
+          Swerve Drive
+        </h1>
+        <form id="swervedriveform">
+          <label>
+            Max Speed (Feet per Second)
+            <input max="20" min="0" name="maxSpeed" step="1" type="number" value="14.5">
+          </label>
+          <label>
+            Optimal Voltage
+            <input max="12" min="0" name="optimalVoltage" step="1" type="number" value="12">
+          </label>
+          <label>
+            IMU
+            <select name="imu_type">
+              <option value="pigeon">Pigeon</option>
+              <option value="pigeon2">Pigeon2</option>
+              <option value="navx">NavX</option>
+              <option value="analog">AnalogGyroscope</option>
+              <option value="adis16448">ADIS16448</option>
+              <option value="adis16470">ADIS16470</option>
+              <option value="adxrs450">ADXRS450</option>
+            </select>
+          </label>
+          <label>
+            IMU ID
+            <input name="imu_id" type="number">
+          </label>
+          <label>
+            IMU CAN Bus
+            <input name="imu_canbus" style="width: 50%" type="text">
+          </label>
+          <label>
+            Inverted IMU
+            <input name="invertedIMU" type="checkbox">
+          </label>
+        </form>
+      </div>
+    </td>
+    <td>
+      <h3>swervedrive.json</h3>
+      <code id="swervedrivejson">
+        function (a, b) {
+        sum = a + b;
+        return sum;
+        }
+      </code>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div>
+        <h1>
+          Module Properties
+        </h1>
+        <form id="physicalpropertiesform">
+          <label>
+            Wheel Diameter (inches)
+            <input max="20" min="0" name="wheelDiameter" type="number" value="4">
+          </label>
+          <label>
+            Grip Coefficient of Friction
+            <input max="5" min="0" name="wheelGripCoefficientOfFriction" type="number" value="1.19">
+          </label>
+          <label>
+            Angle Motor Free Speed RPM
+            <input max="20" min="0" name="angleMotorFreeSpeedRPM" type="number" value="5676">
+          </label>
+          <br/>
+
+          <label>
+            Gear Ratio Drive
+            <input name="gearRatio_drive" step="0.01" style="width: 20%" type="number" value="6.75">
+          </label>
+          <label>
+            Gear Ratio Angle
+            <input name="gearRatio_angle" step="0.01" style="width: 20%" type="number" value="12.8">
+          </label>
+          <br/>
+          <label>
+            Current Limit Drive
+            <input name="currentLimit_drive" style="width: 20%" type="number" value="40">
+          </label>
+          <label>
+            Current Limit Angle
+            <input name="currentLimit_angle" style="width: 20%" type="number" value="20">
+          </label>
+          <br/>
+
+          <label>
+            Ramp Rate Drive
+            <input name="rampRate_drive" step="0.01" style="width: 20%" type="number" value="0.25">
+          </label>
+          <label>
+            Ramp Rate Angle
+            <input name="rampRate_angle" step="0.01" style="width: 20%" type="number" value="0.25">
+          </label>
+          <br/>
+          <label>
+            Encoder Ticks Drive
+            <input name="encoderPulsePerRotation_drive" style="width: 20%" type="number"
+                   value="0.25">
+          </label>
+          <label>
+            Encoder Ticks Angle
+            <input name="encoderPulsePerRotation_angle" style="width: 20%" type="number"
+                   value="0.25">
+          </label>
+        </form>
+      </div>
+    </td>
+    <td>
+      <h3>physicalproperties.json</h3>
+      <code id="physicalpropertiesjson">
+        function (a, b) {
+        sum = a + b;
+        return sum;
+        }
+      </code>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div>
+        <h1>
+          Front Left
+        </h1>
+        <form id="frontleftform">
+          <label>
+            Location X
+            <input name="location_x" style="width: 20%" type="number">
+          </label>
+          <label>
+            Location Y
+            <input name="location_y" style="width: 20%" type="number">
+          </label>
+          <label>
+            Absolute Encoder Offset
+            <input name="absoluteEncoderOffset" style="width: 20%" type="number">
+          </label>
+          <br/>
+          <label>
+            Drive Motor
+            <select name="drive_type">
+              <option value="sparkmax">Neo</option>
+              <option value="falcon">Falcon</option>
+            </select>
+          </label>
+          <label>
+            Drive Motor ID
+            <input name="drive_id" style="width: 40%" type="number">
+          </label>
+          <label>
+            Drive Motor CAN Bus
+            <input name="drive_canbus" style="width: 20%" type="text">
+          </label>
+          <label>
+            Drive Motor Inverted
+            <input name="inverted_drive" type="checkbox">
+          </label>
+          <br/>
+          <label>
+            Angle Motor
+            <select name="angle_type">
+              <option value="sparkmax">Neo</option>
+              <option value="falcon">Falcon</option>
+            </select>
+          </label>
+          <label>
+            Angle Motor ID
+            <input name="angle_id" style="width: 40%" type="number">
+          </label>
+          <label>
+            Angle Motor CAN Bus
+            <input name="angle_canbus" style="width: 20%" type="text">
+          </label>
+          <label>
+            Angle Motor Inverted
+            <input name="inverted_angle" type="checkbox">
+          </label>
+          <br/>
+          <label>
+            Absolute Encoder
+            <select name="encoder_type">
+              <option value="none">None</option>
+              <option value="attached">Attached</option>
+              <option value="cancoder">CANCoder</option>
+            </select>
+          </label>
+          <label>
+            Absolute Encoder ID
+            <input name="encoder_id" style="width: 40%" type="number">
+          </label>
+          <label>
+            Absolute Encoder CAN Bus
+            <input name="encoder_canbus" style="width: 20%" type="text">
+          </label>
+          <label>
+            Absolute Encoder Inverted
+            <input name="inverted_encoder" type="checkbox">
+          </label>
+          <br/>
+        </form>
+      </div>
+    </td>
+    <td>
+      <h3>frontleft.json</h3>
+      <code id="frontleftjson">
+        function (a, b) {
+        sum = a + b;
+        return sum;
+        }
+      </code>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div>
+        <h1>
+          Front Right
+        </h1>
+        <form id="frontrightform">
+          <label>
+            Location X
+            <input name="location_x" style="width: 20%" type="number">
+          </label>
+          <label>
+            Location Y
+            <input name="location_y" style="width: 20%" type="number">
+          </label>
+          <label>
+            Absolute Encoder Offset
+            <input name="absoluteEncoderOffset" style="width: 20%" type="number">
+          </label>
+          <br/>
+          <label>
+            Drive Motor
+            <select name="drive_type">
+              <option value="sparkmax">Neo</option>
+              <option value="falcon">Falcon</option>
+            </select>
+          </label>
+          <label>
+            Drive Motor ID
+            <input name="drive_id" style="width: 40%" type="number">
+          </label>
+          <label>
+            Drive Motor CAN Bus
+            <input name="drive_canbus" style="width: 20%" type="text">
+          </label>
+          <label>
+            Drive Motor Inverted
+            <input name="inverted_drive" type="checkbox">
+          </label>
+          <br/>
+          <label>
+            Angle Motor
+            <select name="angle_type">
+              <option value="sparkmax">Neo</option>
+              <option value="falcon">Falcon</option>
+            </select>
+          </label>
+          <label>
+            Angle Motor ID
+            <input name="angle_id" style="width: 40%" type="number">
+          </label>
+          <label>
+            Angle Motor CAN Bus
+            <input name="angle_canbus" style="width: 20%" type="text">
+          </label>
+          <label>
+            Angle Motor Inverted
+            <input name="inverted_angle" type="checkbox">
+          </label>
+          <br/>
+          <label>
+            Absolute Encoder
+            <select name="encoder_type">
+              <option value="none">None</option>
+              <option value="attached">Attached</option>
+              <option value="cancoder">CANCoder</option>
+            </select>
+          </label>
+          <label>
+            Absolute Encoder ID
+            <input name="encoder_id" style="width: 40%" type="number">
+          </label>
+          <label>
+            Absolute Encoder CAN Bus
+            <input name="encoder_canbus" style="width: 20%" type="text">
+          </label>
+          <label>
+            Absolute Encoder Inverted
+            <input name="inverted_encoder" type="checkbox">
+          </label>
+          <br/>
+        </form>
+      </div>
+    </td>
+    <td>
+      <h3>frontright.json</h3>
+      <code id="frontrightjson">
+        function (a, b) {
+        sum = a + b;
+        return sum;
+        }
+      </code>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div>
+        <h1>
+          Back Left
+        </h1>
+        <form id="backleftform">
+          <label>
+            Location X
+            <input name="location_x" style="width: 20%" type="number">
+          </label>
+          <label>
+            Location Y
+            <input name="location_y" style="width: 20%" type="number">
+          </label>
+          <label>
+            Absolute Encoder Offset
+            <input name="absoluteEncoderOffset" style="width: 20%" type="number">
+          </label>
+          <br/>
+          <label>
+            Drive Motor
+            <select name="drive_type">
+              <option value="sparkmax">Neo</option>
+              <option value="falcon">Falcon</option>
+            </select>
+          </label>
+          <label>
+            Drive Motor ID
+            <input name="drive_id" style="width: 40%" type="number">
+          </label>
+          <label>
+            Drive Motor CAN Bus
+            <input name="drive_canbus" style="width: 20%" type="text">
+          </label>
+          <label>
+            Drive Motor Inverted
+            <input name="inverted_drive" type="checkbox">
+          </label>
+          <br/>
+          <label>
+            Angle Motor
+            <select name="angle_type">
+              <option value="sparkmax">Neo</option>
+              <option value="falcon">Falcon</option>
+            </select>
+          </label>
+          <label>
+            Angle Motor ID
+            <input name="angle_id" style="width: 40%" type="number">
+          </label>
+          <label>
+            Angle Motor CAN Bus
+            <input name="angle_canbus" style="width: 20%" type="text">
+          </label>
+          <label>
+            Angle Motor Inverted
+            <input name="inverted_angle" type="checkbox">
+          </label>
+          <br/>
+          <label>
+            Absolute Encoder
+            <select name="encoder_type">
+              <option value="none">None</option>
+              <option value="attached">Attached</option>
+              <option value="cancoder">CANCoder</option>
+            </select>
+          </label>
+          <label>
+            Absolute Encoder ID
+            <input name="encoder_id" style="width: 40%" type="number">
+          </label>
+          <label>
+            Absolute Encoder CAN Bus
+            <input name="encoder_canbus" style="width: 20%" type="text">
+          </label>
+          <label>
+            Absolute Encoder Inverted
+            <input name="inverted_encoder" type="checkbox">
+          </label>
+          <br/>
+        </form>
+      </div>
+    </td>
+    <td>
+      <h3>backleft.json</h3>
+      <code id="backleftjson">
+        function (a, b) {
+        sum = a + b;
+        return sum;
+        }
+      </code>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div>
+        <h1>
+          Back Right
+        </h1>
+        <form id="backrightform">
+          <label>
+            Location X
+            <input name="location_x" style="width: 20%" type="number">
+          </label>
+          <label>
+            Location Y
+            <input name="location_y" style="width: 20%" type="number">
+          </label>
+          <label>
+            Absolute Encoder Offset
+            <input name="absoluteEncoderOffset" style="width: 20%" type="number">
+          </label>
+          <br/>
+          <label>
+            Drive Motor
+            <select name="drive_type">
+              <option value="sparkmax">Neo</option>
+              <option value="falcon">Falcon</option>
+            </select>
+          </label>
+          <label>
+            Drive Motor ID
+            <input name="drive_id" style="width: 40%" type="number">
+          </label>
+          <label>
+            Drive Motor CAN Bus
+            <input name="drive_canbus" style="width: 20%" type="text">
+          </label>
+          <label>
+            Drive Motor Inverted
+            <input name="inverted_drive" type="checkbox">
+          </label>
+          <br/>
+          <label>
+            Angle Motor
+            <select name="angle_type">
+              <option value="sparkmax">Neo</option>
+              <option value="falcon">Falcon</option>
+            </select>
+          </label>
+          <label>
+            Angle Motor ID
+            <input name="angle_id" style="width: 40%" type="number">
+          </label>
+          <label>
+            Angle Motor CAN Bus
+            <input name="angle_canbus" style="width: 20%" type="text">
+          </label>
+          <label>
+            Angle Motor Inverted
+            <input name="inverted_angle" type="checkbox">
+          </label>
+          <br/>
+          <label>
+            Absolute Encoder
+            <select name="encoder_type">
+              <option value="none">None</option>
+              <option value="attached">Attached</option>
+              <option value="cancoder">CANCoder</option>
+            </select>
+          </label>
+          <label>
+            Absolute Encoder ID
+            <input name="encoder_id" style="width: 40%" type="number">
+          </label>
+          <label>
+            Absolute Encoder CAN Bus
+            <input name="encoder_canbus" style="width: 20%" type="text">
+          </label>
+          <label>
+            Absolute Encoder Inverted
+            <input name="inverted_encoder" type="checkbox">
+          </label>
+          <br/>
+        </form>
+      </div>
+    </td>
+    <td>
+      <h3>backright.json</h3>
+      <code id="backrightjson">
+        function (a, b) {
+        sum = a + b;
+        return sum;
+        }
+      </code>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <h1>Heading Tuning</h1>
+      <form id="controllerpropertiesform">
+        <label>
+          Joystick Radial Deadband
+          <input max="1" min="0" name="angleJoystickRadiusDeadband" step="0.1" type="number"
+                 value="0.5">
+        </label>
+        <br/>
+        <label>
+          Heading kP
+          <input max="1" min="0" name="heading_p" step="0.01" type="number"
+                 value="0.4">
+        </label>
+        <label>
+          Heading kI
+          <input max="1" min="0" name="heading_i" step="0.01" type="number"
+                 value="0">
+        </label>
+        <label>
+          Heading kD
+          <input max="1" min="0" name="heading_d" step="0.01" type="number"
+                 value="0.01">
+        </label>
+      </form>
+    </td>
+    <td>
+      <h3>controllerproperties.json</h3>
+      <code id="controllerpropertiesjson">
+        function (a, b) {
+        sum = a + b;
+        return sum;
+        }
+      </code>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <h1>Module Tuning</h1>
+      <form id="pidfpropertiesform">
+        <label>
+          Drive kP
+          <input max="10" min="0" name="drive_p" step="0.001" type="number"
+                 value="0.0020645">
+        </label>
+        <label>
+          Drive kI
+          <input max="1" min="0" name="drive_i" step="0.01" type="number"
+                 value="0">
+        </label>
+        <label>
+          Drive kD
+          <input max="1" min="0" name="drive_d" step="0.01" type="number"
+                 value="0">
+        </label>
+        <label>
+          Drive kF
+          <input max="1" min="0" name="drive_f" step="0.01" type="number"
+                 value="0">
+        </label>
+        <label>
+          Drive Integral Zone
+          <input max="100" min="0" name="drive_iz" step="0.01" type="number"
+                 value="0">
+        </label>
+        <br/>
+        <label>
+          Angle kP
+          <input max="10" min="0" name="angle_p" step="0.001" type="number"
+                 value="0.0020645">
+        </label>
+        <label>
+          Angle kI
+          <input max="1" min="0" name="angle_i" step="0.01" type="number"
+                 value="0">
+        </label>
+        <label>
+          Angle kD
+          <input max="1" min="0" name="angle_d" step="0.01" type="number"
+                 value="0">
+        </label>
+        <label>
+          Angle kF
+          <input max="1" min="0" name="angle_f" step="0.01" type="number"
+                 value="0">
+        </label>
+        <label>
+          Angle Integral Zone
+          <input max="100" min="0" name="angle_iz" step="0.01" type="number"
+                 value="0">
+        </label>
+      </form>
+    </td>
+    <td>
+      <h3>pidfproperties.json</h3>
+      <code id="pidfpropertiesjson">
+        function (a, b) {
+        sum = a + b;
+        return sum;
+        }
+      </code>
+    </td>
+  </tr>
+  </tbody>
+</table>
+</body>
+<style>
+  label {
+    display: block;
+  }
+
+  td {
+    width: 50%;
+  }
+
+  code {
+    display: block;
+    white-space: break-spaces;
+    background: lightgray;
+  }
+</style>
+<script>
+  function isNumeric(str) {
+    if (typeof str != "string") {
+      return false
+    } // we only process strings!
+    return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+        !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+  }
+
+  function jsonify(formname) {
+    var data = {};
+    var formdata = $("#" + formname + "form").serializeArray();
+    for (var value of formdata) {
+      if (value.name.includes("_")) {
+        var struct = value.name.substring(0, value.name.indexOf("_"));
+        if (data[struct] == null) {
+          data[struct] = {};
+        }
+        data[struct][value.name.substring(value.name.indexOf("_") + 1)] = isNumeric(value.value)
+            ? parseFloat(value.value) : (value.value === "" ? null : value.value);
+      } else {
+        data[value.name] = isNumeric(value.value) ? parseFloat(value.value) : (value.value === ""
+            ? null : value.value);
+      }
+    }
+    return JSON.stringify(data, null, 2);
+  }
+
+  function updateJSON(name) {
+    $("#" + name + "json").text(jsonify(name));
+
+  }
+
+  function updateAll() {
+    let jsons = ['pidfproperties', 'controllerproperties', 'physicalproperties', 'frontleft',
+      'frontright', 'backleft', 'backright', 'swervedrive', 'controllerproperties'];
+    for (const json of jsons) {
+      updateJSON(json);
+    }
+  }
+
+  updateAll();
+  setInterval(updateAll, 500)
+</script>
+</html>

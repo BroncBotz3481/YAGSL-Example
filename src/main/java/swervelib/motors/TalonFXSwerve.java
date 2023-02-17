@@ -5,10 +5,8 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Robot;
 import swervelib.encoders.SwerveAbsoluteEncoder;
-import swervelib.math.SwerveMath;
 import swervelib.parser.PIDFConfig;
 import swervelib.simulation.ctre.PhysicsSim;
 
@@ -117,17 +115,7 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public SwerveMotor setAbsoluteEncoder(SwerveAbsoluteEncoder encoder)
   {
-    /*if (encoder.getAbsoluteEncoder() instanceof CANCoder)
-    {
-      configuration.primaryPID.selectedFeedbackSensor = FeedbackDevice.RemoteSensor0;
-      configuration.remoteFilter0.remoteSensorDeviceID = ((CANCoder) encoder.getAbsoluteEncoder()).getDeviceID();
-      configuration.remoteFilter0.remoteSensorSource = RemoteSensorSource.CANCoder;
-//      motor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
-//      motor.configRemoteFeedbackFilter((CANCoder) encoder.getAbsoluteEncoder(),
-//                                       CTRE_remoteSensor.REMOTE_SENSOR_0.ordinal());
-      configChanged = true;
-      absoluteEncoder = true;
-    }*/
+    // Do not support.
     return this;
   }
 
@@ -148,9 +136,6 @@ public class TalonFXSwerve extends SwerveMotor
   public void configureIntegratedEncoder(double positionConversionFactor)
   {
     this.positionConversionFactor = positionConversionFactor;
-//    configuration.primaryPID.selectedFeedbackCoefficient = positionConversionFactor;
-//    configChanged = true;
-//    motor.configSelectedFeedbackCoefficient(positionConversionFactor);
   }
 
   /**
@@ -161,14 +146,6 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public void configurePIDF(PIDFConfig config)
   {
-//    int slotIdx = isDriveMotor ? CTRE_slotIdx.Velocity.ordinal() : CTRE_slotIdx.Turning.ordinal();
-//    slotIdx = 0;
-//    motor.config_kP(slotIdx, config.p);
-//    motor.config_kI(slotIdx, config.i);
-//    motor.config_kD(slotIdx, config.d);
-//    motor.config_kF(slotIdx, config.f);
-//    motor.config_IntegralZone(slotIdx, config.iz);
-//    motor.configClosedLoopPeakOutput(slotIdx, config.output.max);
     configuration.slot0.kP = config.p;
     configuration.slot0.kI = config.i;
     configuration.slot0.kD = config.d;
@@ -236,7 +213,7 @@ public class TalonFXSwerve extends SwerveMotor
     motor.set(percentOutput);
   }
 
-    /**
+  /**
    * Put an angle within the the 360 deg scope of a reference. For example, given a scope reference of 756 degrees,
    * assumes the full scope is (720-1080), and places an angle of 22 degrees into it, returning 742 deg.
    *
@@ -288,8 +265,8 @@ public class TalonFXSwerve extends SwerveMotor
    */
   public double convertToNativeSensorUnits(double setpoint)
   {
-    setpoint = isDriveMotor ? 
-               setpoint * .1 : 
+    setpoint = isDriveMotor ?
+               setpoint * .1 :
                placeInAppropriate0To360Scope(getRawPosition(), setpoint);
     return setpoint / positionConversionFactor;
   }
@@ -313,26 +290,15 @@ public class TalonFXSwerve extends SwerveMotor
     if (!isDriveMotor && !Robot.isReal())
     {
       System.out.println("The angle motor is " + motor.getDeviceID());
-      // System.out.println("Setpoint " + Math.round(normalize(setpoint)));
       System.out.println("Current point " + Math.round(getPosition()));
 
-      // Credit to Team 3538!
-      // Inspired from https://github.com/FRC-Team3538/FRC2023-beta/blob/java/src/main/java/io/robojackets/subsystems/SwerveModule.java#L176-L199
-      // Rotation2d normalized_target_angle = Rotation2d.fromDegrees(SwerveMath.normalizeAngle(setpoint));
-      // Rotation2d actual_current_angle    = Rotation2d.fromDegrees(getRawPosition());
-      // Rotation2d normalized_actual_current_angle = Rotation2d.fromDegrees(
-      //     SwerveMath.normalizeAngle(actual_current_angle.getDegrees()));
-
-      // Rotation2d target_diff = normalized_target_angle.minus(normalized_actual_current_angle);
-
-      // setpoint = Math.toDegrees(actual_current_angle.getRadians() + target_diff.getRadians());
     }
 
     motor.set(isDriveMotor ? ControlMode.Velocity : ControlMode.Position,
               convertToNativeSensorUnits(setpoint),
               DemandType.ArbitraryFeedForward,
               feedforward * -0.3);
-    // Credit to Team 3181 for the -0.3, I'm not sure why it works but it does.
+    // Credit to Team 3181 for the -0.3, I'm not sure why it works, but it does.
   }
 
   /**
@@ -404,11 +370,6 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public void setCurrentLimit(int currentLimit)
   {
-//    SupplyCurrentLimitConfiguration config = new SupplyCurrentLimitConfiguration();
-//    motor.configGetSupplyCurrentLimit(config);
-//    config.currentLimit = currentLimit;
-//    config.enable = true;
-//    motor.configSupplyCurrentLimit(config);
     configuration.supplyCurrLimit.currentLimit = currentLimit;
     configuration.supplyCurrLimit.enable = true;
     configChanged = true;
@@ -422,8 +383,6 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public void setLoopRampRate(double rampRate)
   {
-//    motor.configClosedloopRamp(rampRate);
-//    motor.configOpenloopRamp(rampRate);
     configuration.closedloopRamp = rampRate;
     configuration.openloopRamp = rampRate;
     configChanged = true;

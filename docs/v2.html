@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://kit.fontawesome.com/1d72776854.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/css/v2.css">
+</head>
+
+<body>
+    <div class="container-md">
+        <div id="swervedrive-card" class="card mt-4">
+            <div class="card-header" data-bs-toggle="collapse" data-bs-target="#swervedrive-container"
+                aria-expanded="false" aria-controls="swervedrive-container">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                            <h1 class="d-inline display-6">Swerve Drive</h1>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <p class="lead float-end"><a
+                                href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Drive">deploy/swerve/swervedrive.json</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div id="swervedrive-container" class="row g-0 collapse">
+                <div class="col-12 col-md-6">
+                    <div class="card-body">
+                        <form id="swervedrive-form">
+                            <div class="form-floating mb-3">
+                                <input id="maxSpeed-input" class="form-control" name="maxSpeed" type="number"
+                                    value="14.5" placeholder="14.5" aria-describedby="maxSpeed-help">
+                                <label class="form-label" for="maxSpeed-input">Max Speed</label>
+                                <div id="maxSpeed-help" class="form-text">Feet per Second</div>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="optimalVoltage-input" class="form-control" name="optimalVoltage"
+                                    type="number" value="12" placeholder="12">
+                                <label class="form-label" for="optimalVoltage-input">Optimal Voltage</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <select id="imu_type-input" class="form-select" name="imu_type">
+                                    <option value="pigeon" selected>Pigeon</option>
+                                    <option value="pigeon2">Pigeon2</option>
+                                    <option value="navx">NavX</option>
+                                    <option value="analog">AnalogGyroscope</option>
+                                    <option value="adis16448">ADIS16448</option>
+                                    <option value="adis16470">ADIS16470</option>
+                                    <option value="adxrs450">ADXRS450</option>
+                                </select>
+                                <label class="form-label" for="imu_type-input">IMU Type</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="imu_id-input" class="form-control" name="imu_id" type="number" value="0"
+                                    placeholder="0">
+                                <label class="form-label" for="imu_id-input">IMU ID</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="imu_canbus-input" class="form-control" name="imu_canbus" type="text"
+                                    value="rio" placeholder="rio">
+                                <label class="form-label" for="imu_canbus-input">IMU CAN Bus</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="invertedIMU-input"
+                                    name="invertedIMU">
+                                <label class="form-check-label" for="invertedIMU-input">
+                                    Inverted IMU
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div
+                    class="col-12 col-md-6 bg-body-tertiary border-sm-left-0 border-md-left border-top border-md-top-0 card-body text-muted">
+                    <i onClick="copyText('swervedrive')" class='d-inline float-end bx bx-clipboard bx-sm bx-tada-hover'
+                        data-bs-toggle="tooltip" data-bs-title="Copy JSON" data-bs-custom-class="v2-tooltip"></i>
+                    <pre id="swervedrive-json" class="fs-6"></pre>
+                </div>
+            </div>
+        </div>
+        <div id="physicalproperties-card" class="card mt-4">
+            <div class="card-header" data-bs-toggle="collapse" data-bs-target="#physicalproperties-container"
+                aria-expanded="false" aria-controls="physicalproperties-container">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <h1 class="d-inline display-6">Module Properties</h1>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <p class="lead float-end"><a
+                                href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module-Physical-Properties">deploy/swerve/modules/physicalproperties.json</a>
+                            </h1>
+                    </div>
+                </div>
+            </div>
+            <div id="physicalproperties-container" class="row g-0 collapse">
+                <div class="col-12 col-md-6">
+                    <div class="card-body">
+                        <form id="physicalproperties-form">
+                            <div class="form-floating mb-3">
+                                <input id="wheelDiameter-input" class="form-control" name="wheelDiameter" type="number"
+                                    value="4" placeholder="4" aria-describedby="wheelDiameter-help">
+                                <label class="form-label" for="wheelDiameter-input">Max Speed</label>
+                                <div id="wheelDiameter-help" class="form-text">Inches</div>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="wheelGripCoefficientOfFriction-input" class="form-control"
+                                    name="wheelGripCoefficientOfFriction" type="number" value="1.19" placeholder="1.19">
+                                <label class="form-label" for="wheelGripCoefficientOfFriction-input">Grip Coefficient of
+                                    Friction</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="freespeedrpm-input" class="form-control" name="freespeedrpm" type="number"
+                                    value="5676" placeholder="5676">
+                                <label class="form-label" for="freespeedrpm-input">Angle Motor Free Speed RPM</label>
+                            </div>
+                            <hr />
+                            <div class="form-floating mb-3">
+                                <input id="gearRatio_drive-input" class="form-control" name="gearRatio_drive"
+                                    type="number" value="6.75" placeholder="6.75">
+                                <label class="form-label" for="gearRatio_drive-input">Gear Ratio Drive</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="gearRatio_angle-input" class="form-control" name="gearRatio_angle"
+                                    type="number" value="12.8" placeholder="12.8">
+                                <label class="form-label" for="gearRatio_angle-input">Gear Ratio Angle</label>
+                            </div>
+                            <hr />
+                            <div class="form-floating mb-3">
+                                <input id="currentLimit_drive-input" class="form-control" name="currentLimit_drive"
+                                    type="number" value="40" placeholder="40">
+                                <label class="form-label" for="currentLimit_drive-input">Current Limit Drive</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="currentLimit_angle-input" class="form-control" name="currentLimit_angle"
+                                    type="number" value="20" placeholder="20">
+                                <label class="form-label" for="currentLimit_angle-input">Current Limit Angle</label>
+                            </div>
+                            <hr />
+                            <div class="form-floating mb-3">
+                                <input id="rampRate_drive-input" class="form-control" name="rampRate_drive"
+                                    type="number" value=".25" placeholder=".25">
+                                <label class="form-label" for="rampRate_drive-input">Ramp Rate Drive</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="rampRate_angle-input" class="form-control" name="rampRate_angle"
+                                    type="number" value=".25" placeholder=".25">
+                                <label class="form-label" for="rampRate_angle-input">Ramp Rate Angle</label>
+                            </div>
+                            <hr />
+                            <div class="form-floating mb-3">
+                                <input id="encoderPulsePerRotation_drive-input" class="form-control"
+                                    name="encoderPulsePerRotation_drive" type="number" value=".25" placeholder=".25">
+                                <label class="form-label" for="encoderPulsePerRotation_drive-input">Encoder Ticks
+                                    Drive</label>
+                            </div>
+                            <div class="form-floating">
+                                <input id="encoderPulsePerRotation_angle-input" class="form-control"
+                                    name="encoderPulsePerRotation_angle" type="number" value=".25" placeholder=".25">
+                                <label class="form-label" for="encoderPulsePerRotation_angle-input">Encoder Ticks
+                                    Angle</label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div
+                    class="col-12 col-md-6 bg-body-tertiary border-sm-left-0 border-md-left border-sm-top border-md-top-0 card-body text-muted">
+                    <i onClick="copyText('physicalproperties')"
+                        class='d-inline float-end bx bx-clipboard bx-sm bx-tada-hover' data-bs-toggle="tooltip"
+                        data-bs-title="Copy JSON" data-bs-custom-class="v2-tooltip"></i>
+                    <pre id="physicalproperties-json" class="fs-6"></pre>
+                </div>
+            </div>
+        </div>
+        <div id="frontleft-card" class="card mt-4">
+            <div class="card-header" data-bs-toggle="collapse" data-bs-target="#frontleft-container"
+                aria-expanded="false" aria-controls="frontleft-container">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <h1 class="d-inline display-6">Front Left Module</h1>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <p class="lead float-end"><a
+                                href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module">deploy/swerve/modules/frontleft.json</a>
+                            </h1>
+                    </div>
+                </div>
+            </div>
+            <div id="frontleft-container" class="row g-0 collapse">
+                <div class="col-12 col-md-6">
+                    <div class="card-body">
+                        <form id="frontleft-form">
+                            <div class="form-floating mb-3">
+                                <input id="location_x-input" class="form-control" name="location_x" type="number"
+                                    value="0" placeholder="0" aria-describedby="location_x-help">
+                                <label class="form-label" for="location_x-input">Location X</label>
+                                <div id="location_x-help" class="form-text">Inches</div>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="location_y-input" class="form-control" name="location_y" type="number"
+                                    value="0" placeholder="0" aria-describedby="location_y-help">
+                                <label class="form-label" for="location_y-input">Location Y</label>
+                                <div id="location_y-help" class="form-text">Inches</div>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="absoluteEncoderOffset-input" class="form-control"
+                                    name="absoluteEncoderOffset" type="number" value="0" placeholder="0">
+                                <label class="form-label" for="absoluteEncoderOffset-input">Absolute Encoder
+                                    Offset</label>
+                            </div>
+                            <hr />
+                            <div class="form-floating mb-3">
+                                <select id="drive_type-input" class="form-select" name="drive_type">
+                                    <option value="sparkmax" selected>NEO</option>
+                                    <option value="falcon">Falcon</option>
+                                </select>
+                                <label class="form-label" for="drive_type-input">Drive Motor Type</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="drive_id-input" class="form-control" name="drive_id" type="number" value="0"
+                                    placeholder="0">
+                                <label class="form-label" for="drive_id-input">Drive Motor ID</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="drive_canbus-input" class="form-control" name="drive_canbus" type="text"
+                                    value="rio" placeholder="rio">
+                                <label class="form-label" for="drive_canbus-input">Drive Motor CAN Bus</label>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="inverted_drive-input"
+                                    name="inverted_drive">
+                                <label class="form-check-label" for="inverted_drive-input">
+                                    Drive Motor Inverted
+                                </label>
+                            </div>
+                            <hr />
+                            <div class="form-floating mb-3">
+                                <select id="angle_type-input" class="form-select" name="angle_type">
+                                    <option value="sparkmax" selected>NEO</option>
+                                    <option value="falcon">Falcon</option>
+                                </select>
+                                <label class="form-label" for="angle_type-input">Angle Motor Type</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="angle_id-input" class="form-control" name="angle_id" type="number" value="0"
+                                    placeholder="0">
+                                <label class="form-label" for="angle_id-input">Angle Motor ID</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="angle_canbus-input" class="form-control" name="angle_canbus" type="text"
+                                    value="rio" placeholder="rio">
+                                <label class="form-label" for="angle_canbus-input">Angle Motor CAN Bus</label>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="inverted_angle-input"
+                                    name="inverted_angle">
+                                <label class="form-check-label" for="inverted_angle-input">
+                                    Angle Motor Inverted
+                                </label>
+                            </div>
+                            <hr />
+                            <div class="form-floating mb-3">
+                                <select id="encoder_type-input" class="form-select" name="encoder_type">
+                                    <option value="none">None</option>
+                                    <option value="attached">Attached</option>
+                                    <option value="cancoder">CANCoder</option>
+                                </select>
+                                <label class="form-label" for="encoder_type-input">Absolute Encoder Type</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="encoder_id-input" class="form-control" name="encoder_id" type="number"
+                                    value="0" placeholder="0">
+                                <label class="form-label" for="encoder_id-input">Absolute Encoder ID</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="encoder_canbus-input" class="form-control" name="encoder_canbus" type="text"
+                                    value="rio" placeholder="rio">
+                                <label class="form-label" for="encoder_canbus-input">Absolute Encoder CAN Bus</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="inverted_encoder-input"
+                                    name="inverted_encoder">
+                                <label class="form-check-label" for="inverted_encoder-input">
+                                    Absolute Encoder Inverted
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div
+                    class="col-12 col-md-6 bg-body-tertiary border-sm-left-0 border-md-left border-sm-top border-md-top-0 card-body text-muted">
+                    <i onClick="copyText('frontleft')" class='d-inline float-end bx bx-clipboard bx-sm bx-tada-hover'
+                        data-bs-toggle="tooltip" data-bs-title="Copy JSON" data-bs-custom-class="v2-tooltip"></i>
+                    <pre id="frontleft-json" class="fs-6"></pre>
+                </div>
+            </div>
+        </div>
+        <div id="frontright-card" class="card mt-4">
+            <div class="card-header" data-bs-toggle="collapse" data-bs-target="#frontright-container"
+                aria-expanded="false" aria-controls="frontright-container">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <h1 class="d-inline display-6">Front Right Module</h1>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <p class="lead float-end"><a
+                                href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module">deploy/swerve/modules/frontright.json</a>
+                            </h1>
+                    </div>
+                </div>
+            </div>
+            <div id="frontright-container" class="row g-0 collapse">
+                <div class="col-12 col-md-6">
+                    <div class="card-body">
+                        <form id="frontright-form">
+                            <div class="form-floating mb-3">
+                                <input id="location_x-input" class="form-control" name="location_x" type="number"
+                                    value="0" placeholder="0" aria-describedby="location_x-help">
+                                <label class="form-label" for="location_x-input">Location X</label>
+                                <div id="location_x-help" class="form-text">Inches</div>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="location_y-input" class="form-control" name="location_y" type="number"
+                                    value="0" placeholder="0" aria-describedby="location_y-help">
+                                <label class="form-label" for="location_y-input">Location Y</label>
+                                <div id="location_y-help" class="form-text">Inches</div>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="absoluteEncoderOffset-input" class="form-control"
+                                    name="absoluteEncoderOffset" type="number" value="0" placeholder="0">
+                                <label class="form-label" for="absoluteEncoderOffset-input">Absolute Encoder
+                                    Offset</label>
+                            </div>
+                            <hr />
+                            <div class="form-floating mb-3">
+                                <select id="drive_type-input" class="form-select" name="drive_type">
+                                    <option value="sparkmax" selected>NEO</option>
+                                    <option value="falcon">Falcon</option>
+                                </select>
+                                <label class="form-label" for="drive_type-input">Drive Motor Type</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="drive_id-input" class="form-control" name="drive_id" type="number" value="0"
+                                    placeholder="0">
+                                <label class="form-label" for="drive_id-input">Drive Motor ID</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="drive_canbus-input" class="form-control" name="drive_canbus" type="text"
+                                    value="rio" placeholder="rio">
+                                <label class="form-label" for="drive_canbus-input">Drive Motor CAN Bus</label>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="inverted_drive-input"
+                                    name="inverted_drive">
+                                <label class="form-check-label" for="inverted_drive-input">
+                                    Drive Motor Inverted
+                                </label>
+                            </div>
+                            <hr />
+                            <div class="form-floating mb-3">
+                                <select id="angle_type-input" class="form-select" name="angle_type">
+                                    <option value="sparkmax" selected>NEO</option>
+                                    <option value="falcon">Falcon</option>
+                                </select>
+                                <label class="form-label" for="angle_type-input">Angle Motor Type</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="angle_id-input" class="form-control" name="angle_id" type="number" value="0"
+                                    placeholder="0">
+                                <label class="form-label" for="angle_id-input">Angle Motor ID</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="angle_canbus-input" class="form-control" name="angle_canbus" type="text"
+                                    value="rio" placeholder="rio">
+                                <label class="form-label" for="angle_canbus-input">Angle Motor CAN Bus</label>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="inverted_angle-input"
+                                    name="inverted_angle">
+                                <label class="form-check-label" for="inverted_angle-input">
+                                    Angle Motor Inverted
+                                </label>
+                            </div>
+                            <hr />
+                            <div class="form-floating mb-3">
+                                <select id="encoder_type-input" class="form-select" name="encoder_type">
+                                    <option value="none">None</option>
+                                    <option value="attached">Attached</option>
+                                    <option value="cancoder">CANCoder</option>
+                                </select>
+                                <label class="form-label" for="encoder_type-input">Absolute Encoder Type</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="encoder_id-input" class="form-control" name="encoder_id" type="number"
+                                    value="0" placeholder="0">
+                                <label class="form-label" for="encoder_id-input">Absolute Encoder ID</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="encoder_canbus-input" class="form-control" name="encoder_canbus" type="text"
+                                    value="rio" placeholder="rio">
+                                <label class="form-label" for="encoder_canbus-input">Absolute Encoder CAN Bus</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="inverted_encoder-input"
+                                    name="inverted_encoder">
+                                <label class="form-check-label" for="inverted_encoder-input">
+                                    Absolute Encoder Inverted
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div
+                    class="col-12 col-md-6 bg-body-tertiary border-sm-left-0 border-md-left border-sm-top border-md-top-0 card-body text-muted">
+                    <i onClick="copyText('frontright')" class='d-inline float-end bx bx-clipboard bx-sm bx-tada-hover'
+                        data-bs-toggle="tooltip" data-bs-title="Copy JSON" data-bs-custom-class="v2-tooltip"></i>
+                    <pre id="frontright-json" class="fs-6"></pre>
+                </div>
+            </div>
+        </div>
+        <div id="backleft-card" class="card mt-4">
+            <div class="card-header" data-bs-toggle="collapse" data-bs-target="#backleft-container"
+                aria-expanded="false" aria-controls="backleft-container">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <h1 class="display-6">Back Left Module</h1>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <p class="lead float-end"><a
+                                href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module">deploy/swerve/modules/backleft.json</a>
+                            </h1>
+                    </div>
+                </div>
+            </div>
+            <div id="backleft-container" class="row g-0 collapse">
+                <div class="col-12 col-md-6">
+                    <div class="card-body">
+                        <form id="backleft-form">
+                            <div class="form-floating mb-3">
+                                <input id="location_x-input" class="form-control" name="location_x" type="number"
+                                    value="0" placeholder="0" aria-describedby="location_x-help">
+                                <label class="form-label" for="location_x-input">Location X</label>
+                                <div id="location_x-help" class="form-text">Inches</div>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="location_y-input" class="form-control" name="location_y" type="number"
+                                    value="0" placeholder="0" aria-describedby="location_y-help">
+                                <label class="form-label" for="location_y-input">Location Y</label>
+                                <div id="location_y-help" class="form-text">Inches</div>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="absoluteEncoderOffset-input" class="form-control"
+                                    name="absoluteEncoderOffset" type="number" value="0" placeholder="0">
+                                <label class="form-label" for="absoluteEncoderOffset-input">Absolute Encoder
+                                    Offset</label>
+                            </div>
+                            <hr />
+                            <div class="form-floating mb-3">
+                                <select id="drive_type-input" class="form-select" name="drive_type">
+                                    <option value="sparkmax" selected>NEO</option>
+                                    <option value="falcon">Falcon</option>
+                                </select>
+                                <label class="form-label" for="drive_type-input">Drive Motor Type</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="drive_id-input" class="form-control" name="drive_id" type="number" value="0"
+                                    placeholder="0">
+                                <label class="form-label" for="drive_id-input">Drive Motor ID</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="drive_canbus-input" class="form-control" name="drive_canbus" type="text"
+                                    value="rio" placeholder="rio">
+                                <label class="form-label" for="drive_canbus-input">Drive Motor CAN Bus</label>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="inverted_drive-input"
+                                    name="inverted_drive">
+                                <label class="form-check-label" for="inverted_drive-input">
+                                    Drive Motor Inverted
+                                </label>
+                            </div>
+                            <hr />
+                            <div class="form-floating mb-3">
+                                <select id="angle_type-input" class="form-select" name="angle_type">
+                                    <option value="sparkmax" selected>NEO</option>
+                                    <option value="falcon">Falcon</option>
+                                </select>
+                                <label class="form-label" for="angle_type-input">Angle Motor Type</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="angle_id-input" class="form-control" name="angle_id" type="number" value="0"
+                                    placeholder="0">
+                                <label class="form-label" for="angle_id-input">Angle Motor ID</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="angle_canbus-input" class="form-control" name="angle_canbus" type="text"
+                                    value="rio" placeholder="rio">
+                                <label class="form-label" for="angle_canbus-input">Angle Motor CAN Bus</label>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="inverted_angle-input"
+                                    name="inverted_angle">
+                                <label class="form-check-label" for="inverted_angle-input">
+                                    Angle Motor Inverted
+                                </label>
+                            </div>
+                            <hr />
+                            <div class="form-floating mb-3">
+                                <select id="encoder_type-input" class="form-select" name="encoder_type">
+                                    <option value="none">None</option>
+                                    <option value="attached">Attached</option>
+                                    <option value="cancoder">CANCoder</option>
+                                </select>
+                                <label class="form-label" for="encoder_type-input">Absolute Encoder Type</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="encoder_id-input" class="form-control" name="encoder_id" type="number"
+                                    value="0" placeholder="0">
+                                <label class="form-label" for="encoder_id-input">Absolute Encoder ID</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="encoder_canbus-input" class="form-control" name="encoder_canbus" type="text"
+                                    value="rio" placeholder="rio">
+                                <label class="form-label" for="encoder_canbus-input">Absolute Encoder CAN Bus</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="inverted_encoder-input"
+                                    name="inverted_encoder">
+                                <label class="form-check-label" for="inverted_encoder-input">
+                                    Absolute Encoder Inverted
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div
+                    class="col-12 col-md-6 bg-body-tertiary border-sm-left-0 border-md-left border-sm-top border-md-top-0 card-body text-muted">
+                    <i onClick="copyText('backleft')" class='d-inline float-end bx bx-clipboard bx-sm bx-tada-hover'
+                        data-bs-toggle="tooltip" data-bs-title="Copy JSON" data-bs-custom-class="v2-tooltip"></i>
+                    <pre id="backleft-json" class="fs-6"></pre>
+                </div>
+            </div>
+        </div>
+        <div id="backright-card" class="card mt-4">
+            <div class="card-header" data-bs-toggle="collapse" data-bs-target="#backright-container"
+                aria-expanded="false" aria-controls="backright-container">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <h1 class="display-6">Back Right Module</h1>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <p class="lead float-end"><a
+                                href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module">deploy/swerve/modules/backright.json</a>
+                            </h1>
+                    </div>
+                </div>
+            </div>
+            <div id="backright-container" class="row g-0 collapse">
+                <div class="col-12 col-md-6">
+                    <div class="card-body">
+                        <form id="backright-form">
+                            <div class="form-floating mb-3">
+                                <input id="location_x-input" class="form-control" name="location_x" type="number"
+                                    value="0" placeholder="0" aria-describedby="location_x-help">
+                                <label class="form-label" for="location_x-input">Location X</label>
+                                <div id="location_x-help" class="form-text">Inches</div>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="location_y-input" class="form-control" name="location_y" type="number"
+                                    value="0" placeholder="0" aria-describedby="location_y-help">
+                                <label class="form-label" for="location_y-input">Location Y</label>
+                                <div id="location_y-help" class="form-text">Inches</div>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="absoluteEncoderOffset-input" class="form-control"
+                                    name="absoluteEncoderOffset" type="number" value="0" placeholder="0">
+                                <label class="form-label" for="absoluteEncoderOffset-input">Absolute Encoder
+                                    Offset</label>
+                            </div>
+                            <hr />
+                            <div class="form-floating mb-3">
+                                <select id="drive_type-input" class="form-select" name="drive_type">
+                                    <option value="sparkmax" selected>NEO</option>
+                                    <option value="falcon">Falcon</option>
+                                </select>
+                                <label class="form-label" for="drive_type-input">Drive Motor Type</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="drive_id-input" class="form-control" name="drive_id" type="number" value="0"
+                                    placeholder="0">
+                                <label class="form-label" for="drive_id-input">Drive Motor ID</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="drive_canbus-input" class="form-control" name="drive_canbus" type="text"
+                                    value="rio" placeholder="rio">
+                                <label class="form-label" for="drive_canbus-input">Drive Motor CAN Bus</label>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="inverted_drive-input"
+                                    name="inverted_drive">
+                                <label class="form-check-label" for="inverted_drive-input">
+                                    Drive Motor Inverted
+                                </label>
+                            </div>
+                            <hr />
+                            <div class="form-floating mb-3">
+                                <select id="angle_type-input" class="form-select" name="angle_type">
+                                    <option value="sparkmax" selected>NEO</option>
+                                    <option value="falcon">Falcon</option>
+                                </select>
+                                <label class="form-label" for="angle_type-input">Angle Motor Type</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="angle_id-input" class="form-control" name="angle_id" type="number" value="0"
+                                    placeholder="0">
+                                <label class="form-label" for="angle_id-input">Angle Motor ID</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="angle_canbus-input" class="form-control" name="angle_canbus" type="text"
+                                    value="rio" placeholder="rio">
+                                <label class="form-label" for="angle_canbus-input">Angle Motor CAN Bus</label>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="inverted_angle-input"
+                                    name="inverted_angle">
+                                <label class="form-check-label" for="inverted_angle-input">
+                                    Angle Motor Inverted
+                                </label>
+                            </div>
+                            <hr />
+                            <div class="form-floating mb-3">
+                                <select id="encoder_type-input" class="form-select" name="encoder_type">
+                                    <option value="none">None</option>
+                                    <option value="attached">Attached</option>
+                                    <option value="cancoder">CANCoder</option>
+                                </select>
+                                <label class="form-label" for="encoder_type-input">Absolute Encoder Type</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="encoder_id-input" class="form-control" name="encoder_id" type="number"
+                                    value="0" placeholder="0">
+                                <label class="form-label" for="encoder_id-input">Absolute Encoder ID</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="encoder_canbus-input" class="form-control" name="encoder_canbus" type="text"
+                                    value="rio" placeholder="rio">
+                                <label class="form-label" for="encoder_canbus-input">Absolute Encoder CAN Bus</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="inverted_encoder-input"
+                                    name="inverted_encoder">
+                                <label class="form-check-label" for="inverted_encoder-input">
+                                    Absolute Encoder Inverted
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div
+                    class="col-12 col-md-6 bg-body-tertiary border-sm-left-0 border-md-left border-sm-top border-md-top-0 card-body text-muted">
+                    <i onClick="copyText('backright')" class='d-inline float-end bx bx-clipboard bx-sm bx-tada-hover'
+                        data-bs-toggle="tooltip" data-bs-title="Copy JSON" data-bs-custom-class="v2-tooltip"></i>
+                    <pre id="backright-json" class="fs-6"></pre>
+                </div>
+            </div>
+        </div>
+        <div id="controllerproperties-card" class="card mt-4">
+            <div class="card-header" data-bs-toggle="collapse" data-bs-target="#controllerproperties-container"
+                aria-expanded="false" aria-controls="controllerproperties-container">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <h1 class="display-6">Heading Tuning</h1>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <p class="lead float-end"><a
+                                href="https://github.com/BroncBotz3481/YAGSL/wiki/Controller-Properties">deploy/swerve/controllerproperties.json</a>
+                            </h1>
+                    </div>
+                </div>
+            </div>
+            <div id="controllerproperties-container" class="row g-0 collapse">
+                <div class="col-12 col-md-6">
+                    <div class="card-body">
+                        <form id="controllerproperties-form">
+                            <div class="form-floating mb-3">
+                                <input id="angleJoystickRadiusDeadband-input" class="form-control"
+                                    name="angleJoystickRadiusDeadband" type="number" value="0.5" placeholder="0.5">
+                                <label class="form-label" for="angleJoystickRadiusDeadband-input">Joystick Radial
+                                    Deadband</label>
+                            </div>
+                            <hr />
+                            <div class="form-floating mb-3">
+                                <input id="heading_p-input" class="form-control" name="heading_p" type="number"
+                                    value="0.4" placeholder="0.4">
+                                <label class="form-label" for="heading_p-input">Heading kP</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="heading_i-input" class="form-control" name="heading_i" type="number"
+                                    value="0" placeholder="0">
+                                <label class="form-label" for="heading_i-input">Heading kI</label>
+                            </div>
+                            <div class="form-floating">
+                                <input id="heading_d-input" class="form-control" name="heading_d" type="number"
+                                    value="0.01" placeholder="0.01">
+                                <label class="form-label" for="heading_d-input">Heading kD</label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div
+                    class="col-12 col-md-6 bg-body-tertiary border-sm-left-0 border-md-left border-sm-top border-md-top-0 card-body text-muted">
+                    <i onClick="copyText('controllerproperties')"
+                        class='d-inline float-end bx bx-clipboard bx-sm bx-tada-hover' data-bs-toggle="tooltip"
+                        data-bs-title="Copy JSON" data-bs-custom-class="v2-tooltip"></i>
+                    <pre id="controllerproperties-json" class="fs-6"></pre>
+                </div>
+            </div>
+        </div>
+        <div id="pidfproperties-card" class="card mt-4">
+            <div class="card-header" data-bs-toggle="collapse" data-bs-target="#pidfproperties-container"
+                aria-expanded="false" aria-controls="pidfproperties-container">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <h1 class="display-6">Module Tuning</h1>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <p class="lead float-end"><a
+                                href="https://github.com/BroncBotz3481/YAGSL/wiki/Swerve-Module-PIDF-Properties">deploy/swerve/modules/pidfproperties.json</a>
+                            </h1>
+                    </div>
+                </div>
+            </div>
+            <div id="pidfproperties-container" class="row g-0 collapse">
+                <div class="col-12 col-md-6">
+                    <div class="card-body">
+                        <form id="pidfproperties-form">
+                            <div class="form-floating mb-3">
+                                <input id="drive_p-input" class="form-control" name="drive_p" type="number"
+                                    value="0.0020645" placeholder="0.0020645">
+                                <label class="form-label" for="drive_p-input">Drive kP</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="drive_i-input" class="form-control" name="drive_i" type="number" value="0"
+                                    placeholder="0">
+                                <label class="form-label" for="drive_i-input">Drive kI</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="drive_d-input" class="form-control" name="drive_d" type="number" value="0"
+                                    placeholder="0">
+                                <label class="form-label" for="drive_d-input">Drive kD</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="drive_f-input" class="form-control" name="drive_f" type="number" value="0"
+                                    placeholder="0">
+                                <label class="form-label" for="drive_f-input">Drive kF</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="drive_iz-input" class="form-control" name="drive_iz" type="number" value="0"
+                                    placeholder="0">
+                                <label class="form-label" for="drive_iz-input">Drive Integral Zone</label>
+                            </div>
+                            <hr />
+                            <div class="form-floating mb-3">
+                                <input id="angle_p-input" class="form-control" name="angle_p" type="number"
+                                    value="0.0020645" placeholder="0.0020645">
+                                <label class="form-label" for="angle_p-input">Angle kP</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="angle_i-input" class="form-control" name="angle_i" type="number" value="0"
+                                    placeholder="0">
+                                <label class="form-label" for="angle_i-input">Angle kI</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="angle_d-input" class="form-control" name="angle_d" type="number" value="0"
+                                    placeholder="0">
+                                <label class="form-label" for="angle_d-input">Angle kD</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="angle_f-input" class="form-control" name="angle_f" type="number" value="0"
+                                    placeholder="0">
+                                <label class="form-label" for="angle_f-input">Angle kF</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input id="angle_iz-input" class="form-control" name="angle_iz" type="number" value="0"
+                                    placeholder="0">
+                                <label class="form-label" for="angle_iz-input">Angle Integral Zone</label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div
+                    class="col-12 col-md-6 bg-body-tertiary border-sm-left-0 border-md-left border-sm-top border-md-top-0 card-body text-muted">
+                    <i onClick="copyText('pidfproperties')"
+                        class='d-inline float-end bx bx-clipboard bx-sm bx-tada-hover' data-bs-toggle="tooltip"
+                        data-bs-title="Copy JSON" data-bs-custom-class="v2-tooltip"></i>
+                    <pre id="pidfproperties-json" class="fs-6"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://kit.fontawesome.com/1d72776854.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"
+        integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/v2.js"></script>
+</body>
+
+</html>

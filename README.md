@@ -20,7 +20,7 @@ https://broncbotz3481.github.io/YAGSL-Lib/yagsl/yagsl.json
 ```
 
 [Javadocs here](https://broncbotz3481.github.io/YAGSL/)  
-[Library here](https://broncbotz3481.github.io/YAGSL/)  
+[Library here](https://github.com/BroncBotz3481/YAGSL/)  
 [Code here](https://github.com/BroncBotz3481/YAGSL/tree/main/swervelib)  
 [WIKI](https://github.com/BroncBotz3481/YAGSL/wiki)  
 [Config Generation](https://broncbotz3481.github.io/YAGSL-Example/)

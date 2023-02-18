@@ -10,14 +10,20 @@ be the base of your robot project. YAGSL provides an easy way to generate a Swer
 used in both TimedRobot and Command-Based Robot templates.
 
 # Overview
-### Vendordeps
+
+### Installation
+
+Vendor URL:
+
 ```
 https://broncbotz3481.github.io/YAGSL-Lib/yagsl/yagsl.json
 ```
-Javadocs [here](https://broncbotz3481.github.io/YAGSL/)
-Library [here](https://broncbotz3481.github.io/YAGSL/)
-Code [here](https://github.com/BroncBotz3481/YAGSL/tree/main/swervelib)
 
+[Javadocs here](https://broncbotz3481.github.io/YAGSL/)  
+[Library here](https://broncbotz3481.github.io/YAGSL/)  
+[Code here](https://github.com/BroncBotz3481/YAGSL/tree/main/swervelib)  
+[WIKI](https://github.com/BroncBotz3481/YAGSL/wiki)  
+[Config Generation](https://broncbotz3481.github.io/YAGSL-Example/)
 
 # Create an issue if there is any errors you find!
 

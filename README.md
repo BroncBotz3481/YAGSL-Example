@@ -9,6 +9,16 @@ This example is intended to be a starting place on how to use YAGSL. By no means
 be the base of your robot project. YAGSL provides an easy way to generate a SwerveDrive which can be
 used in both TimedRobot and Command-Based Robot templates.
 
+# Overview
+### Vendordeps
+```
+https://broncbotz3481.github.io/YAGSL-Lib/yagsl/yagsl.json
+```
+Javadocs [here](https://broncbotz3481.github.io/YAGSL/)
+Library [here](https://broncbotz3481.github.io/YAGSL/)
+Code [here](https://github.com/BroncBotz3481/YAGSL/tree/main/swervelib)
+
+
 # Create an issue if there is any errors you find!
 
 We will be actively montoring this and fix any issues when we can!

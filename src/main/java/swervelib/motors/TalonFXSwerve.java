@@ -5,7 +5,7 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import frc.robot.Robot;
+import edu.wpi.first.wpilibj.RobotBase;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.parser.PIDFConfig;
 import swervelib.simulation.ctre.PhysicsSim;
@@ -55,7 +55,7 @@ public class TalonFXSwerve extends SwerveMotor
     factoryDefaults();
     clearStickyFaults();
 
-    if (!Robot.isReal())
+    if (RobotBase.isSimulation())
     {
       PhysicsSim.getInstance().addTalonFX(motor, .25, 6800);
     }
@@ -280,7 +280,7 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public void setReference(double setpoint, double feedforward)
   {
-    if (!Robot.isReal())
+    if (RobotBase.isSimulation())
     {
       PhysicsSim.getInstance().run();
     }
@@ -334,7 +334,7 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public void setPosition(double position)
   {
-    if (!absoluteEncoder && Robot.isReal())
+    if (!absoluteEncoder && !RobotBase.isSimulation())
     {
       motor.setSelectedSensorPosition(convertToNativeSensorUnits(position));
     }

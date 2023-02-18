@@ -11,10 +11,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Robot;
 import java.util.ArrayList;
 import java.util.List;
 import swervelib.imu.SwerveIMU;
@@ -69,8 +69,8 @@ public class SwerveDrive
 
   /**
    * Creates a new swerve drivebase subsystem.  Robot is controlled via the {@link SwerveDrive#drive} method, or via the
-   * {@link SwerveDrive#setModuleStates} method.  The {@link SwerveDrive#drive} method incorporates kinematics— it takes
-   * a translation and rotation, as well as parameters for field-centric and closed-loop velocity control.
+   * {@link SwerveDrive#setModuleStates} method.  The {@link SwerveDrive#drive} method incorporates kinematics-- it
+   * takes a translation and rotation, as well as parameters for field-centric and closed-loop velocity control.
    * {@link SwerveDrive#setModuleStates} takes a list of SwerveModuleStates and directly passes them to the modules.
    * This subsystem also handles odometry.
    *
@@ -87,7 +87,7 @@ public class SwerveDrive
 
     // Create an integrator for angle if the robot is being simulated to emulate an IMU
     // If the robot is real, instantiate the IMU instead.
-    if (!Robot.isReal())
+    if (RobotBase.isSimulation())
     {
       simIMU = new SwerveIMUSimulation();
     } else
@@ -271,7 +271,7 @@ public class SwerveDrive
   public void zeroGyro()
   {
     // Resets the real gyro or the angle accumulator, depending on whether the robot is being simulated
-    if (Robot.isReal())
+    if (!RobotBase.isSimulation())
     {
       imu.setYaw(0);
     } else
@@ -290,7 +290,7 @@ public class SwerveDrive
   public Rotation2d getYaw()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (Robot.isReal())
+    if (!RobotBase.isSimulation())
     {
       double[] ypr = new double[3];
       imu.getYawPitchRoll(ypr);
@@ -309,7 +309,7 @@ public class SwerveDrive
   public Rotation2d getPitch()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (Robot.isReal())
+    if (!RobotBase.isSimulation())
     {
       double[] ypr = new double[3];
       imu.getYawPitchRoll(ypr);
@@ -328,7 +328,7 @@ public class SwerveDrive
   public Rotation2d getRoll()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (Robot.isReal())
+    if (!RobotBase.isSimulation())
     {
       double[] ypr = new double[3];
       imu.getYawPitchRoll(ypr);
@@ -347,7 +347,7 @@ public class SwerveDrive
   public Rotation3d getGyroRotation3d()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (Robot.isReal())
+    if (!RobotBase.isSimulation())
     {
       double[] ypr = new double[3];
       imu.getYawPitchRoll(ypr);
@@ -429,7 +429,7 @@ public class SwerveDrive
     swerveDrivePoseEstimator.update(getYaw(), getModulePositions());
 
     // Update angle accumulator if the robot is simulated
-    if (!Robot.isReal())
+    if (RobotBase.isSimulation())
     {
       simIMU.updateOdometry(kinematics, getStates(),
                             getSwerveModulePoses(swerveDrivePoseEstimator.getEstimatedPosition()), field);
@@ -495,7 +495,7 @@ public class SwerveDrive
       swerveDrivePoseEstimator.resetPosition(robotPose.getRotation(), getModulePositions(), robotPose);
     }
 
-    if (Robot.isReal())
+    if (!RobotBase.isSimulation())
     {
       imu.setYaw(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees());
       // Yaw reset recommended by Team 1622

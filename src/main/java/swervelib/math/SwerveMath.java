@@ -19,7 +19,7 @@ public class SwerveMath
 
   /**
    * Calculate the angle kV which will be multiplied by the radians per second for the feedforward. Volt * seconds /
-   * degree <=> (maxVolts) / (maxSpeed)
+   * degree == (maxVolts) / (maxSpeed)
    *
    * @param optimalVoltage    Optimal voltage to use when calculating the angle kV.
    * @param motorFreeSpeedRPM Motor free speed in Rotations per Minute.

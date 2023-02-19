@@ -199,7 +199,7 @@
           <form id="frontleft-form">
             <div class="form-floating mb-3">
               <input aria-describedby="frontleftlocation_x-help" class="form-control" id="frontleftlocation_x-input"
-                     name="frontleftlocation_x"
+                     name="location_x"
                      placeholder="0" type="number" value="0">
               <label class="form-label" for="frontleftlocation_x-input">Location X</label>
               <div class="form-text" id="frontleftlocation_x-help">Inches (+x is torwards the robot
@@ -207,8 +207,9 @@
               </div>
             </div>
             <div class="form-floating mb-3">
-              <input aria-describedby="frontleftlocation_y-help" class="form-control" id="frontleftlocation_y-input"
-                     name="frontleftlocation_y"
+              <input aria-describedby="frontleftlocation_y-help" class="form-control"
+                     id="frontleftlocation_y-input"
+                     name="location_y"
                      placeholder="0" type="number" value="0">
               <label class="form-label" for="frontleftlocation_y-input">Location Y</label>
               <div class="form-text" id="frontleftlocation_y-help">Inches (+y is torwards robot
@@ -217,20 +218,20 @@
             </div>
             <div class="form-floating mb-3">
               <input class="form-control" id="frontleftabsolueEncoderOffset-input"
-                     name="frontleftabsolueEncoderOffset" placeholder="0" type="number" value="0">
+                     name="absolueEncoderOffset" placeholder="0" type="number" value="0">
               <label class="form-label" for="frontleftabsolueEncoderOffset-input">Absolute Encoder
                 Offset</label>
             </div>
             <hr/>
             <div class="form-floating mb-3">
-              <select class="form-select" id="frontleftdrive_type-input" name="frontleftdrive_type">
+              <select class="form-select" id="frontleftdrive_type-input" name="drive_type">
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
               </select>
               <label class="form-label" for="frontleftdrive_type-input">Drive Motor Type</label>
             </div>
             <div class="form-floating mb-3">
-              <input class="form-control" id="frontleftdrive_id-input" name="frontleftdrive_id"
+              <input class="form-control" id="frontleftdrive_id-input" name="drive_id"
                      placeholder="0"
                      type="number"
                      value="0">
@@ -238,13 +239,14 @@
             </div>
             <div class="form-floating mb-3">
               <input class="form-control" id="frontleftdrive_canbus-input"
-                     name="frontleftdrive_canbus" placeholder="rio"
+                     name="drive_canbus" placeholder="rio"
                      type="text" value="rio">
               <label class="form-label" for="frontleftdrive_canbus-input">Drive Motor CAN
                 Bus</label>
             </div>
             <div class="form-check mb-3">
-              <input class="form-check-input" id="inverted_frontleftdrive-input" name="inverted_frontleftdrive"
+              <input class="form-check-input" id="inverted_frontleftdrive-input"
+                     name="inverted_drive"
                      type="checkbox">
               <label class="form-check-label" for="inverted_frontleftdrive-input">
                 Drive Motor Inverted
@@ -252,14 +254,14 @@
             </div>
             <hr/>
             <div class="form-floating mb-3">
-              <select class="form-select" id="frontleftangle_type-input" name="frontleftangle_type">
+              <select class="form-select" id="frontleftangle_type-input" name="angle_type">
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
               </select>
               <label class="form-label" for="frontleftangle_type-input">Angle Motor Type</label>
             </div>
             <div class="form-floating mb-3">
-              <input class="form-control" id="frontleftangle_id-input" name="frontleftangle_id"
+              <input class="form-control" id="frontleftangle_id-input" name="angle_id"
                      placeholder="0"
                      type="number"
                      value="0">
@@ -267,7 +269,7 @@
             </div>
             <div class="form-floating mb-3">
               <input class="form-control" id="frontleftangle_canbus-input"
-                     name="frontleftangle_canbus" placeholder="rio"
+                     name="angle_canbus" placeholder="rio"
                      type="text" value="rio">
               <label class="form-label" for="frontleftangle_canbus-input">Angle Motor CAN
                 Bus</label>
@@ -282,7 +284,7 @@
             <hr/>
             <div class="form-floating mb-3">
               <select class="form-select" id="frontleftencoder_type-input"
-                      name="frontleftencoder_type">
+                      name="encoder_type">
                 <option value="none">None</option>
                 <option value="attached">Attached</option>
                 <option value="cancoder">CANCoder</option>
@@ -291,14 +293,14 @@
                 Type</label>
             </div>
             <div class="form-floating mb-3">
-              <input class="form-control" id="frontleftencoder_id-input" name="frontleftencoder_id"
+              <input class="form-control" id="frontleftencoder_id-input" name="encoder_id"
                      placeholder="0"
                      type="number" value="0">
               <label class="form-label" for="frontleftencoder_id-input">Absolute Encoder ID</label>
             </div>
             <div class="form-floating mb-3">
               <input class="form-control" id="frontleftencoder_canbus-input"
-                     name="frontleftencoder_canbus"
+                     name="encoder_canbus"
                      placeholder="rio"
                      type="text" value="rio">
               <label class="form-label" for="frontleftencoder_canbus-input">Absolute Encoder CAN
@@ -343,7 +345,7 @@
           <form id="frontright-form">
             <div class="form-floating mb-3">
               <input aria-describedby="frontrightlocation_x-help" class="form-control"
-                     id="frontrightlocation_x-input" name="frontrightlocation_x"
+                     id="frontrightlocation_x-input" name="location_x"
                      placeholder="0" type="number" value="0">
               <label class="form-label" for="frontrightlocation_x-input">Location X</label>
               <div class="form-text" id="frontrightlocation_x-help">Inches (+x is torwards the robot
@@ -352,7 +354,7 @@
             </div>
             <div class="form-floating mb-3">
               <input aria-describedby="frontrightlocation_y-help" class="form-control"
-                     id="frontrightlocation_y-input" name="frontrightlocation_y"
+                     id="frontrightlocation_y-input" name="location_y"
                      placeholder="0" type="number" value="0">
               <label class="form-label" for="frontrightlocation_y-input">Location Y</label>
               <div class="form-text" id="frontrightlocation_y-help">Inches (+y is torwards robot
@@ -361,21 +363,21 @@
             </div>
             <div class="form-floating mb-3">
               <input class="form-control" id="frontrightabsolueEncoderOffset-input"
-                     name="frontrightabsolueEncoderOffset" placeholder="0" type="number" value="0">
+                     name="absolueEncoderOffset" placeholder="0" type="number" value="0">
               <label class="form-label" for="frontrightabsolueEncoderOffset-input">Absolute Encoder
                 Offset</label>
             </div>
             <hr/>
             <div class="form-floating mb-3">
               <select class="form-select" id="frontrightdrive_type-input"
-                      name="frontrightdrive_type">
+                      name="drive_type">
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
               </select>
               <label class="form-label" for="frontrightdrive_type-input">Drive Motor Type</label>
             </div>
             <div class="form-floating mb-3">
-              <input class="form-control" id="frontrightdrive_id-input" name="frontrightdrive_id"
+              <input class="form-control" id="frontrightdrive_id-input" name="drive_id"
                      placeholder="0"
                      type="number"
                      value="0">
@@ -383,7 +385,7 @@
             </div>
             <div class="form-floating mb-3">
               <input class="form-control" id="frontrightdrive_canbus-input"
-                     name="frontrightdrive_canbus" placeholder="rio"
+                     name="drive_canbus" placeholder="rio"
                      type="text" value="rio">
               <label class="form-label" for="frontrightdrive_canbus-input">Drive Motor CAN
                 Bus</label>
@@ -398,14 +400,14 @@
             <hr/>
             <div class="form-floating mb-3">
               <select class="form-select" id="frontrightangle_type-input"
-                      name="frontrightangle_type">
+                      name="angle_type">
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
               </select>
               <label class="form-label" for="frontrightangle_type-input">Angle Motor Type</label>
             </div>
             <div class="form-floating mb-3">
-              <input class="form-control" id="frontrightangle_id-input" name="frontrightangle_id"
+              <input class="form-control" id="frontrightangle_id-input" name="angle_id"
                      placeholder="0"
                      type="number"
                      value="0">
@@ -413,7 +415,7 @@
             </div>
             <div class="form-floating mb-3">
               <input class="form-control" id="frontrightangle_canbus-input"
-                     name="frontrightangle_canbus" placeholder="rio"
+                     name="angle_canbus" placeholder="rio"
                      type="text" value="rio">
               <label class="form-label" for="frontrightangle_canbus-input">Angle Motor CAN
                 Bus</label>
@@ -428,7 +430,7 @@
             <hr/>
             <div class="form-floating mb-3">
               <select class="form-select" id="frontrightencoder_type-input"
-                      name="frontrightencoder_type">
+                      name="encoder_type">
                 <option value="none">None</option>
                 <option value="attached">Attached</option>
                 <option value="cancoder">CANCoder</option>
@@ -438,13 +440,13 @@
             </div>
             <div class="form-floating mb-3">
               <input class="form-control" id="frontrightencoder_id-input"
-                     name="frontrightencoder_id" placeholder="0"
+                     name="encoder_id" placeholder="0"
                      type="number" value="0">
               <label class="form-label" for="frontrightencoder_id-input">Absolute Encoder ID</label>
             </div>
             <div class="form-floating mb-3">
               <input class="form-control" id="frontrightencoder_canbus-input"
-                     name="frontrightencoder_canbus"
+                     name="encoder_canbus"
                      placeholder="rio"
                      type="text" value="rio">
               <label class="form-label" for="frontrightencoder_canbus-input">Absolute Encoder CAN
@@ -488,8 +490,9 @@
         <div class="card-body">
           <form id="backleft-form">
             <div class="form-floating mb-3">
-              <input aria-describedby="backleftlocation_x-help" class="form-control" id="backleftlocation_x-input"
-                     name="backleftlocation_x"
+              <input aria-describedby="backleftlocation_x-help" class="form-control"
+                     id="backleftlocation_x-input"
+                     name="location_x"
                      placeholder="0" type="number" value="0">
               <label class="form-label" for="backleftlocation_x-input">Location X</label>
               <div class="form-text" id="backleftlocation_x-help">Inches (+x is torwards the robot
@@ -497,8 +500,9 @@
               </div>
             </div>
             <div class="form-floating mb-3">
-              <input aria-describedby="backleftlocation_y-help" class="form-control" id="backleftlocation_y-input"
-                     name="backleftlocation_y"
+              <input aria-describedby="backleftlocation_y-help" class="form-control"
+                     id="backleftlocation_y-input"
+                     name="location_y"
                      placeholder="0" type="number" value="0">
               <label class="form-label" for="backleftlocation_y-input">Location Y</label>
               <div class="form-text" id="backleftlocation_y-help">Inches (+y is torwards robot
@@ -507,20 +511,20 @@
             </div>
             <div class="form-floating mb-3">
               <input class="form-control" id="backleftabsolueEncoderOffset-input"
-                     name="backleftabsolueEncoderOffset" placeholder="0" type="number" value="0">
+                     name="absolueEncoderOffset" placeholder="0" type="number" value="0">
               <label class="form-label" for="backleftabsolueEncoderOffset-input">Absolute Encoder
                 Offset</label>
             </div>
             <hr/>
             <div class="form-floating mb-3">
-              <select class="form-select" id="backleftdrive_type-input" name="backleftdrive_type">
+              <select class="form-select" id="backleftdrive_type-input" name="drive_type">
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
               </select>
               <label class="form-label" for="backleftdrive_type-input">Drive Motor Type</label>
             </div>
             <div class="form-floating mb-3">
-              <input class="form-control" id="backleftdrive_id-input" name="backleftdrive_id"
+              <input class="form-control" id="backleftdrive_id-input" name="drive_id"
                      placeholder="0"
                      type="number"
                      value="0">
@@ -528,7 +532,7 @@
             </div>
             <div class="form-floating mb-3">
               <input class="form-control" id="backleftdrive_canbus-input"
-                     name="backleftdrive_canbus" placeholder="rio"
+                     name="drive_canbus" placeholder="rio"
                      type="text" value="rio">
               <label class="form-label" for="backleftdrive_canbus-input">Drive Motor CAN Bus</label>
             </div>
@@ -541,14 +545,14 @@
             </div>
             <hr/>
             <div class="form-floating mb-3">
-              <select class="form-select" id="backleftangle_type-input" name="backleftangle_type">
+              <select class="form-select" id="backleftangle_type-input" name="angle_type">
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
               </select>
               <label class="form-label" for="backleftangle_type-input">Angle Motor Type</label>
             </div>
             <div class="form-floating mb-3">
-              <input class="form-control" id="backleftangle_id-input" name="backleftangle_id"
+              <input class="form-control" id="backleftangle_id-input" name="angle_id"
                      placeholder="0"
                      type="number"
                      value="0">
@@ -556,7 +560,7 @@
             </div>
             <div class="form-floating mb-3">
               <input class="form-control" id="backleftangle_canbus-input"
-                     name="backleftangle_canbus" placeholder="rio"
+                     name="angle_canbus" placeholder="rio"
                      type="text" value="rio">
               <label class="form-label" for="backleftangle_canbus-input">Angle Motor CAN Bus</label>
             </div>
@@ -570,7 +574,7 @@
             <hr/>
             <div class="form-floating mb-3">
               <select class="form-select" id="backleftencoder_type-input"
-                      name="backleftencoder_type">
+                      name="encoder_type">
                 <option value="none">None</option>
                 <option value="attached">Attached</option>
                 <option value="cancoder">CANCoder</option>
@@ -579,14 +583,14 @@
                 Type</label>
             </div>
             <div class="form-floating mb-3">
-              <input class="form-control" id="backleftencoder_id-input" name="backleftencoder_id"
+              <input class="form-control" id="backleftencoder_id-input" name="encoder_id"
                      placeholder="0"
                      type="number" value="0">
               <label class="form-label" for="backleftencoder_id-input">Absolute Encoder ID</label>
             </div>
             <div class="form-floating mb-3">
               <input class="form-control" id="backleftencoder_canbus-input"
-                     name="backleftencoder_canbus"
+                     name="encoder_canbus"
                      placeholder="rio"
                      type="text" value="rio">
               <label class="form-label" for="backleftencoder_canbus-input">Absolute Encoder CAN
@@ -630,8 +634,9 @@
         <div class="card-body">
           <form id="backright-form">
             <div class="form-floating mb-3">
-              <input aria-describedby="backrightlocation_x-help" class="form-control" id="backrightlocation_x-input"
-                     name="backrightlocation_x"
+              <input aria-describedby="backrightlocation_x-help" class="form-control"
+                     id="backrightlocation_x-input"
+                     name="location_x"
                      placeholder="0" type="number" value="0">
               <label class="form-label" for="backrightlocation_x-input">Location X</label>
               <div class="form-text" id="backrightlocation_x-help">Inches (+x is torwards the robot
@@ -639,8 +644,9 @@
               </div>
             </div>
             <div class="form-floating mb-3">
-              <input aria-describedby="backrightlocation_y-help" class="form-control" id="backrightlocation_y-input"
-                     name="backrightlocation_y"
+              <input aria-describedby="backrightlocation_y-help" class="form-control"
+                     id="backrightlocation_y-input"
+                     name="location_y"
                      placeholder="0" type="number" value="0">
               <label class="form-label" for="backrightlocation_y-input">Location Y</label>
               <div class="form-text" id="backrightlocation_y-help">Inches (+y is torwards robot
@@ -649,20 +655,20 @@
             </div>
             <div class="form-floating mb-3">
               <input class="form-control" id="backrightabsolueEncoderOffset-input"
-                     name="backrightabsolueEncoderOffset" placeholder="0" type="number" value="0">
+                     name="absolueEncoderOffset" placeholder="0" type="number" value="0">
               <label class="form-label" for="backrightabsolueEncoderOffset-input">Absolute Encoder
                 Offset</label>
             </div>
             <hr/>
             <div class="form-floating mb-3">
-              <select class="form-select" id="backrightdrive_type-input" name="backrightdrive_type">
+              <select class="form-select" id="backrightdrive_type-input" name="drive_type">
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
               </select>
               <label class="form-label" for="backrightdrive_type-input">Drive Motor Type</label>
             </div>
             <div class="form-floating mb-3">
-              <input class="form-control" id="backrightdrive_id-input" name="backrightdrive_id"
+              <input class="form-control" id="backrightdrive_id-input" name="drive_id"
                      placeholder="0"
                      type="number"
                      value="0">
@@ -670,7 +676,7 @@
             </div>
             <div class="form-floating mb-3">
               <input class="form-control" id="backrightdrive_canbus-input"
-                     name="backrightdrive_canbus" placeholder="rio"
+                     name="drive_canbus" placeholder="rio"
                      type="text" value="rio">
               <label class="form-label" for="backrightdrive_canbus-input">Drive Motor CAN
                 Bus</label>
@@ -684,14 +690,14 @@
             </div>
             <hr/>
             <div class="form-floating mb-3">
-              <select class="form-select" id="backrightangle_type-input" name="backrightangle_type">
+              <select class="form-select" id="backrightangle_type-input" name="angle_type">
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
               </select>
               <label class="form-label" for="backrightangle_type-input">Angle Motor Type</label>
             </div>
             <div class="form-floating mb-3">
-              <input class="form-control" id="backrightangle_id-input" name="backrightangle_id"
+              <input class="form-control" id="backrightangle_id-input" name="angle_id"
                      placeholder="0"
                      type="number"
                      value="0">
@@ -699,7 +705,7 @@
             </div>
             <div class="form-floating mb-3">
               <input class="form-control" id="backrightangle_canbus-input"
-                     name="backrightangle_canbus" placeholder="rio"
+                     name="angle_canbus" placeholder="rio"
                      type="text" value="rio">
               <label class="form-label" for="backrightangle_canbus-input">Angle Motor CAN
                 Bus</label>
@@ -714,7 +720,7 @@
             <hr/>
             <div class="form-floating mb-3">
               <select class="form-select" id="backrightencoder_type-input"
-                      name="backrightencoder_type">
+                      name="encoder_type">
                 <option value="none">None</option>
                 <option value="attached">Attached</option>
                 <option value="cancoder">CANCoder</option>
@@ -723,14 +729,14 @@
                 Type</label>
             </div>
             <div class="form-floating mb-3">
-              <input class="form-control" id="backrightencoder_id-input" name="backrightencoder_id"
+              <input class="form-control" id="backrightencoder_id-input" name="encoder_id"
                      placeholder="0"
                      type="number" value="0">
               <label class="form-label" for="backrightencoder_id-input">Absolute Encoder ID</label>
             </div>
             <div class="form-floating mb-3">
               <input class="form-control" id="backrightencoder_canbus-input"
-                     name="backrightencoder_canbus"
+                     name="encoder_canbus"
                      placeholder="rio"
                      type="text" value="rio">
               <label class="form-label" for="backrightencoder_canbus-input">Absolute Encoder CAN

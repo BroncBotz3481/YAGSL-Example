@@ -125,7 +125,7 @@ public class SwerveModule
   {
     if (absoluteEncoder != null)
     {
-      angleMotor.setPosition(absoluteEncoder.getAbsolutePosition() - angleOffset);
+      angleMotor.setPosition(getAbsolutePosition() - angleOffset);
     }
   }
 
@@ -237,7 +237,13 @@ public class SwerveModule
    */
   public double getAbsolutePosition()
   {
-    return absoluteEncoder.getAbsolutePosition();
+    double angle = absoluteEncoder.getAbsolutePosition();
+    if (absoluteEncoder.readingError)
+    {
+      angle = getRelativePosition();
+    }
+
+    return angle;
   }
 
   /**

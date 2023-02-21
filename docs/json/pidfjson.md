@@ -10,14 +10,15 @@ example `heading` only takes into account the PID.
 
 A `0` in any place basically disables that portion of the PIDF.
 
-| Name   | Units           | Required | Description                                  |
-|--------|-----------------|----------|----------------------------------------------|
-| p      | kP Gain         | Y        | Proportional Gain for the PID.               |
-| i      | kI Gain         | Y        | Integral Gain for the PID.                   |
-| d      | kD Gain         | Y        | Derivative Gain for the PID.                 |
-| f      | Number          | N        | Feedforward for the PID.                     |
-| iz     | Number          | N        | Integral zone for the integrator of the PID. |
-| output | [Range](#Range) | N        | The output range for the PID.                |
+| Name    | Units           | Required | Description                                                                                                     |
+|---------|-----------------|----------|-----------------------------------------------------------------------------------------------------------------|
+| p       | kP Gain         | Y        | Proportional Gain for the PID.                                                                                  |
+| i       | kI Gain         | Y        | Integral Gain for the PID.                                                                                      |
+| d       | kD Gain         | Y        | Derivative Gain for the PID.                                                                                    |
+| f       | Number          | N        | Feedforward for the PID.                                                                                        |
+| iz      | Number          | N        | Integral zone for the integrator of the PID.                                                                    |
+| output  | [Range](#Range) | N        | The output range for the PID.                                                                                   |
+| fscalar | Number          | N        | The feedforward scalar value applied to all generated feedforwards (0.33 is typical for falcons). Default is 1. |
 
 ### Range
 

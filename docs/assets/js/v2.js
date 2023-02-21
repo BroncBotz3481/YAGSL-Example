@@ -19,8 +19,10 @@ function getFreeSpeedFromMotors() {
   switch (highest_motor) {
     case "neo":
       $("#freespeedrpm-input").val(5676);
+      $("#angle_fscalar-input").val(1);
     case "falcon":
       $("#freespeedrpm-input").val(6800);
+      $("#angle_fscalar-input").val(0.33);
   }
 }
 

@@ -183,7 +183,7 @@ public class SwerveModule
    */
   public void setAngle(double angle)
   {
-    angleMotor.setReference(angle, 1 * configuration.angleKV);
+    angleMotor.setReference(angle, configuration.angleKV);
     lastAngle = angle;
   }
 

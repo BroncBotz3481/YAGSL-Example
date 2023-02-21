@@ -291,8 +291,8 @@ public class TalonFXSwerve extends SwerveMotor
         isDriveMotor ? ControlMode.Velocity : ControlMode.Position,
         convertToNativeSensorUnits(setpoint),
         DemandType.ArbitraryFeedForward,
-        feedforward * -0.3);
-    // Credit to Team 3181 for the -0.3, I'm not sure why it works, but it does.
+        isDriveMotor ? feedforward : feedforward * 0.3);
+    // Credit to Team 3181 for the 0.3, I'm not sure why it works, but it does.
   }
 
   /**

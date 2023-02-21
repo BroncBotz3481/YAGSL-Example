@@ -51,6 +51,7 @@ public class DeviceJson
         return null;
       case "thrifty":
       case "throughbore":
+      case "dutycycle":
       case "analog":
         return new AnalogAbsoluteEncoderSwerve(id);
       case "cancoder":

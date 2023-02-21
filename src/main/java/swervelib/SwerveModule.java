@@ -231,7 +231,7 @@ public class SwerveModule
   }
 
   /**
-   * Get the absolute position.
+   * Get the absolute position. Falls back to relative position on reading failure.
    *
    * @return Absolute encoder angle in degrees.
    */

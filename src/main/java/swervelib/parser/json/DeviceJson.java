@@ -3,6 +3,7 @@ package swervelib.parser.json;
 import swervelib.encoders.CANCoderSwerve;
 import swervelib.encoders.SparkMaxEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
+import swervelib.encoders.ThriftyEncoderSwerve;
 import swervelib.imu.ADIS16448Swerve;
 import swervelib.imu.ADIS16470Swerve;
 import swervelib.imu.ADXRS450Swerve;
@@ -48,6 +49,9 @@ public class DeviceJson
       case "integrated":
       case "attached":
         return null;
+      case "thrifty":
+      case "analog":
+        return new ThriftyEncoderSwerve(id);
       case "cancoder":
         return new CANCoderSwerve(id, canbus != null ? canbus : "");
       default:

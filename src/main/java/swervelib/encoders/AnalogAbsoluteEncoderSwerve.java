@@ -4,9 +4,9 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotController;
 
 /**
- * Swerve Absolute Encoder for Thrifty Encoders.
+ * Swerve Absolute Encoder for Thrifty Encoders and other analog encoders.
  */
-public class ThriftyEncoderSwerve extends SwerveAbsoluteEncoder
+public class AnalogAbsoluteEncoderSwerve extends SwerveAbsoluteEncoder
 {
   // Entire class inspired by 5010
   // Source: https://github.com/FRC5010/FRCLibrary/blob/main/FRC5010Example2023/src/main/java/frc/robot/FRC5010/sensors/AnalogInput5010.java
@@ -24,17 +24,17 @@ public class ThriftyEncoderSwerve extends SwerveAbsoluteEncoder
    *
    * @param encoder Encoder to construct.
    */
-  public ThriftyEncoderSwerve(AnalogInput encoder)
+  public AnalogAbsoluteEncoderSwerve(AnalogInput encoder)
   {
     this.encoder = encoder;
   }
 
   /**
-   * Construct the Thrifty Encoder given the analog input channel.
+   * Construct the Encoder given the analog input channel.
    *
    * @param channel Analog Input channel of which the encoder resides.
    */
-  public ThriftyEncoderSwerve(int channel)
+  public AnalogAbsoluteEncoderSwerve(int channel)
   {
     this(new AnalogInput(channel));
   }

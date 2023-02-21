@@ -29,6 +29,11 @@ https://broncbotz3481.github.io/YAGSL-Lib/yagsl/yagsl.json
 
 We will be actively montoring this and fix any issues when we can!
 
+## Development
+
+* Development happens here on `YAGSL-Example`. `YAGSL` and `YAGSL-Lib` are updated on a nightly
+  basis.
+
 ### TL;DR Make your configuration [here](https://broncbotz3481.github.io/YAGSL-Example/) and put it into the structure bellow.
 
 ```text

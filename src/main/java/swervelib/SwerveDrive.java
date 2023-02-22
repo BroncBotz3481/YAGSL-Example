@@ -306,7 +306,7 @@ public class SwerveDrive
     {
       simIMU.setAngle(0);
     }
-    swerveController.lastAngle = 0;
+    swerveController.lastAngleScalar = 0;
     resetOdometry(new Pose2d(getPose().getTranslation(), new Rotation2d()));
   }
 

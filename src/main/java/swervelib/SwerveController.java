@@ -64,7 +64,8 @@ public class SwerveController
   }
 
   /**
-   * Get the chassis speeds based on controller input of 1 joystick and a angle.
+   * Get the chassis speeds based on controller input of 1 joystick and an angle. Cubes the x and y input for smoother
+   * motion.
    *
    * @param xInput                     X joystick input for the robot to move in the X direction.
    * @param yInput                     Y joystick input for the robot to move in the Y direction.
@@ -76,8 +77,7 @@ public class SwerveController
       double xInput, double yInput, double angle, double currentHeadingAngleRadians)
   {
     // Calculates an angular rate using a PIDController and the commanded angle.  This is then
-    // scaled by
-    // the drivebase's maximum angular velocity.
+    // scaled by the drivebase's maximum angular velocity.
     double omega =
         thetaController.calculate(currentHeadingAngleRadians, angle) * config.maxAngularVelocity;
     // Convert joystick inputs to m/s by scaling by max linear speed.  Also uses a cubic function
@@ -86,6 +86,23 @@ public class SwerveController
     double y = Math.pow(yInput, 3) * config.maxSpeed;
 
     return new ChassisSpeeds(x, y, omega);
+  }
+
+  /**
+   * Get the {@link ChassisSpeeds} based of raw speeds desired in meters/second and headins in radians.
+   *
+   * @param xSpeed                     X speed in meters per second.
+   * @param ySpeed                     Y speed in meters per second.
+   * @param targetHeadingAngleRadians  Target heading in radians.
+   * @param currentHeadingAngleRadians Current heading in radians.
+   * @return {@link ChassisSpeeds} the robot should move to.
+   */
+  public ChassisSpeeds getRawTargetSpeeds(double xSpeed, double ySpeed, double targetHeadingAngleRadians,
+                                          double currentHeadingAngleRadians)
+  {
+    return new ChassisSpeeds(xSpeed, ySpeed,
+                             thetaController.calculate(currentHeadingAngleRadians, targetHeadingAngleRadians) *
+                             config.maxAngularVelocity);
   }
 
   /**

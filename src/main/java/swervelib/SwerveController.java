@@ -100,6 +100,8 @@ public class SwerveController
   public ChassisSpeeds getRawTargetSpeeds(double xSpeed, double ySpeed, double targetHeadingAngleRadians,
                                           double currentHeadingAngleRadians)
   {
+    // Calculates an angular rate using a PIDController and the commanded angle.  This is then
+    // scaled by the drivebase's maximum angular velocity.
     return new ChassisSpeeds(xSpeed, ySpeed,
                              thetaController.calculate(currentHeadingAngleRadians, targetHeadingAngleRadians) *
                              config.maxAngularVelocity);

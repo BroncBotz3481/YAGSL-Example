@@ -123,7 +123,8 @@ public class DeviceJson
     {
       case "sparkmax":
         return new SparkMaxEncoderSwerve(motor);
-      case "none":
+      case "falcon":
+      case "talonfx":
         return null;
     }
     throw new RuntimeException(

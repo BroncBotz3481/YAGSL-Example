@@ -184,6 +184,10 @@ public class SwerveDrive
     // Sets states
     for (SwerveModule module : swerveModules)
     {
+      SwerveModuleState2 moduleState = module.getState();
+      SwerveDriveTelemetry.desiredStates[module.moduleNumber * 2] = moduleState.angle.getDegrees();
+      SwerveDriveTelemetry.desiredStates[(module.moduleNumber * 2) + 1] = moduleState.speedMetersPerSecond;
+
       module.setDesiredState(desiredStates[module.moduleNumber], isOpenLoop);
       SmartDashboard.putNumber(
           "Module " + module.moduleNumber + " Speed Setpoint: ",

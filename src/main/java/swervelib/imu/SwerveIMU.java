@@ -19,7 +19,7 @@ public abstract class SwerveIMU
   /**
    * Time last cache was taken in microseconds.
    */
-  private       double   cachedTimeMicro = RobotController.getFPGATime();
+  private       double   cachedTimeMicro = 0;
 
   /**
    * Reset IMU to factory default.

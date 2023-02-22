@@ -19,7 +19,7 @@ public abstract class SwerveAbsoluteEncoder
   /**
    * Time last cache was taken in microseconds.
    */
-  private       double  cachedTimeMicro = RobotController.getFPGATime();
+  private       double  cachedTimeMicro = 0;
   /**
    * The cached absolute encoder position.
    */

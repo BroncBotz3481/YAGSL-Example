@@ -21,17 +21,9 @@ public class SwerveModuleSimulation
    */
   private final Timer              timer;
   /**
-   * Cached motor position.
-   */
-  private final double             cachedPosition  = 0;
-  /**
-   * Cached motor velocity.
-   */
-  private final double             cachedVelocity  = 0;
-  /**
    * Time last cache was taken in microseconds.
    */
-  private       double             cachedTimeMicro = RobotController.getFPGATime();
+  private       double             cachedTimeMicro = 0;
   /**
    * Time delta since last update
    */

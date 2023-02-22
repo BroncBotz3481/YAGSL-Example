@@ -21,11 +21,11 @@ public abstract class SwerveMotor
   /**
    * Time last cache was taken in microseconds.
    */
-  private       double  cachedTimeMicroPosition = RobotController.getFPGATime();
+  private       double  cachedTimeMicroPosition = 0;
   /**
    * Time last cache was taken in microseconds.
    */
-  private       double  cachedTimeMicroVelocity = RobotController.getFPGATime();
+  private       double  cachedTimeMicroVelocity = 0;
   /**
    * Cached motor position.
    */

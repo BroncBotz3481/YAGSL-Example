@@ -10,8 +10,10 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -29,6 +31,17 @@ public final class Autos
   private Autos()
   {
     throw new UnsupportedOperationException("This is a utility class!");
+  }
+
+  /**
+   * April Tag field layout.
+   */
+  private static AprilTagFieldLayout aprilTagField = null;
+
+  public static CommandBase driveAndSpin(SwerveSubsystem swerve)
+  {
+    return Commands.sequence(
+        new RepeatCommand(new InstantCommand(() -> swerve.drive(new Translation2d(1, 0), 5, true, true), swerve)));
   }
 
   /**
@@ -58,7 +71,8 @@ public final class Autos
       HashMap<String, Command> eventMap = new HashMap<>();
       eventMap.put("marker1", new PrintCommand("Passed marker 1"));
 
-      // Create the AutoBuilder. This only needs to be created once when robot code starts, not every time you want to create an auto command. A good place to put this is in RobotContainer along with your subsystems.
+      // Create the AutoBuilder. This only needs to be created once when robot code starts, not every time you want
+      // to create an auto command. A good place to put this is in RobotContainer along with your subsystems.
       SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
           swerve::getPose,
 // Pose2d supplier
@@ -82,9 +96,37 @@ public final class Autos
     return Commands.sequence(new FollowTrajectory(swerve, example, true));
   }
 
-  public static CommandBase driveAndSpin(SwerveSubsystem swerve)
+  /**
+   * Create a {@link FollowTrajectory} command to go to the April Tag from the current position.
+   *
+   * @param swerve            Swerve drive subsystem.
+   * @param id                April Tag ID to go to.
+   * @param rotation          Rotation to go to.
+   * @param holonomicRotation Holonomic rotation to be at.
+   * @param offset            Offset from the April Tag.
+   * @return {@link FollowTrajectory} command. May return null if cannot load field.
+   */
+  public static CommandBase driveToAprilTag(SwerveSubsystem swerve, int id, Rotation2d rotation,
+                                            Rotation2d holonomicRotation, Translation2d offset)
   {
-    return Commands.sequence(
-        new RepeatCommand(new InstantCommand(() -> swerve.drive(new Translation2d(1, 0), 5, true, true), swerve)));
+    if (aprilTagField == null)
+    {
+      try
+      {
+        aprilTagField = new AprilTagFieldLayout(
+            Filesystem.getDeployDirectory() + "/apriltags/2023-chargedup.json");
+      } catch (Exception ignored)
+      {
+        return null;
+      }
+    }
+    PathPlannerTrajectory path = PathPlanner.generatePath(new PathConstraints(4, 3), false,
+                                                          PathPoint.fromCurrentHolonomicState(swerve.getPose(),
+                                                                                              swerve.getRobotVelocity()),
+                                                          new PathPoint(aprilTagField.getTagPose(id).get()
+                                                                                     .getTranslation()
+                                                                                     .toTranslation2d().plus(offset),
+                                                                        rotation, holonomicRotation));
+    return Commands.sequence(new FollowTrajectory(swerve, path, false));
   }
 }

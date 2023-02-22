@@ -469,7 +469,7 @@ public class SwerveDrive
     }
 
     field.setRobotPose(swerveDrivePoseEstimator.getEstimatedPosition());
-    ChassisSpeeds measuredChassisSpeeds = kinematics.toChassisSpeeds(getStates());
+    ChassisSpeeds measuredChassisSpeeds = getRobotVelocity();
     SwerveDriveTelemetry.measuredChassisSpeeds[1] = measuredChassisSpeeds.vyMetersPerSecond;
     SwerveDriveTelemetry.measuredChassisSpeeds[0] = measuredChassisSpeeds.vxMetersPerSecond;
     SwerveDriveTelemetry.measuredChassisSpeeds[2] = Math.toDegrees(measuredChassisSpeeds.omegaRadiansPerSecond);

@@ -325,7 +325,7 @@ public class SwerveDrive
     if (!RobotBase.isSimulation())
     {
       double[] ypr = new double[3];
-      imu.getCachedYawPitchRoll(ypr);
+      imu.getYawPitchRoll(ypr);
       return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[0] : ypr[0]);
     } else
     {
@@ -344,7 +344,7 @@ public class SwerveDrive
     if (!RobotBase.isSimulation())
     {
       double[] ypr = new double[3];
-      imu.getCachedYawPitchRoll(ypr);
+      imu.getYawPitchRoll(ypr);
       return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[1] : ypr[1]);
     } else
     {
@@ -363,7 +363,7 @@ public class SwerveDrive
     if (!RobotBase.isSimulation())
     {
       double[] ypr = new double[3];
-      imu.getCachedYawPitchRoll(ypr);
+      imu.getYawPitchRoll(ypr);
       return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[2] : ypr[2]);
     } else
     {
@@ -382,7 +382,7 @@ public class SwerveDrive
     if (!RobotBase.isSimulation())
     {
       double[] ypr = new double[3];
-      imu.getCachedYawPitchRoll(ypr);
+      imu.getYawPitchRoll(ypr);
       return new Rotation3d(
           Math.toRadians(swerveDriveConfiguration.invertedIMU ? 360 - ypr[2] : ypr[2]),
           Math.toRadians(swerveDriveConfiguration.invertedIMU ? 360 - ypr[1] : ypr[1]),

@@ -199,9 +199,9 @@ public class SwerveModule
     double     omega;
     if (!RobotBase.isSimulation())
     {
-      velocity = driveMotor.getCachedVelocity();
-      azimuth = Rotation2d.fromDegrees(angleMotor.getCachedPosition());
-      omega = Math.toRadians(angleMotor.getCachedVelocity());
+      velocity = driveMotor.getVelocity();
+      azimuth = Rotation2d.fromDegrees(angleMotor.getPosition());
+      omega = Math.toRadians(angleMotor.getVelocity());
     } else
     {
       return simModule.getState();
@@ -220,8 +220,8 @@ public class SwerveModule
     Rotation2d azimuth;
     if (!RobotBase.isSimulation())
     {
-      position = driveMotor.getCachedPosition();
-      azimuth = Rotation2d.fromDegrees(angleMotor.getCachedPosition());
+      position = driveMotor.getPosition();
+      azimuth = Rotation2d.fromDegrees(angleMotor.getPosition());
     } else
     {
       return simModule.getPosition();
@@ -239,7 +239,7 @@ public class SwerveModule
   {
     if (absoluteEncoder != null)
     {
-      double angle = absoluteEncoder.getCachedAbsolutePosition();
+      double angle = absoluteEncoder.getAbsolutePosition();
       if (absoluteEncoder.readingError)
       {
         angle = getRelativePosition();
@@ -258,7 +258,7 @@ public class SwerveModule
    */
   public double getRelativePosition()
   {
-    return angleMotor.getCachedPosition();
+    return angleMotor.getPosition();
   }
 
   /**

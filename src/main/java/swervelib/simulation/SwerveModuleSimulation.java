@@ -2,7 +2,6 @@ package swervelib.simulation;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import swervelib.math.SwerveModuleState2;
 
@@ -12,18 +11,11 @@ import swervelib.math.SwerveModuleState2;
 public class SwerveModuleSimulation
 {
 
-  /**
-   * Cache timeout in milliseconds. Data will refresh after this many milliseconds.
-   */
-  private final double             cachedTimeout   = 10;
+
   /**
    * Main timer to simulate the passage of time.
    */
   private final Timer              timer;
-  /**
-   * Time last cache was taken in microseconds.
-   */
-  private       double             cachedTimeMicro = 0;
   /**
    * Time delta since last update
    */
@@ -70,13 +62,9 @@ public class SwerveModuleSimulation
     dt = timer.get() - lastTime;
     lastTime = timer.get();
 
-    if ((RobotController.getFPGATime() - cachedTimeMicro) > (cachedTimeout * 1000))
-    {
-      state = desiredState;
-      fakeSpeed = desiredState.speedMetersPerSecond;
-      fakePos += (fakeSpeed * dt);
-      cachedTimeMicro = RobotController.getFPGATime();
-    }
+    state = desiredState;
+    fakeSpeed = desiredState.speedMetersPerSecond;
+    fakePos += (fakeSpeed * dt);
 
   }
 

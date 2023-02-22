@@ -1,6 +1,5 @@
 package swervelib.motors;
 
-import edu.wpi.first.wpilibj.RobotController;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.parser.PIDFConfig;
 
@@ -11,29 +10,9 @@ public abstract class SwerveMotor
 {
 
   /**
-   * Cache timeout in milliseconds. Data will refresh after this many milliseconds.
-   */
-  private final double  cachedTimeout           = 10;
-  /**
    * Whether the swerve motor is a drive motor.
    */
-  protected     boolean isDriveMotor;
-  /**
-   * Time last cache was taken in microseconds.
-   */
-  private       double  cachedTimeMicroPosition = 0;
-  /**
-   * Time last cache was taken in microseconds.
-   */
-  private       double  cachedTimeMicroVelocity = 0;
-  /**
-   * Cached motor position.
-   */
-  private       double  cachedPosition          = 0;
-  /**
-   * Cached motor velocity.
-   */
-  private       double  cachedVelocity          = 0;
+  protected boolean isDriveMotor;
 
   /**
    * Configure the factory defaults.
@@ -129,36 +108,6 @@ public abstract class SwerveMotor
    * @param position Integrated encoder position. Should be angle in degrees or meters per second.
    */
   public abstract void setPosition(double position);
-
-  /**
-   * Get the velocity of the integrated encoder.
-   *
-   * @return velocity in meters per second or degrees per second.
-   */
-  public double getCachedVelocity()
-  {
-    if ((RobotController.getFPGATime() - cachedTimeMicroVelocity) > (cachedTimeout * 1000))
-    {
-      cachedTimeMicroVelocity = RobotController.getFPGATime();
-      cachedVelocity = getVelocity();
-    }
-    return cachedVelocity;
-  }
-
-  /**
-   * Get the position of the integrated encoder.
-   *
-   * @return Position in meters or degrees.
-   */
-  public double getCachedPosition()
-  {
-    if ((RobotController.getFPGATime() - cachedTimeMicroPosition) > (cachedTimeout * 1000))
-    {
-      cachedTimeMicroPosition = RobotController.getFPGATime();
-      cachedPosition = getPosition();
-    }
-    return cachedPosition;
-  }
 
   /**
    * Set the voltage compensation for the swerve module motor.

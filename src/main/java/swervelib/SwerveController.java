@@ -53,6 +53,17 @@ public class SwerveController
   }
 
   /**
+   * Helper function to get the {@link Translation2d} of the chassis speeds given the {@link ChassisSpeeds}.
+   *
+   * @param speeds Chassis speeds.
+   * @return {@link Translation2d} of the speed the robot is going in.
+   */
+  public static Translation2d getTranslation2d(ChassisSpeeds speeds)
+  {
+    return new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+  }
+
+  /**
    * Add slew rate limiters to all controls. This prevents the robot from ramping up too much. To disable a
    * {@link SlewRateLimiter} set the desired one to null.
    *
@@ -65,17 +76,6 @@ public class SwerveController
     xLimiter = x;
     yLimiter = y;
     angleLimiter = angle;
-  }
-
-  /**
-   * Helper function to get the {@link Translation2d} of the chassis speeds given the {@link ChassisSpeeds}.
-   *
-   * @param speeds Chassis speeds.
-   * @return {@link Translation2d} of the speed the robot is going in.
-   */
-  public static Translation2d getTranslation2d(ChassisSpeeds speeds)
-  {
-    return new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
   }
 
   /**

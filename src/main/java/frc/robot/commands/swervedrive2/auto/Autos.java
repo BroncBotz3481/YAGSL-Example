@@ -28,15 +28,15 @@ import java.util.List;
 public final class Autos
 {
 
-  private Autos()
-  {
-    throw new UnsupportedOperationException("This is a utility class!");
-  }
-
   /**
    * April Tag field layout.
    */
   private static AprilTagFieldLayout aprilTagField = null;
+
+  private Autos()
+  {
+    throw new UnsupportedOperationException("This is a utility class!");
+  }
 
   public static CommandBase driveAndSpin(SwerveSubsystem swerve)
   {

@@ -90,12 +90,12 @@ public class SwerveModule
     {
       absoluteEncoder.factoryDefault();
       absoluteEncoder.configure(moduleConfiguration.absoluteEncoderInverted);
-      angleMotor.setPosition(absoluteEncoder.getAbsolutePosition() - angleOffset);
+      angleMotor.setPosition(absoluteEncoder.getCachedAbsolutePosition() - angleOffset);
     }
 
     // Config angle motor/controller
     angleMotor.configureIntegratedEncoder(
-      moduleConfiguration.getPositionEncoderConversion(false));
+        moduleConfiguration.getPositionEncoderConversion(false));
     angleMotor.configurePIDF(moduleConfiguration.anglePIDF);
     angleMotor.configurePIDWrapping(-180, 180);
     angleMotor.setInverted(moduleConfiguration.angleMotorInverted);
@@ -199,9 +199,9 @@ public class SwerveModule
     double     omega;
     if (!RobotBase.isSimulation())
     {
-      velocity = driveMotor.getVelocity();
-      azimuth = Rotation2d.fromDegrees(angleMotor.getPosition());
-      omega = Math.toRadians(angleMotor.getVelocity());
+      velocity = driveMotor.getCachedVelocity();
+      azimuth = Rotation2d.fromDegrees(angleMotor.getCachedPosition());
+      omega = Math.toRadians(angleMotor.getCachedVelocity());
     } else
     {
       return simModule.getState();
@@ -220,8 +220,8 @@ public class SwerveModule
     Rotation2d azimuth;
     if (!RobotBase.isSimulation())
     {
-      position = driveMotor.getPosition();
-      azimuth = Rotation2d.fromDegrees(angleMotor.getPosition());
+      position = driveMotor.getCachedPosition();
+      azimuth = Rotation2d.fromDegrees(angleMotor.getCachedPosition());
     } else
     {
       return simModule.getPosition();
@@ -239,7 +239,7 @@ public class SwerveModule
   {
     if (absoluteEncoder != null)
     {
-      double angle = absoluteEncoder.getAbsolutePosition();
+      double angle = absoluteEncoder.getCachedAbsolutePosition();
       if (absoluteEncoder.readingError)
       {
         angle = getRelativePosition();
@@ -258,7 +258,7 @@ public class SwerveModule
    */
   public double getRelativePosition()
   {
-    return angleMotor.getPosition();
+    return angleMotor.getCachedPosition();
   }
 
   /**

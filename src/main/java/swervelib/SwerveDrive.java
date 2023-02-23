@@ -219,6 +219,10 @@ public class SwerveDrive
    */
   public void setChassisSpeeds(ChassisSpeeds chassisSpeeds)
   {
+    SwerveDriveTelemetry.desiredChassisSpeeds[1] = chassisSpeeds.vyMetersPerSecond;
+    SwerveDriveTelemetry.desiredChassisSpeeds[0] = chassisSpeeds.vxMetersPerSecond;
+    SwerveDriveTelemetry.desiredChassisSpeeds[2] = Math.toDegrees(chassisSpeeds.omegaRadiansPerSecond);
+
     setModuleStates(kinematics.toSwerveModuleStates(chassisSpeeds), false);
   }
 

@@ -153,7 +153,8 @@ public class SwerveDrive
   /**
    * The primary method for controlling the drivebase. Takes a Translation2d and a rotation rate, and calculates and
    * commands module states accordingly. Can use either open-loop or closed-loop velocity control for the wheel
-   * velocities. Also has field- and robot-relative modes, which affect how the translation vector is used.
+   * velocities. Also has field- and robot-relative modes, which affect how the translation vector is used. This
+   * method defaults to no heading correction.
    *
    * @param translation   {@link Translation2d} that is the commanded linear velocity of the robot, in meters per
    *                      second. In robot-relative mode, positive x is torwards the bow (front) and positive y is
@@ -168,6 +169,28 @@ public class SwerveDrive
   public void drive(
       Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop)
   {
+    drive(translation, rotation, fieldRelative, isOpenLoop, false);
+  }
+
+  /**
+   * The primary method for controlling the drivebase. Takes a Translation2d and a rotation rate, and calculates and
+   * commands module states accordingly. Can use either open-loop or closed-loop velocity control for the wheel
+   * velocities. Also has field- and robot-relative modes, which affect how the translation vector is used.
+   *
+   * @param translation       {@link Translation2d} that is the commanded linear velocity of the robot, in meters per
+   *                          second. In robot-relative mode, positive x is torwards the bow (front) and positive y is
+   *                          torwards port (left). In field-relative mode, positive x is away from the alliance wall (field
+   *                          North) and positive y is torwards the left wall when looking through the driver station glass
+   *                          (field West).
+   * @param rotation          Robot angular rate, in radians per second. CCW positive. Unaffected by field/robot
+   *                          relativity.
+   * @param fieldRelative     Drive mode. True for field-relative, false for robot-relative.
+   * @param isOpenLoop        Whether to use closed-loop velocity control. Set to true to disable closed-loop.
+   * @param headingCorrection Whether to correct heading when driving translationally. Set to true to enable.
+   */
+  public void drive(
+      Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop, boolean headingCorrection)
+  {
     // Creates a robot-relative ChassisSpeeds object, converting from field-relative speeds if
     // necessary.
     ChassisSpeeds velocity =
@@ -178,7 +201,7 @@ public class SwerveDrive
 
     // Heading Angular Velocity Deadband, might make a configuration option later.
     // Originally made by Team 1466 Webb Robotics.
-    if (Math.abs(rotation) < 0.01)
+    if (Math.abs(rotation) < 0.01 && headingCorrection)
     {
       velocity.omegaRadiansPerSecond =
           swerveController.headingCalculate(lastHeadingRadians, getYaw().getRadians());

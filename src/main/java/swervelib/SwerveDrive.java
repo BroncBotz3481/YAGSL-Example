@@ -445,10 +445,19 @@ public class SwerveDrive
    */
   public void lockPose()
   {
+    // Sets states
     for (SwerveModule swerveModule : swerveModules)
     {
-      swerveModule.setDesiredState(
-          new SwerveModuleState2(0, swerveModule.configuration.moduleLocation.getAngle(), 0), true);
+      SwerveModuleState2 desiredState =
+          new SwerveModuleState2(0, swerveModule.configuration.moduleLocation.getAngle(), 0);
+
+      SwerveDriveTelemetry.desiredStates[swerveModule.moduleNumber * 2] =
+          desiredState.angle.getDegrees();
+      SwerveDriveTelemetry.desiredStates[(swerveModule.moduleNumber * 2) + 1] =
+          desiredState.speedMetersPerSecond;
+
+      swerveModule.setDesiredState(desiredState, false);
+
     }
   }
 

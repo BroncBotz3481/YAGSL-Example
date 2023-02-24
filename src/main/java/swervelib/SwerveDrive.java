@@ -1,5 +1,6 @@
 package swervelib;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -10,6 +11,8 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
@@ -56,23 +59,33 @@ public class SwerveDrive
   /**
    * Swerve controller for controlling heading of the robot.
    */
-  public        SwerveController         swerveController;
+  public  SwerveController    swerveController;
+  /**
+   * Trustworthiness of the internal model of how motors should be moving Measured in expected standard deviation
+   * (meters of position and degrees of rotation)
+   */
+  public  Matrix<N3, N1>      stateStdDevs                 = VecBuilder.fill(0.1, 0.1, 0.1);
+  /**
+   * Trustworthiness of the vision system Measured in expected standard deviation (meters of position and degrees of
+   * rotation)
+   */
+  public  Matrix<N3, N1>      visionMeasurementStdDevs     = VecBuilder.fill(0.9, 0.9, 0.9);
   /**
    * Swerve IMU device for sensing the heading of the robot.
    */
-  private       SwerveIMU                imu;
+  private SwerveIMU           imu;
   /**
    * Simulation of the swerve drive.
    */
-  private       SwerveIMUSimulation      simIMU;
+  private SwerveIMUSimulation simIMU;
   /**
    * Counter to synchronize the modules relative encoder with absolute encoder when not moving.
    */
-  private       int                      moduleSynchronizationCounter = 0;
+  private int                 moduleSynchronizationCounter = 0;
   /**
    * The last heading set in radians.
    */
-  private       double                   lastHeadingRadians           = 0;
+  private double              lastHeadingRadians           = 0;
 
   /**
    * Creates a new swerve drivebase subsystem. Robot is controlled via the {@link SwerveDrive#drive} method, or via the
@@ -113,11 +126,8 @@ public class SwerveDrive
             getYaw(),
             getModulePositions(),
             new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0)),
-            VecBuilder.fill(
-                0.1, 0.1, 0.1), // x,y,heading in radians; state std dev, higher=less weight
-            VecBuilder.fill(
-                0.9, 0.9,
-                0.9)); // x,y,heading in radians; Vision measurement std dev, higher=less weight
+            stateStdDevs,
+            visionMeasurementStdDevs); // x,y,heading in radians; Vision measurement std dev, higher=less weight
 
     zeroGyro();
 
@@ -621,20 +631,23 @@ public class SwerveDrive
    * Add a vision measurement to the {@link SwerveDrivePoseEstimator} and update the {@link SwerveIMU} gyro reading with
    * the given timestamp of the vision measurement. <b>THIS WILL BREAK IF UPDATED TOO OFTEN.</b>
    *
-   * @param robotPose Robot {@link Pose2d} as measured by vision.
-   * @param timestamp Timestamp the measurement was taken as time since startup, should be taken from
-   *                  {@link Timer#getFPGATimestamp()} or similar sources.
-   * @param soft      Add vision estimate using the
-   *                  {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double)} function, or hard reset
-   *                  odometry with the given position with
-   *                  {@link edu.wpi.first.math.kinematics.SwerveDriveOdometry#resetPosition(Rotation2d,
-   *                  SwerveModulePosition[], Pose2d)}.
+   * @param robotPose       Robot {@link Pose2d} as measured by vision.
+   * @param timestamp       Timestamp the measurement was taken as time since startup, should be taken from
+   *                        {@link Timer#getFPGATimestamp()} or similar sources.
+   * @param soft            Add vision estimate using the
+   *                        {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double)} function, or hard
+   *                        reset odometry with the given position with
+   *                        {@link edu.wpi.first.math.kinematics.SwerveDriveOdometry#resetPosition(Rotation2d,
+   *                        SwerveModulePosition[], Pose2d)}.
+   * @param trustWorthiness Trust level of vision reading when using a soft measurement, used to multiply the standard
+   *                        deviation. Set to 1 for full trust.
    */
-  public void addVisionMeasurement(Pose2d robotPose, double timestamp, boolean soft)
+  public void addVisionMeasurement(Pose2d robotPose, double timestamp, boolean soft, double trustWorthiness)
   {
     if (soft)
     {
-      swerveDrivePoseEstimator.addVisionMeasurement(robotPose, timestamp);
+      swerveDrivePoseEstimator.addVisionMeasurement(robotPose, timestamp,
+                                                    visionMeasurementStdDevs.times(1.0 / trustWorthiness));
     } else
     {
       swerveDrivePoseEstimator.resetPosition(

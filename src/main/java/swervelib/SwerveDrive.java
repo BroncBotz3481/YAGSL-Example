@@ -52,27 +52,27 @@ public class SwerveDrive
   /**
    * Field object.
    */
-  public  Field2d             field                        = new Field2d();
+  public        Field2d                  field                        = new Field2d();
   /**
    * Swerve controller for controlling heading of the robot.
    */
-  public  SwerveController    swerveController;
+  public        SwerveController         swerveController;
   /**
    * Swerve IMU device for sensing the heading of the robot.
    */
-  private SwerveIMU           imu;
+  private       SwerveIMU                imu;
   /**
    * Simulation of the swerve drive.
    */
-  private SwerveIMUSimulation simIMU;
+  private       SwerveIMUSimulation      simIMU;
   /**
    * Counter to synchronize the modules relative encoder with absolute encoder when not moving.
    */
-  private int                 moduleSynchronizationCounter = 0;
+  private       int                      moduleSynchronizationCounter = 0;
   /**
    * The last heading set in radians.
    */
-  private double              lastHeadingRadians           = 0;
+  private       double                   lastHeadingRadians           = 0;
 
   /**
    * Creates a new swerve drivebase subsystem. Robot is controlled via the {@link SwerveDrive#drive} method, or via the
@@ -153,8 +153,8 @@ public class SwerveDrive
   /**
    * The primary method for controlling the drivebase. Takes a Translation2d and a rotation rate, and calculates and
    * commands module states accordingly. Can use either open-loop or closed-loop velocity control for the wheel
-   * velocities. Also has field- and robot-relative modes, which affect how the translation vector is used. This
-   * method defaults to no heading correction.
+   * velocities. Also has field- and robot-relative modes, which affect how the translation vector is used. This method
+   * defaults to no heading correction.
    *
    * @param translation   {@link Translation2d} that is the commanded linear velocity of the robot, in meters per
    *                      second. In robot-relative mode, positive x is torwards the bow (front) and positive y is
@@ -179,9 +179,9 @@ public class SwerveDrive
    *
    * @param translation       {@link Translation2d} that is the commanded linear velocity of the robot, in meters per
    *                          second. In robot-relative mode, positive x is torwards the bow (front) and positive y is
-   *                          torwards port (left). In field-relative mode, positive x is away from the alliance wall (field
-   *                          North) and positive y is torwards the left wall when looking through the driver station glass
-   *                          (field West).
+   *                          torwards port (left). In field-relative mode, positive x is away from the alliance wall
+   *                          (field North) and positive y is torwards the left wall when looking through the driver
+   *                          station glass (field West).
    * @param rotation          Robot angular rate, in radians per second. CCW positive. Unaffected by field/robot
    *                          relativity.
    * @param fieldRelative     Drive mode. True for field-relative, false for robot-relative.

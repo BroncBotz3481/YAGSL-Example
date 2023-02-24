@@ -62,11 +62,10 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
       throw new RuntimeException("Cannot use SparkMAX as a drive motor without an encoder attached.");
     }
 
-    // Error out here instead of inside REVLib regarding hall encoders.
+    // Hall encoders can be used as quadrature encoders.
     if (encoderType == Type.kHallSensor)
     {
-      DriverStation.reportError("Cannot use a Hall Encoder with a brushed SparkMAX", true);
-      throw new RuntimeException("Cannot use a hall encoder with a brushed SparkMAX");
+      encoderType = Type.kQuadrature;
     }
 
     this.motor = motor;

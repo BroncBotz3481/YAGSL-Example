@@ -14,4 +14,4 @@ to be tuned correctly in order for Autonomous functions to work.
 | Name                        | Units              | Required | Description                                                                                    |
 |-----------------------------|--------------------|----------|------------------------------------------------------------------------------------------------|
 | angleJoystickRadiusDeadband | Double             | Y        | The minimum radius of the angle control joystick to allow for heading adjustment of the robot. |
-| heading                     | [PID](pidfjson.md) | Y        | The PID used to control the robot heading.                                                     |
+| heading                     | [PIDF](pidfjson.md) | Y        | The PID used to control the robot heading.                                                     |

@@ -9,5 +9,5 @@ and is used while initializing the `SwerveDriveConfiguration` object.
 
 | Name  | Units                                    | Required | Description                                                           |
 |-------|------------------------------------------|----------|-----------------------------------------------------------------------|
-| drive | PIDF with Integral Zone and Output limit | Y        | The configuration which will be used for the PIDF on the drive motor. |
-| angle | PIDF with Integral Zone and Output limit | Y        | The configuration which will be used for the PIDF on the angle motor. |
+| drive | [PIDF](pidfjson.md) | Y        | The configuration which will be used for the PIDF on the drive motor. |
+| angle | [PIDF](pidfjson.md) | Y        | The configuration which will be used for the PIDF on the angle motor. The fscalar is only used here. |

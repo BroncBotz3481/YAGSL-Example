@@ -348,7 +348,7 @@ public class TalonFXSwerve extends SwerveMotor
   {
     if (!absoluteEncoder && !RobotBase.isSimulation())
     {
-      motor.setSelectedSensorPosition(convertToNativeSensorUnits(position), 0, 250);
+      motor.setSelectedSensorPosition(position / positionConversionFactor, 0, 250);
     }
   }
 

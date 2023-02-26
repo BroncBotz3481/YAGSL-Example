@@ -21,7 +21,7 @@ public class TalonSRXSwerve extends SwerveMotor
   /**
    * Factory default already occurred.
    */
-  private final boolean              factoryDefaultOccurred = false;
+  private final boolean               factoryDefaultOccurred = false;
   /**
    * Current TalonFX configuration.
    */
@@ -29,7 +29,7 @@ public class TalonSRXSwerve extends SwerveMotor
   /**
    * Whether the absolute encoder is integrated.
    */
-  private final boolean              absoluteEncoder        = false;
+  private final boolean               absoluteEncoder        = false;
   /**
    * TalonSRX motor controller.
    */
@@ -45,7 +45,7 @@ public class TalonSRXSwerve extends SwerveMotor
   /**
    * Nominal voltage default to use with feedforward.
    */
-  private double nominalVoltage            = 12.0;
+  private double  nominalVoltage           = 12.0;
 
   /**
    * Constructor for TalonSRX swerve motor.

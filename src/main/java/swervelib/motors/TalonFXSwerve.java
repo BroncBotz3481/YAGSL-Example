@@ -44,7 +44,7 @@ public class TalonFXSwerve extends SwerveMotor
   /**
    * Nominal voltage default to use with feedforward.
    */
-  private double nominalVoltage            = 12.0;
+  private double  nominalVoltage           = 12.0;
 
   /**
    * Constructor for TalonFX swerve motor.

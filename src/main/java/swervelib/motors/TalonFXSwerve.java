@@ -42,10 +42,6 @@ public class TalonFXSwerve extends SwerveMotor
    */
   private boolean configChanged            = true;
   /**
-   * Feedforward scalar value for the angle motor.
-   */
-  private double  fscalar                  = 1;
-  /**
    * Nominal voltage default to use with feedforward.
    */
   private double nominalVoltage = 12.0;
@@ -177,7 +173,6 @@ public class TalonFXSwerve extends SwerveMotor
     configuration.slot0.kF = config.f;
     configuration.slot0.integralZone = config.iz;
     configuration.slot0.closedLoopPeakOutput = config.output.max;
-    fscalar = config.fscalar;
     configChanged = true;
   }
 

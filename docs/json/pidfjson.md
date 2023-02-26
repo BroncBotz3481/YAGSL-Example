@@ -18,7 +18,6 @@ A `0` in any place basically disables that portion of the PIDF.
 | f       | Number          | N        | Feedforward for the PID.                                                                                        |
 | iz      | Number          | N        | Integral zone for the integrator of the PID.                                                                    |
 | output  | [Range](#Range) | N        | The output range for the PID.                                                                                   |
-| fscalar | Number          | N        | The feedforward scalar value applied to all generated feedforwards (0.33 is typical for falcons). Default is 1. |
 
 ### Range
 

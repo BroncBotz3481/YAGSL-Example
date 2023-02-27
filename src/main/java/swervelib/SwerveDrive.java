@@ -261,9 +261,10 @@ public class SwerveDrive
 
       if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.HIGH.ordinal())
       {
-        SwerveModuleState2 moduleState = module.getState();
-        SwerveDriveTelemetry.desiredStates[module.moduleNumber * 2] = moduleState.angle.getDegrees();
-        SwerveDriveTelemetry.desiredStates[(module.moduleNumber * 2) + 1] = moduleState.speedMetersPerSecond;
+        SwerveDriveTelemetry.desiredStates[module.moduleNumber *
+                                           2] = desiredStates[module.moduleNumber].angle.getDegrees();
+        SwerveDriveTelemetry.desiredStates[(module.moduleNumber * 2) +
+                                           1] = desiredStates[module.moduleNumber].speedMetersPerSecond;
       }
       if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)
       {

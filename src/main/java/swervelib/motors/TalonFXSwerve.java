@@ -346,6 +346,7 @@ public class TalonFXSwerve extends SwerveMotor
   {
     if (!absoluteEncoder && !SwerveDriveTelemetry.isSimulation)
     {
+      position = position < 0 ? Math.IEEEremainder(position, 360) + 360 : position; // Fixes initial 360 movement.
       motor.setSelectedSensorPosition(position / positionConversionFactor, 0, 250);
     }
   }

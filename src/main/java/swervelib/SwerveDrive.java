@@ -72,7 +72,7 @@ public class SwerveDrive
    * Trustworthiness of the vision system Measured in expected standard deviation (meters of position and degrees of
    * rotation)
    */
-  public        Matrix<N6, N1>           visionMeasurementStdDevs     = VecBuilder.fill(0.1, 0.1, 0.1, 0.1, 0.1, 0.1);
+  public        Matrix<N6, N1>           visionMeasurementStdDevs     = VecBuilder.fill(0.9, 0.9, 0.9, 0.9, 0.9, 0.9);
   /**
    * Local measurement standard deviation, higher = less trustworthy.
    */

@@ -161,7 +161,7 @@ public class SwerveDrivePoseEstimator
 
     m_gyroOffset = initialPoseMeters.getRotation().minus(gyroAngle);
     m_previousAngle = initialPoseMeters.getRotation();
-    m_observer.setXhat(poseTo3dVector(initialPoseMeters));
+    m_observer.setXhat(poseTo6dVector(initialPoseMeters));
   }
 
   /**
@@ -194,7 +194,7 @@ public class SwerveDrivePoseEstimator
     m_observer.reset();
     m_latencyCompensator.reset();
 
-    m_observer.setXhat(poseTo3dVector(poseMeters));
+    m_observer.setXhat(poseTo6dVector(poseMeters));
 
     m_gyroOffset = getEstimatedPosition().getRotation().minus(gyroAngle);
     m_previousAngle = poseMeters.getRotation();
@@ -231,7 +231,7 @@ public class SwerveDrivePoseEstimator
         Nat.N6(),
         m_observer,
         m_nominalDt,
-        poseTo3dVector(visionRobotPoseMeters),
+        poseTo6dVector(visionRobotPoseMeters),
         m_visionCorrect,
         timestampSeconds);
   }
@@ -317,12 +317,12 @@ public class SwerveDrivePoseEstimator
   }
 
   /**
-   * Convert a {@link Pose3d} to a vector of [x, y, theta], where theta is in radians.
+   * Convert a {@link Pose3d} to a vector of [x, y, z, pitch, roll, yaw], where pitch, roll, yaw are in radians.
    *
    * @param pose A pose to convert to a vector.
-   * @return The given pose in vector form, with the third element, theta, in radians.
+   * @return The given pose in vector form.
    */
-  public static Matrix<N6, N1> poseTo3dVector(Pose3d pose) {
+  public static Matrix<N6, N1> poseTo6dVector(Pose3d pose) {
     return VecBuilder.fill(
         pose.getTranslation().getX(),
         pose.getTranslation().getY(),

@@ -9,12 +9,12 @@ import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.StateSpaceUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.AngleStatistics;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.numbers.N6;
 import edu.wpi.first.util.WPIUtilJNI;
 import java.util.function.BiConsumer;
 import swervelib.math.SwerveKinematics2;
@@ -48,10 +48,10 @@ import swervelib.math.SwerveModuleState2;
 public class SwerveDrivePoseEstimator
 {
 
-  private final UnscentedKalmanFilter<N3, N3, N1>          m_observer;
+  private final UnscentedKalmanFilter<N6, N6, N3>          m_observer;
   private final SwerveKinematics2                          m_kinematics;
-  private final BiConsumer<Matrix<N3, N1>, Matrix<N3, N1>> m_visionCorrect;
-  private final KalmanFilterLatencyCompensator<N3, N3, N1> m_latencyCompensator;
+  private final BiConsumer<Matrix<N6, N1>, Matrix<N6, N1>> m_visionCorrect;
+  private final KalmanFilterLatencyCompensator<N6, N6, N3> m_latencyCompensator;
 
   private final double m_nominalDt; // Seconds
   private       double m_prevTimeSeconds = -1.0;
@@ -59,7 +59,7 @@ public class SwerveDrivePoseEstimator
   private Rotation3d m_gyroOffset;
   private Rotation3d m_previousAngle;
 
-  private Matrix<N3, N3> m_visionContR;
+  private Matrix<N6, N6> m_visionContR;
 
   /**
    * Constructs a SwerveDrivePoseEstimator.
@@ -81,9 +81,9 @@ public class SwerveDrivePoseEstimator
       Rotation3d gyroAngle,
       Pose3d initialPoseMeters,
       SwerveKinematics2 kinematics,
-      Matrix<N3, N1> stateStdDevs,
-      Matrix<N1, N1> localMeasurementStdDevs,
-      Matrix<N3, N1> visionMeasurementStdDevs)
+      Matrix<N6, N1> stateStdDevs,
+      Matrix<N3, N1> localMeasurementStdDevs,
+      Matrix<N6, N1> visionMeasurementStdDevs)
   {
     this(
         gyroAngle,
@@ -117,19 +117,21 @@ public class SwerveDrivePoseEstimator
       Rotation3d gyroAngle,
       Pose3d initialPoseMeters,
       SwerveKinematics2 kinematics,
-      Matrix<N3, N1> stateStdDevs,
-      Matrix<N1, N1> localMeasurementStdDevs,
-      Matrix<N3, N1> visionMeasurementStdDevs,
+      Matrix<N6, N1> stateStdDevs,
+      Matrix<N3, N1> localMeasurementStdDevs,
+      Matrix<N6, N1> visionMeasurementStdDevs,
       double nominalDtSeconds)
   {
     m_nominalDt = nominalDtSeconds;
 
+
+
     m_observer =
         new UnscentedKalmanFilter<>(
+            Nat.N6(),
             Nat.N3(),
-            Nat.N1(),
             (x, u) -> u,
-            (x, u) -> x.extractRowVector(2),
+            (x, u) -> VecBuilder.fill(x.get(3, 0), x.get(4, 0), x.get(5, 0)),
             stateStdDevs,
             localMeasurementStdDevs,
             AngleStatistics.angleMean(2),
@@ -147,7 +149,7 @@ public class SwerveDrivePoseEstimator
     m_visionCorrect =
         (u, y) ->
             m_observer.correct(
-                Nat.N3(),
+                Nat.N6(),
                 u,
                 y,
                 (x, u1) -> x,
@@ -156,9 +158,10 @@ public class SwerveDrivePoseEstimator
                 AngleStatistics.angleResidual(2),
                 AngleStatistics.angleResidual(2),
                 AngleStatistics.angleAdd(2));
+
     m_gyroOffset = initialPoseMeters.getRotation().minus(gyroAngle);
     m_previousAngle = initialPoseMeters.getRotation();
-    m_observer.setXhat(StateSpaceUtil.poseTo3dVector(initialPoseMeters.toPose2d()));
+    m_observer.setXhat(poseTo3dVector(initialPoseMeters));
   }
 
   /**
@@ -169,9 +172,9 @@ public class SwerveDrivePoseEstimator
    *                                 global measurements from vision less. This matrix is in the form [x, y, theta]ᵀ,
    *                                 with units in meters and radians.
    */
-  public void setVisionMeasurementStdDevs(Matrix<N3, N1> visionMeasurementStdDevs)
+  public void setVisionMeasurementStdDevs(Matrix<N6, N1> visionMeasurementStdDevs)
   {
-    m_visionContR = StateSpaceUtil.makeCovarianceMatrix(Nat.N3(), visionMeasurementStdDevs);
+    m_visionContR = StateSpaceUtil.makeCovarianceMatrix(Nat.N6(), visionMeasurementStdDevs);
   }
 
   /**
@@ -191,7 +194,7 @@ public class SwerveDrivePoseEstimator
     m_observer.reset();
     m_latencyCompensator.reset();
 
-    m_observer.setXhat(StateSpaceUtil.poseTo3dVector(poseMeters.toPose2d()));
+    m_observer.setXhat(poseTo3dVector(poseMeters));
 
     m_gyroOffset = getEstimatedPosition().getRotation().minus(gyroAngle);
     m_previousAngle = poseMeters.getRotation();
@@ -205,10 +208,7 @@ public class SwerveDrivePoseEstimator
   public Pose3d getEstimatedPosition()
   {
     return new Pose3d(
-        m_observer.getXhat(0),
-        m_observer.getXhat(1),
-        0,
-        new Rotation3d(0, 0, m_observer.getXhat(2)));
+        m_observer.getXhat(0), m_observer.getXhat(1), m_observer.getXhat(2), new Rotation3d(m_observer.getXhat(3), m_observer.getXhat(4), m_observer.getXhat(5)));
   }
 
   /**
@@ -225,13 +225,13 @@ public class SwerveDrivePoseEstimator
    *                              timestamp is the same epoch as Timer.getFPGATimestamp.) This means that you should use
    *                              Timer.getFPGATimestamp as your time source or sync the epochs.
    */
-  public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds)
+  public void addVisionMeasurement(Pose3d visionRobotPoseMeters, double timestampSeconds)
   {
     m_latencyCompensator.applyPastGlobalMeasurement(
-        Nat.N3(),
+        Nat.N6(),
         m_observer,
         m_nominalDt,
-        StateSpaceUtil.poseTo3dVector(visionRobotPoseMeters),
+        poseTo3dVector(visionRobotPoseMeters),
         m_visionCorrect,
         timestampSeconds);
   }
@@ -258,9 +258,9 @@ public class SwerveDrivePoseEstimator
    *                                 with units in meters and radians.
    */
   public void addVisionMeasurement(
-      Pose2d visionRobotPoseMeters,
+      Pose3d visionRobotPoseMeters,
       double timestampSeconds,
-      Matrix<N3, N1> visionMeasurementStdDevs)
+      Matrix<N6, N1> visionMeasurementStdDevs)
   {
     setVisionMeasurementStdDevs(visionMeasurementStdDevs);
     addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
@@ -296,21 +296,39 @@ public class SwerveDrivePoseEstimator
     m_prevTimeSeconds = currentTimeSeconds;
 
     var angle = gyroAngle.plus(m_gyroOffset);
-    var omega = angle.minus(m_previousAngle).getAngle() / dt;
+    var omegaX = angle.minus(m_previousAngle).getX() / dt;
+    var omegaY = angle.minus(m_previousAngle).getY() / dt;
+    var omegaZ = angle.minus(m_previousAngle).getZ() / dt;
 
     var chassisSpeeds = m_kinematics.toChassisSpeeds(moduleStates);
     var fieldRelativeVelocities =
-        new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)
-            .rotateBy(angle.toRotation2d());
+        new Translation3d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, 0)
+            .rotateBy(angle);
 
-    var u = VecBuilder.fill(fieldRelativeVelocities.getX(), fieldRelativeVelocities.getY(), omega);
+    var u = VecBuilder.fill(fieldRelativeVelocities.getX(), fieldRelativeVelocities.getY(), fieldRelativeVelocities.getZ(), omegaX, omegaY, omegaZ);
     m_previousAngle = angle;
 
-    var localY = VecBuilder.fill(angle.getAngle());
+    var localY = VecBuilder.fill(angle.getX(), angle.getY(), angle.getZ());
     m_latencyCompensator.addObserverState(m_observer, u, localY, currentTimeSeconds);
     m_observer.predict(u, dt);
     m_observer.correct(u, localY);
 
     return getEstimatedPosition();
+  }
+
+  /**
+   * Convert a {@link Pose3d} to a vector of [x, y, theta], where theta is in radians.
+   *
+   * @param pose A pose to convert to a vector.
+   * @return The given pose in vector form, with the third element, theta, in radians.
+   */
+  public static Matrix<N6, N1> poseTo3dVector(Pose3d pose) {
+    return VecBuilder.fill(
+        pose.getTranslation().getX(),
+        pose.getTranslation().getY(),
+        pose.getTranslation().getY(),
+        pose.getRotation().getX(),
+        pose.getRotation().getY(),
+        pose.getRotation().getZ());
   }
 }

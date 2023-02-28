@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.numbers.N6;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
@@ -66,16 +67,16 @@ public class SwerveDrive
    * Trustworthiness of the internal model of how motors should be moving Measured in expected standard deviation
    * (meters of position and degrees of rotation)
    */
-  public        Matrix<N3, N1>           stateStdDevs                 = VecBuilder.fill(0.1, 0.1, 0.1);
+  public        Matrix<N6, N1>           stateStdDevs                 = VecBuilder.fill(0.1, 0.1, 0.1, 0.1, 0.1, 0.1);
   /**
    * Trustworthiness of the vision system Measured in expected standard deviation (meters of position and degrees of
    * rotation)
    */
-  public        Matrix<N3, N1>           visionMeasurementStdDevs     = VecBuilder.fill(0.9, 0.9, 0.9);
+  public        Matrix<N6, N1>           visionMeasurementStdDevs     = VecBuilder.fill(0.1, 0.1, 0.1, 0.1, 0.1, 0.1);
   /**
    * Local measurement standard deviation, higher = less trustworthy.
    */
-  public        Matrix<N1, N1>           localMeasurementStdDev       = VecBuilder.fill(0.1);
+  public        Matrix<N3, N1>           localMeasurementStdDev       = VecBuilder.fill(0.1, 0.1, 0.1);
   /**
    * Invert odometry readings of drive motor positions, used as a patch for debugging currently.
    */
@@ -321,6 +322,7 @@ public class SwerveDrive
   {
     return swerveDrivePoseEstimator.getEstimatedPosition();
   }
+
 
   /**
    * Gets the current field-relative velocity (x, y and omega) of the robot
@@ -694,7 +696,7 @@ public class SwerveDrive
   {
     if (soft)
     {
-      swerveDrivePoseEstimator.addVisionMeasurement(robotPose.toPose2d(), timestamp,
+      swerveDrivePoseEstimator.addVisionMeasurement(robotPose, timestamp,
                                                     visionMeasurementStdDevs.times(1.0 / trustWorthiness));
     } else
     {
@@ -704,11 +706,11 @@ public class SwerveDrive
 
     if (!SwerveDriveTelemetry.isSimulation)
     {
-      imu.setYaw(Math.toDegrees(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getAngle()));
+      imu.setYaw(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getZ());
       // Yaw reset recommended by Team 1622
     } else
     {
-      simIMU.setAngle(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getAngle());
+      simIMU.setAngle(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getZ());
     }
   }
 

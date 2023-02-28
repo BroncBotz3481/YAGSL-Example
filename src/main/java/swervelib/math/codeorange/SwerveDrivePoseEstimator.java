@@ -207,7 +207,7 @@ public class SwerveDrivePoseEstimator
     return new Pose3d(
         m_observer.getXhat(0),
         m_observer.getXhat(1),
-        m_observer.getXhat(2),
+        0,
         new Rotation3d(0, 0, m_observer.getXhat(2)));
   }
 

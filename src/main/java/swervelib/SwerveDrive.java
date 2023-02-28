@@ -177,8 +177,8 @@ public class SwerveDrive
   }
 
   /**
-   * The primary method for controlling the drivebase. Takes a Translation2d and a rotation rate, and calculates and
-   * commands module states accordingly. Can use either open-loop or closed-loop velocity control for the wheel
+   * The primary method for controlling the drivebase. Takes a {@link Translation2d} and a rotation rate, and calculates
+   * and commands module states accordingly. Can use either open-loop or closed-loop velocity control for the wheel
    * velocities. Also has field- and robot-relative modes, which affect how the translation vector is used. This method
    * defaults to no heading correction.
    *
@@ -685,7 +685,7 @@ public class SwerveDrive
    * @param timestamp       Timestamp the measurement was taken as time since startup, should be taken from
    *                        {@link Timer#getFPGATimestamp()} or similar sources.
    * @param soft            Add vision estimate using the
-   *                        {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double)} function, or hard
+   *                        {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose3d, double)} function, or hard
    *                        reset odometry with the given position with
    *                        {@link edu.wpi.first.math.kinematics.SwerveDriveOdometry#resetPosition(Rotation2d,
    *                        SwerveModulePosition[], Pose2d)}.

@@ -55,7 +55,7 @@ public class SwerveDrive
   /**
    * Field object.
    */
-  public        Field2d                  field                    = new Field2d();
+  public        Field2d                  field                        = new Field2d();
   /**
    * Swerve controller for controlling heading of the robot.
    */
@@ -64,33 +64,36 @@ public class SwerveDrive
    * Trustworthiness of the internal model of how motors should be moving Measured in expected standard deviation
    * (meters of position and degrees of rotation)
    */
-  public        Matrix<N3, N1>           stateStdDevs             = VecBuilder.fill(0.1, 0.1, 0.1);
+  public        Matrix<N3, N1>           stateStdDevs                 = VecBuilder.fill(0.1, 0.1, 0.1);
   /**
    * Trustworthiness of the vision system Measured in expected standard deviation (meters of position and degrees of
    * rotation)
    */
-  public        Matrix<N3, N1>           visionMeasurementStdDevs = VecBuilder.fill(0.9, 0.9, 0.9);
-
+  public        Matrix<N3, N1>           visionMeasurementStdDevs     = VecBuilder.fill(0.9, 0.9, 0.9);
+  /**
+   * Local measurement standard deviation, higher = less trustworthy.
+   */
+  public        Matrix<N1, N1>           localMeasurementStdDev       = VecBuilder.fill(0.1);
   /**
    * Invert odometry readings of drive motor positions, used as a patch for debugging currently.
    */
-  public  boolean             invertOdometry               = false;
+  public        boolean                  invertOdometry               = false;
   /**
    * Swerve IMU device for sensing the heading of the robot.
    */
-  private SwerveIMU           imu;
+  private       SwerveIMU                imu;
   /**
    * Simulation of the swerve drive.
    */
-  private SwerveIMUSimulation simIMU;
+  private       SwerveIMUSimulation      simIMU;
   /**
    * Counter to synchronize the modules relative encoder with absolute encoder when not moving.
    */
-  private int                 moduleSynchronizationCounter = 0;
+  private       int                      moduleSynchronizationCounter = 0;
   /**
    * The last heading set in radians.
    */
-  private double              lastHeadingRadians           = 0;
+  private       double                   lastHeadingRadians           = 0;
 
   /**
    * Creates a new swerve drivebase subsystem. Robot is controlled via the {@link SwerveDrive#drive} method, or via the
@@ -131,7 +134,7 @@ public class SwerveDrive
             new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0)),
             kinematics,
             stateStdDevs,
-            VecBuilder.fill(0.1),
+            localMeasurementStdDev,
             visionMeasurementStdDevs); // x,y,heading in radians; Vision measurement std dev, higher=less weight
 
     zeroGyro();

@@ -22,7 +22,8 @@ import org.ejml.simple.SimpleMatrix;
  * is useful because many states cannot be measured directly as a result of sensor noise, or because the state is
  * "hidden".
  *
- * <p>The Unscented Kalman filter is similar to the {@link KalmanFilter Kalman filter}, except that
+ * <p>The Unscented Kalman filter is similar to the {@link edu.wpi.first.math.estimator.KalmanFilter Kalman filter},
+ * except that
  * it propagates carefully chosen points called sigma points through the non-linear model to obtain an estimate of the
  * true covariance (as opposed to a linearized version of it). This means that the UKF works with nonlinear systems.
  */

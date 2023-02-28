@@ -345,6 +345,7 @@ public class SwerveDrive
   public void resetOdometry(Pose2d pose)
   {
     swerveDrivePoseEstimator.resetPosition(pose, getYaw());
+    resetDriveEncoders();
   }
 
   /**
@@ -686,6 +687,7 @@ public class SwerveDrive
     } else
     {
       swerveDrivePoseEstimator.resetPosition(robotPose, robotPose.getRotation());
+      resetDriveEncoders();
     }
 
     if (!SwerveDriveTelemetry.isSimulation)
@@ -695,6 +697,17 @@ public class SwerveDrive
     } else
     {
       simIMU.setAngle(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getRadians());
+    }
+  }
+
+  /**
+   * Reset the drive encoders to 0 for all swerve modules.
+   */
+  public void resetDriveEncoders()
+  {
+    for (SwerveModule module : swerveModules)
+    {
+      module.resetEncoder();
     }
   }
 }

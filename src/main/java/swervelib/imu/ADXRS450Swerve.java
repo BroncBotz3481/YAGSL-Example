@@ -71,6 +71,18 @@ public class ADXRS450Swerve extends SwerveIMU
   }
 
   /**
+   * Fetch the acceleration [x, y, z] from the IMU.
+   * 
+   * @param accel Array which will be filled with {x, y, z} in m/s/s.
+   */
+  @Override
+  public void getAccel(Double[] accel) {
+      accel[0] = Double.NaN;
+      accel[1] = Double.NaN;
+      accel[2] = Double.NaN;
+  }
+
+  /**
    * Get the instantiated IMU object.
    *
    * @return IMU object.

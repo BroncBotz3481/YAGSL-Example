@@ -80,6 +80,20 @@ public class Pigeon2Swerve extends SwerveIMU
   }
 
   /**
+   * Fetch the acceleration [x, y, z] from the IMU.
+   * 
+   * @param accel Array which will be filled with {x, y, z} in m/s/s.
+   */
+  @Override
+  public void getAccel(Double[] accel) {
+      short[] initial = new short[3];
+      imu.getBiasedAccelerometer(initial);
+      accel[0] = initial[0] / 16384.0 * 9.81;
+      accel[1] = initial[1] / 16384.0 * 9.81;
+      accel[2] = initial[2] / 16384.0 * 9.81;
+  }
+
+  /**
    * Get the instantiated IMU object.
    *
    * @return IMU object.

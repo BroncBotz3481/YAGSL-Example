@@ -78,6 +78,17 @@ public class SwerveIMUSimulation
   }
 
   /**
+   * Gets the acceleration of the robot in m/s/s. This is not currently simulated so returns 0.
+   * @param accel the acceleration array to fill [x, y, z]
+   */
+  public void getAccel(Double[] accel)
+  {
+    accel[0] = Double.NaN;
+    accel[1] = Double.NaN;
+    accel[2] = Double.NaN;
+  }
+
+  /**
    * Update the odometry of the simulated {@link swervelib.SwerveDrive} and post the {@link swervelib.SwerveModule}
    * states to the {@link Field2d}.
    *

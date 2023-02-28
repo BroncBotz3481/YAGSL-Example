@@ -4,10 +4,12 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
@@ -130,8 +132,8 @@ public class SwerveDrive
     //    odometry = new SwerveDriveOdometry(kinematics, getYaw(), getModulePositions());
     swerveDrivePoseEstimator =
         new SwerveDrivePoseEstimator(
-            getYaw(),
-            new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0)),
+            getGyroRotation3d(),
+            new Pose3d(new Translation3d(0, 0, 0), new Rotation3d()),
             kinematics,
             stateStdDevs,
             localMeasurementStdDev,
@@ -307,6 +309,16 @@ public class SwerveDrive
    */
   public Pose2d getPose()
   {
+    return swerveDrivePoseEstimator.getEstimatedPosition().toPose2d();
+  }
+
+  /**
+   * Gets the current pose (position and rotation) of the robot, as reported by odometry.
+   *
+   * @return The robot's pose
+   */
+  public Pose3d getPose3d()
+  {
     return swerveDrivePoseEstimator.getEstimatedPosition();
   }
 
@@ -342,9 +354,9 @@ public class SwerveDrive
    *
    * @param pose The pose to set the odometry to
    */
-  public void resetOdometry(Pose2d pose)
+  public void resetOdometry(Pose3d pose)
   {
-    swerveDrivePoseEstimator.resetPosition(pose, getYaw());
+    swerveDrivePoseEstimator.resetPosition(pose, getGyroRotation3d());
     resetDriveEncoders();
   }
 
@@ -433,7 +445,7 @@ public class SwerveDrive
       simIMU.setAngle(0);
     }
     swerveController.lastAngleScalar = 0;
-    resetOdometry(new Pose2d(getPose().getTranslation(), new Rotation2d()));
+    resetOdometry(new Pose3d(getPose3d().getTranslation(), new Rotation3d()));
   }
 
   /**
@@ -591,12 +603,12 @@ public class SwerveDrive
   public void updateOdometry()
   {
     // Update odometry
-    swerveDrivePoseEstimator.update(getYaw(), getModuleStates());
+    swerveDrivePoseEstimator.update(getGyroRotation3d(), getModuleStates());
 
     // Update angle accumulator if the robot is simulated
     if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.HIGH.ordinal())
     {
-      Pose2d[] modulePoses = getSwerveModulePoses(swerveDrivePoseEstimator.getEstimatedPosition());
+      Pose2d[] modulePoses = getSwerveModulePoses(swerveDrivePoseEstimator.getEstimatedPosition().toPose2d());
       if (SwerveDriveTelemetry.isSimulation)
       {
         simIMU.updateOdometry(
@@ -615,7 +627,7 @@ public class SwerveDrive
 
     if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.LOW.ordinal())
     {
-      field.setRobotPose(swerveDrivePoseEstimator.getEstimatedPosition());
+      field.setRobotPose(swerveDrivePoseEstimator.getEstimatedPosition().toPose2d());
     }
 
     double sumOmega = 0;
@@ -678,11 +690,11 @@ public class SwerveDrive
    * @param trustWorthiness Trust level of vision reading when using a soft measurement, used to multiply the standard
    *                        deviation. Set to 1 for full trust.
    */
-  public void addVisionMeasurement(Pose2d robotPose, double timestamp, boolean soft, double trustWorthiness)
+  public void addVisionMeasurement(Pose3d robotPose, double timestamp, boolean soft, double trustWorthiness)
   {
     if (soft)
     {
-      swerveDrivePoseEstimator.addVisionMeasurement(robotPose, timestamp,
+      swerveDrivePoseEstimator.addVisionMeasurement(robotPose.toPose2d(), timestamp,
                                                     visionMeasurementStdDevs.times(1.0 / trustWorthiness));
     } else
     {
@@ -692,11 +704,11 @@ public class SwerveDrive
 
     if (!SwerveDriveTelemetry.isSimulation)
     {
-      imu.setYaw(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees());
+      imu.setYaw(Math.toDegrees(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getAngle()));
       // Yaw reset recommended by Team 1622
     } else
     {
-      simIMU.setAngle(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getRadians());
+      simIMU.setAngle(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getAngle());
     }
   }
 

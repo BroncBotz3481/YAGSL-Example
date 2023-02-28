@@ -5,7 +5,9 @@
 package frc.robot.subsystems.swervedrive2;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -108,7 +110,7 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public void resetOdometry(Pose2d initialHolonomicPose)
   {
-    swerveDrive.resetOdometry(initialHolonomicPose);
+    swerveDrive.resetOdometry(new Pose3d(initialHolonomicPose));
   }
 
   /**
@@ -254,6 +256,9 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public void addFakeVisionReading()
   {
-    swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp(), false, 1);
+    swerveDrive.addVisionMeasurement(new Pose3d(3, 3, 0, new Rotation3d(0, 0, 65)),
+                                     Timer.getFPGATimestamp(),
+                                     false,
+                                     1);
   }
 }

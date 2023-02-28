@@ -10,7 +10,8 @@ import edu.wpi.first.math.StateSpaceUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.AngleStatistics;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -29,7 +30,7 @@ import swervelib.math.SwerveModuleState2;
  * <p>{@link SwerveDrivePoseEstimator#update} should be called every robot loop. If your loops are
  * faster or slower than the default of 0.02s, then you should change the nominal delta time using the secondary
  * constructor:
- * {@link SwerveDrivePoseEstimator#SwerveDrivePoseEstimator(Rotation2d, Pose2d, SwerveKinematics2, Matrix, Matrix,
+ * {@link SwerveDrivePoseEstimator#SwerveDrivePoseEstimator(Rotation3d, Pose3d, SwerveKinematics2, Matrix, Matrix,
  * Matrix, double)}.
  *
  * <p>{@link SwerveDrivePoseEstimator#addVisionMeasurement} can be called as infrequently as you
@@ -55,8 +56,8 @@ public class SwerveDrivePoseEstimator
   private final double m_nominalDt; // Seconds
   private       double m_prevTimeSeconds = -1.0;
 
-  private Rotation2d m_gyroOffset;
-  private Rotation2d m_previousAngle;
+  private Rotation3d m_gyroOffset;
+  private Rotation3d m_previousAngle;
 
   private Matrix<N3, N3> m_visionContR;
 
@@ -77,8 +78,8 @@ public class SwerveDrivePoseEstimator
    *                                 with units in meters and radians.
    */
   public SwerveDrivePoseEstimator(
-      Rotation2d gyroAngle,
-      Pose2d initialPoseMeters,
+      Rotation3d gyroAngle,
+      Pose3d initialPoseMeters,
       SwerveKinematics2 kinematics,
       Matrix<N3, N1> stateStdDevs,
       Matrix<N1, N1> localMeasurementStdDevs,
@@ -113,8 +114,8 @@ public class SwerveDrivePoseEstimator
    */
   @SuppressWarnings("ParameterName")
   public SwerveDrivePoseEstimator(
-      Rotation2d gyroAngle,
-      Pose2d initialPoseMeters,
+      Rotation3d gyroAngle,
+      Pose3d initialPoseMeters,
       SwerveKinematics2 kinematics,
       Matrix<N3, N1> stateStdDevs,
       Matrix<N1, N1> localMeasurementStdDevs,
@@ -155,10 +156,9 @@ public class SwerveDrivePoseEstimator
                 AngleStatistics.angleResidual(2),
                 AngleStatistics.angleResidual(2),
                 AngleStatistics.angleAdd(2));
-
     m_gyroOffset = initialPoseMeters.getRotation().minus(gyroAngle);
     m_previousAngle = initialPoseMeters.getRotation();
-    m_observer.setXhat(StateSpaceUtil.poseTo3dVector(initialPoseMeters));
+    m_observer.setXhat(StateSpaceUtil.poseTo3dVector(initialPoseMeters.toPose2d()));
   }
 
   /**
@@ -185,13 +185,13 @@ public class SwerveDrivePoseEstimator
    * @param poseMeters The position on the field that your robot is at.
    * @param gyroAngle  The angle reported by the gyroscope.
    */
-  public void resetPosition(Pose2d poseMeters, Rotation2d gyroAngle)
+  public void resetPosition(Pose3d poseMeters, Rotation3d gyroAngle)
   {
     // Reset state estimate and error covariance
     m_observer.reset();
     m_latencyCompensator.reset();
 
-    m_observer.setXhat(StateSpaceUtil.poseTo3dVector(poseMeters));
+    m_observer.setXhat(StateSpaceUtil.poseTo3dVector(poseMeters.toPose2d()));
 
     m_gyroOffset = getEstimatedPosition().getRotation().minus(gyroAngle);
     m_previousAngle = poseMeters.getRotation();
@@ -202,10 +202,13 @@ public class SwerveDrivePoseEstimator
    *
    * @return The estimated robot pose in meters.
    */
-  public Pose2d getEstimatedPosition()
+  public Pose3d getEstimatedPosition()
   {
-    return new Pose2d(
-        m_observer.getXhat(0), m_observer.getXhat(1), new Rotation2d(m_observer.getXhat(2)));
+    return new Pose3d(
+        m_observer.getXhat(0),
+        m_observer.getXhat(1),
+        m_observer.getXhat(2),
+        new Rotation3d(0, 0, m_observer.getXhat(2)));
   }
 
   /**
@@ -271,7 +274,7 @@ public class SwerveDrivePoseEstimator
    * @param moduleStates The current velocities and rotations of the swerve modules.
    * @return The estimated pose of the robot in meters.
    */
-  public Pose2d update(Rotation2d gyroAngle, SwerveModuleState2... moduleStates)
+  public Pose3d update(Rotation3d gyroAngle, SwerveModuleState2... moduleStates)
   {
     return updateWithTime(WPIUtilJNI.now() * 1.0e-6, gyroAngle, moduleStates);
   }
@@ -286,24 +289,24 @@ public class SwerveDrivePoseEstimator
    * @return The estimated pose of the robot in meters.
    */
   @SuppressWarnings("LocalVariableName")
-  public Pose2d updateWithTime(
-      double currentTimeSeconds, Rotation2d gyroAngle, SwerveModuleState2... moduleStates)
+  public Pose3d updateWithTime(
+      double currentTimeSeconds, Rotation3d gyroAngle, SwerveModuleState2... moduleStates)
   {
     double dt = m_prevTimeSeconds >= 0 ? currentTimeSeconds - m_prevTimeSeconds : m_nominalDt;
     m_prevTimeSeconds = currentTimeSeconds;
 
     var angle = gyroAngle.plus(m_gyroOffset);
-    var omega = angle.minus(m_previousAngle).getRadians() / dt;
+    var omega = angle.minus(m_previousAngle).getAngle() / dt;
 
     var chassisSpeeds = m_kinematics.toChassisSpeeds(moduleStates);
     var fieldRelativeVelocities =
         new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)
-            .rotateBy(angle);
+            .rotateBy(angle.toRotation2d());
 
     var u = VecBuilder.fill(fieldRelativeVelocities.getX(), fieldRelativeVelocities.getY(), omega);
     m_previousAngle = angle;
 
-    var localY = VecBuilder.fill(angle.getRadians());
+    var localY = VecBuilder.fill(angle.getAngle());
     m_latencyCompensator.addObserverState(m_observer, u, localY, currentTimeSeconds);
     m_observer.predict(u, dt);
     m_observer.correct(u, localY);

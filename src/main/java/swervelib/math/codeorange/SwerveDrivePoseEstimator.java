@@ -58,6 +58,9 @@ public class SwerveDrivePoseEstimator
 
   private Rotation3d m_gyroOffset;
   private Rotation3d m_previousAngle;
+  private double m_previousRoll = 0;
+  private double m_previousPitch = 0;
+  private double m_previousYaw = 0;
 
   private Matrix<N6, N6> m_visionContR;
 
@@ -161,6 +164,9 @@ public class SwerveDrivePoseEstimator
 
     m_gyroOffset = initialPoseMeters.getRotation().minus(gyroAngle);
     m_previousAngle = initialPoseMeters.getRotation();
+    m_previousRoll = initialPoseMeters.getRotation().getX();
+    m_previousPitch = initialPoseMeters.getRotation().getY();
+    m_previousYaw = initialPoseMeters.getRotation().getZ();
     m_observer.setXhat(poseTo6dVector(initialPoseMeters));
   }
 
@@ -197,6 +203,9 @@ public class SwerveDrivePoseEstimator
     m_observer.setXhat(poseTo6dVector(poseMeters));
 
     m_gyroOffset = getEstimatedPosition().getRotation().minus(gyroAngle);
+    m_previousRoll = poseMeters.getRotation().getX();
+    m_previousPitch = poseMeters.getRotation().getY();
+    m_previousYaw = poseMeters.getRotation().getZ();
     m_previousAngle = poseMeters.getRotation();
   }
 
@@ -308,7 +317,14 @@ public class SwerveDrivePoseEstimator
     var u = VecBuilder.fill(fieldRelativeVelocities.getX(), fieldRelativeVelocities.getY(), fieldRelativeVelocities.getZ(), omegaX, omegaY, omegaZ);
     m_previousAngle = angle;
 
-    var localY = VecBuilder.fill(angle.getX(), angle.getY(), angle.getZ());
+    m_previousPitch = Math.toRadians(placeInAppropriate0To360Scope(Math.toDegrees(m_previousPitch), Math.toDegrees(angle.getX())));
+    m_previousRoll = Math.toRadians(placeInAppropriate0To360Scope(Math.toDegrees(m_previousRoll), Math.toDegrees(angle.getY())));
+    m_previousYaw = Math.toRadians(placeInAppropriate0To360Scope(Math.toDegrees(m_previousYaw), Math.toDegrees(angle.getZ())));
+
+    var localY = VecBuilder.fill(
+      m_previousPitch, 
+      m_previousRoll, 
+      m_previousYaw);
     m_latencyCompensator.addObserverState(m_observer, u, localY, currentTimeSeconds);
     m_observer.predict(u, dt);
     m_observer.correct(u, localY);
@@ -330,5 +346,43 @@ public class SwerveDrivePoseEstimator
         pose.getRotation().getX(),
         pose.getRotation().getY(),
         pose.getRotation().getZ());
+  }
+
+  /**
+   * Put an angle within the the 360 deg scope of a reference. For example, given a scope reference
+   * of 756 degrees, assumes the full scope is (720-1080), and places an angle of 22 degrees into
+   * it, returning 742 deg.
+   *
+   * @param scopeReference Current Angle (deg)
+   * @param newAngle Target Angle (deg)
+   * @return Closest angle within scope (deg)
+   */
+  private double placeInAppropriate0To360Scope(double scopeReference, double newAngle) {
+    double lowerBound;
+    double upperBound;
+    double lowerOffset = (scopeReference % 360);
+
+    // Create the interval from the reference angle.
+    if (lowerOffset >= 0) {
+      lowerBound = scopeReference - lowerOffset;
+      upperBound = scopeReference + (360 - lowerOffset);
+    } else {
+      upperBound = scopeReference - lowerOffset;
+      lowerBound = scopeReference - (360 + lowerOffset);
+    }
+    // Put the angle in the interval.
+    while (newAngle < lowerBound) {
+      newAngle += 360;
+    }
+    while (newAngle > upperBound) {
+      newAngle -= 360;
+    }
+    // Smooth the transition between interval boundaries.
+    if (newAngle - scopeReference > 180) {
+      newAngle -= 360;
+    } else if (newAngle - scopeReference < -180) {
+      newAngle += 360;
+    }
+    return newAngle;
   }
 }

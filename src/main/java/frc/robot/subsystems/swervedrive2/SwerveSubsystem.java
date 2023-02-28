@@ -256,7 +256,7 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public void addFakeVisionReading()
   {
-    swerveDrive.addVisionMeasurement(new Pose3d(3, 3, 0, new Rotation3d(0, 0, 65)),
+    swerveDrive.addVisionMeasurement(new Pose3d(3, 3, 0, new Rotation3d(0, 0, Math.toRadians(65))),
                                      Timer.getFPGATimestamp(),
                                      false,
                                      1);

@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import swervelib.imu.SwerveIMU;
 import swervelib.math.SwerveKinematics2;
 import swervelib.math.SwerveMath;
@@ -539,16 +541,21 @@ public class SwerveDrive
     }
   }
 
-  public Double getZAccel() {
+  /**
+   * Gets current acceleration of the robot in m/s/s
+   * @return acceleration of the robot as a {@link Translation3d}
+   */
+  public Optional<Translation3d> getAccel() {
     Double[] accel = new Double[3];
     if (!SwerveDriveTelemetry.isSimulation)
     {
       imu.getAccel(accel);
-      return accel[2];
     } else {
       simIMU.getAccel(accel);
-      return accel[2];
     }
+    return !accel[0].isNaN() || !accel[1].isNaN() || !accel[2].isNaN() 
+           ? Optional.of(new Translation3d(accel[0], accel[1], accel[2]).rotateBy(getGyroRotation3d()))
+           : Optional.empty();
   }
 
   /**
@@ -627,7 +634,7 @@ public class SwerveDrive
   public void updateOdometry()
   {
     // Update odometry
-    swerveDrivePoseEstimator.update(getGyroRotation3d(), getZAccel(), getModuleStates());
+    swerveDrivePoseEstimator.update(getGyroRotation3d(), getAccel(), getModuleStates());
 
     // Update angle accumulator if the robot is simulated
     if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.HIGH.ordinal())

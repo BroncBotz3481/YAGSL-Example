@@ -16,6 +16,8 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.numbers.N6;
 import edu.wpi.first.util.WPIUtilJNI;
+
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import swervelib.math.SwerveKinematics2;
 import swervelib.math.SwerveModuleState2;
@@ -310,9 +312,9 @@ public class SwerveDrivePoseEstimator
    * @param moduleStates The current velocities and rotations of the swerve modules.
    * @return The estimated pose of the robot in meters.
    */
-  public Pose3d update(Rotation3d gyroAngle, Double zAccel, SwerveModuleState2... moduleStates)
+  public Pose3d update(Rotation3d gyroAngle, Optional<Translation3d> accel, SwerveModuleState2... moduleStates)
   {
-    return updateWithTime(WPIUtilJNI.now() * 1.0e-6, gyroAngle, zAccel, moduleStates);
+    return updateWithTime(WPIUtilJNI.now() * 1.0e-6, gyroAngle, accel, moduleStates);
   }
 
   /**
@@ -327,7 +329,7 @@ public class SwerveDrivePoseEstimator
    */
   @SuppressWarnings("LocalVariableName")
   public Pose3d updateWithTime(
-      double currentTimeSeconds, Rotation3d gyroAngle, Double zAccel, SwerveModuleState2... moduleStates)
+      double currentTimeSeconds, Rotation3d gyroAngle, Optional<Translation3d> accel, SwerveModuleState2... moduleStates)
   {
     double dt = m_prevTimeSeconds >= 0 ? currentTimeSeconds - m_prevTimeSeconds : m_nominalDt;
     m_prevTimeSeconds = currentTimeSeconds;
@@ -342,9 +344,9 @@ public class SwerveDrivePoseEstimator
         new Translation3d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, 0)
             .rotateBy(angle);
     var z = fieldRelativeVelocities.getZ();
-    if (!zAccel.isNaN())
+    if (accel.isEmpty())
     {
-      var uZ = VecBuilder.fill(zAccel);
+      var uZ = VecBuilder.fill(accel.get().getZ());
       var lZ = VecBuilder.fill(fieldRelativeVelocities.getZ());
   
       m_accelObserver.predict(uZ, dt);

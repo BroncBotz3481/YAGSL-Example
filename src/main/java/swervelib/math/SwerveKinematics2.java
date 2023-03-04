@@ -27,8 +27,6 @@ public class SwerveKinematics2 extends SwerveDriveKinematics {
   private final SimpleMatrix m_forwardKinematics;
   /** Second order kinematics inverse matrix. */
   private final SimpleMatrix bigInverseKinematics;
-
-  private final SimpleMatrix bigForwardKinematics;
   /** Number of swerve modules. */
   private final int m_numModules;
   /** Location of each swerve module in meters. */
@@ -37,12 +35,6 @@ public class SwerveKinematics2 extends SwerveDriveKinematics {
   private final SwerveModuleState2[] m_moduleStates;
   /** Previous CoR */
   private Translation2d m_prevCoR = new Translation2d();
-
-  private double m_lastTimeTwist = 0;
-  private double m_lastTimeChassisSpeeds = 0;
-
-  private Pose2d m_lastVelocityChassis = new Pose2d();
-  private Pose2d m_lastAccelChassis = new Pose2d();
 
   /**
    * Constructs a swerve drive kinematics object. This takes in a variable number of wheel locations
@@ -73,10 +65,6 @@ public class SwerveKinematics2 extends SwerveDriveKinematics {
               i * 2 + 1, 0, /* Start Data */ 0, 1, -m_modules[i].getY(), +m_modules[i].getX());
     }
     m_forwardKinematics = m_inverseKinematics.pseudoInverse();
-    bigForwardKinematics = bigInverseKinematics.pseudoInverse();
-
-    m_lastTimeTwist = WPIUtilJNI.now() * 1.0e-6;
-    m_lastTimeChassisSpeeds = WPIUtilJNI.now() * 1.0e-6;
 
     MathSharedStore.reportUsage(MathUsageId.kKinematics_SwerveDrive, 1);
   }

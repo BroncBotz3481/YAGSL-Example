@@ -1,6 +1,11 @@
 package swervelib.imu;
 
+import java.util.Optional;
+
 import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -82,6 +87,34 @@ public class NavXSwerve extends SwerveIMU
     yprArray[0] = (gyro.getYaw() % 360) - yawOffset;
     yprArray[1] = (gyro.getPitch() % 360);
     yprArray[2] = (gyro.getRoll() % 360);
+  }
+
+    /**
+   * Fetch the {@link Rotation3d} from the IMU. Robot relative.
+   *
+   * @return {@link Rotation3d} from the IMU.
+   */
+  public Rotation3d getRotation3d() 
+  {
+    return new Rotation3d(gyro.getRoll(), gyro.getPitch(), gyro.getYaw())
+        .minus(new Rotation3d(0, 0, Math.toRadians(yawOffset)));
+  }
+
+  /**
+   * Fetch the acceleration [x, y, z] from the IMU in meters per second quared. If acceleration
+   * isn't supported returns empty.
+   *
+   * @return {@link Translation3d} of the acceleration as an {@link Optional}.
+   */
+  @Override
+  public Optional<Translation3d> getAccel() 
+  {
+    return Optional.of(
+        new Translation3d(
+                gyro.getWorldLinearAccelX(),
+                gyro.getWorldLinearAccelY(),
+                gyro.getWorldLinearAccelZ())
+            .times(9.81));
   }
 
   /**

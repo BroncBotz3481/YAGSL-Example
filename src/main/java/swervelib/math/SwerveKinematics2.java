@@ -289,40 +289,10 @@ public class SwerveKinematics2 extends SwerveDriveKinematics {
 
     var chassisSpeedsVector = m_forwardKinematics.mult(moduleStatesMatrix);
 
-    var moduleAccelerationStatesMatrix = new SimpleMatrix(m_numModules * 2, 1);
-
-    for (int i = 0; i < m_numModules; i++) {
-      var module = wheelStates[i];
-
-      double vel = module.speedMetersPerSecond;
-      double accel = module.accelMetersPerSecondSq;
-      var angle = module.angle;
-      double angleVel = module.omegaRadPerSecond;
-
-      var omegaVector = new SimpleMatrix(2, 1);
-
-      omegaVector.setColumn(0, 0, accel, (angleVel + chassisSpeedsVector.get(2, 0)) * vel);
-
-      var trigThetaAngle = new SimpleMatrix(2, 2);
-      trigThetaAngle.setColumn(0, 0, angle.getCos(), -angle.getSin());
-      trigThetaAngle.setColumn(1, 0, angle.getSin(), angle.getCos());
-      var trigThetaAngleInv = trigThetaAngle.pseudoInverse();
-
-      var accelVector = trigThetaAngleInv.mult(omegaVector);
-      moduleAccelerationStatesMatrix.set(i * 2, 0, accelVector.get(0, 0));
-      moduleAccelerationStatesMatrix.set(i * 2 + 1, 0, accelVector.get(1, 0));
-    }
-
-    var accelerationVector = bigForwardKinematics.mult(moduleAccelerationStatesMatrix);
-
-    var time = WPIUtilJNI.now() * 1.0e-6;
-    var dt = time - m_lastTimeChassisSpeeds;
-    m_lastTimeChassisSpeeds = time;
-
     return new ChassisSpeeds(
-            chassisSpeedsVector.get(0, 0) - accelerationVector.get(0, 0) * dt,
-            chassisSpeedsVector.get(1, 0) - accelerationVector.get(1, 0) * dt,
-            chassisSpeedsVector.get(2, 0) - accelerationVector.get(3, 0) * dt);
+            chassisSpeedsVector.get(0, 0),
+            chassisSpeedsVector.get(1, 0),
+            chassisSpeedsVector.get(2, 0));
   }
 
   /**
@@ -343,61 +313,18 @@ public class SwerveKinematics2 extends SwerveDriveKinematics {
                       + "constructor");
     }
     var moduleDeltaMatrix = new SimpleMatrix(m_numModules * 2, 1);
-    var moduleSpeedsMatrix = new SimpleMatrix(m_numModules * 2, 1);
 
     for (int i = 0; i < m_numModules; i++) {
       var module = wheelDeltas[i];
       moduleDeltaMatrix.set(i * 2, 0, module.distanceMeters * module.angle.getCos());
       moduleDeltaMatrix.set(i * 2 + 1, module.distanceMeters * module.angle.getSin());
-      moduleSpeedsMatrix.set(i * 2, 0, module.speedMetersPerSecond * module.angle.getCos());
-      moduleSpeedsMatrix.set(i * 2 + 1, module.speedMetersPerSecond * module.angle.getSin());
     }
 
     var chassisDeltaVector = m_forwardKinematics.mult(moduleDeltaMatrix);
-    var chassisSpeedsVector = m_forwardKinematics.mult(moduleSpeedsMatrix);
-
-    var moduleAccelerationStatesMatrix = new SimpleMatrix(m_numModules * 2, 1);
-
-    for (int i = 0; i < m_numModules; i++) {
-      var module = wheelDeltas[i];
-
-      double pos = module.distanceMeters;
-      double vel = module.speedMetersPerSecond;
-      double accel = module.accelMetersPerSecondSq;
-      var angle = module.angle;
-      double angleVel = module.omegaRadPerSecond;
-
-      var omegaVector = new SimpleMatrix(2, 1);
-
-      omegaVector.setColumn(0, 0, vel, (angleVel + chassisSpeedsVector.get(2, 0)) * pos);
-
-      var trigThetaAngle = new SimpleMatrix(2, 2);
-      trigThetaAngle.setColumn(0, 0, angle.getCos(), angle.getSin());
-      trigThetaAngle.setColumn(1, 0, -angle.getSin(), angle.getCos());
-
-      var accelVector = trigThetaAngle.mult(omegaVector);
-      moduleAccelerationStatesMatrix.set(i * 2, 0, accelVector.get(0, 0));
-      moduleAccelerationStatesMatrix.set(i * 2 + 1, 0, accelVector.get(1, 0));
-    }
-
-    var accelerationVector = bigForwardKinematics.mult(moduleAccelerationStatesMatrix);
-    // System.out.println(accelerationVector.toString());
-
-    var time = WPIUtilJNI.now() * 1.0e-6;
-    var dt = time - m_lastTimeTwist;
-    m_lastTimeTwist = time;
-
-    var scale = (Math.pow(Math.abs(chassisDeltaVector.get(2, 0)), 0.4) / 0.30);
-    System.out.println(scale);
-    System.out.println(accelerationVector.toString());
 
     return new Twist2d(
-            chassisDeltaVector.get(0, 0)
-            - accelerationVector.get(0, 0) * dt * 0.31,
-//                    * (Math.pow(Math.abs(chassisDeltaVector.get(2, 0)), 0.59) / 0.40),
-            chassisDeltaVector.get(1, 0)
-                    - accelerationVector.get(1, 0) * dt * 0.31,
-//                    * (Math.pow(Math.abs(chassisDeltaVector.get(2, 0)), 0.59) / 0.40),
-            chassisDeltaVector.get(2, 0) - accelerationVector.get(3, 0) * dt);
+            chassisDeltaVector.get(0, 0),
+            chassisDeltaVector.get(1, 0),
+            chassisDeltaVector.get(2, 0));
   }
 }

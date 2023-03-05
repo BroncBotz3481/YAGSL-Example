@@ -43,7 +43,8 @@ public abstract class SwerveIMU
   public abstract Rotation3d getRotation3d();
 
   /**
-   * Fetch the acceleration [x, y, z] from the IMU in m/s/s. If acceleration isn't supported returns empty.
+   * Fetch the acceleration [x, y, z] from the IMU in meters per second squared. If
+   * acceleration isn't supported returns empty.
    *
    * @return {@link Translation3d} of the acceleration as an {@link Optional}.
    */

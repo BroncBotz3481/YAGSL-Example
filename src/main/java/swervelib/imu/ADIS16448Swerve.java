@@ -88,7 +88,8 @@ public class ADIS16448Swerve extends SwerveIMU
   }
 
   /**
-   * Fetch the acceleration [x, y, z] from the IMU.
+   * Fetch the acceleration [x, y, z] from the IMU in meters per second squared. If
+   * acceleration isn't supported returns empty.
    *
    * @return {@link Translation3d} of the acceleration.
    */

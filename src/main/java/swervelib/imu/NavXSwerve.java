@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -96,8 +97,8 @@ public class NavXSwerve extends SwerveIMU
    */
   public Rotation3d getRotation3d() 
   {
-    return new Rotation3d(gyro.getRoll(), gyro.getPitch(), gyro.getYaw())
-        .minus(new Rotation3d(0, 0, Math.toRadians(yawOffset)));
+    return new Rotation3d(new Quaternion(gyro.getQuaternionW(), gyro.getQuaternionX(), gyro.getQuaternionY(), gyro.getQuaternionZ()))
+            .minus(new Rotation3d(0, 0, Math.toRadians(yawOffset)));
   }
 
   /**

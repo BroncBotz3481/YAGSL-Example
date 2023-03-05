@@ -421,13 +421,11 @@ public class SwerveDrive
   public Rotation2d getYaw()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (!SwerveDriveTelemetry.isSimulation)
-    {
-      double[] ypr = new double[3];
-      imu.getYawPitchRoll(ypr);
-      return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[0] : ypr[0]);
-    } else
-    {
+    if (!SwerveDriveTelemetry.isSimulation) {
+      return swerveDriveConfiguration.invertedIMU
+              ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getZ())
+              : Rotation2d.fromRadians(imu.getRotation3d().getZ());
+    } else {
       return simIMU.getYaw();
     }
   }
@@ -440,13 +438,11 @@ public class SwerveDrive
   public Rotation2d getPitch()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (!SwerveDriveTelemetry.isSimulation)
-    {
-      double[] ypr = new double[3];
-      imu.getYawPitchRoll(ypr);
-      return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[1] : ypr[1]);
-    } else
-    {
+    if (!SwerveDriveTelemetry.isSimulation) {
+      return swerveDriveConfiguration.invertedIMU
+              ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getY())
+              : Rotation2d.fromRadians(imu.getRotation3d().getY());
+    } else {
       return simIMU.getPitch();
     }
   }
@@ -459,13 +455,11 @@ public class SwerveDrive
   public Rotation2d getRoll()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (!SwerveDriveTelemetry.isSimulation)
-    {
-      double[] ypr = new double[3];
-      imu.getYawPitchRoll(ypr);
-      return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[2] : ypr[2]);
-    } else
-    {
+    if (!SwerveDriveTelemetry.isSimulation) {
+      return swerveDriveConfiguration.invertedIMU
+              ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getX())
+              : Rotation2d.fromRadians(imu.getRotation3d().getX());
+    } else {
       return simIMU.getRoll();
     }
   }

@@ -52,13 +52,13 @@ public class SwerveModule
    */
   public        double                 lastAngle;
   /**
-   * Last measured velocity the swerve module.
-   */
-  private       double                 lastVel = 0;
-  /**
    * Last time on the timer.
    */
   private       double                 lastTime;
+  /**
+   * Last velocity set for the swerve module.
+   */
+  public        double                 lastVelocity;
   /**
    * Simulated swerve module.
    */
@@ -132,6 +132,7 @@ public class SwerveModule
     }
 
     lastAngle = getState().angle.getDegrees();
+    lastVelocity = getState().speedMetersPerSecond;
   }
 
   /**
@@ -176,7 +177,11 @@ public class SwerveModule
     } else
     {
       double velocity = desiredState.speedMetersPerSecond;
-      driveMotor.setReference(velocity, feedforward.calculate(velocity));
+      if (velocity != lastVelocity)
+      {
+        driveMotor.setReference(velocity, feedforward.calculate(velocity));
+      }
+      lastVelocity = velocity;
     }
 
     // Prevents module rotation if speed is less than 1%
@@ -184,8 +189,11 @@ public class SwerveModule
         (Math.abs(desiredState.speedMetersPerSecond) <= (configuration.maxSpeed * 0.01)
          ? lastAngle
          : desiredState.angle.getDegrees());
-    angleMotor.setReference(
-        angle, Math.toDegrees(desiredState.omegaRadPerSecond) * configuration.angleKV);
+    if (angle != lastAngle)
+    {
+      angleMotor.setReference(
+          angle, Math.toDegrees(desiredState.omegaRadPerSecond) * configuration.angleKV);
+    }
     lastAngle = angle;
 
     if (SwerveDriveTelemetry.isSimulation)
@@ -223,8 +231,8 @@ public class SwerveModule
     {
       position = driveMotor.getPosition();
       velocity = driveMotor.getVelocity();
-      accel = (velocity - lastVel) / dt;
-      lastVel = velocity;
+      accel = (velocity - lastVelocity) / dt;
+      lastVelocity = velocity;
       azimuth = Rotation2d.fromDegrees(angleMotor.getPosition());
       omega = Math.toRadians(angleMotor.getVelocity());
     } else

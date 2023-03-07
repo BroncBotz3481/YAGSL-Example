@@ -1,13 +1,11 @@
 package swervelib.imu;
 
-import java.util.Optional;
-
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
-
 import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.Optional;
 
 /**
  * SwerveIMU interface for the Pigeon.
@@ -85,8 +83,8 @@ public class PigeonSwerve extends SwerveIMU
   }
 
   /**
-   * Fetch the acceleration [x, y, z] from the IMU in meters per second squared. If
-   * acceleration isn't supported returns empty.
+   * Fetch the acceleration [x, y, z] from the IMU in meters per second squared. If acceleration isn't supported returns
+   * empty.
    *
    * @return {@link Translation3d} of the acceleration as an {@link Optional}.
    */

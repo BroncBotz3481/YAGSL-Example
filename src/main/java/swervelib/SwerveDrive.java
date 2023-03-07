@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import swervelib.imu.SwerveIMU;
 import swervelib.math.SwerveKinematics2;
 import swervelib.math.SwerveMath;
@@ -68,6 +67,10 @@ public class SwerveDrive
    * rotation)
    */
   public        Matrix<N4, N1>           visionMeasurementStdDevs     = VecBuilder.fill(0.9, 0.9, 0.9, 0.9);
+  /**
+   * Local measurement standard deviation, higher = less trustworthy.
+   */
+  public        Matrix<N1, N1>           localMeasurementStdDev       = VecBuilder.fill(0.1);
   /**
    * Invert odometry readings of drive motor positions, used as a patch for debugging currently.
    */
@@ -406,6 +409,27 @@ public class SwerveDrive
   }
 
   /**
+   * Gets the current module positions (azimuth and wheel position (meters)). Inverts the distance from each module if
+   * {@link #invertOdometry} is true.
+   *
+   * @return A list of SwerveModulePositions containg the current module positions
+   */
+  public SwerveModuleState2[] getModuleStates()
+  {
+    SwerveModuleState2[] states =
+        new SwerveModuleState2[swerveDriveConfiguration.moduleCount];
+    for (SwerveModule module : swerveModules)
+    {
+      states[module.moduleNumber] = module.getState();
+      if (invertOdometry)
+      {
+        states[module.moduleNumber].speedMetersPerSecond *= -1;
+      }
+    }
+    return states;
+  }
+
+  /**
    * Resets the gyro angle to zero and resets odometry to the same position, but facing toward 0.
    */
   public void zeroGyro()
@@ -432,11 +456,13 @@ public class SwerveDrive
   public Rotation2d getYaw()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (!SwerveDriveTelemetry.isSimulation) {
+    if (!SwerveDriveTelemetry.isSimulation)
+    {
       return swerveDriveConfiguration.invertedIMU
-              ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getZ())
-              : Rotation2d.fromRadians(imu.getRotation3d().getZ());
-    } else {
+             ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getZ())
+             : Rotation2d.fromRadians(imu.getRotation3d().getZ());
+    } else
+    {
       return simIMU.getYaw();
     }
   }
@@ -449,11 +475,13 @@ public class SwerveDrive
   public Rotation2d getPitch()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (!SwerveDriveTelemetry.isSimulation) {
+    if (!SwerveDriveTelemetry.isSimulation)
+    {
       return swerveDriveConfiguration.invertedIMU
-              ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getY())
-              : Rotation2d.fromRadians(imu.getRotation3d().getY());
-    } else {
+             ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getY())
+             : Rotation2d.fromRadians(imu.getRotation3d().getY());
+    } else
+    {
       return simIMU.getPitch();
     }
   }
@@ -466,11 +494,13 @@ public class SwerveDrive
   public Rotation2d getRoll()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (!SwerveDriveTelemetry.isSimulation) {
+    if (!SwerveDriveTelemetry.isSimulation)
+    {
       return swerveDriveConfiguration.invertedIMU
-              ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getX())
-              : Rotation2d.fromRadians(imu.getRotation3d().getX());
-    } else {
+             ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getX())
+             : Rotation2d.fromRadians(imu.getRotation3d().getX());
+    } else
+    {
       return simIMU.getRoll();
     }
   }
@@ -483,24 +513,29 @@ public class SwerveDrive
   public Rotation3d getGyroRotation3d()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (!SwerveDriveTelemetry.isSimulation) {
+    if (!SwerveDriveTelemetry.isSimulation)
+    {
       return swerveDriveConfiguration.invertedIMU
-          ? imu.getRotation3d().unaryMinus()
-          : imu.getRotation3d();
-    } else {
+             ? imu.getRotation3d().unaryMinus()
+             : imu.getRotation3d();
+    } else
+    {
       return simIMU.getGyroRotation3d();
     }
   }
 
-    /**
+  /**
    * Gets current acceleration of the robot in m/s/s. If gyro unsupported returns empty.
    *
    * @return acceleration of the robot as a {@link Translation3d}
    */
-  public Optional<Translation3d> getAccel() {
-    if (!SwerveDriveTelemetry.isSimulation) {
+  public Optional<Translation3d> getAccel()
+  {
+    if (!SwerveDriveTelemetry.isSimulation)
+    {
       return imu.getAccel();
-    } else {
+    } else
+    {
       return simIMU.getAccel();
     }
   }
@@ -700,4 +735,26 @@ public class SwerveDrive
       module.resetEncoder();
     }
   }
+
+  /**
+   * Reset the drive encoders to 0 for all swerve modules.
+   */
+  public void resetDriveEncoders()
+  {
+    for (SwerveModule module : swerveModules)
+    {
+      module.resetEncoder();
+    }
+  }
+
+  /**
+   * Set the Gyroscope offset using a {@link Rotation3d} object. (Only yaw works currently.)
+   *
+   * @param gyro Gyroscope offset.
+   */
+  public void setGyro(Rotation3d gyro)
+  {
+    imu.setYaw(gyro.getZ());
+  }
+
 }

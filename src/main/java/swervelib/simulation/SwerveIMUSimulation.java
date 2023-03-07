@@ -1,13 +1,12 @@
 package swervelib.simulation;
 
-import java.util.Optional;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import java.util.Optional;
 import swervelib.math.SwerveKinematics2;
 import swervelib.math.SwerveModuleState2;
 
@@ -85,7 +84,8 @@ public class SwerveIMUSimulation
    *
    * @return {@link Translation3d} of the acceleration as an {@link Optional}.
    */
-  public Optional<Translation3d> getAccel() {
+  public Optional<Translation3d> getAccel()
+  {
     return Optional.empty();
   }
 

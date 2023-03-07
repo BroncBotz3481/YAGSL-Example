@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import swervelib.imu.SwerveIMU;
 import swervelib.math.SwerveKinematics2;
 import swervelib.math.SwerveMath;
@@ -422,11 +421,13 @@ public class SwerveDrive
   public Rotation2d getYaw()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (!SwerveDriveTelemetry.isSimulation) {
+    if (!SwerveDriveTelemetry.isSimulation)
+    {
       return swerveDriveConfiguration.invertedIMU
-              ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getZ())
-              : Rotation2d.fromRadians(imu.getRotation3d().getZ());
-    } else {
+             ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getZ())
+             : Rotation2d.fromRadians(imu.getRotation3d().getZ());
+    } else
+    {
       return simIMU.getYaw();
     }
   }
@@ -439,11 +440,13 @@ public class SwerveDrive
   public Rotation2d getPitch()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (!SwerveDriveTelemetry.isSimulation) {
+    if (!SwerveDriveTelemetry.isSimulation)
+    {
       return swerveDriveConfiguration.invertedIMU
-              ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getY())
-              : Rotation2d.fromRadians(imu.getRotation3d().getY());
-    } else {
+             ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getY())
+             : Rotation2d.fromRadians(imu.getRotation3d().getY());
+    } else
+    {
       return simIMU.getPitch();
     }
   }
@@ -456,11 +459,13 @@ public class SwerveDrive
   public Rotation2d getRoll()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (!SwerveDriveTelemetry.isSimulation) {
+    if (!SwerveDriveTelemetry.isSimulation)
+    {
       return swerveDriveConfiguration.invertedIMU
-              ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getX())
-              : Rotation2d.fromRadians(imu.getRotation3d().getX());
-    } else {
+             ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getX())
+             : Rotation2d.fromRadians(imu.getRotation3d().getX());
+    } else
+    {
       return simIMU.getRoll();
     }
   }
@@ -473,24 +478,29 @@ public class SwerveDrive
   public Rotation3d getGyroRotation3d()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (!SwerveDriveTelemetry.isSimulation) {
+    if (!SwerveDriveTelemetry.isSimulation)
+    {
       return swerveDriveConfiguration.invertedIMU
-          ? imu.getRotation3d().unaryMinus()
-          : imu.getRotation3d();
-    } else {
+             ? imu.getRotation3d().unaryMinus()
+             : imu.getRotation3d();
+    } else
+    {
       return simIMU.getGyroRotation3d();
     }
   }
 
-    /**
+  /**
    * Gets current acceleration of the robot in m/s/s. If gyro unsupported returns empty.
    *
    * @return acceleration of the robot as a {@link Translation3d}
    */
-  public Optional<Translation3d> getAccel() {
-    if (!SwerveDriveTelemetry.isSimulation) {
+  public Optional<Translation3d> getAccel()
+  {
+    if (!SwerveDriveTelemetry.isSimulation)
+    {
       return imu.getAccel();
-    } else {
+    } else
+    {
       return simIMU.getAccel();
     }
   }
@@ -679,4 +689,15 @@ public class SwerveDrive
       simIMU.setAngle(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getRadians());
     }
   }
+
+  /**
+   * Set the Gyroscope offset using a {@link Rotation3d} object. (Only yaw works currently.)
+   *
+   * @param gyro Gyroscope offset.
+   */
+  public void setGyro(Rotation3d gyro)
+  {
+    imu.setYaw(gyro.getZ());
+  }
+
 }

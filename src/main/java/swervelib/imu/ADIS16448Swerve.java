@@ -100,18 +100,6 @@ public class ADIS16448Swerve extends SwerveIMU
   }
 
   /**
-   * Fetch the acceleration [x, y, z] from the IMU.
-   * 
-   * @param accel Array which will be filled with {x, y, z} in m/s/s.
-   */
-  @Override
-  public void getAccel(Double[] accel) {
-      accel[0] = imu.getAccelX();
-      accel[1] = imu.getAccelY();
-      accel[2] = imu.getAccelZ();
-  }
-
-  /**
    * Get the instantiated IMU object.
    *
    * @return IMU object.

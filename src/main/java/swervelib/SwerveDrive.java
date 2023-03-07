@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
@@ -20,6 +21,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import swervelib.imu.SwerveIMU;
 import swervelib.math.SwerveKinematics2;
 import swervelib.math.SwerveMath;
@@ -418,13 +421,11 @@ public class SwerveDrive
   public Rotation2d getYaw()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (!SwerveDriveTelemetry.isSimulation)
-    {
-      double[] ypr = new double[3];
-      imu.getYawPitchRoll(ypr);
-      return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[0] : ypr[0]);
-    } else
-    {
+    if (!SwerveDriveTelemetry.isSimulation) {
+      return swerveDriveConfiguration.invertedIMU
+              ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getZ())
+              : Rotation2d.fromRadians(imu.getRotation3d().getZ());
+    } else {
       return simIMU.getYaw();
     }
   }
@@ -437,13 +438,11 @@ public class SwerveDrive
   public Rotation2d getPitch()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (!SwerveDriveTelemetry.isSimulation)
-    {
-      double[] ypr = new double[3];
-      imu.getYawPitchRoll(ypr);
-      return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[1] : ypr[1]);
-    } else
-    {
+    if (!SwerveDriveTelemetry.isSimulation) {
+      return swerveDriveConfiguration.invertedIMU
+              ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getY())
+              : Rotation2d.fromRadians(imu.getRotation3d().getY());
+    } else {
       return simIMU.getPitch();
     }
   }
@@ -456,13 +455,11 @@ public class SwerveDrive
   public Rotation2d getRoll()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (!SwerveDriveTelemetry.isSimulation)
-    {
-      double[] ypr = new double[3];
-      imu.getYawPitchRoll(ypr);
-      return Rotation2d.fromDegrees(swerveDriveConfiguration.invertedIMU ? 360 - ypr[2] : ypr[2]);
-    } else
-    {
+    if (!SwerveDriveTelemetry.isSimulation) {
+      return swerveDriveConfiguration.invertedIMU
+              ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getX())
+              : Rotation2d.fromRadians(imu.getRotation3d().getX());
+    } else {
       return simIMU.getRoll();
     }
   }
@@ -475,17 +472,25 @@ public class SwerveDrive
   public Rotation3d getGyroRotation3d()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (!SwerveDriveTelemetry.isSimulation)
-    {
-      double[] ypr = new double[3];
-      imu.getYawPitchRoll(ypr);
-      return new Rotation3d(
-          Math.toRadians(swerveDriveConfiguration.invertedIMU ? 360 - ypr[2] : ypr[2]),
-          Math.toRadians(swerveDriveConfiguration.invertedIMU ? 360 - ypr[1] : ypr[1]),
-          Math.toRadians(swerveDriveConfiguration.invertedIMU ? 360 - ypr[0] : ypr[0]));
-    } else
-    {
+    if (!SwerveDriveTelemetry.isSimulation) {
+      return swerveDriveConfiguration.invertedIMU
+          ? imu.getRotation3d().unaryMinus()
+          : imu.getRotation3d();
+    } else {
       return simIMU.getGyroRotation3d();
+    }
+  }
+
+    /**
+   * Gets current acceleration of the robot in m/s/s. If gyro unsupported returns empty.
+   *
+   * @return acceleration of the robot as a {@link Translation3d}
+   */
+  public Optional<Translation3d> getAccel() {
+    if (!SwerveDriveTelemetry.isSimulation) {
+      return imu.getAccel();
+    } else {
+      return simIMU.getAccel();
     }
   }
 

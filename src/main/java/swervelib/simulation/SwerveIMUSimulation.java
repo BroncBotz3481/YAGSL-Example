@@ -1,8 +1,11 @@
 package swervelib.simulation;
 
+import java.util.Optional;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import swervelib.math.SwerveKinematics2;
@@ -78,14 +81,12 @@ public class SwerveIMUSimulation
   }
 
   /**
-   * Gets the acceleration of the robot in m/s/s. This is not currently simulated so returns 0.
-   * @param accel the acceleration array to fill [x, y, z]
+   * Fetch the acceleration [x, y, z] from the IMU in m/s/s. If acceleration isn't supported returns empty.
+   *
+   * @return {@link Translation3d} of the acceleration as an {@link Optional}.
    */
-  public void getAccel(Double[] accel)
-  {
-    accel[0] = Double.NaN;
-    accel[1] = Double.NaN;
-    accel[2] = Double.NaN;
+  public Optional<Translation3d> getAccel() {
+    return Optional.empty();
   }
 
   /**

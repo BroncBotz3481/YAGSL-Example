@@ -14,35 +14,36 @@ import swervelib.math.SwerveKinematics2;
 import swervelib.math.SwerveModuleState2;
 
 /**
- * Class for swerve drive odometry. Odometry allows you to track the robot's position on the field
- * over a course of a match using readings from your swerve drive encoders and swerve azimuth
- * encoders.
+ * Class for swerve drive odometry. Odometry allows you to track the robot's position on the field over a course of a
+ * match using readings from your swerve drive encoders and swerve azimuth encoders.
  *
  * <p>Teams can use odometry during the autonomous period for complex tasks like path following.
  * Furthermore, odometry can be used for latency compensation when using computer-vision systems.
  */
-public class SwerveDriveOdometry {
-  private final SwerveKinematics2 m_kinematics;
-  private Pose3dFix m_poseMeters;
+public class SwerveDriveOdometry
+{
 
-  private Rotation3d m_gyroOffset;
-  private Rotation3d m_previousAngle;
-  private final int m_numModules;
-  private SwerveModuleState2[] m_previousModulePositions;
+  private final SwerveKinematics2 m_kinematics;
+  private final int                  m_numModules;
+  private       Pose3dFix         m_poseMeters;
+  private       Rotation3d           m_gyroOffset;
+  private       Rotation3d           m_previousAngle;
+  private       SwerveModuleState2[] m_previousModulePositions;
 
   /**
    * Constructs a SwerveDriveOdometry object.
    *
-   * @param kinematics The swerve drive kinematics for your drivetrain.
-   * @param gyroAngle The angle reported by the gyroscope.
+   * @param kinematics      The swerve drive kinematics for your drivetrain.
+   * @param gyroAngle       The angle reported by the gyroscope.
    * @param modulePositions The wheel positions reported by each module.
-   * @param initialPose The starting position of the robot on the field.
+   * @param initialPose     The starting position of the robot on the field.
    */
   public SwerveDriveOdometry(
       SwerveKinematics2 kinematics,
       Rotation3d gyroAngle,
       SwerveModuleState2[] modulePositions,
-      Pose3dFix initialPose) {
+      Pose3dFix initialPose)
+  {
     m_kinematics = kinematics;
     m_poseMeters = initialPose;
     m_gyroOffset = m_poseMeters.getRotation().minus(gyroAngle);
@@ -50,7 +51,8 @@ public class SwerveDriveOdometry {
     m_numModules = modulePositions.length;
 
     m_previousModulePositions = new SwerveModuleState2[m_numModules];
-    for (int index = 0; index < m_numModules; index++) {
+    for (int index = 0; index < m_numModules; index++)
+    {
       m_previousModulePositions[index] =
           new SwerveModuleState2(
               modulePositions[index].distanceMeters,
@@ -66,16 +68,17 @@ public class SwerveDriveOdometry {
   /**
    * Constructs a SwerveDriveOdometry object.
    *
-   * @param kinematics The swerve drive kinematics for your drivetrain.
-   * @param gyroAngle The angle reported by the gyroscope.
+   * @param kinematics      The swerve drive kinematics for your drivetrain.
+   * @param gyroAngle       The angle reported by the gyroscope.
    * @param modulePositions The wheel positions reported by each module.
-   * @param initialPose The starting position of the robot on the field.
+   * @param initialPose     The starting position of the robot on the field.
    */
   public SwerveDriveOdometry(
       SwerveKinematics2 kinematics,
       Rotation2d gyroAngle,
       SwerveModuleState2[] modulePositions,
-      Pose2d initialPose) {
+      Pose2d initialPose)
+  {
     this(
         kinematics,
         new Rotation3d(0, 0, gyroAngle.getRadians()),
@@ -86,24 +89,26 @@ public class SwerveDriveOdometry {
   /**
    * Constructs a SwerveDriveOdometry object with the default pose at the origin.
    *
-   * @param kinematics The swerve drive kinematics for your drivetrain.
-   * @param gyroAngle The angle reported by the gyroscope.
+   * @param kinematics      The swerve drive kinematics for your drivetrain.
+   * @param gyroAngle       The angle reported by the gyroscope.
    * @param modulePositions The wheel positions reported by each module.
    */
   public SwerveDriveOdometry(
-      SwerveKinematics2 kinematics, Rotation3d gyroAngle, SwerveModuleState2[] modulePositions) {
+      SwerveKinematics2 kinematics, Rotation3d gyroAngle, SwerveModuleState2[] modulePositions)
+  {
     this(kinematics, gyroAngle, modulePositions, new Pose3dFix());
   }
 
   /**
    * Constructs a SwerveDriveOdometry object with the default pose at the origin.
    *
-   * @param kinematics The swerve drive kinematics for your drivetrain.
-   * @param gyroAngle The angle reported by the gyroscope.
+   * @param kinematics      The swerve drive kinematics for your drivetrain.
+   * @param gyroAngle       The angle reported by the gyroscope.
    * @param modulePositions The wheel positions reported by each module.
    */
   public SwerveDriveOdometry(
-      SwerveKinematics2 kinematics, Rotation2d gyroAngle, SwerveModuleState2[] modulePositions) {
+      SwerveKinematics2 kinematics, Rotation2d gyroAngle, SwerveModuleState2[] modulePositions)
+  {
     this(kinematics, gyroAngle, modulePositions, new Pose2d());
   }
 
@@ -115,22 +120,25 @@ public class SwerveDriveOdometry {
    *
    * <p>Similarly, module positions do not need to be reset in user code.
    *
-   * @param gyroAngle The angle reported by the gyroscope.
+   * @param gyroAngle       The angle reported by the gyroscope.
    * @param modulePositions The wheel positions reported by each module.,
-   * @param pose The position on the field that your robot is at.
+   * @param pose            The position on the field that your robot is at.
    */
   public void resetPosition(
-      Rotation3d gyroAngle, SwerveModuleState2[] modulePositions, Pose3dFix pose) {
-    if (modulePositions.length != m_numModules) {
+      Rotation3d gyroAngle, SwerveModuleState2[] modulePositions, Pose3dFix pose)
+  {
+    if (modulePositions.length != m_numModules)
+    {
       throw new IllegalArgumentException(
           "Number of modules is not consistent with number of wheel locations provided in "
-              + "constructor");
+          + "constructor");
     }
 
     m_poseMeters = pose;
     m_previousAngle = pose.getRotation();
     m_gyroOffset = m_poseMeters.getRotation().minus(gyroAngle);
-    for (int index = 0; index < m_numModules; index++) {
+    for (int index = 0; index < m_numModules; index++)
+    {
       m_previousModulePositions[index] =
           new SwerveModuleState2(
               modulePositions[index].distanceMeters,
@@ -149,12 +157,13 @@ public class SwerveDriveOdometry {
    *
    * <p>Similarly, module positions do not need to be reset in user code.
    *
-   * @param gyroAngle The angle reported by the gyroscope.
+   * @param gyroAngle       The angle reported by the gyroscope.
    * @param modulePositions The wheel positions reported by each module.,
-   * @param pose The position on the field that your robot is at.
+   * @param pose            The position on the field that your robot is at.
    */
   public void resetPosition(
-      Rotation2d gyroAngle, SwerveModuleState2[] modulePositions, Pose2d pose) {
+      Rotation2d gyroAngle, SwerveModuleState2[] modulePositions, Pose2d pose)
+  {
     resetPosition(
         new Rotation3d(0, 0, gyroAngle.getRadians()), modulePositions, new Pose3dFix(pose));
   }
@@ -164,7 +173,8 @@ public class SwerveDriveOdometry {
    *
    * @return The pose of the robot (x and y are in meters).
    */
-  public Pose2d getPoseMeters() {
+  public Pose2d getPoseMeters()
+  {
     return m_poseMeters.toPose2d();
   }
 
@@ -173,31 +183,34 @@ public class SwerveDriveOdometry {
    *
    * @return The pose of the robot (x and y are in meters).
    */
-  public Pose3dFix getPoseMeters3d() {
+  public Pose3dFix getPoseMeters3d()
+  {
     return m_poseMeters;
   }
 
   /**
-   * Updates the robot's position on the field using forward kinematics and integration of the pose
-   * over time. This method automatically calculates the current time to calculate period
-   * (difference between two timestamps). The period is used to calculate the change in distance
-   * from a velocity. This also takes in an angle parameter which is used instead of the angular
-   * rate that is calculated from forward kinematics.
+   * Updates the robot's position on the field using forward kinematics and integration of the pose over time. This
+   * method automatically calculates the current time to calculate period (difference between two timestamps). The
+   * period is used to calculate the change in distance from a velocity. This also takes in an angle parameter which is
+   * used instead of the angular rate that is calculated from forward kinematics.
    *
-   * @param gyroAngle The angle reported by the gyroscope.
-   * @param modulePositions The current position of all swerve modules. Please provide the positions
-   *     in the same order in which you instantiated your SwerveDriveKinematics.
+   * @param gyroAngle       The angle reported by the gyroscope.
+   * @param modulePositions The current position of all swerve modules. Please provide the positions in the same order
+   *                        in which you instantiated your SwerveDriveKinematics.
    * @return The new pose of the robot.
    */
-  public Pose3dFix update(Rotation3d gyroAngle, SwerveModuleState2[] modulePositions) {
-    if (modulePositions.length != m_numModules) {
+  public Pose3dFix update(Rotation3d gyroAngle, SwerveModuleState2[] modulePositions)
+  {
+    if (modulePositions.length != m_numModules)
+    {
       throw new IllegalArgumentException(
           "Number of modules is not consistent with number of wheel locations provided in "
-              + "constructor");
+          + "constructor");
     }
     var moduleDeltas = new SwerveModuleState2[m_numModules];
-    for (int index = 0; index < m_numModules; index++) {
-      var current = modulePositions[index];
+    for (int index = 0; index < m_numModules; index++)
+    {
+      var current  = modulePositions[index];
       var previous = m_previousModulePositions[index];
 
       moduleDeltas[index] =
@@ -212,7 +225,7 @@ public class SwerveDriveOdometry {
       previous.accelMetersPerSecondSq = current.accelMetersPerSecondSq;
     }
 
-    var angle = gyroAngle.plus(m_gyroOffset);
+    var angle            = gyroAngle.plus(m_gyroOffset);
     var angle_difference = angle.minus(m_previousAngle).getQuaternion().toRotationVector();
 
     var twist2d = m_kinematics.toTwist2d(moduleDeltas);
@@ -234,18 +247,18 @@ public class SwerveDriveOdometry {
   }
 
   /**
-   * Updates the robot's position on the field using forward kinematics and integration of the pose
-   * over time. This method automatically calculates the current time to calculate period
-   * (difference between two timestamps). The period is used to calculate the change in distance
-   * from a velocity. This also takes in an angle parameter which is used instead of the angular
-   * rate that is calculated from forward kinematics.
+   * Updates the robot's position on the field using forward kinematics and integration of the pose over time. This
+   * method automatically calculates the current time to calculate period (difference between two timestamps). The
+   * period is used to calculate the change in distance from a velocity. This also takes in an angle parameter which is
+   * used instead of the angular rate that is calculated from forward kinematics.
    *
-   * @param gyroAngle The angle reported by the gyroscope.
-   * @param modulePositions The current position of all swerve modules. Please provide the positions
-   *     in the same order in which you instantiated your SwerveDriveKinematics.
+   * @param gyroAngle       The angle reported by the gyroscope.
+   * @param modulePositions The current position of all swerve modules. Please provide the positions in the same order
+   *                        in which you instantiated your SwerveDriveKinematics.
    * @return The new pose of the robot.
    */
-  public Pose2d update(Rotation2d gyroAngle, SwerveModuleState2[] modulePositions) {
+  public Pose2d update(Rotation2d gyroAngle, SwerveModuleState2[] modulePositions)
+  {
     return update(new Rotation3d(0, 0, gyroAngle.getRadians()), modulePositions).toPose2d();
   }
 }

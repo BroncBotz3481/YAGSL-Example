@@ -13,20 +13,31 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Twist3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import java.util.Objects;
 
-/** Represents a 3D pose containing translational and rotational elements. */
+/**
+ * Represents a 3D pose containing translational and rotational elements.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE)
-public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
-  private final Translation3d m_translation;
-  private final Rotation3d m_rotation;
+public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d
+{
 
-  /** Constructs a pose at the origin facing toward the positive X axis. */
-  public Pose3dFix() {
+  private final Translation3d m_translation;
+  private final Rotation3d    m_rotation;
+
+  /**
+   * Constructs a pose at the origin facing toward the positive X axis.
+   */
+  public Pose3dFix()
+  {
     m_translation = new Translation3d();
     m_rotation = new Rotation3d();
   }
@@ -35,12 +46,13 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
    * Constructs a pose with the specified translation and rotation.
    *
    * @param translation The translational component of the pose.
-   * @param rotation The rotational component of the pose.
+   * @param rotation    The rotational component of the pose.
    */
   @JsonCreator
   public Pose3dFix(
       @JsonProperty(required = true, value = "translation") Translation3d translation,
-      @JsonProperty(required = true, value = "rotation") Rotation3d rotation) {
+      @JsonProperty(required = true, value = "rotation") Rotation3d rotation)
+  {
     m_translation = translation;
     m_rotation = rotation;
   }
@@ -48,12 +60,13 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
   /**
    * Constructs a pose with x, y, and z translations instead of a separate Translation3d.
    *
-   * @param x The x component of the translational component of the pose.
-   * @param y The y component of the translational component of the pose.
-   * @param z The z component of the translational component of the pose.
+   * @param x        The x component of the translational component of the pose.
+   * @param y        The y component of the translational component of the pose.
+   * @param z        The z component of the translational component of the pose.
    * @param rotation The rotational component of the pose.
    */
-  public Pose3dFix(double x, double y, double z, Rotation3d rotation) {
+  public Pose3dFix(double x, double y, double z, Rotation3d rotation)
+  {
     m_translation = new Translation3d(x, y, z);
     m_rotation = rotation;
   }
@@ -63,7 +76,8 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
    *
    * @param pose The 2D pose.
    */
-  public Pose3dFix(Pose2d pose) {
+  public Pose3dFix(Pose2d pose)
+  {
     m_translation = new Translation3d(pose.getX(), pose.getY(), 0.0);
     m_rotation = new Rotation3d(0.0, 0.0, pose.getRotation().getRadians());
   }
@@ -74,7 +88,8 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
    * @param other The transform to transform the pose by.
    * @return The transformed pose.
    */
-  public Pose3dFix plus(Transform3d other) {
+  public Pose3dFix plus(Transform3d other)
+  {
     return transformBy(other);
   }
 
@@ -84,7 +99,8 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
    * @param other The initial pose of the transformation.
    * @return The transform that maps the other pose to the current pose.
    */
-  public Transform3d minus(Pose3dFix other) {
+  public Transform3d minus(Pose3dFix other)
+  {
     final var pose = this.relativeTo(other);
     return new Transform3d(pose.getTranslation(), pose.getRotation());
   }
@@ -95,7 +111,8 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
    * @return The translational component of the pose.
    */
   @JsonProperty
-  public Translation3d getTranslation() {
+  public Translation3d getTranslation()
+  {
     return m_translation;
   }
 
@@ -104,7 +121,8 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
    *
    * @return The x component of the pose's translation.
    */
-  public double getX() {
+  public double getX()
+  {
     return m_translation.getX();
   }
 
@@ -113,7 +131,8 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
    *
    * @return The y component of the pose's translation.
    */
-  public double getY() {
+  public double getY()
+  {
     return m_translation.getY();
   }
 
@@ -122,7 +141,8 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
    *
    * @return The z component of the pose's translation.
    */
-  public double getZ() {
+  public double getZ()
+  {
     return m_translation.getZ();
   }
 
@@ -132,7 +152,8 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
    * @return The rotational component of the pose.
    */
   @JsonProperty
-  public Rotation3d getRotation() {
+  public Rotation3d getRotation()
+  {
     return m_rotation;
   }
 
@@ -142,7 +163,8 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
    * @param scalar The scalar.
    * @return The new scaled Pose3d.
    */
-  public Pose3dFix times(double scalar) {
+  public Pose3dFix times(double scalar)
+  {
     return new Pose3dFix(m_translation.times(scalar), m_rotation.times(scalar));
   }
 
@@ -152,18 +174,20 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
    * @param scalar The scalar.
    * @return The new scaled Pose3d.
    */
-  public Pose3dFix div(double scalar) {
+  public Pose3dFix div(double scalar)
+  {
     return times(1.0 / scalar);
   }
 
   /**
-   * Transforms the pose by the given transformation and returns the new pose. See + operator for
-   * the matrix multiplication performed.
+   * Transforms the pose by the given transformation and returns the new pose. See + operator for the matrix
+   * multiplication performed.
    *
    * @param other The transform to transform the pose by.
    * @return The transformed pose.
    */
-  public Pose3dFix transformBy(Transform3d other) {
+  public Pose3dFix transformBy(Transform3d other)
+  {
     return new Pose3dFix(
         m_translation.plus(other.getTranslation().rotateBy(m_rotation)),
         other.getRotation().plus(m_rotation));
@@ -175,11 +199,11 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
    * <p>This function can often be used for trajectory tracking or pose stabilization algorithms to
    * get the error between the reference and the current pose.
    *
-   * @param other The pose that is the origin of the new coordinate frame that the current pose will
-   *     be converted into.
+   * @param other The pose that is the origin of the new coordinate frame that the current pose will be converted into.
    * @return The current pose relative to the new origin pose.
    */
-  public Pose3dFix relativeTo(Pose3dFix other) {
+  public Pose3dFix relativeTo(Pose3dFix other)
+  {
     var transform = new Transform3d(other, this);
     return new Pose3dFix(transform.getTranslation(), transform.getRotation());
   }
@@ -188,31 +212,33 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
    * Obtain a new Pose3d from a (constant curvature) velocity.
    *
    * <p>The twist is a change in pose in the robot's coordinate frame since the previous pose
-   * update. When the user runs exp() on the previous known field-relative pose with the argument
-   * being the twist, the user will receive the new field-relative pose.
+   * update. When the user runs exp() on the previous known field-relative pose with the argument being the twist, the
+   * user will receive the new field-relative pose.
    *
    * <p>"Exp" represents the pose exponential, which is solving a differential equation moving the
    * pose forward in time.
    *
-   * @param twist The change in pose in the robot's coordinate frame since the previous pose update.
-   *     For example, if a non-holonomic robot moves forward 0.01 meters and changes angle by 0.5
-   *     degrees since the previous pose update, the twist would be Twist3d(0.01, 0.0, 0.0, new new
-   *     Rotation3d(0.0, 0.0, Units.degreesToRadians(0.5))).
+   * @param twist The change in pose in the robot's coordinate frame since the previous pose update. For example, if a
+   *              non-holonomic robot moves forward 0.01 meters and changes angle by 0.5 degrees since the previous pose
+   *              update, the twist would be Twist3d(0.01, 0.0, 0.0, new new Rotation3d(0.0, 0.0,
+   *              Units.degreesToRadians(0.5))).
    * @return The new pose of the robot.
    */
-  public Pose3dFix exp(Twist3d twist) {
+  public Pose3dFix exp(Twist3d twist)
+  {
     // Implementation from Section 3.2 of https://ethaneade.org/lie.pdf
-    final var u = VecBuilder.fill(twist.dx, twist.dy, twist.dz);
-    final var rvec = VecBuilder.fill(twist.rx, twist.ry, twist.rz);
-    final var omega = rotationVectorToMatrix(rvec);
+    final var u       = VecBuilder.fill(twist.dx, twist.dy, twist.dz);
+    final var rvec    = VecBuilder.fill(twist.rx, twist.ry, twist.rz);
+    final var omega   = rotationVectorToMatrix(rvec);
     final var omegaSq = omega.times(omega);
-    double theta = rvec.norm();
-    double thetaSq = theta * theta;
+    double    theta   = rvec.norm();
+    double    thetaSq = theta * theta;
 
     double A;
     double B;
     double C;
-    if (Math.abs(theta) < 1E-7) {
+    if (Math.abs(theta) < 1E-7)
+    {
       // Taylor Expansions around θ = 0
       // A = 1/1! - θ²/3! + θ⁴/5!
       // B = 1/2! - θ²/4! + θ⁴/6!
@@ -227,7 +253,8 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
       A = 1 - thetaSq / 6 + thetaSq * thetaSq / 120;
       B = 1 / 2.0 - thetaSq / 24 + thetaSq * thetaSq / 720;
       C = 1 / 6.0 - thetaSq / 120 + thetaSq * thetaSq / 5040;
-    } else {
+    } else
+    {
       // A = sin(θ)/θ
       // B = (1 - cos(θ)) / θ²
       // C = (1 - A) / θ²
@@ -236,8 +263,8 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
       C = (1 - A) / thetaSq;
     }
 
-    Matrix<N3, N3> R = Matrix.eye(Nat.N3()).plus(omega.times(A)).plus(omegaSq.times(B));
-    Matrix<N3, N3> V = Matrix.eye(Nat.N3()).plus(omega.times(B)).plus(omegaSq.times(C));
+    Matrix<N3, N3> R                     = Matrix.eye(Nat.N3()).plus(omega.times(A)).plus(omegaSq.times(B));
+    Matrix<N3, N3> V                     = Matrix.eye(Nat.N3()).plus(omega.times(B)).plus(omegaSq.times(C));
     Matrix<N3, N1> translation_component = V.times(u);
     final var transform =
         new Transform3d(
@@ -251,13 +278,14 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
   }
 
   /**
-   * Returns a Twist3d that maps this pose to the end pose. If c is the output of {@code a.Log(b)},
-   * then {@code a.Exp(c)} would yield b.
+   * Returns a Twist3d that maps this pose to the end pose. If c is the output of {@code a.Log(b)}, then
+   * {@code a.Exp(c)} would yield b.
    *
    * @param end The end pose for the transformation.
    * @return The twist that maps this to end.
    */
-  public Twist3d log(Pose3dFix end) {
+  public Twist3d log(Pose3dFix end)
+  {
     // Implementation from Section 3.2 of https://ethaneade.org/lie.pdf
     final var transform = end.relativeTo(this);
 
@@ -267,14 +295,15 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
 
     // System.out.println(rvec.toString());
 
-    final var omega = rotationVectorToMatrix(rvec);
-    final var theta = rvec.norm();
+    final var omega   = rotationVectorToMatrix(rvec);
+    final var theta   = rvec.norm();
     final var thetaSq = theta * theta;
 
     // System.out.println(theta);
 
     double C;
-    if (Math.abs(theta) < 1E-7) {
+    if (Math.abs(theta) < 1E-7)
+    {
       // Taylor Expansions around θ = 0
       // A = 1/1! - θ²/3! + θ⁴/5!
       // B = 1/2! - θ²/4! + θ⁴/6!
@@ -287,7 +316,8 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
       // C:
       // https://www.wolframalpha.com/input?i2d=true&i=series+expansion+of+Divide%5B1-Divide%5BDivide%5Bsin%5C%2840%29x%5C%2841%29%2Cx%5D%2C2Divide%5B1-cos%5C%2840%29x%5C%2841%29%2CPower%5Bx%2C2%5D%5D%5D%2CPower%5Bx%2C2%5D%5D+at+x%3D0
       C = 1 / 12.0 + thetaSq / 720 + thetaSq * thetaSq / 30240;
-    } else {
+    } else
+    {
       // A = sin(θ)/θ
       // B = (1 - cos(θ)) / θ²
       // C = (1 - A/(2*B)) / θ²
@@ -316,12 +346,14 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
    *
    * @return A Pose2d representing this Pose3d projected into the X-Y plane.
    */
-  public Pose2d toPose2d() {
+  public Pose2d toPose2d()
+  {
     return new Pose2d(m_translation.toTranslation2d(), m_rotation.toRotation2d());
   }
 
   @Override
-  public String toString() {
+  public String toString()
+  {
     return String.format("Pose3d(%s, %s)", m_translation, m_rotation);
   }
 
@@ -332,20 +364,24 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
    * @return Whether the two objects are equal or not.
    */
   @Override
-  public boolean equals(Object obj) {
-    if (obj instanceof Pose3dFix) {
+  public boolean equals(Object obj)
+  {
+    if (obj instanceof Pose3dFix)
+    {
       return ((Pose3dFix) obj).m_translation.equals(m_translation)
-          && ((Pose3dFix) obj).m_rotation.equals(m_rotation);
+             && ((Pose3dFix) obj).m_rotation.equals(m_rotation);
     }
     return false;
   }
 
   @Override
-  public int hashCode() {
+  public int hashCode()
+  {
     return Objects.hash(m_translation, m_rotation);
   }
 
-  public Pose3d interpolate(Pose3dFix endValue, double t) {
+  public Pose3d interpolate(Pose3dFix endValue, double t)
+  {
     return super.interpolate(endValue, t);
   }
 
@@ -358,7 +394,8 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d {
    * @param rotation The rotation vector.
    * @return The rotation vector as a 3x3 rotation matrix.
    */
-  private Matrix<N3, N3> rotationVectorToMatrix(Vector<N3> rotation) {
+  private Matrix<N3, N3> rotationVectorToMatrix(Vector<N3> rotation)
+  {
     // Given a rotation vector <a, b, c>,
     //         [ 0 -c  b]
     // Omega = [ c  0 -a]

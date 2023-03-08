@@ -38,23 +38,27 @@ public class SwerveModule
   /**
    * Module number for kinematics, usually 0 to 3. front left -> front right -> back left -> back right.
    */
-  public        int                    moduleNumber;
+  public  int                    moduleNumber;
   /**
    * Feedforward for drive motor during closed loop control.
    */
-  public        SimpleMotorFeedforward feedforward;
+  public  SimpleMotorFeedforward feedforward;
   /**
    * Last angle set for the swerve module.
    */
-  public        double                 lastAngle;
+  public  double                 lastAngle;
   /**
    * Last velocity set for the swerve module.
    */
-  public        double                 lastVelocity;
+  public  double                 lastVelocity;
   /**
    * Simulated swerve module.
    */
-  private       SwerveModuleSimulation simModule;
+  private SwerveModuleSimulation simModule;
+  /**
+   * Encoder synchronization queued.
+   */
+  private boolean                synchronizeEncoderQueued = false;
 
   /**
    * Construct the swerve module and initialize the swerve module motors and absolute encoder.
@@ -125,13 +129,13 @@ public class SwerveModule
   }
 
   /**
-   * Synchronize the integrated angle encoder with the absolute encoder.
+   * Queue synchronization of the integrated angle encoder with the absolute encoder.
    */
-  public void synchronizeEncoders()
+  public void queueSynchronizeEncoders()
   {
     if (absoluteEncoder != null)
     {
-      angleMotor.setPosition(getAbsolutePosition() - angleOffset);
+      synchronizeEncoderQueued = true;
     }
   }
 
@@ -178,10 +182,22 @@ public class SwerveModule
         (Math.abs(desiredState.speedMetersPerSecond) <= (configuration.maxSpeed * 0.01)
          ? lastAngle
          : desiredState.angle.getDegrees());
-    if (angle != lastAngle)
+    if (angle != lastAngle || synchronizeEncoderQueued)
     {
-      angleMotor.setReference(
-          angle, Math.toDegrees(desiredState.omegaRadPerSecond) * configuration.angleKV);
+      // Synchronize encoders if queued and send in the current position as the value from the absolute encoder.
+      if (absoluteEncoder != null && synchronizeEncoderQueued)
+      {
+        double absoluteEncoderPosition = getAbsolutePosition();
+        angleMotor.setPosition(absoluteEncoderPosition - angleOffset);
+        angleMotor.setReference(angle,
+                                Math.toDegrees(desiredState.omegaRadPerSecond) * configuration.angleKV,
+                                absoluteEncoderPosition);
+        synchronizeEncoderQueued = false;
+      } else
+      {
+        angleMotor.setReference(
+            angle, Math.toDegrees(desiredState.omegaRadPerSecond) * configuration.angleKV);
+      }
     }
     lastAngle = angle;
 

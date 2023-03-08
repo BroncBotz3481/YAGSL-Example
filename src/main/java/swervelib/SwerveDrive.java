@@ -409,27 +409,6 @@ public class SwerveDrive
   }
 
   /**
-   * Gets the current module positions (azimuth and wheel position (meters)). Inverts the distance from each module if
-   * {@link #invertOdometry} is true.
-   *
-   * @return A list of SwerveModulePositions containg the current module positions
-   */
-  public SwerveModuleState2[] getModuleStates()
-  {
-    SwerveModuleState2[] states =
-        new SwerveModuleState2[swerveDriveConfiguration.moduleCount];
-    for (SwerveModule module : swerveModules)
-    {
-      states[module.moduleNumber] = module.getState();
-      if (invertOdometry)
-      {
-        states[module.moduleNumber].speedMetersPerSecond *= -1;
-      }
-    }
-    return states;
-  }
-
-  /**
    * Resets the gyro angle to zero and resets odometry to the same position, but facing toward 0.
    */
   public void zeroGyro()
@@ -722,17 +701,6 @@ public class SwerveDrive
     } else
     {
       simIMU.setAngle(swerveDrivePoseEstimator.getEstimatedPosition3d().getRotation().getZ());
-    }
-  }
-
-  /**
-   * Reset the drive encoders to 0 for all swerve modules.
-   */
-  public void resetDriveEncoders()
-  {
-    for (SwerveModule module : swerveModules)
-    {
-      module.resetEncoder();
     }
   }
 

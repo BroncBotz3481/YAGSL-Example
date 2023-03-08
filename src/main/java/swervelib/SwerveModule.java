@@ -267,7 +267,7 @@ public class SwerveModule
   /**
    * Get the absolute position. Falls back to relative position on reading failure.
    *
-   * @return Absolute encoder angle in degrees.
+   * @return Absolute encoder angle in degrees in the range [0, 360).
    */
   public double getAbsolutePosition()
   {

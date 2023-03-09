@@ -21,7 +21,7 @@ public class Pigeon2Swerve extends SwerveIMU
   /**
    * Offset for the Pigeon 2.
    */
-  private Rotation3d offset = new Rotation3d();
+  private final Rotation3d offset = new Rotation3d();
 
   /**
    * Generate the SwerveIMU for pigeon.
@@ -54,6 +54,7 @@ public class Pigeon2Swerve extends SwerveIMU
   public void factoryDefault()
   {
     imu.configFactoryDefault();
+    imu.configEnableCompass(false); // Compass utilization causes readings to jump dramatically in some cases.
   }
 
   /**

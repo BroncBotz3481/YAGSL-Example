@@ -38,27 +38,27 @@ public class SwerveModule
   /**
    * Module number for kinematics, usually 0 to 3. front left -> front right -> back left -> back right.
    */
-  public  int                    moduleNumber;
+  public        int                    moduleNumber;
   /**
    * Feedforward for drive motor during closed loop control.
    */
-  public  SimpleMotorFeedforward feedforward;
+  public        SimpleMotorFeedforward feedforward;
   /**
    * Last angle set for the swerve module.
    */
-  public  double                 lastAngle;
+  public        double                 lastAngle;
   /**
    * Last velocity set for the swerve module.
    */
-  public  double                 lastVelocity;
+  public        double                 lastVelocity;
   /**
    * Simulated swerve module.
    */
-  private SwerveModuleSimulation simModule;
+  private       SwerveModuleSimulation simModule;
   /**
    * Encoder synchronization queued.
    */
-  private boolean                synchronizeEncoderQueued = false;
+  private       boolean                synchronizeEncoderQueued = false;
 
   /**
    * Construct the swerve module and initialize the swerve module motors and absolute encoder.
@@ -144,8 +144,10 @@ public class SwerveModule
    *
    * @param desiredState Desired swerve module state.
    * @param isOpenLoop   Whether to use open loop (direct percent) or direct velocity control.
+   * @param force        Disables optimizations that prevent movement in the angle motor and forces the desired state
+   *                     onto the swerve module.
    */
-  public void setDesiredState(SwerveModuleState2 desiredState, boolean isOpenLoop)
+  public void setDesiredState(SwerveModuleState2 desiredState, boolean isOpenLoop, boolean force)
   {
     SwerveModuleState simpleState =
         new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
@@ -177,26 +179,33 @@ public class SwerveModule
       lastVelocity = velocity;
     }
 
-    // Prevents module rotation if speed is less than 1%
-    double angle =
-        (Math.abs(desiredState.speedMetersPerSecond) <= (configuration.maxSpeed * 0.01)
-         ? lastAngle
-         : desiredState.angle.getDegrees());
-    if (angle != lastAngle || synchronizeEncoderQueued)
+    double angle = desiredState.angle.getDegrees();
+
+    // If we are forcing the angle
+    if (force)
     {
-      // Synchronize encoders if queued and send in the current position as the value from the absolute encoder.
-      if (absoluteEncoder != null && synchronizeEncoderQueued)
+      angleMotor.setReference(angle, Math.toDegrees(desiredState.omegaRadPerSecond) * configuration.angleKV);
+    } else
+    {
+      // Prevents module rotation if speed is less than 1%
+      angle = Math.abs(desiredState.speedMetersPerSecond) <= (configuration.maxSpeed * 0.01) ? lastAngle : angle;
+      // Prevent module rotation if angle is the same as the previous angle.
+      if (angle != lastAngle || synchronizeEncoderQueued)
       {
-        double absoluteEncoderPosition = getAbsolutePosition();
-        angleMotor.setPosition(absoluteEncoderPosition);
-        angleMotor.setReference(angle,
-                                Math.toDegrees(desiredState.omegaRadPerSecond) * configuration.angleKV,
-                                absoluteEncoderPosition);
-        synchronizeEncoderQueued = false;
-      } else
-      {
-        angleMotor.setReference(
-            angle, Math.toDegrees(desiredState.omegaRadPerSecond) * configuration.angleKV);
+        // Synchronize encoders if queued and send in the current position as the value from the absolute encoder.
+        if (absoluteEncoder != null && synchronizeEncoderQueued)
+        {
+          double absoluteEncoderPosition = getAbsolutePosition();
+          angleMotor.setPosition(absoluteEncoderPosition);
+          angleMotor.setReference(angle,
+                                  Math.toDegrees(desiredState.omegaRadPerSecond) * configuration.angleKV,
+                                  absoluteEncoderPosition);
+          synchronizeEncoderQueued = false;
+        } else
+        {
+          angleMotor.setReference(
+              angle, Math.toDegrees(desiredState.omegaRadPerSecond) * configuration.angleKV);
+        }
       }
     }
     lastAngle = angle;

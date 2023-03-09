@@ -34,8 +34,8 @@ import swervelib.math.SwerveModuleState2;
 public class SwerveDrivePoseEstimator {
   private final SwerveDriveOdometry m_odometry;
   private final Matrix<N4, N1> m_q = new Matrix<>(Nat.N4(), Nat.N1());
-  private final int m_numModules;
-  private Matrix<N4, N4> m_visionK = new Matrix<>(Nat.N4(), Nat.N4());
+  private final int            m_numModules;
+  private final Matrix<N4, N4> m_visionK = new Matrix<>(Nat.N4(), Nat.N4());
 
   private static final double kBufferDuration = 1.5;
 
@@ -266,7 +266,8 @@ public class SwerveDrivePoseEstimator {
    *
    * @return The estimated robot pose in meters.
    */
-  public Pose3d getEstimatedPosition3d() {
+  public Pose3dFix getEstimatedPosition3d()
+  {
     return m_poseEstimate;
   }
 
@@ -284,14 +285,14 @@ public class SwerveDrivePoseEstimator {
    * @param visionRobotPoseMeters The pose of the robot as measured by the vision camera.
    * @param timestampSeconds The timestamp of the vision measurement in seconds. Note that if you
    *     don't use your own time source by calling {@link
-   *     SwerveDrivePoseEstimator#updateWithTime(double,Rotation2d,double,double)} then you
+   *     SwerveDrivePoseEstimator#updateWithTime} then you
    *     must use a timestamp with an epoch since FPGA startup (i.e., the epoch of this timestamp is
    *     the same epoch as {@link edu.wpi.first.wpilibj.Timer#getFPGATimestamp()}.) This means that
    *     you should use {@link edu.wpi.first.wpilibj.Timer#getFPGATimestamp()} as your time source
    *     or sync the epochs.
    */
   public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
-    addVisionMeasurement(new Pose3d(visionRobotPoseMeters), timestampSeconds);
+    addVisionMeasurement(new Pose3dFix(visionRobotPoseMeters), timestampSeconds);
   }
 
   /**
@@ -308,7 +309,7 @@ public class SwerveDrivePoseEstimator {
    * @param visionRobotPoseMeters The pose of the robot as measured by the vision camera.
    * @param timestampSeconds The timestamp of the vision measurement in seconds. Note that if you
    *     don't use your own time source by calling {@link
-   *     SwerveDrivePoseEstimator#updateWithTime(double,Rotation2d,double,double)} then you
+   *     SwerveDrivePoseEstimator#updateWithTime} then you
    *     must use a timestamp with an epoch since FPGA startup (i.e., the epoch of this timestamp is
    *     the same epoch as {@link edu.wpi.first.wpilibj.Timer#getFPGATimestamp()}.) This means that
    *     you should use {@link edu.wpi.first.wpilibj.Timer#getFPGATimestamp()} as your time source
@@ -389,7 +390,7 @@ public class SwerveDrivePoseEstimator {
    * @param visionRobotPoseMeters The pose of the robot as measured by the vision camera.
    * @param timestampSeconds The timestamp of the vision measurement in seconds. Note that if you
    *     don't use your own time source by calling {@link
-   *     SwerveDrivePoseEstimator#updateWithTime(double,Rotation2d,double,double)}, then you
+   *     SwerveDrivePoseEstimator#updateWithTime}, then you
    *     must use a timestamp with an epoch since FPGA startup (i.e., the epoch of this timestamp is
    *     the same epoch as {@link edu.wpi.first.wpilibj.Timer#getFPGATimestamp()}). This means that
    *     you should use {@link edu.wpi.first.wpilibj.Timer#getFPGATimestamp()} as your time source
@@ -424,7 +425,7 @@ public class SwerveDrivePoseEstimator {
    * @param visionRobotPoseMeters The pose of the robot as measured by the vision camera.
    * @param timestampSeconds The timestamp of the vision measurement in seconds. Note that if you
    *     don't use your own time source by calling {@link
-   *     SwerveDrivePoseEstimator#updateWithTime(double,Rotation2d,double,double)}, then you
+   *     SwerveDrivePoseEstimator#updateWithTime}, then you
    *     must use a timestamp with an epoch since FPGA startup (i.e., the epoch of this timestamp is
    *     the same epoch as {@link edu.wpi.first.wpilibj.Timer#getFPGATimestamp()}). This means that
    *     you should use {@link edu.wpi.first.wpilibj.Timer#getFPGATimestamp()} as your time source
@@ -442,14 +443,14 @@ public class SwerveDrivePoseEstimator {
   }
 
   /**
-   * Updates the pose estimator with wheel encoder and gyro information. This should be called every
-   * loop.
+   * Updates the pose estimator with wheel encoder and gyro information. This should be called every loop.
    *
-   * @param gyroAngle The current gyro angle.
+   * @param gyroAngle       The current gyro angle.
    * @param modulePositions The current distance measurements and rotations of the swerve modules.
    * @return The estimated pose of the robot in meters.
    */
-  public Pose3d update(Rotation3d gyroAngle, SwerveModuleState2[] modulePositions) {
+  public Pose3dFix update(Rotation3d gyroAngle, SwerveModuleState2[] modulePositions)
+  {
     return updateWithTime(MathSharedStore.getTimestamp(), gyroAngle, modulePositions);
   }
 
@@ -482,20 +483,21 @@ public class SwerveDrivePoseEstimator {
   }
 
   /**
-   * Updates the pose estimator with wheel encoder and gyro information. This should be called every
-   * loop.
+   * Updates the pose estimator with wheel encoder and gyro information. This should be called every loop.
    *
    * @param currentTimeSeconds Time at which this method was called, in seconds.
-   * @param gyroAngle The current gyroscope angle.
-   * @param modulePositions The current distance measurements and rotations of the swerve modules.
+   * @param gyroAngle          The current gyroscope angle.
+   * @param modulePositions    The current distance measurements and rotations of the swerve modules.
    * @return The estimated pose of the robot in meters.
    */
-  public Pose3d updateWithTime(
-      double currentTimeSeconds, Rotation3d gyroAngle, SwerveModuleState2[] modulePositions) {
-    if (modulePositions.length != m_numModules) {
+  public Pose3dFix updateWithTime(
+      double currentTimeSeconds, Rotation3d gyroAngle, SwerveModuleState2[] modulePositions)
+  {
+    if (modulePositions.length != m_numModules)
+    {
       throw new IllegalArgumentException(
           "Number of modules is not consistent with number of wheel locations provided in "
-              + "constructor");
+          + "constructor");
     }
 
     var lastOdom = m_odometry.getPoseMeters3d();

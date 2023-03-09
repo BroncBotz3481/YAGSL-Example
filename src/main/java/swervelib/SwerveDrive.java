@@ -25,6 +25,7 @@ import swervelib.imu.SwerveIMU;
 import swervelib.math.SwerveKinematics2;
 import swervelib.math.SwerveMath;
 import swervelib.math.SwerveModuleState2;
+import swervelib.math.estimator.Pose3dFix;
 import swervelib.math.estimator.SwerveDrivePoseEstimator;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
@@ -126,7 +127,7 @@ public class SwerveDrive
             kinematics,
             getGyroRotation3d(),
             getModuleStates(),
-            new Pose3d(new Translation3d(0, 0, 0), new Rotation3d()));
+            new Pose3dFix(new Translation3d(0, 0, 0), new Rotation3d()));
             // x,y,heading in radians; Vision measurement std dev, higher=less weight
 
     zeroGyro();
@@ -307,7 +308,7 @@ public class SwerveDrive
    *
    * @return The robot's pose
    */
-  public Pose3d getPose3d()
+  public Pose3dFix getPose3d()
   {
     return swerveDrivePoseEstimator.getEstimatedPosition3d();
   }

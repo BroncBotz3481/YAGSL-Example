@@ -68,10 +68,6 @@ public class SwerveDrive
    */
   public        Matrix<N4, N1>           visionMeasurementStdDevs     = VecBuilder.fill(0.9, 0.9, 0.9, 0.9);
   /**
-   * Local measurement standard deviation, higher = less trustworthy.
-   */
-  public        Matrix<N1, N1>           localMeasurementStdDev       = VecBuilder.fill(0.1);
-  /**
    * Invert odometry readings of drive motor positions, used as a patch for debugging currently.
    */
   public        boolean                  invertOdometry               = false;
@@ -417,7 +413,7 @@ public class SwerveDrive
     // simulated
     if (!SwerveDriveTelemetry.isSimulation)
     {
-      imu.setYaw(0);
+      imu.setOffset(imu.getRawRotation3d());
     } else
     {
       simIMU.setAngle(0);
@@ -696,7 +692,7 @@ public class SwerveDrive
 
     if (!SwerveDriveTelemetry.isSimulation)
     {
-      imu.setYaw(swerveDrivePoseEstimator.getEstimatedPosition3d().getRotation().getZ());
+      imu.setOffset(swerveDrivePoseEstimator.getEstimatedPosition3d().getRotation());
       // Yaw reset recommended by Team 1622
     } else
     {
@@ -716,13 +712,13 @@ public class SwerveDrive
   }
 
   /**
-   * Set the Gyroscope offset using a {@link Rotation3d} object. (Only yaw works currently.)
+   * Set the Gyroscope offset using a {@link Rotation3d} object.
    *
    * @param gyro Gyroscope offset.
    */
   public void setGyro(Rotation3d gyro)
   {
-    imu.setYaw(gyro.getZ());
+    imu.setOffset(gyro);
   }
 
 }

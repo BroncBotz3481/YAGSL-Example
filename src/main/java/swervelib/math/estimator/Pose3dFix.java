@@ -88,7 +88,7 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d
    * @param other The transform to transform the pose by.
    * @return The transformed pose.
    */
-  public Pose3dFix plus(Transform3d other)
+  public Pose3dFix plus(Transform3dFix other)
   {
     return transformBy(other);
   }
@@ -99,10 +99,10 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d
    * @param other The initial pose of the transformation.
    * @return The transform that maps the other pose to the current pose.
    */
-  public Transform3d minus(Pose3dFix other)
+  public Transform3dFix minus(Pose3dFix other)
   {
     final var pose = this.relativeTo(other);
-    return new Transform3d(pose.getTranslation(), pose.getRotation());
+    return new Transform3dFix(pose.getTranslation(), pose.getRotation());
   }
 
   /**
@@ -186,7 +186,7 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d
    * @param other The transform to transform the pose by.
    * @return The transformed pose.
    */
-  public Pose3dFix transformBy(Transform3d other)
+  public Pose3dFix transformBy(Transform3dFix other)
   {
     return new Pose3dFix(
         m_translation.plus(other.getTranslation().rotateBy(m_rotation)),
@@ -204,7 +204,7 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d
    */
   public Pose3dFix relativeTo(Pose3dFix other)
   {
-    var transform = new Transform3d(other, this);
+    var transform = new Transform3dFix(other, this);
     return new Pose3dFix(transform.getTranslation(), transform.getRotation());
   }
 
@@ -267,7 +267,7 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d
     Matrix<N3, N3> V                     = Matrix.eye(Nat.N3()).plus(omega.times(B)).plus(omegaSq.times(C));
     Matrix<N3, N1> translation_component = V.times(u);
     final var transform =
-        new Transform3d(
+        new Transform3dFix(
             new Translation3d(
                 translation_component.get(0, 0),
                 translation_component.get(1, 0),

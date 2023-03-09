@@ -550,6 +550,9 @@ public class SwerveDrive
       swerveModule.setDesiredState(desiredState, false);
 
     }
+
+    // Update kinematics because we are not using setModuleStates
+    kinematics.toSwerveModuleStates(new ChassisSpeeds());
   }
 
   /**

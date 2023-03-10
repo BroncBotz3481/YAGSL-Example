@@ -649,7 +649,7 @@ public class SwerveDrive
   {
     for (SwerveModule module : swerveModules)
     {
-      module.synchronizeEncoders();
+      module.queueSynchronizeEncoders();
     }
   }
 

@@ -21,7 +21,7 @@ public class Pigeon2Swerve extends SwerveIMU
   /**
    * Offset for the Pigeon 2.
    */
-  private final Rotation3d offset = new Rotation3d();
+  private Rotation3d offset = new Rotation3d();
 
   /**
    * Generate the SwerveIMU for pigeon.
@@ -73,7 +73,7 @@ public class Pigeon2Swerve extends SwerveIMU
    */
   public void setOffset(Rotation3d offset)
   {
-    offset = getRotation3d();
+    this.offset = offset;
   }
 
   /**

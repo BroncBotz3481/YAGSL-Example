@@ -20,7 +20,7 @@
   },
   "absoluteEncoderOffset": -50.977,
   "location": {
-    "x": 12,
-    "y": -12
+    "front": 12,
+    "left": -12
   }
 }

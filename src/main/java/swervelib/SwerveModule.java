@@ -140,7 +140,8 @@ public class SwerveModule
   }
 
   /**
-   * Set the desired state of the swerve module.
+   * Set the desired state of the swerve module. <br /><b>WARNING: If you are not using one of the functions from
+   * {@link SwerveDrive} you may screw up {@link SwerveDrive#kinematics}</b>
    *
    * @param desiredState Desired swerve module state.
    * @param isOpenLoop   Whether to use open loop (direct percent) or direct velocity control.

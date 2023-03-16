@@ -663,7 +663,7 @@ public class SwerveDrive
   {
     for (SwerveModule module : swerveModules)
     {
-      module.synchronizeEncoders();
+      module.queueSynchronizeEncoders();
     }
   }
 
@@ -693,25 +693,17 @@ public class SwerveDrive
       swerveDrivePoseEstimator.resetPosition(
           robotPose.getRotation(), getModulePositions(), robotPose);
     }
-
-    if (!SwerveDriveTelemetry.isSimulation)
-    {
-      imu.setOffset(new Rotation3d(0, 0, swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getRadians()));
-      // Yaw reset recommended by Team 1622
-    } else
-    {
-      simIMU.setAngle(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getRadians());
-    }
   }
 
   /**
-   * Set the Gyroscope offset using a {@link Rotation3d} object.
+   * Set the expected gyroscope angle using a {@link Rotation3d} object. To reset gyro, set to a new
+   * {@link Rotation3d}.
    *
-   * @param gyro Gyroscope offset.
+   * @param gyro expected gyroscope angle.
    */
   public void setGyro(Rotation3d gyro)
   {
-    imu.setOffset(gyro);
+    imu.setOffset(imu.getRawRotation3d().minus(gyro));
   }
 
   /**

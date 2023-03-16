@@ -679,15 +679,6 @@ public class SwerveDrive
       swerveDrivePoseEstimator.resetPosition(
           robotPose.getRotation(), getModulePositions(), robotPose);
     }
-
-    if (!SwerveDriveTelemetry.isSimulation)
-    {
-      imu.setOffset(new Rotation3d(0, 0, swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getRadians()));
-      // Yaw reset recommended by Team 1622
-    } else
-    {
-      simIMU.setAngle(swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getRadians());
-    }
   }
 
   /**

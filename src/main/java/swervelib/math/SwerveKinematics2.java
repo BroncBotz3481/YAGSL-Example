@@ -2,14 +2,13 @@ package swervelib.math;
 
 import edu.wpi.first.math.MathSharedStore;
 import edu.wpi.first.math.MathUsageId;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.util.WPIUtilJNI;
+import edu.wpi.first.wpilibj.Timer;
 import java.util.Arrays;
 import java.util.Collections;
 import org.ejml.simple.SimpleMatrix;
@@ -35,6 +34,13 @@ public class SwerveKinematics2 extends SwerveDriveKinematics {
   private final SwerveModuleState2[] m_moduleStates;
   /** Previous CoR */
   private Translation2d m_prevCoR = new Translation2d();
+  /**
+   * Previous CoR
+   */
+  private       Translation2d        m_prevCoR             = new Translation2d();
+  private       ChassisSpeeds m_prevChassisSpeeds   = new ChassisSpeeds();
+  private final Timer         m_moduleAccelTimer    = new Timer();
+  private       double        m_prevModuleAccelTime = 0.0;
 
   /**
    * Constructs a swerve drive kinematics object. This takes in a variable number of wheel locations
@@ -65,6 +71,7 @@ public class SwerveKinematics2 extends SwerveDriveKinematics {
               i * 2 + 1, 0, /* Start Data */ 0, 1, -m_modules[i].getY(), +m_modules[i].getX());
     }
     m_forwardKinematics = m_inverseKinematics.pseudoInverse();
+    m_moduleAccelTimer.start();
 
     MathSharedStore.reportUsage(MathUsageId.kKinematics_SwerveDrive, 1);
   }
@@ -137,90 +144,114 @@ public class SwerveKinematics2 extends SwerveDriveKinematics {
   }
 
   /**
-   * Performs inverse kinematics to return the module states from a desired chassis velocity. This
-   * method is often used to convert joystick values into module speeds and angles.
+   * Performs inverse kinematics to return the module states from a desired chassis velocity. This method is often
+   * used
+   * to convert joystick values into module speeds and angles.
    *
    * <p>This function also supports variable centers of rotation. During normal operations, the
-   * center of rotation is usually the same as the physical center of the robot; therefore, the
-   * argument is defaulted to that use case. However, if you wish to change the center of rotation
-   * for evasive maneuvers, vision alignment, or for any other use case, you can do so.
+   * center of rotation is usually the same as the physical center of the robot; therefore, the argument is
+   * defaulted to
+   * that use case. However, if you wish to change the center of rotation for evasive maneuvers, vision alignment, or
+   * for any other use case, you can do so.
    *
    * <p>In the case that the desired chassis speeds are zero (i.e. the robot will be stationary),
    * the previously calculated module angle will be maintained.
    *
-   * @param chassisSpeeds The desired chassis speed.
-   * @param centerOfRotationMeters The center of rotation. For example, if you set the center of
-   *     rotation at one corner of the robot and provide a chassis speed that only has a dtheta
-   *     component, the robot will rotate around that corner.
-   * @return An array containing the module states. Use caution because these module states are not
-   *     normalized. Sometimes, a user input may cause one of the module speeds to go above the
-   *     attainable max velocity. Use the {@link #desaturateWheelSpeeds(SwerveModuleState2[],
-   *     double) DesaturateWheelSpeeds} function to rectify this issue.
+   * @param chassisSpeeds          The desired chassis speed.
+   * @param centerOfRotationMeters The center of rotation. For example, if you set the center of rotation at one
+   *                               corner
+   *                               of the robot and provide a chassis speed that only has a dtheta component, the
+   *                               robot
+   *                               will rotate around that corner.
+   * @return An array containing the module states. Use caution because these module states are not normalized.
+   * Sometimes, a user input may cause one of the module speeds to go above the attainable max velocity. Use the
+   * {@link #desaturateWheelSpeeds(SwerveModuleState2[], double) DesaturateWheelSpeeds} function to rectify this issue.
    */
   @SuppressWarnings("PMD.MethodReturnsInternalArray")
   public SwerveModuleState2[] toSwerveModuleStates(
-          ChassisSpeeds chassisSpeeds, Translation2d centerOfRotationMeters) {
+      ChassisSpeeds chassisSpeeds, Translation2d centerOfRotationMeters)
+  {
+    var time = m_moduleAccelTimer.get();
+    var dt   = time - m_prevModuleAccelTime;
+    m_prevModuleAccelTime = time;
+
+    var accelChassisSpeeds = new ChassisSpeeds(
+        (chassisSpeeds.vxMetersPerSecond - m_prevChassisSpeeds.vxMetersPerSecond) / dt,
+        (chassisSpeeds.vyMetersPerSecond - m_prevChassisSpeeds.vyMetersPerSecond) / dt,
+        (chassisSpeeds.omegaRadiansPerSecond - m_prevChassisSpeeds.omegaRadiansPerSecond) / dt
+    );
+    m_prevChassisSpeeds = chassisSpeeds;
+
     if (chassisSpeeds.vxMetersPerSecond == 0.0
-            && chassisSpeeds.vyMetersPerSecond == 0.0
-            && chassisSpeeds.omegaRadiansPerSecond == 0.0) {
-      for (int i = 0; i < m_numModules; i++) {
+        && chassisSpeeds.vyMetersPerSecond == 0.0
+        && chassisSpeeds.omegaRadiansPerSecond == 0.0)
+    {
+      for (int i = 0; i < m_numModules; i++)
+      {
         m_moduleStates[i].speedMetersPerSecond = 0.0;
       }
 
       return m_moduleStates;
     }
 
-    if (!centerOfRotationMeters.equals(m_prevCoR)) {
-      for (int i = 0; i < m_numModules; i++) {
+    if (!centerOfRotationMeters.equals(m_prevCoR))
+    {
+      for (int i = 0; i < m_numModules; i++)
+      {
         m_inverseKinematics.setRow(
-                i * 2, 0, /* Start Data */ 1, 0, -m_modules[i].getY() + centerOfRotationMeters.getY());
+            i * 2, 0, /* Start Data */ 1, 0, -m_modules[i].getY() + centerOfRotationMeters.getY());
         m_inverseKinematics.setRow(
-                i * 2 + 1,
-                0, /* Start Data */
-                0,
-                1,
-                +m_modules[i].getX() - centerOfRotationMeters.getX());
+            i * 2 + 1,
+            0, /* Start Data */
+            0,
+            1,
+            +m_modules[i].getX() - centerOfRotationMeters.getX());
         bigInverseKinematics.setRow(
-                i * 2,
-                0, /* Start Data */
-                1,
-                0,
-                -m_modules[i].getX() + centerOfRotationMeters.getX(),
-                -m_modules[i].getY() + centerOfRotationMeters.getY());
+            i * 2,
+            0, /* Start Data */
+            1,
+            0,
+            -m_modules[i].getX() + centerOfRotationMeters.getX(),
+            -m_modules[i].getY() + centerOfRotationMeters.getY());
         bigInverseKinematics.setRow(
-                i * 2 + 1,
-                0, /* Start Data */
-                0,
-                1,
-                -m_modules[i].getY() + centerOfRotationMeters.getY(),
-                +m_modules[i].getX() - centerOfRotationMeters.getX());
+            i * 2 + 1,
+            0, /* Start Data */
+            0,
+            1,
+            -m_modules[i].getY() + centerOfRotationMeters.getY(),
+            +m_modules[i].getX() - centerOfRotationMeters.getX());
       }
       m_prevCoR = centerOfRotationMeters;
     }
 
     var chassisSpeedsVector = new SimpleMatrix(3, 1);
     chassisSpeedsVector.setColumn(
-            0,
-            0,
-            chassisSpeeds.vxMetersPerSecond,
-            chassisSpeeds.vyMetersPerSecond,
-            chassisSpeeds.omegaRadiansPerSecond);
+        0,
+        0,
+        chassisSpeeds.vxMetersPerSecond,
+        chassisSpeeds.vyMetersPerSecond,
+        chassisSpeeds.omegaRadiansPerSecond);
 
     var moduleVelocityStatesMatrix = m_inverseKinematics.mult(chassisSpeedsVector);
 
     var accelerationVector = new SimpleMatrix(4, 1);
-    accelerationVector.setColumn(0, 0, 0, 0, Math.pow(chassisSpeeds.omegaRadiansPerSecond, 2), 0);
+    accelerationVector.setColumn(0, 0,
+                                 accelChassisSpeeds.vxMetersPerSecond,
+                                 accelChassisSpeeds.vyMetersPerSecond,
+                                 chassisSpeeds.omegaRadiansPerSecond * chassisSpeeds.omegaRadiansPerSecond,
+                                 accelChassisSpeeds.omegaRadiansPerSecond);
 
     var moduleAccelerationStatesMatrix = bigInverseKinematics.mult(accelerationVector);
 
-    for (int i = 0; i < m_numModules; i++) {
+    for (int i = 0; i < m_numModules; i++)
+    {
       double x = moduleVelocityStatesMatrix.get(i * 2, 0);
       double y = moduleVelocityStatesMatrix.get(i * 2 + 1, 0);
 
       double ax = moduleAccelerationStatesMatrix.get(i * 2, 0);
       double ay = moduleAccelerationStatesMatrix.get(i * 2 + 1, 0);
 
-      double speed = Math.hypot(x, y);
+      double     speed = Math.hypot(x, y);
       Rotation2d angle = new Rotation2d(x, y);
 
       var trigThetaAngle = new SimpleMatrix(2, 2);

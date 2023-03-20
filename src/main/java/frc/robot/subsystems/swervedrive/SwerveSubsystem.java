@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.swervedrive2;
+package frc.robot.subsystems.swervedrive;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -10,7 +10,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+
 import java.io.File;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
@@ -255,5 +258,25 @@ public class SwerveSubsystem extends SubsystemBase
   public void addFakeVisionReading()
   {
     swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp(), false, 1);
+  }
+
+  public Command moveRevOntoChargeStation() {
+        
+    return this.run(() -> {
+        System.out.println("Not on platform. Moving forward.");
+        drive(new Translation2d(-3,0),0, false, true);
+        System.out.println(swerveDrive.getPitch().getDegrees());
+    }).until(() -> swerveDrive.getPitch().getDegrees() > 10.5 || swerveDrive.getPitch().getDegrees() < -10.5);
+  }
+
+  public Command balanceRobot(double originalAngle) {
+    System.out.println("Balancing");
+    return this.run(() -> {
+            System.out.println(swerveDrive.getPitch().getDegrees());
+            drive(new Translation2d(Constants.Auton.balancePID.calculate(swerveDrive.getPitch().getDegrees(),0),0),0, false, true);
+        }
+    )
+    .until(() -> swerveDrive.getPitch().getDegrees() < .1 && swerveDrive.getPitch().getDegrees() > -.1)
+    .andThen(() -> lock());
   }
 }

@@ -7,19 +7,29 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.swervedrive2.auto.Autos;
-import frc.robot.commands.swervedrive2.drivebase.AbsoluteDrive;
-import frc.robot.commands.swervedrive2.drivebase.AbsoluteFieldDrive;
-import frc.robot.commands.swervedrive2.drivebase.TeleopDrive;
-import frc.robot.subsystems.swervedrive2.SwerveSubsystem;
+import frc.robot.commands.AutoMap;
+import frc.robot.commands.swervedrive.auto.PathBuilder;
+import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
+import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
+import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
+import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+
 import java.io.File;
+
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -28,17 +38,37 @@ import java.io.File;
  */
 public class RobotContainer
 {
+  private SendableChooser<Command> chooser = new SendableChooser<>();
 
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
-                                                                         "swerve/neo"));
+                                                                         "swerve/falcon"));
+  //private final Shooter shooter = new Shooter();
   // CommandJoystick rotationController = new CommandJoystick(1);
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  CommandJoystick driverController = new CommandJoystick(1);
+  //CommandJoystick driverController = new CommandJoystick(1);
 
   // CommandJoystick driverController   = new CommandJoystick(3);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
-  XboxController driverXbox = new XboxController(0);
+  private static final CommandXboxController driverXbox = new CommandXboxController(0);
 
+  private final AutoMap autoMap = new AutoMap();
+  private final PathBuilder builder = new PathBuilder(drivebase, autoMap.getEventMap());
+
+  private final int translationAxis = XboxController.Axis.kLeftY.value;
+  private final int strafeAxis = XboxController.Axis.kLeftX.value;
+  private final int rotationAxis = XboxController.Axis.kRightX.value;
+
+
+  private final TeleopDrive closedFieldRel =
+  new TeleopDrive(
+      drivebase,
+      () -> -driverXbox.getRawAxis(translationAxis), 
+      () -> -driverXbox.getRawAxis(strafeAxis), 
+      () -> -driverXbox.getRawAxis(rotationAxis), 
+      () -> driverXbox.leftBumper().getAsBoolean(),
+      false,
+      false
+      );
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -46,44 +76,39 @@ public class RobotContainer
   {
     // Configure the trigger bindings
     configureBindings();
+    initializeChooser();
 
-    AbsoluteDrive closedAbsoluteDrive = new AbsoluteDrive(drivebase,
-                                                          // Applies deadbands and inverts controls because joysticks
-                                                          // are back-right positive while robot
-                                                          // controls are front-left positive
-                                                          () -> (Math.abs(driverXbox.getLeftY()) >
-                                                                 OperatorConstants.LEFT_Y_DEADBAND)
-                                                                ? driverXbox.getLeftY() : 0,
-                                                          () -> (Math.abs(driverXbox.getLeftX()) >
-                                                                 OperatorConstants.LEFT_X_DEADBAND)
-                                                                ? driverXbox.getLeftX() : 0,
-                                                          () -> -driverXbox.getRightX(),
-                                                          () -> -driverXbox.getRightY(),
-                                                          false);
+    drivebase.setDefaultCommand(closedFieldRel);
 
-    AbsoluteFieldDrive closedFieldAbsoluteDrive = new AbsoluteFieldDrive(drivebase,
-                                                                         () -> (Math.abs(driverXbox.getLeftY()) >
-                                                                                OperatorConstants.LEFT_Y_DEADBAND)
-                                                                               ? driverXbox.getLeftY() : 0,
-                                                                         () -> (Math.abs(driverXbox.getLeftX()) >
-                                                                                OperatorConstants.LEFT_X_DEADBAND)
-                                                                               ? driverXbox.getLeftX() : 0,
-                                                                         () -> driverXbox.getRawAxis(2), false);
-    TeleopDrive simClosedFieldRel = new TeleopDrive(drivebase,
-                                                    () -> (Math.abs(driverXbox.getLeftY()) >
-                                                           OperatorConstants.LEFT_Y_DEADBAND)
-                                                          ? driverXbox.getLeftY() : 0,
-                                                    () -> (Math.abs(driverXbox.getLeftX()) >
-                                                           OperatorConstants.LEFT_X_DEADBAND)
-                                                          ? driverXbox.getLeftX() : 0,
-                                                    () -> driverXbox.getRawAxis(2), () -> true, false, true);
-    TeleopDrive closedFieldRel = new TeleopDrive(
-        drivebase,
-        () -> (Math.abs(driverController.getY()) > OperatorConstants.LEFT_Y_DEADBAND) ? driverController.getY() : 0,
-        () -> (Math.abs(driverController.getX()) > OperatorConstants.LEFT_X_DEADBAND) ? driverController.getX() : 0,
-        () -> -driverController.getRawAxis(3), () -> true, false, true);
+    //shooter.setDefaultCommand(shooter.moveArm(() -> driverXbox.getLeftTriggerAxis() - driverXbox.getRightTriggerAxis()));
+  }
 
-    drivebase.setDefaultCommand(!RobotBase.isSimulation() ? closedAbsoluteDrive : closedFieldAbsoluteDrive);
+  private void initializeChooser() {
+
+    chooser.addOption(
+        "Default Test",
+        builder.getSwerveCommand(
+            PathPlanner.loadPathGroup(
+                "Test Path", new PathConstraints(Constants.Auton.MAX_SPEED, Constants.Auton.MAX_ACCELERATION))));
+
+    chooser.addOption(
+      "Calibration 2 Meter",
+      builder.getSwerveCommand(
+          PathPlanner.loadPathGroup(
+              "Calibration Test", new PathConstraints(Constants.Auton.MAX_SPEED, Constants.Auton.MAX_ACCELERATION))));
+
+    chooser.setDefaultOption(
+        "Test - 2", 
+        builder.getSwerveCommand(
+            PathPlanner.loadPathGroup(
+                "SamplePath", new PathConstraints(Constants.Auton.MAX_SPEED, Constants.Auton.MAX_ACCELERATION))));
+
+    chooser.addOption(
+          "Shoot High And Balance - No PathPlanner",
+          drivebase.moveRevOntoChargeStation());
+          //.andThen(drivebase.reverseBalance()));
+
+    SmartDashboard.putData("Auto", chooser);
   }
 
   /**
@@ -96,12 +121,11 @@ public class RobotContainer
   private void configureBindings()
   {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-
-    new JoystickButton(driverXbox, 1).onTrue((new InstantCommand(drivebase::zeroGyro)));
-    new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
-//    new JoystickButton(driverXbox, 3).whileTrue(new RepeatCommand(new InstantCommand(drivebase::lock, drivebase)));
+    //driverXbox.a().onTrue(shooter.moveArmToPosition(-1000));
+    driverXbox.y().onTrue((new InstantCommand(drivebase::zeroGyro)));
+    //new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
+    driverXbox.a().whileTrue(new RepeatCommand(new InstantCommand(drivebase::lock, drivebase)));
   }
-
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -109,8 +133,7 @@ public class RobotContainer
    */
   public Command getAutonomousCommand()
   {
-    // An example command will be run in autonomous
-    return Autos.exampleAuto(drivebase);
+    return chooser.getSelected();
   }
 
   public void setDriveMode()

@@ -226,7 +226,7 @@ public class SwerveDrive
     {
       velocity.omegaRadiansPerSecond =
           swerveController.headingCalculate(lastHeadingRadians, getYaw().getRadians());
-    } else
+    } else if (headingCorrection)
     {
       lastHeadingRadians = getYaw().getRadians();
     }

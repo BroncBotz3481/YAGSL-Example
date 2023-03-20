@@ -222,13 +222,16 @@ public class SwerveDrive
 
     // Heading Angular Velocity Deadband, might make a configuration option later.
     // Originally made by Team 1466 Webb Robotics.
-    if (Math.abs(rotation) < 0.01 && headingCorrection)
+    if (headingCorrection)
     {
-      velocity.omegaRadiansPerSecond =
-          swerveController.headingCalculate(lastHeadingRadians, getYaw().getRadians());
-    } else if (headingCorrection)
-    {
-      lastHeadingRadians = getYaw().getRadians();
+      if (Math.abs(rotation) < 0.01)
+      {
+        velocity.omegaRadiansPerSecond =
+            swerveController.headingCalculate(lastHeadingRadians, getYaw().getRadians());
+      } else
+      {
+        lastHeadingRadians = getYaw().getRadians();
+      }
     }
 
     // Display commanded speed for testing

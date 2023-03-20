@@ -1,9 +1,9 @@
 # Swerve Module Physical Properties (`physicalproperties.json`)
 
 This JSON configures the physical properties shared with all the Swerve Modules. It maps 1:1
-with [`PhysicalPropertiesJson.java`](../../src/main/java/frc/robot/subsystems/swervedrive2/swervelib/parser/json/PhysicalPropertiesJson.java)
+with [`PhysicalPropertiesJson.java`](../../src/main/java/frc/robot/subsystems/swervedrive/swervelib/parser/json/PhysicalPropertiesJson.java)
 which creates
-[`SwerveModulePhysicalCharacteristics.java`](../../src/main/java/frc/robot/subsystems/swervedrive2/swervelib/parser/SwerveModulePhysicalCharacteristics.java).
+[`SwerveModulePhysicalCharacteristics.java`](../../src/main/java/frc/robot/subsystems/swervedrive/swervelib/parser/SwerveModulePhysicalCharacteristics.java).
 
 # Fields
 

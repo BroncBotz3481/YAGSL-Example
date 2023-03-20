@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.swervedrive2;
+package frc.robot.subsystems.swervedrive;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -247,6 +247,16 @@ public class SwerveSubsystem extends SubsystemBase
   public void lock()
   {
     swerveDrive.lockPose();
+  }
+
+  /**
+   * Gets the current pitch angle of the robot, as reported by the imu.
+   *
+   * @return The heading as a {@link Rotation2d} angle
+   */
+  public Rotation2d getPitch()
+  {
+    return swerveDrive.getPitch();
   }
 
   /**

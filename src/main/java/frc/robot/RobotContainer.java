@@ -14,11 +14,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.swervedrive2.auto.Autos;
-import frc.robot.commands.swervedrive2.drivebase.AbsoluteDrive;
-import frc.robot.commands.swervedrive2.drivebase.AbsoluteFieldDrive;
-import frc.robot.commands.swervedrive2.drivebase.TeleopDrive;
-import frc.robot.subsystems.swervedrive2.SwerveSubsystem;
+import frc.robot.commands.swervedrive.auto.Autos;
+import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
+import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
+import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
+import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
 
 /**

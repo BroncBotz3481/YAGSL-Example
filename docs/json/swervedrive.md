@@ -2,11 +2,11 @@
 
 The Swerve Drive JSON configuration file configures everything related to the overall Swerve Drive.
 It maps 1:1
-to [`SwerveDriveJson.java`](../../src/main/java/frc/robot/subsystems/swervedrive2/swervelib/parser/json/SwerveDriveJson.java)
+to [`SwerveDriveJson.java`](../../src/main/java/frc/robot/subsystems/swervedrive/swervelib/parser/json/SwerveDriveJson.java)
 which creates
-a [`SwerveDriveConfiguration`](../../src/main/java/frc/robot/subsystems/swervedrive2/swervelib/parser/SwerveDriveConfiguration.java)
+a [`SwerveDriveConfiguration`](../../src/main/java/frc/robot/subsystems/swervedrive/swervelib/parser/SwerveDriveConfiguration.java)
 that is used to create
-the [`SwerveDrive`](../../src/main/java/frc/robot/subsystems/swervedrive2/swervelib/SwerveDrive.java)
+the [`SwerveDrive`](../../src/main/java/frc/robot/subsystems/swervedrive/swervelib/SwerveDrive.java)
 object.
 
 # JSON Fields

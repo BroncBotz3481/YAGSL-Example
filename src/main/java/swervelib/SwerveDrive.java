@@ -4,6 +4,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -707,6 +708,31 @@ public class SwerveDrive
   public void setGyro(Rotation3d gyro)
   {
     imu.setOffset(imu.getRawRotation3d().minus(gyro));
+  }
+
+  /**
+   * Helper function to get the {@link SwerveDrive#swerveController} for the {@link SwerveDrive} which can be used to
+   * generate {@link ChassisSpeeds} for the robot to orient it correctly given axis or angles, and apply
+   * {@link edu.wpi.first.math.filter.SlewRateLimiter} to given inputs. Important functions to look at are
+   * {@link SwerveController#getTargetSpeeds(double, double, double, double)},
+   * {@link SwerveController#addSlewRateLimiters(SlewRateLimiter, SlewRateLimiter, SlewRateLimiter)},
+   * {@link SwerveController#getRawTargetSpeeds(double, double, double)}.
+   *
+   * @return {@link SwerveController} for the {@link SwerveDrive}.
+   */
+  public SwerveController getSwerveController()
+  {
+    return swerveController;
+  }
+
+  /**
+   * Get the {@link SwerveModule}s associated with the {@link SwerveDrive}.
+   *
+   * @return {@link SwerveModule} array specified by configurations.
+   */
+  public SwerveModule[] getModules()
+  {
+    return swerveDriveConfiguration.modules;
   }
 
   /**

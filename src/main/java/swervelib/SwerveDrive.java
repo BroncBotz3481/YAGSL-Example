@@ -129,7 +129,7 @@ public class SwerveDrive
             getGyroRotation3d(),
             getModuleStates(),
             new Pose3dFix(new Translation3d(0, 0, 0), new Rotation3d()));
-            // x,y,heading in radians; Vision measurement std dev, higher=less weight
+    // x,y,heading in radians; Vision measurement std dev, higher=less weight
 
     zeroGyro();
 
@@ -190,8 +190,8 @@ public class SwerveDrive
   }
 
   /**
-   * The primary method for controlling the drivebase. Takes a Translation2d and a rotation rate, and calculates and
-   * commands module states accordingly. Can use either open-loop or closed-loop velocity control for the wheel
+   * The primary method for controlling the drivebase. Takes a {@link Translation2d} and a rotation rate, and calculates
+   * and commands module states accordingly. Can use either open-loop or closed-loop velocity control for the wheel
    * velocities. Also has field- and robot-relative modes, which affect how the translation vector is used.
    *
    * @param translation       {@link Translation2d} that is the commanded linear velocity of the robot, in meters per
@@ -691,8 +691,7 @@ public class SwerveDrive
    * @param soft            Add vision estimate using the
    *                        {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose3d, double)} function, or hard
    *                        reset odometry with the given position with
-   *                        {@link SwerveDrivePoseEstimator#resetPosition(Rotation2d,
-   *                        SwerveModuleState2[], Pose2d)}.
+   *                        {@link SwerveDrivePoseEstimator#resetPosition(Rotation2d, SwerveModuleState2[], Pose2d)}.
    * @param trustWorthiness Trust level of vision reading when using a soft measurement, used to multiply the standard
    *                        deviation. Set to 1 for full trust.
    */

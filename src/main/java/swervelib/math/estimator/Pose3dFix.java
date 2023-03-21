@@ -94,7 +94,7 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d
   }
 
   /**
-   * Returns the Transform3d that maps the one pose to another.
+   * Returns the {@link edu.wpi.first.math.geometry.Transform3d} that maps the one pose to another.
    *
    * @param other The initial pose of the transformation.
    * @return The transform that maps the other pose to the current pose.
@@ -161,7 +161,7 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d
    * Multiplies the current pose by a scalar.
    *
    * @param scalar The scalar.
-   * @return The new scaled Pose3d.
+   * @return The new scaled {@link Pose3d}.
    */
   public Pose3dFix times(double scalar)
   {
@@ -209,7 +209,7 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d
   }
 
   /**
-   * Obtain a new Pose3d from a (constant curvature) velocity.
+   * Obtain a new {@link Pose3d} from a (constant curvature) velocity.
    *
    * <p>The twist is a change in pose in the robot's coordinate frame since the previous pose
    * update. When the user runs exp() on the previous known field-relative pose with the argument being the twist, the
@@ -240,9 +240,9 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d
     if (Math.abs(theta) < 1E-7)
     {
       // Taylor Expansions around θ = 0
-      // A = 1/1! - θ²/3! + θ⁴/5!
-      // B = 1/2! - θ²/4! + θ⁴/6!
-      // C = 1/3! - θ²/5! + θ⁴/7!
+      // A = 1/1! - θ^2/3! + θ^4/5!
+      // B = 1/2! - θ^2/4! + θ^4/6!
+      // C = 1/3! - θ^2/5! + θ^4/7!
       // sources:
       // A:
       // https://www.wolframalpha.com/input?i2d=true&i=series+expansion+of+Divide%5Bsin%5C%2840%29x%5C%2841%29%2Cx%5D+at+x%3D0
@@ -256,8 +256,8 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d
     } else
     {
       // A = sin(θ)/θ
-      // B = (1 - cos(θ)) / θ²
-      // C = (1 - A) / θ²
+      // B = (1 - cos(θ)) / θ^2
+      // C = (1 - A) / θ^2
       A = Math.sin(theta) / theta;
       B = (1 - Math.cos(theta)) / thetaSq;
       C = (1 - A) / thetaSq;
@@ -278,7 +278,7 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d
   }
 
   /**
-   * Returns a Twist3d that maps this pose to the end pose. If c is the output of {@code a.Log(b)}, then
+   * Returns a {@link Twist3d} that maps this pose to the end pose. If c is the output of {@code a.Log(b)}, then
    * {@code a.Exp(c)} would yield b.
    *
    * @param end The end pose for the transformation.
@@ -305,9 +305,9 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d
     if (Math.abs(theta) < 1E-7)
     {
       // Taylor Expansions around θ = 0
-      // A = 1/1! - θ²/3! + θ⁴/5!
-      // B = 1/2! - θ²/4! + θ⁴/6!
-      // C = 1/6 * (1/2 + θ²/5! + θ⁴/7!)
+      // A = 1/1! - θ^2/3! + θ^4/5!
+      // B = 1/2! - θ^2/4! + θ^4/6!
+      // C = 1/6 * (1/2 + θ^2/5! + θ^4/7!)
       // sources:
       // A:
       // https://www.wolframalpha.com/input?i2d=true&i=series+expansion+of+Divide%5Bsin%5C%2840%29x%5C%2841%29%2Cx%5D+at+x%3D0
@@ -319,8 +319,8 @@ public class Pose3dFix extends edu.wpi.first.math.geometry.Pose3d
     } else
     {
       // A = sin(θ)/θ
-      // B = (1 - cos(θ)) / θ²
-      // C = (1 - A/(2*B)) / θ²
+      // B = (1 - cos(θ)) / θ^2
+      // C = (1 - A/(2*B)) / θ^2
       double A = Math.sin(theta) / theta;
       double B = (1 - Math.cos(theta)) / thetaSq;
       C = (1 - A / (2 * B)) / thetaSq;

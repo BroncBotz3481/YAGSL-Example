@@ -166,7 +166,11 @@ public class SwerveModule
     simpleState = SwerveModuleState.optimize(simpleState, getState().angle);
     desiredState =
         new SwerveModuleState2(
-            0, simpleState.speedMetersPerSecond, desiredState.accelMetersPerSecondSq, simpleState.angle, desiredState.omegaRadPerSecond);
+            0,
+            simpleState.speedMetersPerSecond,
+            desiredState.accelMetersPerSecondSq,
+            simpleState.angle,
+            desiredState.omegaRadPerSecond);
     if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)
     {
       SmartDashboard.putNumber(
@@ -248,7 +252,7 @@ public class SwerveModule
     double     accel;
     Rotation2d azimuth;
     double     omega;
-    var dt = timer.get() - lastTime;
+    var        dt = timer.get() - lastTime;
     lastTime = timer.get();
     if (!SwerveDriveTelemetry.isSimulation)
     {

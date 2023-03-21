@@ -324,4 +324,34 @@ public class SwerveModule
   {
     driveMotor.setPosition(0);
   }
+
+  /**
+   * Get the angle {@link SwerveMotor} for the {@link SwerveModule}.
+   *
+   * @return {@link SwerveMotor} for the angle/steering motor of the module.
+   */
+  public SwerveMotor getAngleMotor()
+  {
+    return angleMotor;
+  }
+
+  /**
+   * Get the drive {@link SwerveMotor} for the {@link SwerveModule}.
+   *
+   * @return {@link SwerveMotor} for the drive motor of the module.
+   */
+  public SwerveMotor getDriveMotor()
+  {
+    return driveMotor;
+  }
+
+  /**
+   * Fetch the {@link SwerveModuleConfiguration} for the {@link SwerveModule} with the parsed configurations.
+   *
+   * @return {@link SwerveModuleConfiguration} for the {@link SwerveModule}.
+   */
+  public SwerveModuleConfiguration getConfiguration()
+  {
+    return configuration;
+  }
 }

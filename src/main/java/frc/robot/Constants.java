@@ -26,25 +26,12 @@ public final class Constants
   public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
   public static final double LOOP_TIME  = 0.13; //s, 20ms + 110ms sprk max velocity lag
 
-  public static final class ShooterConstants {
-    public static final int SHOOTER_TOP_MOTOR = 20;
-    public static final int SHOOTER_BOTTOM_MOTOR = 21;
+  public static final class ArmConstants {
     public static final int ARM_MAIN_MOTOR = 22;
     public static final int ARM_FOLLOWER_MOTOR = 23;
 
-    public static final double highGoalVelocityTopMotor = .55;
-    public static final double highGoalVelocityBottomMotor = .55;
-
-    public static final double midGoalVelocityBottomMotor = .21;
-    public static final double midGoalVelocityTopMotor = .22;
-
-    public static final double bottomGoalVelocityTopMotor = .14;
-    public static final double bottomGoalVelocityBottomMotor = .13;
-    
-
     public static final int kTimeoutMs = 0;
     public static final int kPIDLoopIdx = 0;
-    public static final double intakeVelocity = .28 ;
 
     /* Sysid values divided by 12 to convert from voltage */
     public static final double armkG = (0 / 12);
@@ -56,24 +43,37 @@ public final class Constants
     public static final double armkD = 0;
     public static final double armkF = 0;
 
-    public static final double shooterArmPeakCurrentDuration = 0.1;
-    public static final double shooterArmPeakCurrentLimit = 45;
-    public static final double shooterArmContinuousCurrentLimit = 30;
-    public static final boolean shooterArmEnableCurrentLimit = true;
-    public static final double openLoopRamp = 0.25;
-    public static final double motionCruiseVelocity = 15000;
-    public static final double motionAcceleration = 1500;
-
-
-    /* Arm Constants */
-
     public static final double kArmReduction = 16;
     public static final double kArmLengthMeters = 10;
     public static final double kArmMassKg = 10;
     public static final double kMinAngleRads = -2 * Math.PI;
     public static final double kMaxAngleRads = 2 * Math.PI;
     public static final double kArmEncoderDistPerPulse = 2.0 * Math.PI / 2048;
-  
+
+    public static final double shooterArmPeakCurrentDuration = 0.1;
+    public static final double shooterArmPeakCurrentLimit = 45;
+    public static final double shooterArmContinuousCurrentLimit = 30;
+    public static final boolean shooterArmEnableCurrentLimit = true;
+    public static final double openLoopRamp = 0.25;
+    public static final double motionCruiseVelocity = 15000;
+    public static final double motionAcceleration = 1500;  
+  }
+  public static final class ShooterConstants {
+    public static final int SHOOTER_TOP_MOTOR = 20;
+    public static final int SHOOTER_BOTTOM_MOTOR = 21;
+
+    public static final double highGoalVelocityTopMotor = .55;
+    public static final double highGoalVelocityBottomMotor = .55;
+
+    public static final double midGoalVelocityBottomMotor = .21;
+    public static final double midGoalVelocityTopMotor = .22;
+
+    public static final double bottomGoalVelocityTopMotor = .14;
+    public static final double bottomGoalVelocityBottomMotor = .13;
+
+    public static final double intakeVelocity = .28 ;
+    public static final double currentThreshold = 0;
+
   }
   public static final class Auton
   {  

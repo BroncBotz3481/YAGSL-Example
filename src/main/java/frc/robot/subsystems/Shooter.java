@@ -16,6 +16,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -111,7 +112,7 @@ public class Shooter extends SubsystemBase {
                       m_armFF.calculate(angle, rotateMotor.getSelectedSensorVelocity()));
 
       rotateMotorFollower.follow(rotateMotor);
-
+      // DataLogManager.log("Current Angle: " + angle);
       System.out.println("Current Angle: " + angle);
     }).until(() -> rotateMotor.isMotionProfileFinished());
   }

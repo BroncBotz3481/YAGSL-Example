@@ -298,7 +298,7 @@ public class TalonFXSwerve extends SwerveMotor
     while (newAngle < lowerBound)
     {
       newAngle += 360;
-    }
+    } 
     while (newAngle > upperBound)
     {
       newAngle -= 360;

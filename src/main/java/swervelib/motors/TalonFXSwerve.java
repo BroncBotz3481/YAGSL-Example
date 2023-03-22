@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.Timer;
@@ -425,6 +426,12 @@ public class TalonFXSwerve extends SwerveMotor
   {
     configuration.supplyCurrLimit.currentLimit = currentLimit;
     configuration.supplyCurrLimit.enable = true;
+    if (isDriveMotor) {
+      configuration.supplyCurrLimit.triggerThresholdCurrent = 60;
+    } else {
+      configuration.supplyCurrLimit.triggerThresholdCurrent = 40;
+    }
+    configuration.supplyCurrLimit.triggerThresholdTime = 0.1;
     configChanged = true;
   }
 

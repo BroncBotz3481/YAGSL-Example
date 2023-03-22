@@ -293,8 +293,8 @@ public class SwerveSubsystem extends SubsystemBase
    * @param useAllianceColor Automatically transform the path based on alliance color.
    * @return PathPlanner command to follow the given path.
    */
-  public Command pathPlannerCommand(String path, PathConstraints constraints, Map<String, Command> eventMap,
-                                    PIDConstants translation, PIDConstants rotation, boolean useAllianceColor)
+  public Command creatPathPlannerCommand(String path, PathConstraints constraints, Map<String, Command> eventMap,
+                                         PIDConstants translation, PIDConstants rotation, boolean useAllianceColor)
   {
     List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(path, constraints);
 //    SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(

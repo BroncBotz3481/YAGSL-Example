@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.swervedrive;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -17,6 +18,7 @@ import frc.robot.Constants;
 import java.io.File;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
+import swervelib.SwerveModule;
 import swervelib.math.SwerveKinematics2;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
@@ -48,6 +50,13 @@ public class SwerveSubsystem extends SubsystemBase
     {
       throw new RuntimeException(e);
     }
+
+    /* React more like basefalconswerve */
+    for(SwerveModule mod : swerveDrive.getModules())
+    {
+      mod.configuration.angleKV = 0;
+    }
+    swerveDrive.replaceSwerveModuleFeedforward(new SimpleMotorFeedforward(0.075039, 0.00035552, 7.488E-05));
   }
 
   /**

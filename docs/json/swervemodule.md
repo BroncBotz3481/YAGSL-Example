@@ -1,9 +1,9 @@
 # Swerve Module Configuration (`module/x.json`)
 
 The swerve module configuration configures unique properties of each swerve module. It maps 1:1
-with [`ModuleJson.java`](../../src/main/java/frc/robot/subsystems/swervedrive2/swervelib/parser/json/ModuleJson.java)
+with [`ModuleJson.java`](../../src/main/java/frc/robot/subsystems/swervedrive/swervelib/parser/json/ModuleJson.java)
 which is used to
-create [`SwerveModuleConfiguration`](../../src/main/java/frc/robot/subsystems/swervedrive2/swervelib/parser/SwerveModuleConfiguration.java).
+create [`SwerveModuleConfiguration`](../../src/main/java/frc/robot/subsystems/swervedrive/swervelib/parser/SwerveModuleConfiguration.java).
 This configuration file interacts directly with swerve kinematics.
 
 # Fields

@@ -8,8 +8,8 @@ and instantiate your Swerve Drive that way.
 ## How to create a SwerveDrive using JSON.
 
 This example program creates
-the [`SwerveDrive`](../src/main/java/frc/robot/subsystems/swervedrive2/swervelib/SwerveDrive.java)
-in the [`SwerveSubsystem`](../src/main/java/frc/robot/subsystems/swervedrive2/SwerveSubsystem.java),
+the [`SwerveDrive`](../src/main/java/frc/robot/subsystems/swervedrive/swervelib/SwerveDrive.java)
+in the [`SwerveSubsystem`](../src/main/java/frc/robot/subsystems/swervedrive/SwerveSubsystem.java),
 as you should only interact with it in the SwerveSubsystem if you are using command based
 programming.
 

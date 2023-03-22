@@ -1,7 +1,7 @@
 # PIDF Configuration
 
 The PIDF configurations map 1:1
-with [`PIDFConfig.java`](../../src/main/java/frc/robot/subsystems/swervedrive2/swervelib/parser/PIDFConfig.java)
+with [`PIDFConfig.java`](../../src/main/java/frc/robot/subsystems/swervedrive/swervelib/parser/PIDFConfig.java)
 which stores information regarding the PID or PIDF configurations for the robot, such as module
 velocity & position, and robot heading. Not every parameter is used on every PIDF configuration. For
 example `heading` only takes into account the PID.

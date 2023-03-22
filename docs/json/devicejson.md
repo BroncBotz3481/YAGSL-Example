@@ -2,7 +2,7 @@
 
 All devices in a swerve drive come down to a basic set of fields. The device configuration is used
 to store and create those devices during parsing with a 1:1 mapping
-to [DeviceJson.java](../../src/main/java/frc/robot/subsystems/swervedrive2/swervelib/parser/json/DeviceJson.java).
+to [DeviceJson.java](../../src/main/java/frc/robot/subsystems/swervedrive/swervelib/parser/json/DeviceJson.java).
 
 # Fields
 

@@ -16,6 +16,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,6 +31,17 @@ public class Shooter extends SubsystemBase {
   TalonFX rotateMotorFollower;
   ArmFeedforward m_armFF;
   TalonFXConfiguration shooterArmFXConfig;
+
+  DoubleLogEntry armPosition;
+  DoubleLogEntry armAngleDegrees;
+  DoubleLogEntry armVelocity;
+  DoubleLogEntry armMotorCurrent;
+  DoubleLogEntry armMotorCurrent2;
+
+  DoubleLogEntry shooterSpeed;
+  DoubleLogEntry shooterCurrent;
+
+
 
   /** Creates a new Shooter. */
   public Shooter() {
@@ -79,11 +92,29 @@ public class Shooter extends SubsystemBase {
 
 		/* Zero the sensor once on robot boot up */
 		rotateMotor.setSelectedSensorPosition(0, Constants.ShooterConstants.kPIDLoopIdx, Constants.ShooterConstants.kTimeoutMs);
+
+    DataLog log = DataLogManager.getLog();
+    
+    armPosition = new DoubleLogEntry(log, "/arm/position");
+    armAngleDegrees = new DoubleLogEntry(log, "/arm/angle");
+    armVelocity = new DoubleLogEntry(log, "/arm/velocity");
+    armMotorCurrent = new DoubleLogEntry(log, "/arm/curent-1");
+    armMotorCurrent2 = new DoubleLogEntry(log, "/arm/curent-2");
+
+    shooterSpeed = new DoubleLogEntry(log, "/shooter/speed");
+    shooterCurrent = new DoubleLogEntry(log, "/shooter/current");
+
+
   }
 
   @Override
   public void periodic() {
-
+      armPosition.append(rotateMotor.getSelectedSensorPosition());
+      //armAngleDegrees.append(getAngle());
+      armVelocity.append(rotateMotor.getSelectedSensorVelocity());
+      armMotorCurrent.append(rotateMotor.getStatorCurrent());
+      armMotorCurrent2.append(rotateMotorFollower.getStatorCurrent());
+      
       // ShuffleboardTab tab = Shuffleboard.getTab("Arm");
       SmartDashboard.putNumber("Shooter Master Falcon Position", rotateMotor.getSelectedSensorPosition());
       SmartDashboard.putNumber("Shooter Follower Falcon Position", rotateMotorFollower.getSelectedSensorPosition());

@@ -24,6 +24,7 @@ import frc.robot.commands.swervedrive.drivebase.AbsoluteFieldDrive;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import swervelib.SwerveModule;
 
 import java.io.File;
 
@@ -79,6 +80,7 @@ public class RobotContainer
     initializeChooser();
 
     drivebase.setDefaultCommand(closedFieldRel);
+    
 
     //shooter.setDefaultCommand(shooter.moveArm(() -> driverXbox.getLeftTriggerAxis() - driverXbox.getRightTriggerAxis()));
   }

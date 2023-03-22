@@ -24,12 +24,11 @@ public class PathBuilder {
             new PIDConstants(Auton.angleAutoPID.p, Auton.angleAutoPID.i, Auton.angleAutoPID.d),
             drivebase::setChassisSpeeds,
             eventMap,
-            false,
+            true,
             drivebase);
   }
 
   public Command getSwerveCommand(List<PathPlannerTrajectory> path) {
-    System.out.println("COMMAND GET");
     return autoBuilder.fullAuto(path);
   }
 }

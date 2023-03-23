@@ -35,8 +35,10 @@ public class PoseEstimator extends SubsystemBase {
             previousResult = currentResult;
             if (isRedAlliance) {
                 swerveDrive.addVisionMeasurement(LimelightHelpers.getBotPose2d_wpiRed(""), LimelightHelpers.getLatency_Capture(""), true, .5);
+                System.out.println("Using vision pose");
             } else {
                 swerveDrive.addVisionMeasurement(LimelightHelpers.getBotPose2d_wpiBlue(""), LimelightHelpers.getLatency_Capture(""), true, .5);
+                System.out.println("Using vision pose");
             }
         }
     }

@@ -50,14 +50,7 @@ public class SwerveSubsystem extends SubsystemBase
     {
       throw new RuntimeException(e);
     }
-
-    /* React more like basefalconswerve */
-    for(SwerveModule mod : swerveDrive.getModules())
-    {
-      mod.configuration.angleKV = 0;
-    }
-    swerveDrive.replaceSwerveModuleFeedforward(new SimpleMotorFeedforward(0.075039, 0.00035552, 7.488E-05));
-  }
+}
 
   /**
    * Construct the swerve drive.

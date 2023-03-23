@@ -98,8 +98,8 @@ public class RobotContainer
 
     chooser.addOption(
           "Shoot High And Balance - No PathPlanner",
-          drivebase.moveRevOntoChargeStation());
-          //.andThen(drivebase.reverseBalance()));
+          drivebase.moveRevOntoChargeStation()
+          .andThen(() -> drivebase.balanceRobot()));
 
     SmartDashboard.putData("Auto", chooser);
   }

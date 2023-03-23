@@ -1,7 +1,7 @@
 package frc.robot.subsystems.swervedrive;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.LimelightResults;
@@ -11,6 +11,7 @@ public class PoseEstimator extends SubsystemBase {
 
     SwerveDrive swerveDrive;
     LimelightResults previousResult = null;
+    double previousTime = 0;
     boolean isRedAlliance;
 
     public PoseEstimator(SwerveDrive swerveDrive) {
@@ -31,7 +32,10 @@ public class PoseEstimator extends SubsystemBase {
     @Override
     public void periodic() {
         LimelightResults currentResult = LimelightHelpers.getLatestResults("");
-        if (currentResult != previousResult) {
+        double currentTime = Timer.getFPGATimestamp();
+        
+        if ((currentTime - previousTime > 10) && (currentResult != previousResult)) {
+            System.out.println("Ten Seconds has passed");
             previousResult = currentResult;
             if (isRedAlliance) {
                 swerveDrive.addVisionMeasurement(LimelightHelpers.getBotPose2d_wpiRed(""), LimelightHelpers.getLatency_Capture(""), true, .5);

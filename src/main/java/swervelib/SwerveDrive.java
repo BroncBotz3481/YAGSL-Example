@@ -367,6 +367,18 @@ public class SwerveDrive
   }
 
   /**
+   * Resets odometry to the given pose. Gyro angle and module positions do not need to be reset when calling this
+   * method. However, if either gyro angle or module position is reset, this must be called in order for odometry to
+   * keep working.
+   *
+   * @param pose The pose to set the odometry to
+   */
+  public void resetOdometry(Pose2d pose)
+  {
+    swerveDrivePoseEstimator.resetPosition(getGyroRotation3d(), getModuleStates(), new Pose3dFix(pose));
+  }
+
+  /**
    * Post the trajectory to the field
    *
    * @param trajectory the trajectory to post.

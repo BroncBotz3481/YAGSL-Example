@@ -14,10 +14,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.LimelightHelpers;
+import frc.robot.LimelightHelpers.LimelightResults;
 
 import java.io.File;
 import java.util.List;
@@ -46,6 +49,10 @@ public class SwerveSubsystem extends SubsystemBase
    */
   private       SwerveAutoBuilder autoBuilder = null;
 
+  LimelightResults previousResult = null;
+  double previousTime = 0;
+  boolean isRedAlliance;
+
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
    *
@@ -62,6 +69,8 @@ public class SwerveSubsystem extends SubsystemBase
     {
       throw new RuntimeException(e);
     }
+
+    setCurrentTeamColor();
 }
 
   /**
@@ -99,13 +108,14 @@ public class SwerveSubsystem extends SubsystemBase
   public void periodic()
   {
     swerveDrive.updateOdometry();
+    updateVisionPose();
   }
 
   @Override
   public void simulationPeriodic()
   {
   }
-
+  
   /**
    * Get the swerve drive kinematics object.
    *
@@ -282,6 +292,34 @@ public class SwerveSubsystem extends SubsystemBase
   public void addFakeVisionReading()
   {
     swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp(), false, 1);
+  }
+
+  
+  public void setCurrentTeamColor() {
+    if (DriverStation.getAlliance() == DriverStation.Alliance.Blue) {
+        System.out.println("Blue Team Configured");
+        isRedAlliance = false;
+    } else {
+        System.out.println("Red Team Configured");
+        isRedAlliance = true;
+    }
+}
+
+  private void updateVisionPose() {
+    double currentTime = Timer.getFPGATimestamp();
+    if (((currentTime - previousTime) > 10)) {
+        System.out.println("Ten Seconds has passed");
+        previousTime = currentTime;
+        if (isRedAlliance) {
+            swerveDrive.addVisionMeasurement(LimelightHelpers.getBotPose2d_wpiRed(""),(Timer.getFPGATimestamp() - (LimelightHelpers.getBotPose_wpiBlue("")[6]/1000.0)), false, 1);
+            System.out.println("Using vision pose red");
+        } else {
+            Pose2d currentPose = LimelightHelpers.getBotPose2d_wpiBlue(""); 
+            swerveDrive.addVisionMeasurement(currentPose,(Timer.getFPGATimestamp() - (LimelightHelpers.getBotPose_wpiBlue("")[6]/1000.0)), false, 1);
+            System.out.println("Using vision pose blue");
+            System.out.println(currentPose);
+        }
+    }
   }
 
   public Command moveRevOntoChargeStation() {

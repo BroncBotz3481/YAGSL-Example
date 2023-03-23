@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems.swervedrive;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
@@ -294,7 +293,7 @@ public class SwerveSubsystem extends SubsystemBase
     }).until(() -> swerveDrive.getPitch().getDegrees() > 10.5 || swerveDrive.getPitch().getDegrees() < -10.5);
   }
 
-  public Command balanceRobot(double originalAngle) {
+  public Command balanceRobot() {
     System.out.println("Balancing");
     return this.run(() -> {
             System.out.println(swerveDrive.getPitch().getDegrees());

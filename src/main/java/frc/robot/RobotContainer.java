@@ -115,6 +115,12 @@ public class RobotContainer
                 "SamplePath", new PathConstraints(Constants.Auton.MAX_SPEED, Constants.Auton.MAX_ACCELERATION))));
 
     chooser.addOption(
+      "2 Cube Auto", 
+      builder.getSwerveCommand(
+          PathPlanner.loadPathGroup(
+              "2 Cube Auto", new PathConstraints(Constants.Auton.MAX_SPEED, Constants.Auton.MAX_ACCELERATION))));
+
+    chooser.addOption(
           "Shoot High And Balance - No PathPlanner",
           drivebase.moveRevOntoChargeStation()
           .andThen(() -> drivebase.balanceRobot()));

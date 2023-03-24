@@ -32,7 +32,12 @@ public class Arm extends SubsystemBase {
   DoubleLogEntry armMotorCurrent;
   DoubleLogEntry armMotorCurrent2;
 
-
+  public enum ArmPosition {
+    Intake,
+    Low,
+    Mid,
+    High
+  }
   /** Creates a new Shooter. */
   public Arm() {
     armMotor = new WPI_TalonFX(Constants.ArmConstants.ARM_MAIN_MOTOR);
@@ -68,15 +73,15 @@ public class Arm extends SubsystemBase {
     armMotor.configAllSettings(ArmFXConfig);
     armMotor.setInverted(TalonFXInvertType.Clockwise);
     armMotor.configMotionSCurveStrength(0);
-    armMotor.setNeutralMode(NeutralMode.Brake);
     
     /* Follow Arm Motor */
     armMotorFollower.follow(armMotor);
     armMotorFollower.setInverted(TalonFXInvertType.CounterClockwise);   
-    armMotorFollower.setNeutralMode(NeutralMode.Brake);
 
 		/* Zero the sensor once on robot boot up */
 		armMotor.setSelectedSensorPosition(0, Constants.ArmConstants.kPIDLoopIdx, Constants.ArmConstants.kTimeoutMs);
+
+    setBrake(true);
   }
 
   public void startLogging() {
@@ -112,8 +117,18 @@ public class Arm extends SubsystemBase {
     });
   }
 
-  public Command moveArmToPosition(double targetPos) {
+  public Command moveArmToPosition(ArmPosition position) {
+    
     return this.run(() -> {
+      double targetPos;
+      switch (position) {
+        case Intake: targetPos = 100;
+                      break;
+        case High: targetPos = 12312093;
+          break;
+        default: targetPos = 0;
+        break;
+      }
       double armMotorVerticalOffset = 0;
 
       // we know vertical offset, treat it as 0, then add 90 degrees = pi/2 rad to get angle from horizontal
@@ -133,5 +148,15 @@ public class Arm extends SubsystemBase {
         armMotor.setSelectedSensorPosition(0);
         armMotorFollower.setSelectedSensorPosition(0);
     });
+  }
+
+  public void setBrake(boolean breakApplied) {
+    if (breakApplied) {
+      armMotor.setNeutralMode(NeutralMode.Brake);
+      armMotorFollower.setNeutralMode(NeutralMode.Brake);
+    } else {
+      armMotor.setNeutralMode(NeutralMode.Coast);
+      armMotorFollower.setNeutralMode(NeutralMode.Coast);
+    }
   }
 }

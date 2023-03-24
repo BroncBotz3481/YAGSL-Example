@@ -19,23 +19,32 @@ public class Shooter extends SubsystemBase {
   DoubleLogEntry shooterSpeed;
   DoubleLogEntry shooterCurrent;
 
+  public enum ShootSpeed {
+    Stop,
+    High,
+    Mid,
+    Low
+  } 
   /** Creates a new Shooter. */
   public Shooter() {
     shootMotorFollower = new WPI_TalonFX(Constants.ShooterConstants.SHOOTER_TOP_MOTOR);
     shootMotor = new WPI_TalonFX(Constants.ShooterConstants.SHOOTER_BOTTOM_MOTOR);
-
+    
     configMotors();
     startLogging();
   }
 
   private void configMotors() {
     /* Config Intake Motors */
-    shootMotorFollower.setNeutralMode(NeutralMode.Coast);
+    shootMotor.setInverted(TalonFXInvertType.Clockwise);
     shootMotor.setNeutralMode(NeutralMode.Coast);
-    
+    shootMotor.configVoltageCompSaturation(11); // "full output" will now scale to 11 Volts for all control modes when enabled.
+    shootMotor.enableVoltageCompensation(true);
 
     shootMotorFollower.setInverted(TalonFXInvertType.Clockwise);
-    shootMotor.setInverted(TalonFXInvertType.Clockwise);
+    shootMotorFollower.setNeutralMode(NeutralMode.Coast);
+    shootMotorFollower.configVoltageCompSaturation(11); // "full output" will now scale to 11 Volts for all control modes when enabled.
+    shootMotorFollower.enableVoltageCompensation(true);
   }
 
   private void startLogging() {
@@ -51,6 +60,37 @@ public class Shooter extends SubsystemBase {
 
   public Command shoot(double speedTop, double speedBottom) {
     return this.runEnd(() -> {
+      shootMotorFollower.set(ControlMode.PercentOutput, -speedTop);
+      shootMotor.set(ControlMode.PercentOutput, -speedBottom);
+    },(() -> {
+      shootMotorFollower.set(ControlMode.PercentOutput, 0);
+      shootMotor.set(ControlMode.PercentOutput, 0);
+    }));
+  }
+
+  public Command shoot(ShootSpeed shootSpeed) {
+    return this.runEnd(() -> {
+      double speedTop;
+      double speedBottom;
+      switch (shootSpeed) {
+        case Low: 
+          speedTop = Constants.ShooterConstants.bottomGoalVelocityTopMotor;
+          speedBottom = Constants.ShooterConstants.bottomGoalVelocityBottomMotor;
+          break;
+        case Mid: 
+          speedTop = Constants.ShooterConstants.midGoalVelocityTopMotor;
+          speedBottom = Constants.ShooterConstants.midGoalVelocityBottomMotor;
+          break;
+        case High: 
+          speedTop = Constants.ShooterConstants.highGoalVelocityTopMotor;
+          speedBottom = Constants.ShooterConstants.highGoalVelocityBottomMotor;
+          break;
+        default: 
+          speedTop = 0;
+          speedBottom = 0;
+          break;
+      }
+      
       shootMotorFollower.set(ControlMode.PercentOutput, -speedTop);
       shootMotor.set(ControlMode.PercentOutput, -speedBottom);
     },(() -> {

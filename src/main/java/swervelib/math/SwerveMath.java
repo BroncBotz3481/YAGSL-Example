@@ -399,7 +399,8 @@ public class SwerveMath
     if (Math.abs(moduleState.speedMetersPerSecond) <= (maxSpeed * 0.01))
     {
       moduleState.angle = lastModuleState.angle;
-      moduleState.omegaRadPerSecond = lastModuleState.omegaRadPerSecond;
+//      moduleState.omegaRadPerSecond = lastModuleState.omegaRadPerSecond;
+      moduleState.omegaRadPerSecond = 0;
     }
   }
 }

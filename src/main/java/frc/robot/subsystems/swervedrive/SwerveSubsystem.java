@@ -9,17 +9,22 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
+import frc.robot.Constants.Auton;
 import frc.robot.LimelightHelpers.LimelightResults;
 
 import java.io.File;
@@ -287,14 +292,8 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   /**
-   * Add a fake vision reading for testing purposes.
+   * Sets team color for vision pose estimation
    */
-  public void addFakeVisionReading()
-  {
-    swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp(), false, 1);
-  }
-
-  
   public void setCurrentTeamColor() {
     if (DriverStation.getAlliance() == DriverStation.Alliance.Blue) {
         System.out.println("Blue Team Configured");
@@ -303,22 +302,27 @@ public class SwerveSubsystem extends SubsystemBase
         System.out.println("Red Team Configured");
         isRedAlliance = true;
     }
-}
+  }
 
+  /**
+   * Updates the current pose
+   */
   private void updateVisionPose() {
-    double currentTime = Timer.getFPGATimestamp();
-    if (((currentTime - previousTime) > 10)) {
-        System.out.println("Ten Seconds has passed");
-        previousTime = currentTime;
-        if (isRedAlliance) {
-            swerveDrive.addVisionMeasurement(LimelightHelpers.getBotPose2d_wpiRed(""),(Timer.getFPGATimestamp() - (LimelightHelpers.getBotPose_wpiBlue("")[6]/1000.0)), false, 1);
-            System.out.println("Using vision pose red");
-        } else {
-            Pose2d currentPose = LimelightHelpers.getBotPose2d_wpiBlue(""); 
-            swerveDrive.addVisionMeasurement(currentPose,(Timer.getFPGATimestamp() - (LimelightHelpers.getBotPose_wpiBlue("")[6]/1000.0)), false, 1);
-            System.out.println("Using vision pose blue");
-            System.out.println(currentPose);
-        }
+    LimelightResults pipelineResults =  LimelightHelpers.getLatestResults("");
+    double[] botpose;
+    double timestamp;
+    if (pipelineResults.targetingResults.valid) {
+      if (isRedAlliance) {
+        botpose = LimelightHelpers.getBotPose_wpiRed("");
+        timestamp = (Timer.getFPGATimestamp() - (botpose[6]/1000.0));
+      } else {
+        botpose = LimelightHelpers.getBotPose_wpiBlue("");
+        timestamp = (Timer.getFPGATimestamp() - (botpose[6]/1000.0));
+      }
+
+      Pose2d currentPose = new Pose2d(new Translation2d(botpose[0], botpose[1]), new Rotation2d(Units.degreesToRadians(botpose[5])));
+
+      swerveDrive.addVisionMeasurement(currentPose,timestamp, true, .5);
     }
   }
 
@@ -341,46 +345,22 @@ public class SwerveSubsystem extends SubsystemBase
     .until(() -> swerveDrive.getPitch().getDegrees() < .1 && swerveDrive.getPitch().getDegrees() > -.1)
     .andThen(() -> lock());
   }
-  
-  /**
-   * Factory to fetch the PathPlanner command to follow the defined path.
-   *
-   * @param path             Path planner path to specify.
-   * @param constraints      {@link PathConstraints} for {@link com.pathplanner.lib.PathPlanner#loadPathGroup} function
-   *                         limiting velocity and acceleration.
-   * @param eventMap         {@link java.util.HashMap} of commands corresponding to path planner events given as
-   *                         strings.
-   * @param translation      The {@link PIDConstants} for the translation of the robot while following the path.
-   * @param rotation         The {@link PIDConstants} for the rotation of the robot while following the path.
-   * @param useAllianceColor Automatically transform the path based on alliance color.
-   * @return PathPlanner command to follow the given path.
-   */
-  public Command creatPathPlannerCommand(String path, PathConstraints constraints, Map<String, Command> eventMap,
-                                         PIDConstants translation, PIDConstants rotation, boolean useAllianceColor)
-  {
-    List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(path, constraints);
-//    SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
-//      Pose2d supplier,
-//      Pose2d consumer- used to reset odometry at the beginning of auto,
-//      PID constants to correct for translation error (used to create the X and Y PID controllers),
-//      PID constants to correct for rotation error (used to create the rotation controller),
-//      Module states consumer used to output to the drive subsystem,
-//      Should the path be automatically mirrored depending on alliance color. Optional- defaults to true
-//   )
-    if (autoBuilder == null)
-    {
-      autoBuilder = new SwerveAutoBuilder(
-          swerveDrive::getPose,
-          swerveDrive::resetOdometry,
-          translation,
-          rotation,
-          swerveDrive::setChassisSpeeds,
-          eventMap,
-          useAllianceColor,
-          this
-      );
-    }
 
-    return autoBuilder.fullAuto(pathGroup);
+  /**
+   * Factory to follow a given trajectory
+   * @param traj The trajectory for swerve to follow
+   * @return PPSwerveControllerCommand to follow the given path
+   */
+  public Command followTrajectoryCommand(PathPlannerTrajectory traj) {
+    return new PPSwerveControllerCommand(
+                traj, 
+                swerveDrive::getPose, // Pose supplier
+                Auton.xAutoPID.createPIDController(),
+                Auton.yAutoPID.createPIDController(),
+                Auton.angleAutoPID.createPIDController(), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+                swerveDrive::setChassisSpeeds, // Module states consumer
+                true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+                this // Requires this drive subsystem
+                );
   }
 }

@@ -1,11 +1,4 @@
 {
-  "HALProvider": {
-    "RoboRIO": {
-      "window": {
-        "visible": true
-      }
-    }
-  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
@@ -23,11 +16,6 @@
       "/SmartDashboard/navX-Sensor[1]": "Gyro"
     },
     "windows": {
-      "/SmartDashboard/Arm Sim": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/Auto": {
         "window": {
           "visible": true
@@ -73,7 +61,7 @@
     }
   },
   "NetworkTables Info": {
-    "Server": {
+    "Connections": {
       "open": true
     },
     "visible": true

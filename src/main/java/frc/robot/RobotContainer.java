@@ -14,7 +14,10 @@ import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AutoMap;
+import frc.robot.commands.swervedrive.auto.GoToPose;
+import frc.robot.commands.swervedrive.auto.GoToScoring;
 import frc.robot.commands.swervedrive.auto.PathBuilder;
+import frc.robot.commands.swervedrive.auto.GoToScoring.POSITION;
 import frc.robot.commands.swervedrive.drivebase.TeleopDrive;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
@@ -42,6 +45,8 @@ public class RobotContainer
 
   // CommandJoystick driverController   = new CommandJoystick(3);//(OperatorConstants.DRIVER_CONTROLLER_PORT);
   private static final CommandXboxController driverXbox = new CommandXboxController(0);
+  private static final CommandXboxController operatorXbox = new CommandXboxController(1);
+
 
   private final AutoMap autoMap = new AutoMap();
   private final PathBuilder builder = new PathBuilder(drivebase, autoMap.getEventMap());
@@ -113,12 +118,16 @@ public class RobotContainer
    */
   private void configureBindings()
   {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    //driverXbox.a().onTrue(shooter.moveArmToPosition(-1000));
-    driverXbox.y().onTrue((new InstantCommand(drivebase::zeroGyro)));
-    //new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
     driverXbox.a().whileTrue(new RepeatCommand(new InstantCommand(drivebase::lock, drivebase)));
+    driverXbox.y().onTrue((new InstantCommand(drivebase::zeroGyro)));
+
+    
+
+    operatorXbox.povRight().whileTrue(new GoToScoring(drivebase, POSITION.RIGHT).getCommand());
+    operatorXbox.povDown().whileTrue(new GoToScoring(drivebase, POSITION.MIDDLE).getCommand());
+    operatorXbox.povLeft().whileTrue(new GoToScoring(drivebase, POSITION.LEFT).getCommand());
   }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

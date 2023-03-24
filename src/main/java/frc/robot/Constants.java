@@ -5,12 +5,21 @@
 package frc.robot;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import swervelib.math.Matter;
 import swervelib.parser.PIDFConfig;
+import webblib.util.HolonomicPose2d;
+import webblib.util.RectanglePoseArea;
+import webblib.util.chargedup.ScoringArea;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean constants. This
@@ -90,6 +99,42 @@ public final class Constants
 
     public static final Translation3d cameraTranslation = new Translation3d(0, 0.0, 0);
     public static final Rotation3d cameraRotation = new Rotation3d(0, 0, 0);
+
+    public static final double lineUpMid = 1.73;
+    public static final List<ScoringArea> scoreAreaList =
+        new ArrayList<ScoringArea>() {
+          {
+            add(
+                new ScoringArea(
+                    new RectanglePoseArea(
+                        new Translation2d(1.23, 3.53), new Translation2d(2.86, 5.33)),
+                    // diagonal y's should not overlap
+                    new HolonomicPose2d(new Pose2d(lineUpMid, 4.95, new Rotation2d(Math.PI)), new Rotation2d()),
+                    new HolonomicPose2d(new Pose2d(lineUpMid, 4.40, new Rotation2d(Math.PI)), new Rotation2d()),
+                    new HolonomicPose2d(
+                        new Pose2d(lineUpMid, 3.84, new Rotation2d(Math.PI)), new Rotation2d())));
+            add(
+                new ScoringArea(
+                    new RectanglePoseArea(
+                        new Translation2d(1.23, 1.90), new Translation2d(2.92, 3.52)),
+                    new HolonomicPose2d(new Pose2d(lineUpMid, 3.30, new Rotation2d(Math.PI)), new Rotation2d()),
+                    new HolonomicPose2d(new Pose2d(lineUpMid, 2.72, new Rotation2d(Math.PI)), new Rotation2d()),
+                    new HolonomicPose2d(
+                        new Pose2d(lineUpMid, 2.19, new Rotation2d(Math.PI)), new Rotation2d())));
+            add(
+                new ScoringArea(
+                    new RectanglePoseArea(
+                        new Translation2d(1.23, 0.0), new Translation2d(2.89, 1.89)),
+                    new HolonomicPose2d(new Pose2d(lineUpMid, 1.61, new Rotation2d(Math.PI)), new Rotation2d()),
+                    new HolonomicPose2d(new Pose2d(lineUpMid, 1.03, new Rotation2d(Math.PI)), new Rotation2d()),
+                    new HolonomicPose2d(
+                        new Pose2d(lineUpMid, 0.55, new Rotation2d(Math.PI)), new Rotation2d())));
+          }
+        };
+
+    public static final double maxSpeedMPS = 5;
+
+    public static final double maxAccelerationMPS = 3;
   }
 
   public static final class Drivebase

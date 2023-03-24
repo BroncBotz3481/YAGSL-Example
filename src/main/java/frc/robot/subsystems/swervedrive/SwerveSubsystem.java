@@ -304,6 +304,22 @@ public class SwerveSubsystem extends SubsystemBase
     }
   }
 
+  // public double[] getCurrentBotPoseVision() {
+  //   return DriverStation.getAlliance() == Alliance.Blue ? LimelightHelpers.getBotPose_wpiBlue("") : LimelightHelpers.getBotPose_wpiRed("");
+  // }
+
+  // private void updateVisionPose() {
+  //   LimelightResults pipelineResults =  LimelightHelpers.getLatestResults("");
+  //   if (pipelineResults.targetingResults.valid && Robot.isReal()) {
+  //     double[] botpose = getCurrentBotPoseVision();
+  //     double timestamp = (Timer.getFPGATimestamp() - (botpose[6]/1000.0));
+
+  //     Pose2d currentPose = new Pose2d(new Translation2d(botpose[0], botpose[1]), new Rotation2d(Units.degreesToRadians(botpose[5])));
+
+  //     swerveDrive.addVisionMeasurement(currentPose,timestamp, true, .5);
+  //   }
+  // }
+  
   /**
    * Updates the current pose
    */
@@ -334,6 +350,18 @@ public class SwerveSubsystem extends SubsystemBase
         System.out.println(swerveDrive.getPitch().getDegrees());
     }).until(() -> swerveDrive.getPitch().getDegrees() > 10.5 || swerveDrive.getPitch().getDegrees() < -10.5);
   }
+
+  // public Command moveToChargeStation() {
+  //   return getPose().getX() <= Constants.Auton.chargeStationLeftPose ? 
+  //   new GoToPose(
+  //     new Pose2d(new Translation2d(5,Constants.Auton.lineUpMid), new Rotation2d()),
+  //     new PathConstraints(Auton.maxSpeedMPS, Auton.maxAccelerationMPS),
+  //     this).getCommand() : 
+  //   new GoToPose(
+  //       new Pose2d(new Translation2d(2,Constants.Auton.lineUpMid), new Rotation2d()),
+  //       new PathConstraints(Auton.maxSpeedMPS, Auton.maxAccelerationMPS),
+  //     this).getCommand();
+  // }
 
   public Command balanceRobot() {
     System.out.println("Balancing");

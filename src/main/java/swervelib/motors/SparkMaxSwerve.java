@@ -199,6 +199,7 @@ public class SparkMaxSwerve extends SwerveMotor
   {
     int pidSlot =
         isDriveMotor ? SparkMAX_slotIdx.Velocity.ordinal() : SparkMAX_slotIdx.Position.ordinal();
+    pidSlot = 0;
     pid.setP(config.p, pidSlot);
     pid.setI(config.i, pidSlot);
     pid.setD(config.d, pidSlot);
@@ -296,6 +297,7 @@ public class SparkMaxSwerve extends SwerveMotor
     boolean possibleBurnOutIssue = true;
     int pidSlot =
         isDriveMotor ? SparkMAX_slotIdx.Velocity.ordinal() : SparkMAX_slotIdx.Position.ordinal();
+    pidSlot = 0;
     if (possibleBurnOutIssue)
     {
       pid.setReference(

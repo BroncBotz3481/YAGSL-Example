@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N4;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -729,13 +730,44 @@ public class SwerveDrive
    * @param soft                     Add vision estimate using the
    *                                 {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double)} function, or
    *                                 hard reset odometry with the given position with
-   *                                 {@link edu.wpi.first.math.kinematics.SwerveDriveOdometry#resetPosition(Rotation2d,
-   *                                 SwerveModulePosition[], Pose2d)}.
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   * {@link edu.wpi.first.math.kinematics.SwerveDriveOdometry#resetPosition(Rotation2d, SwerveModulePosition[], Pose2d)}.
    * @param visionMeasurementStdDevs Vision measurement standard deviation that will be sent to the
    *                                 {@link SwerveDrivePoseEstimator}.
    */
-  public void addVisionMeasurement(Pose2d robotPose, double timestamp, boolean soft,
-                                   Matrix<N3, N1> visionMeasurementStdDevs)
+  public void addVisionMeasurement(Pose3d robotPose, double timestamp, boolean soft,
+                                   Matrix<N4, N1> visionMeasurementStdDevs)
   {
     this.visionMeasurementStdDevs = visionMeasurementStdDevs;
     addVisionMeasurement(robotPose, timestamp, soft, 1);

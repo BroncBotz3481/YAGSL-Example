@@ -116,11 +116,11 @@ public class SwerveModuleConfiguration
     this.anglePIDF = anglePIDF;
     this.velocityPIDF = velocityPIDF;
     this.maxSpeed = maxSpeed;
-    this.angleKV =
-        calculateAngleKV(
-            physicalCharacteristics.optimalVoltage,
-            angleMotorFreeSpeedRPM,
-            physicalCharacteristics.angleGearRatio);
+    this.angleKV = physicalCharacteristics.angleMotorKV == 0 ?
+                   calculateAngleKV(
+                       physicalCharacteristics.optimalVoltage,
+                       angleMotorFreeSpeedRPM,
+                       physicalCharacteristics.angleGearRatio) : physicalCharacteristics.angleMotorKV;
     this.physicalCharacteristics = physicalCharacteristics;
     this.angleMotorEncoderPulsePerRevolution = angleMotorEncoderPulsePerRevolution;
   }

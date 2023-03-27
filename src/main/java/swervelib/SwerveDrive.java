@@ -272,18 +272,18 @@ public class SwerveDrive
       if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.HIGH.ordinal())
       {
         SwerveDriveTelemetry.desiredStates[module.moduleNumber *
-                                           2] = desiredStates[module.moduleNumber].angle.getDegrees();
+                                           2] = module.lastState.angle.getDegrees();
         SwerveDriveTelemetry.desiredStates[(module.moduleNumber * 2) +
-                                           1] = desiredStates[module.moduleNumber].speedMetersPerSecond;
+                                           1] = module.lastState.speedMetersPerSecond;
       }
       if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)
       {
         SmartDashboard.putNumber(
-            "Module " + module.moduleNumber + " Speed Setpoint: ",
-            desiredStates[module.moduleNumber].speedMetersPerSecond);
+            "Module[" + module.moduleNumber + "] Speed Setpoint: ",
+            module.lastState.speedMetersPerSecond);
         SmartDashboard.putNumber(
-            "Module " + module.moduleNumber + " Angle Setpoint: ",
-            desiredStates[module.moduleNumber].angle.getDegrees());
+            "Module[" + module.moduleNumber + "] Angle Setpoint: ",
+            module.lastState.angle.getDegrees());
       }
     }
   }

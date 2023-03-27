@@ -47,7 +47,7 @@ public class SwerveModule
   /**
    * Last swerve module state applied.
    */
-  private       SwerveModuleState2     lastState;
+  public        SwerveModuleState2     lastState;
   /**
    * Simulated swerve module.
    */

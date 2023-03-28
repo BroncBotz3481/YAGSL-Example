@@ -1,0 +1,25 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" factoryName="Gradle" name="Build Robot"
+    type="GradleRunConfiguration">
+    <DebugAllEnabled>false</DebugAllEnabled>
+    <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+    <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+    <ExternalSystemSettings>
+      <option name="executionName"/>
+      <option name="externalProjectPath" value="$PROJECT_DIR$"/>
+      <option name="externalSystemIdString" value="GRADLE"/>
+      <option name="scriptParameters"/>
+      <option name="taskDescriptions">
+        <list/>
+      </option>
+      <option name="taskNames">
+        <list>
+          <option value="build"/>
+        </list>
+      </option>
+      <option name="vmOptions"/>
+    </ExternalSystemSettings>
+    <ForceTestExec>false</ForceTestExec>
+    <method v="2"/>
+  </configuration>
+</component>

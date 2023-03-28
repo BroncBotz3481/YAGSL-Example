@@ -36,7 +36,7 @@ public class Arm extends SubsystemBase {
     Intake,
     Low,
     Mid,
-    High
+    High,
   }
   /** Creates a new Shooter. */
   public Arm() {
@@ -121,13 +121,15 @@ public class Arm extends SubsystemBase {
     
     return this.run(() -> {
       double targetPos;
+      targetPos = 0;
       switch (position) {
         case Intake: targetPos = 100;
                       break;
-        case High: targetPos = 12312093;
+        case High: targetPos = 0;
           break;
-        default: targetPos = 0;
-        break;
+        case Low: break;
+        case Mid: break;
+        default: break;
       }
       double armMotorVerticalOffset = 0;
 

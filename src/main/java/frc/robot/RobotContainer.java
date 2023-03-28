@@ -90,6 +90,7 @@ public class RobotContainer
 
     drivebase.setDefaultCommand(closedFieldRel);
     
+    arm.setDefaultCommand(arm.moveArm(() -> operatorXbox.getRawAxis(3)-operatorXbox.getRawAxis(2)));
 
     //shooter.setDefaultCommand(shooter.moveArm(() -> driverXbox.getLeftTriggerAxis() - driverXbox.getRightTriggerAxis()));
   }
@@ -147,14 +148,20 @@ public class RobotContainer
     driverXbox.a().whileTrue(new RepeatCommand(new InstantCommand(drivebase::lock, drivebase)));
     driverXbox.y().onTrue((new InstantCommand(drivebase::zeroGyro)));
 
-    operatorXbox.a().whileTrue(new SequentialCommandGroup(arm.moveArmToPosition(ArmPosition.Low), shooter.shoot(ShootSpeed.Low)));
-    operatorXbox.b().whileTrue(new SequentialCommandGroup(arm.moveArmToPosition(ArmPosition.Mid), shooter.shoot(ShootSpeed.Mid)));
-    operatorXbox.y().whileTrue(new SequentialCommandGroup(arm.moveArmToPosition(ArmPosition.High), shooter.shoot(ShootSpeed.High)));
-    operatorXbox.x().whileTrue(new SequentialCommandGroup(arm.moveArmToPosition(ArmPosition.Intake), shooter.intake()));
-    operatorXbox.povRight().whileTrue(new GoToScoring(drivebase, POSITION.RIGHT).getCommand());
-    operatorXbox.povDown().whileTrue(new GoToScoring(drivebase, POSITION.MIDDLE).getCommand());
-    operatorXbox.povLeft().whileTrue(new GoToScoring(drivebase, POSITION.LEFT).getCommand());
-  }
+    operatorXbox.y().whileTrue(shooter.shoot(ShootSpeed.High));
+    operatorXbox.b().whileTrue(shooter.shoot(ShootSpeed.Mid));
+    operatorXbox.a().whileTrue(shooter.shoot(ShootSpeed.Low));
+    operatorXbox.x().whileTrue(shooter.intake());
+    operatorXbox.start().whileTrue(shooter.shoot(1, 1));
+
+    // operatorXbox.a().whileTrue(new SequentialCommandGroup(arm.moveArmToPosition(ArmPosition.Low), shooter.shoot(ShootSpeed.Low)));
+    // operatorXbox.b().whileTrue(new SequentialCommandGroup(arm.moveArmToPosition(ArmPosition.Mid), shooter.shoot(ShootSpeed.Mid)));
+    // operatorXbox.y().whileTrue(new SequentialCommandGroup(arm.moveArmToPosition(ArmPosition.High), shooter.shoot(ShootSpeed.High)));
+    // operatorXbox.x().whileTrue(new SequentialCommandGroup(arm.moveArmToPosition(ArmPosition.Intake), shooter.intake()));
+    // operatorXbox.povRight().whileTrue(new GoToScoring(drivebase, POSITION.RIGHT).getCommand());
+    // operatorXbox.povDown().whileTrue(new GoToScoring(drivebase, POSITION.MIDDLE).getCommand());
+    // operatorXbox.povLeft().whileTrue(new GoToScoring(drivebase, POSITION.LEFT).getCommand());
+  }   
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

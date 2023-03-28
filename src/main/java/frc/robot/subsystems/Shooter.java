@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -23,7 +24,8 @@ public class Shooter extends SubsystemBase {
     Stop,
     High,
     Mid,
-    Low
+    Low,
+    Intake
   } 
   /** Creates a new Shooter. */
   public Shooter() {
@@ -38,12 +40,12 @@ public class Shooter extends SubsystemBase {
     /* Config Intake Motors */
     shootMotor.setInverted(TalonFXInvertType.Clockwise);
     shootMotor.setNeutralMode(NeutralMode.Coast);
-    shootMotor.configVoltageCompSaturation(11); // "full output" will now scale to 11 Volts for all control modes when enabled.
+    shootMotor.configVoltageCompSaturation(10); // "full output" will now scale to 11 Volts for all control modes when enabled.
     shootMotor.enableVoltageCompensation(true);
 
     shootMotorFollower.setInverted(TalonFXInvertType.Clockwise);
     shootMotorFollower.setNeutralMode(NeutralMode.Coast);
-    shootMotorFollower.configVoltageCompSaturation(11); // "full output" will now scale to 11 Volts for all control modes when enabled.
+    shootMotorFollower.configVoltageCompSaturation(10); // "full output" will now scale to 11 Volts for all control modes when enabled.
     shootMotorFollower.enableVoltageCompensation(true);
   }
 
@@ -56,12 +58,16 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
+    shooterSpeed.append(shootMotor.getSelectedSensorPosition());
+    shooterCurrent.append(shootMotor.getStatorCurrent());
+
+    SmartDashboard.putNumber("StatorCurrentShooterTopIntake", shootMotorFollower.getStatorCurrent());
   }
 
   public Command shoot(double speedTop, double speedBottom) {
     return this.runEnd(() -> {
-      shootMotorFollower.set(ControlMode.PercentOutput, -speedTop);
-      shootMotor.set(ControlMode.PercentOutput, -speedBottom);
+      shootMotorFollower.set(ControlMode.PercentOutput, speedTop);
+      shootMotor.set(ControlMode.PercentOutput, speedBottom);
     },(() -> {
       shootMotorFollower.set(ControlMode.PercentOutput, 0);
       shootMotor.set(ControlMode.PercentOutput, 0);
@@ -85,14 +91,18 @@ public class Shooter extends SubsystemBase {
           speedTop = Constants.ShooterConstants.highGoalVelocityTopMotor;
           speedBottom = Constants.ShooterConstants.highGoalVelocityBottomMotor;
           break;
+        case Intake: 
+          speedTop = -Constants.ShooterConstants.intakeVelocity;
+          speedBottom = -Constants.ShooterConstants.intakeVelocity;
+        break;
         default: 
           speedTop = 0;
           speedBottom = 0;
           break;
       }
       
-      shootMotorFollower.set(ControlMode.PercentOutput, -speedTop);
-      shootMotor.set(ControlMode.PercentOutput, -speedBottom);
+      shootMotorFollower.set(ControlMode.PercentOutput, speedTop);
+      shootMotor.set(ControlMode.PercentOutput, speedBottom);
     },(() -> {
       shootMotorFollower.set(ControlMode.PercentOutput, 0);
       shootMotor.set(ControlMode.PercentOutput, 0);
@@ -100,9 +110,18 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command intake() {
-    return this.run(() -> {
-      shootMotorFollower.set(ControlMode.PercentOutput, Constants.ShooterConstants.intakeVelocity);
-      shootMotor.set(ControlMode.PercentOutput, Constants.ShooterConstants.intakeVelocity);
-    }).until(() -> shootMotor.getStatorCurrent() > Constants.ShooterConstants.currentThreshold);
+    return this.runEnd(() -> {
+      shoot(ShootSpeed.Intake);
+    }, (() -> { 
+      shoot(ShootSpeed.Stop);  
+      }));//.until(() -> shootMotor.getStatorCurrent() > Constants.ShooterConstants.currentThreshold).andThen(shoot(ShootSpeed.Stop));
+  }
+
+  public Command intakeCurrent() {
+    return this.runEnd(() -> {
+      shoot(ShootSpeed.Intake);
+    }, (() -> { 
+      shoot(ShootSpeed.Stop);     
+      })).withTimeout(1).until(() -> shootMotor.getStatorCurrent() > Constants.ShooterConstants.currentThreshold).andThen(shoot(ShootSpeed.Stop));
   }
 }

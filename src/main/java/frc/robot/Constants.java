@@ -36,8 +36,8 @@ public final class Constants
   public static final double LOOP_TIME  = 0.13; //s, 20ms + 110ms sprk max velocity lag
 
   public static final class ArmConstants {
-    public static final int ARM_MAIN_MOTOR = 22;
-    public static final int ARM_FOLLOWER_MOTOR = 23;
+    public static final int ARM_MAIN_MOTOR = 13;
+    public static final int ARM_FOLLOWER_MOTOR = 14;
 
     public static final int kTimeoutMs = 0;
     public static final int kPIDLoopIdx = 0;
@@ -47,7 +47,7 @@ public final class Constants
     public static final double armkS = (0 / 12);
 
 
-    public static final double armkP = 0;
+    public static final double armkP = 0.01;
     public static final double armkI = 0;
     public static final double armkD = 0;
     public static final double armkF = 0;
@@ -68,20 +68,23 @@ public final class Constants
     public static final double motionAcceleration = 1500;  
   }
   public static final class ShooterConstants {
-    public static final int SHOOTER_TOP_MOTOR = 20;
-    public static final int SHOOTER_BOTTOM_MOTOR = 21;
+    public static final int SHOOTER_TOP_MOTOR = 15;
+    public static final int SHOOTER_BOTTOM_MOTOR = 16;
 
-    public static final double highGoalVelocityTopMotor = .55;
-    public static final double highGoalVelocityBottomMotor = .55;
+    public static final double highGoalVelocityTopMotor = .27;
+    public static final double highGoalVelocityBottomMotor = .31;
 
-    public static final double midGoalVelocityBottomMotor = .21;
-    public static final double midGoalVelocityTopMotor = .22;
+    public static final double midGoalVelocityBottomMotor = .18;
+    public static final double midGoalVelocityTopMotor = .18;
 
-    public static final double bottomGoalVelocityTopMotor = .14;
-    public static final double bottomGoalVelocityBottomMotor = .13;
+    public static final double bottomGoalVelocityTopMotor = .075;
+    public static final double bottomGoalVelocityBottomMotor = .075;
+    
+    public static final double cannonGoalVelocityTopMotor = 1;
+    public static final double cannonGoalVelocityBottomMotor = 1;
 
-    public static final double intakeVelocity = .28 ;
-    public static final double currentThreshold = 0;
+    public static final double intakeVelocity = .3 ;
+    public static final double currentThreshold = 25;
 
   }
   public static final class Auton

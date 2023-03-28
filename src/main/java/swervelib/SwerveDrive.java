@@ -534,6 +534,21 @@ public class SwerveDrive
   }
 
   /**
+   * Set the maximum speed of the drive motors, modified {@link SwerveControllerConfiguration#maxSpeed} and
+   * {@link SwerveDriveConfiguration#maxSpeed} which is used for the
+   * {@link SwerveDrive#setRawModuleStates(SwerveModuleState2[], boolean)} function and
+   * {@link SwerveController#getTargetSpeeds(double, double, double, double, double)} functions. This function overrides
+   * what was placed in the JSON and could damage your motor/robot if set too high or unachievable rates.
+   *
+   * @param maximumSpeed Maximum speed for the drive motors in meters / second.
+   */
+  public void setMaximumSpeed(double maximumSpeed)
+  {
+    swerveDriveConfiguration.maxSpeed = maximumSpeed;
+    swerveController.config.maxSpeed = maximumSpeed;
+  }
+
+  /**
    * Point all modules toward the robot center, thus making the robot very difficult to move. Forcing the robot to keep
    * the current pose.
    */

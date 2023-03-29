@@ -6,6 +6,7 @@ import java.util.function.DoubleSupplier;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
@@ -31,6 +32,9 @@ public class Arm extends SubsystemBase {
   DoubleLogEntry armVelocity;
   DoubleLogEntry armMotorCurrent;
   DoubleLogEntry armMotorCurrent2;
+  DoubleLogEntry armMotorTemp;
+
+  boolean hasArmBeenReset;
 
   public enum ArmPosition {
     Intake,
@@ -40,6 +44,7 @@ public class Arm extends SubsystemBase {
   }
   /** Creates a new Shooter. */
   public Arm() {
+    hasArmBeenReset = false;
     armMotor = new WPI_TalonFX(Constants.ArmConstants.ARM_MAIN_MOTOR);
     armMotorFollower = new WPI_TalonFX(Constants.ArmConstants.ARM_FOLLOWER_MOTOR);
     
@@ -50,38 +55,46 @@ public class Arm extends SubsystemBase {
   }
 
   public void configMotors() {
+    armMotor.configFactoryDefault();
+    armMotorFollower.configFactoryDefault();
+
     /* Config Arm Motor */
-    /* Shooter Arm Configuration */
-    SupplyCurrentLimitConfiguration shooterArmSupplyLimit = new SupplyCurrentLimitConfiguration(
-      Constants.ArmConstants.shooterArmEnableCurrentLimit, 
-      Constants.ArmConstants.shooterArmContinuousCurrentLimit, 
-      Constants.ArmConstants.shooterArmPeakCurrentLimit, 
-      Constants.ArmConstants.shooterArmPeakCurrentDuration);
     ArmFXConfig = new TalonFXConfiguration();
     
     ArmFXConfig.slot0.kP = Constants.ArmConstants.armkP;
     ArmFXConfig.slot0.kI = Constants.ArmConstants.armkI;
     ArmFXConfig.slot0.kD = Constants.ArmConstants.armkD;
     ArmFXConfig.slot0.kF = Constants.ArmConstants.armkF;
-    ArmFXConfig.supplyCurrLimit = shooterArmSupplyLimit;
     ArmFXConfig.openloopRamp = Constants.ArmConstants.openLoopRamp;
     
     ArmFXConfig.motionCruiseVelocity = Constants.ArmConstants.motionCruiseVelocity;
     ArmFXConfig.motionAcceleration = Constants.ArmConstants.motionAcceleration;
   
-
+    armMotor.configVoltageCompSaturation(10);
+    armMotor.enableVoltageCompensation(true);
     armMotor.configAllSettings(ArmFXConfig);
+
     armMotor.setInverted(TalonFXInvertType.Clockwise);
+    armMotor.setSensorPhase(true);
+
     armMotor.configMotionSCurveStrength(0);
+    armMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 40, 45, 1));
+    armMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, Constants.ArmConstants.shooterArmContinuousCurrentLimit, Constants.ArmConstants.shooterArmPeakCurrentLimit, Constants.ArmConstants.shooterArmPeakCurrentDuration));
     
-    /* Follow Arm Motor */
+    armMotorFollower.configVoltageCompSaturation(10);
+    armMotorFollower.enableVoltageCompensation(true);
     armMotorFollower.follow(armMotor);
-    armMotorFollower.setInverted(TalonFXInvertType.CounterClockwise);   
+    
+    armMotorFollower.setInverted(TalonFXInvertType.OpposeMaster);
+    armMotorFollower.setSensorPhase(false);
 
-		/* Zero the sensor once on robot boot up */
-		armMotor.setSelectedSensorPosition(0, Constants.ArmConstants.kPIDLoopIdx, Constants.ArmConstants.kTimeoutMs);
+    armMotorFollower.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 40, 45, 1));
+    armMotorFollower.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, Constants.ArmConstants.shooterArmContinuousCurrentLimit, Constants.ArmConstants.shooterArmPeakCurrentLimit, Constants.ArmConstants.shooterArmPeakCurrentDuration));
+    
 
-    setBrake(true);
+    armMotor.setSelectedSensorPosition(0, Constants.ArmConstants.kPIDLoopIdx, Constants.ArmConstants.kTimeoutMs);
+    armMotorFollower.setSelectedSensorPosition(0, Constants.ArmConstants.kPIDLoopIdx, Constants.ArmConstants.kTimeoutMs);
+    setBrake(NeutralMode.Brake);
   }
 
   public void startLogging() {
@@ -90,8 +103,9 @@ public class Arm extends SubsystemBase {
     armPosition = new DoubleLogEntry(log, "/arm/position");
     armAngleDegrees = new DoubleLogEntry(log, "/arm/angle");
     armVelocity = new DoubleLogEntry(log, "/arm/velocity");
-    armMotorCurrent = new DoubleLogEntry(log, "/arm/curent-1");
-    armMotorCurrent2 = new DoubleLogEntry(log, "/arm/curent-2");
+    armMotorCurrent = new DoubleLogEntry(log, "/arm/curent-main");
+    armMotorCurrent2 = new DoubleLogEntry(log, "/arm/curent-follow");
+    armMotorTemp = new DoubleLogEntry(log, "/arm/temp");
   }
 
   @Override
@@ -101,13 +115,15 @@ public class Arm extends SubsystemBase {
       armVelocity.append(armMotor.getSelectedSensorVelocity());
       armMotorCurrent.append(armMotor.getStatorCurrent());
       armMotorCurrent2.append(armMotorFollower.getStatorCurrent());
+      armMotorTemp.append(armMotor.getTemperature());
 
-      
-      SmartDashboard.putNumber("Shooter Master Falcon Position", armMotor.getSelectedSensorPosition());
-      SmartDashboard.putNumber("Shooter Follower Falcon Position", armMotorFollower.getSelectedSensorPosition());
-      SmartDashboard.putNumber("Shooter Follower Falcon Voltage", armMotor.getStatorCurrent());
+      SmartDashboard.putBoolean("ArmReset", hasArmBeenReset);
+      SmartDashboard.putNumber("ArmSensorPosition", armMotor.getSelectedSensorPosition());
+      SmartDashboard.putNumber("ArmSensorVelocity", armMotor.getSelectedSensorVelocity());
+      SmartDashboard.putNumber("AppliedThrottle", armMotor.getMotorOutputPercent());
 
-      SmartDashboard.putNumber("Current Arm", armMotor.getStatorCurrent());
+      SmartDashboard.putNumber("ArmStatorCurrent", armMotor.getStatorCurrent());
+      SmartDashboard.putNumber("ArmSupplyCurrent", armMotor.getSupplyCurrent());
   }
 
   public Command moveArm(DoubleSupplier percent) {
@@ -146,19 +162,16 @@ public class Arm extends SubsystemBase {
   }
 
   public Command resetArm() {
+    System.out.println("Arm Reset");
+    hasArmBeenReset = true;
     return this.runOnce(() -> {
         armMotor.setSelectedSensorPosition(0);
         armMotorFollower.setSelectedSensorPosition(0);
     });
   }
 
-  public void setBrake(boolean breakApplied) {
-    if (breakApplied) {
-      armMotor.setNeutralMode(NeutralMode.Brake);
-      armMotorFollower.setNeutralMode(NeutralMode.Brake);
-    } else {
-      armMotor.setNeutralMode(NeutralMode.Coast);
-      armMotorFollower.setNeutralMode(NeutralMode.Coast);
-    }
+  public void setBrake(NeutralMode breakMode) {
+    armMotor.setNeutralMode(breakMode);
+    armMotorFollower.setNeutralMode(breakMode);
   }
 }

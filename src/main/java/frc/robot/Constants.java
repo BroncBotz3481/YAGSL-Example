@@ -47,7 +47,7 @@ public final class Constants
     public static final double armkS = (0 / 12);
 
 
-    public static final double armkP = 0.01;
+    public static final double armkP = 0.0731;
     public static final double armkI = 0;
     public static final double armkD = 0;
     public static final double armkF = 0;
@@ -59,13 +59,13 @@ public final class Constants
     public static final double kMaxAngleRads = 2 * Math.PI;
     public static final double kArmEncoderDistPerPulse = 2.0 * Math.PI / 2048;
 
-    public static final double shooterArmPeakCurrentDuration = 0.1;
-    public static final double shooterArmPeakCurrentLimit = 45;
+    public static final double shooterArmPeakCurrentDuration = 0.3;
+    public static final double shooterArmPeakCurrentLimit = 35;
     public static final double shooterArmContinuousCurrentLimit = 30;
     public static final boolean shooterArmEnableCurrentLimit = true;
     public static final double openLoopRamp = 0.25;
-    public static final double motionCruiseVelocity = 15000;
-    public static final double motionAcceleration = 1500;  
+    public static final double motionCruiseVelocity = 1000;
+    public static final double motionAcceleration = 1000;  
   }
   public static final class ShooterConstants {
     public static final int SHOOTER_TOP_MOTOR = 15;

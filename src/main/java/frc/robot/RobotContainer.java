@@ -32,7 +32,7 @@ import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 import java.io.File;
 
-
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 
@@ -142,7 +142,7 @@ public class RobotContainer
     Trigger unlockArm = new Trigger(unlockArmSwitch::get);
     if (DriverStation.isDisabled()) {
       resetArm.onTrue(arm.resetArm());
-      unlockArm.onTrue(new InstantCommand(() -> arm.setBrake(false))).onFalse(new InstantCommand(() -> arm.setBrake(true)));  
+      unlockArm.onTrue(new InstantCommand(() -> arm.setBrake(NeutralMode.Coast))).onFalse(new InstantCommand(() -> arm.setBrake(NeutralMode.Brake)));  
     }
     
     driverXbox.a().whileTrue(new RepeatCommand(new InstantCommand(drivebase::lock, drivebase)));

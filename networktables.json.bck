@@ -2,7 +2,7 @@
   {
     "name": "/Shuffleboard/Shoot/PValue",
     "type": "double",
-    "value": 21.0,
+    "value": 20.0,
     "properties": {
       "persistent": true
     }

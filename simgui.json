@@ -43,6 +43,14 @@
     "Transitory Values": {
       "open": false
     },
+    "persistent": {
+      "Shuffleboard": {
+        "Shoot": {
+          "open": true
+        },
+        "open": true
+      }
+    },
     "retained": {
       "SmartDashboard": {
         "CHOOSE": {

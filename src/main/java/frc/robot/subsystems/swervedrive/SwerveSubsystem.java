@@ -379,7 +379,7 @@ public class SwerveSubsystem extends SubsystemBase
    * @param traj The trajectory for swerve to follow
    * @return PPSwerveControllerCommand to follow the given path
    */
-  public Command followTrajectoryCommand(PathPlannerTrajectory traj) {
+  public PPSwerveControllerCommand followTrajectoryCommand(PathPlannerTrajectory traj) {
     return new PPSwerveControllerCommand(
                 traj, 
                 swerveDrive::getPose, // Pose supplier

@@ -9,7 +9,6 @@ public class AutoMap {
   public final HashMap<String, Command> eventMap = new HashMap<>();
 
   public AutoMap() {
-
     eventMap.put("ScoreLow", new PrintCommand("Passed Event 1!"));
   }
 

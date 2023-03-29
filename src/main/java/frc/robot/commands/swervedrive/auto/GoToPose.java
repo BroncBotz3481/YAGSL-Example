@@ -102,18 +102,18 @@ public class GoToPose {
       constraints = calculateRotationalConstraints(diffPose, constraints);
     }
     traj = PathPlanner.generatePath(constraints, path);
-
-    ppSwerveCommand =
-        new PPSwerveControllerCommand(
-            traj,
-            drive::getPose, // Pose supplier
-            Auton.xAutoPID.createPIDController(),
-            Auton.yAutoPID.createPIDController(),
-            Auton.angleAutoPID.createPIDController(),
-            drive::setChassisSpeeds,
-            true,
-            drive // Requires this drive subsystem
-            );
+    ppSwerveCommand = drive.followTrajectoryCommand(traj);
+    // ppSwerveCommand =
+    //     new PPSwerveControllerCommand(
+    //         traj,
+    //         drive::getPose, // Pose supplier
+    //         Auton.xAutoPID.createPIDController(),
+    //         Auton.yAutoPID.createPIDController(),
+    //         Auton.angleAutoPID.createPIDController(),
+    //         drive::setChassisSpeeds,
+    //         true,
+    //         drive // Requires this drive subsystem
+    //         );
   }
 
   public PPSwerveControllerCommand getCommand() {

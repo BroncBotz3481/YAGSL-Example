@@ -158,9 +158,9 @@ public class RobotContainer
     // operatorXbox.b().whileTrue(new SequentialCommandGroup(arm.moveArmToPosition(ArmPosition.Mid), shooter.shoot(ShootSpeed.Mid)));
     // operatorXbox.y().whileTrue(new SequentialCommandGroup(arm.moveArmToPosition(ArmPosition.High), shooter.shoot(ShootSpeed.High)));
     // operatorXbox.x().whileTrue(new SequentialCommandGroup(arm.moveArmToPosition(ArmPosition.Intake), shooter.intake()));
-    // operatorXbox.povRight().whileTrue(new GoToScoring(drivebase, POSITION.RIGHT).getCommand());
-    // operatorXbox.povDown().whileTrue(new GoToScoring(drivebase, POSITION.MIDDLE).getCommand());
-    // operatorXbox.povLeft().whileTrue(new GoToScoring(drivebase, POSITION.LEFT).getCommand());
+    driverXbox.povRight().whileTrue(new GoToScoring(drivebase, POSITION.LEFT).getCommand());
+    driverXbox.povDown().whileTrue(new GoToScoring(drivebase, POSITION.MIDDLE).getCommand());
+    driverXbox.povLeft().whileTrue(new GoToScoring(drivebase, POSITION.RIGHT).getCommand());
   }   
 
   /**

@@ -155,5 +155,11 @@ public final class Constants
     public static final double LEFT_Y_DEADBAND = 0.01;
   }
 
+  public static class LEDConstants {
+
+    public static final int PWMPORT = 0;
+    public static final int LENGTH = 0;
+
+  }
 
 }

@@ -5,9 +5,12 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -19,7 +22,7 @@ public class Shooter extends SubsystemBase {
 
   DoubleLogEntry shooterSpeed;
   DoubleLogEntry shooterCurrent;
-
+  double pValue;
   public enum ShootSpeed {
     Stop,
     High,
@@ -31,7 +34,7 @@ public class Shooter extends SubsystemBase {
   public Shooter() {
     shootMotorFollower = new WPI_TalonFX(Constants.ShooterConstants.SHOOTER_TOP_MOTOR);
     shootMotor = new WPI_TalonFX(Constants.ShooterConstants.SHOOTER_BOTTOM_MOTOR);
-    
+    pValue = Shuffleboard.getTab("Shoot").addPersistent("PValue", 0).getEntry().getDouble(0);
     configMotors();
     startLogging();
   }
@@ -40,7 +43,7 @@ public class Shooter extends SubsystemBase {
     /* Config Intake Motors */
     shootMotor.setInverted(TalonFXInvertType.Clockwise);
     shootMotor.setNeutralMode(NeutralMode.Coast);
-    shootMotor.configVoltageCompSaturation(10); // "full output" will now scale to 11 Volts for all control modes when enabled.
+    shootMotor.configVoltageCompSaturation(10);
     shootMotor.enableVoltageCompensation(true);
 
     shootMotorFollower.setInverted(TalonFXInvertType.Clockwise);
@@ -60,8 +63,8 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     shooterSpeed.append(shootMotor.getSelectedSensorPosition());
     shooterCurrent.append(shootMotor.getStatorCurrent());
-
     SmartDashboard.putNumber("StatorCurrentShooterTopIntake", shootMotorFollower.getStatorCurrent());
+    // System.out.println(Shuffleboard.getTab("Shoot").addPersistent("PValue", 0).getEntry().getDouble(0));
   }
 
   public Command shoot(double speedTop, double speedBottom) {

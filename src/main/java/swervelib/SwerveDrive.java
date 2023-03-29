@@ -27,7 +27,6 @@ import swervelib.imu.SwerveIMU;
 import swervelib.math.SwerveKinematics2;
 import swervelib.math.SwerveMath;
 import swervelib.math.SwerveModuleState2;
-import swervelib.math.estimator.Pose3dFix;
 import swervelib.math.estimator.SwerveDrivePoseEstimator;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
@@ -129,7 +128,7 @@ public class SwerveDrive
             kinematics,
             getGyroRotation3d(),
             getModuleStates(),
-            new Pose3dFix(new Translation3d(0, 0, 0), new Rotation3d()));
+            new Pose3d(new Translation3d(0, 0, 0), new Rotation3d()));
     // x,y,heading in radians; Vision measurement std dev, higher=less weight
 
     zeroGyro();
@@ -324,7 +323,7 @@ public class SwerveDrive
    *
    * @return The robot's pose
    */
-  public Pose3dFix getPose3d()
+  public Pose3d getPose3d()
   {
     return swerveDrivePoseEstimator.getEstimatedPosition3d();
   }
@@ -376,7 +375,7 @@ public class SwerveDrive
    */
   public void resetOdometry(Pose2d pose)
   {
-    swerveDrivePoseEstimator.resetPosition(getGyroRotation3d(), getModuleStates(), new Pose3dFix(pose));
+    swerveDrivePoseEstimator.resetPosition(getGyroRotation3d(), getModuleStates(), new Pose3d(pose));
   }
 
   /**
@@ -771,39 +770,40 @@ public class SwerveDrive
    * @param soft                     Add vision estimate using the
    *                                 {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double)} function, or
    *                                 hard reset odometry with the given position with
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   * {@link edu.wpi.first.math.kinematics.SwerveDriveOdometry#resetPosition(Rotation2d, SwerveModulePosition[], Pose2d)}.
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 <p>
+   *                                 {@link edu.wpi.first.math.kinematics.SwerveDriveOdometry#resetPosition(Rotation2d,
+   *                                 SwerveModulePosition[], Pose2d)}.
    * @param visionMeasurementStdDevs Vision measurement standard deviation that will be sent to the
    *                                 {@link SwerveDrivePoseEstimator}.
    */

@@ -343,7 +343,10 @@ public class SwerveMath
     {
       targetAngle += 360;
     }
-    return new SwerveModuleState2(targetSpeed, Rotation2d.fromDegrees(targetAngle),
+    return new SwerveModuleState2(desiredState.distanceMeters,
+                                  targetSpeed,
+                                  desiredState.accelMetersPerSecondSq,
+                                  Rotation2d.fromDegrees(targetAngle),
                                   desiredState.omegaRadPerSecond);
   }
 

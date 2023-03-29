@@ -7,6 +7,7 @@ package swervelib.math.estimator;
 import edu.wpi.first.math.MathSharedStore;
 import edu.wpi.first.math.MathUsageId;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Twist3d;
@@ -23,12 +24,12 @@ import swervelib.math.SwerveModuleState2;
 public class SwerveDriveOdometry
 {
 
-  private final SwerveKinematics2 m_kinematics;
+  private final SwerveKinematics2    m_kinematics;
   private final int                  m_numModules;
-  private       Pose3dFix         m_poseMeters;
+  private       Pose3d               m_poseMeters;
   private       Rotation3d           m_gyroOffset;
   private       Rotation3d           m_previousAngle;
-  private       SwerveModuleState2[] m_previousModulePositions;
+  private final SwerveModuleState2[] m_previousModulePositions;
 
   /**
    * Constructs a SwerveDriveOdometry object.
@@ -42,7 +43,7 @@ public class SwerveDriveOdometry
       SwerveKinematics2 kinematics,
       Rotation3d gyroAngle,
       SwerveModuleState2[] modulePositions,
-      Pose3dFix initialPose)
+      Pose3d initialPose)
   {
     m_kinematics = kinematics;
     m_poseMeters = initialPose;
@@ -83,7 +84,7 @@ public class SwerveDriveOdometry
         kinematics,
         new Rotation3d(0, 0, gyroAngle.getRadians()),
         modulePositions,
-        new Pose3dFix(initialPose));
+        new Pose3d(initialPose));
   }
 
   /**
@@ -96,7 +97,7 @@ public class SwerveDriveOdometry
   public SwerveDriveOdometry(
       SwerveKinematics2 kinematics, Rotation3d gyroAngle, SwerveModuleState2[] modulePositions)
   {
-    this(kinematics, gyroAngle, modulePositions, new Pose3dFix());
+    this(kinematics, gyroAngle, modulePositions, new Pose3d());
   }
 
   /**
@@ -125,7 +126,7 @@ public class SwerveDriveOdometry
    * @param pose            The position on the field that your robot is at.
    */
   public void resetPosition(
-      Rotation3d gyroAngle, SwerveModuleState2[] modulePositions, Pose3dFix pose)
+      Rotation3d gyroAngle, SwerveModuleState2[] modulePositions, Pose3d pose)
   {
     if (modulePositions.length != m_numModules)
     {
@@ -165,7 +166,7 @@ public class SwerveDriveOdometry
       Rotation2d gyroAngle, SwerveModuleState2[] modulePositions, Pose2d pose)
   {
     resetPosition(
-        new Rotation3d(0, 0, gyroAngle.getRadians()), modulePositions, new Pose3dFix(pose));
+        new Rotation3d(0, 0, gyroAngle.getRadians()), modulePositions, new Pose3d(pose));
   }
 
   /**
@@ -183,7 +184,7 @@ public class SwerveDriveOdometry
    *
    * @return The pose of the robot (x and y are in meters).
    */
-  public Pose3dFix getPoseMeters3d()
+  public Pose3d getPoseMeters3d()
   {
     return m_poseMeters;
   }
@@ -199,7 +200,7 @@ public class SwerveDriveOdometry
    *                        in which you instantiated your SwerveDriveKinematics.
    * @return The new pose of the robot.
    */
-  public Pose3dFix update(Rotation3d gyroAngle, SwerveModuleState2[] modulePositions)
+  public Pose3d update(Rotation3d gyroAngle, SwerveModuleState2[] modulePositions)
   {
     if (modulePositions.length != m_numModules)
     {
@@ -241,7 +242,7 @@ public class SwerveDriveOdometry
     var newPose = m_poseMeters.exp(twist);
 
     m_previousAngle = angle;
-    m_poseMeters = new Pose3dFix(newPose.getTranslation(), angle);
+    m_poseMeters = new Pose3d(newPose.getTranslation(), angle);
 
     return m_poseMeters;
   }

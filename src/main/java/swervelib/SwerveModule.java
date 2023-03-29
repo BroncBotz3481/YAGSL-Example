@@ -2,10 +2,12 @@ package swervelib;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import swervelib.encoders.SwerveAbsoluteEncoder;
+import swervelib.math.SwerveMath;
 import swervelib.math.SwerveModuleState2;
 import swervelib.motors.SwerveMotor;
 import swervelib.parser.SwerveModuleConfiguration;
@@ -36,6 +38,10 @@ public class SwerveModule
    */
   private final SwerveAbsoluteEncoder  absoluteEncoder;
   /**
+   * Last swerve module state applied. Timer to use for approximating module acceleration.
+   */
+  private final Timer                  timer;
+  /**
    * Module number for kinematics, usually 0 to 3. front left -> front right -> back left -> back right.
    */
   public        int                    moduleNumber;
@@ -44,18 +50,13 @@ public class SwerveModule
    */
   public        SimpleMotorFeedforward feedforward;
   /**
-   * Last swerve module state applied.
-   * Timer to use for approximating module acceleration.
+   * Last angle set for the swerve module.
    */
-  private final Timer                  timer;
+  public        SwerveModuleState2     lastState;
   /**
    * Last time on the timer.
    */
   private       double                 lastTime;
-  /**
-   * Last angle set for the swerve module.
-   */
-  public        SwerveModuleState2     lastState;
   /**
    * Simulated swerve module.
    */
@@ -252,8 +253,7 @@ public class SwerveModule
     {
       position = driveMotor.getPosition();
       velocity = driveMotor.getVelocity();
-      accel = (velocity - lastVelocity) / dt;
-      lastVelocity = velocity;
+      accel = (velocity - lastState.speedMetersPerSecond) / dt;
       azimuth = Rotation2d.fromDegrees(angleMotor.getPosition());
       omega = Math.toRadians(angleMotor.getVelocity());
     } else

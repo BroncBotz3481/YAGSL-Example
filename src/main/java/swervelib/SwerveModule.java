@@ -193,7 +193,7 @@ public class SwerveModule
     if (desiredState.angle != lastState.angle || synchronizeEncoderQueued)
     {
       // Synchronize encoders if queued and send in the current position as the value from the absolute encoder.
-      double feedforward = Math.toDegrees(desiredState.omegaRadPerSecond * configuration.angleKV);
+      double feedforward = Units.radiansToDegrees(desiredState.omegaRadPerSecond * configuration.angleKV);
       if (absoluteEncoder != null && synchronizeEncoderQueued)
       {
         double absoluteEncoderPosition = getAbsolutePosition();

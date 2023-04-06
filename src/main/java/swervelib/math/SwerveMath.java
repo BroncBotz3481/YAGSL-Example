@@ -402,5 +402,9 @@ public class SwerveMath
 //      moduleState.omegaRadPerSecond = lastModuleState.omegaRadPerSecond;
       moduleState.omegaRadPerSecond = 0;
     }
+    if (moduleState.equals(lastModuleState))
+    {
+      moduleState.omegaRadPerSecond = 0;
+    }
   }
 }

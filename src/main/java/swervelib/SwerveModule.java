@@ -174,6 +174,10 @@ public class SwerveModule
     {
       // Prevents module rotation if speed is less than 1%
       SwerveMath.antiJitter(desiredState, lastState, configuration.maxSpeed);
+      if (desiredState.equals(lastState))
+      {
+        desiredState.omegaRadPerSecond = 0;
+      }
     } else
     {
       desiredState.omegaRadPerSecond = 0;
@@ -208,6 +212,7 @@ public class SwerveModule
                                 feedforward);
       }
     }
+
     lastState = desiredState;
 
     if (SwerveDriveTelemetry.isSimulation)

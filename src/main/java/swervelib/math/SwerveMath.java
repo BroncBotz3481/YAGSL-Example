@@ -312,8 +312,8 @@ public class SwerveMath
 
   /**
    * Optimize the angle of the {@link SwerveModuleState2} to be the closest angle to the current angle. Taken from Team
-   * 3181 at
-   * https://github.com/pittsfordrobotics/REVSwerve2023/blob/master/src/main/java/com/team3181/lib/swerve/SwerveOptimizer.java
+   * 3181 at https://github.com/pittsfordrobotics/REVSwerve2023/blob/master/src/main/java/com/team3181/lib/swerve
+   * /SwerveOptimizer.java
    *
    * @param desiredState             Desired {@link SwerveModuleState2} to achieve.
    * @param currentAngle             Current angle as a {@link Rotation2d}.

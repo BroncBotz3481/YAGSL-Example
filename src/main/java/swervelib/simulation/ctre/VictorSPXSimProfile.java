@@ -1,7 +1,6 @@
 package swervelib.simulation.ctre;
 
 import static swervelib.simulation.ctre.PhysicsSim.random;
-
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import swervelib.simulation.ctre.PhysicsSim.SimProfile;
 

@@ -10,23 +10,16 @@ public class SwerveModuleState2 extends SwerveModuleState
 {
 
   /**
-   * Swerve module speed in meters per second.
-   */
-  public double     speedMetersPerSecond;
-  /**
    * Rad per sec
    */
-  public double     omegaRadPerSecond = 0;
-  /**
-   * Swerve module angle as a {@link Rotation2d}.
-   */
-  public Rotation2d angle             = Rotation2d.fromDegrees(0);
+  public double omegaRadPerSecond = 0;
 
   /**
    * Constructs a SwerveModuleState with zeros for speed and angle.
    */
   public SwerveModuleState2()
   {
+    super();
   }
 
   /**
@@ -39,8 +32,44 @@ public class SwerveModuleState2 extends SwerveModuleState
   public SwerveModuleState2(
       double speedMetersPerSecond, Rotation2d angle, double omegaRadPerSecond)
   {
-    this.speedMetersPerSecond = speedMetersPerSecond;
-    this.angle = angle;
+    super(speedMetersPerSecond, angle);
     this.omegaRadPerSecond = omegaRadPerSecond;
+  }
+
+  /**
+   * Create a {@link SwerveModuleState2} based on the {@link SwerveModuleState} with the radians per second defined.
+   *
+   * @param state             First order kinematic module state.
+   * @param omegaRadPerSecond Module wheel angular rotation in radians per second.
+   */
+  public SwerveModuleState2(SwerveModuleState state, double omegaRadPerSecond)
+  {
+    super(state.speedMetersPerSecond, state.angle);
+    this.omegaRadPerSecond = omegaRadPerSecond;
+  }
+
+  /**
+   * Minimize the change in heading the desired swerve module state would require by potentially reversing the direction
+   * the wheel spins. If this is used with the PIDController class's continuous input functionality, the furthest a
+   * wheel will ever rotate is 90 degrees.
+   *
+   * @param desiredState The desired state.
+   * @param currentAngle The current module angle.
+   * @return Optimized swerve module state.
+   */
+  public static SwerveModuleState2 optimize(SwerveModuleState2 desiredState, Rotation2d currentAngle)
+  {
+    return new SwerveModuleState2(SwerveModuleState.optimize(desiredState.toSwerveModuleState(), currentAngle),
+                                  desiredState.omegaRadPerSecond);
+  }
+
+  /**
+   * Convert to a {@link SwerveModuleState}.
+   *
+   * @return {@link SwerveModuleState} with the same angle and speed.
+   */
+  public SwerveModuleState toSwerveModuleState()
+  {
+    return new SwerveModuleState(this.speedMetersPerSecond, this.angle);
   }
 }

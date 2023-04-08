@@ -32,8 +32,9 @@ public class SwerveMath
   public static double calculateAngleKV(
       double optimalVoltage, double motorFreeSpeedRPM, double angleGearRatio)
   {
-    double maxAngularVelocity = 360 * (motorFreeSpeedRPM / angleGearRatio) / 60; // deg/s
-    return optimalVoltage / maxAngularVelocity;
+    return -0.30;
+//    double maxAngularVelocity = 360 * (motorFreeSpeedRPM / angleGearRatio) / 60; // deg/s
+//    return optimalVoltage / maxAngularVelocity;
   }
 
   /**
@@ -311,43 +312,6 @@ public class SwerveMath
   }
 
   /**
-   * Optimize the angle of the {@link SwerveModuleState2} to be the closest angle to the current angle. Taken from Team
-   * 3181 at https://github.com/pittsfordrobotics/REVSwerve2023/blob/master/src/main/java/com/team3181/lib/swerve
-   * /SwerveOptimizer.java
-   *
-   * @param desiredState             Desired {@link SwerveModuleState2} to achieve.
-   * @param currentAngle             Current angle as a {@link Rotation2d}.
-   * @param secondOrderOffsetDegrees Offset calculated using 2nd order kinematics.
-   * @return Optimized {@link SwerveModuleState2}
-   */
-  public static SwerveModuleState2 optimize(SwerveModuleState2 desiredState, Rotation2d currentAngle,
-                                            double secondOrderOffsetDegrees)
-  {
-    double targetAngle = placeInAppropriate0To360Scope(currentAngle.getDegrees(),
-                                                       desiredState.angle.getDegrees() + secondOrderOffsetDegrees);
-    double targetSpeed = desiredState.speedMetersPerSecond;
-    double delta       = targetAngle - currentAngle.getDegrees();
-    if (Math.abs(delta) > 90)
-    {
-      targetSpeed = -targetSpeed;
-      if (delta > 90)
-      {
-        targetAngle -= 180;
-      } else
-      {
-        targetAngle += 180;
-      }
-    }
-    // Ensure outputted angle is positive.
-    while (targetAngle < 0)
-    {
-      targetAngle += 360;
-    }
-    return new SwerveModuleState2(targetSpeed, Rotation2d.fromDegrees(targetAngle),
-                                  desiredState.omegaRadPerSecond);
-  }
-
-  /**
    * Put an angle within the 360 deg scope of a reference. For example, given a scope reference of 756 degrees, assumes
    * the full scope is (720-1080), and places an angle of 22 degrees into it, returning 742 deg.
    *
@@ -399,12 +363,7 @@ public class SwerveMath
     if (Math.abs(moduleState.speedMetersPerSecond) <= (maxSpeed * 0.01))
     {
       moduleState.angle = lastModuleState.angle;
-//      moduleState.omegaRadPerSecond = lastModuleState.omegaRadPerSecond;
-      moduleState.omegaRadPerSecond = 0;
-    }
-    if (moduleState.equals(lastModuleState))
-    {
-      moduleState.omegaRadPerSecond = 0;
+      moduleState.omegaRadPerSecond = lastModuleState.omegaRadPerSecond;
     }
   }
 }

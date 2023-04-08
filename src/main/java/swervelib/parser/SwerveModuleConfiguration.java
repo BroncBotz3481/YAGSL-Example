@@ -4,6 +4,7 @@ import static swervelib.math.SwerveMath.calculateAngleKV;
 import static swervelib.math.SwerveMath.calculateDegreesPerSteeringRotation;
 import static swervelib.math.SwerveMath.calculateMaxAcceleration;
 import static swervelib.math.SwerveMath.calculateMetersPerRotation;
+
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
 import swervelib.encoders.SwerveAbsoluteEncoder;
@@ -46,7 +47,7 @@ public class SwerveModuleConfiguration
   /**
    * Angle volt-meter-per-second.
    */
-  public       double                              angleKV;
+  public       double                              moduleSteerFFCL;
   /**
    * The integrated encoder pulse per revolution.
    */
@@ -115,11 +116,11 @@ public class SwerveModuleConfiguration
     this.anglePIDF = anglePIDF;
     this.velocityPIDF = velocityPIDF;
     this.maxSpeed = maxSpeed;
-    this.angleKV = physicalCharacteristics.angleMotorKV == 0 ?
-                   calculateAngleKV(
-                       physicalCharacteristics.optimalVoltage,
-                       angleMotorFreeSpeedRPM,
-                       physicalCharacteristics.angleGearRatio) : physicalCharacteristics.angleMotorKV;
+    this.moduleSteerFFCL = physicalCharacteristics.moduleSteerFFCL == 0 ?
+                           calculateAngleKV(
+                               physicalCharacteristics.optimalVoltage,
+                               angleMotorFreeSpeedRPM,
+                               physicalCharacteristics.angleGearRatio) : physicalCharacteristics.moduleSteerFFCL;
     this.physicalCharacteristics = physicalCharacteristics;
     this.angleMotorEncoderPulsePerRevolution = angleMotorEncoderPulsePerRevolution;
   }

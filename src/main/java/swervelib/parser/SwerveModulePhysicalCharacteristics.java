@@ -51,7 +51,7 @@ public class SwerveModulePhysicalCharacteristics
    * your drive train does not drift towards the direction you are rotating while you translate. When set to 0 the
    * calculated kV will be used.
    */
-  public final double angleMotorKV;
+  public final double moduleSteerFFCL;
 
   /**
    * Construct the swerve module physical characteristics.
@@ -71,7 +71,7 @@ public class SwerveModulePhysicalCharacteristics
    *                                       overdrawing power and power loss).
    * @param driveEncoderPulsePerRotation   The number of encoder pulses per motor rotation, 1 for integrated encoders.
    * @param angleEncoderPulsePerRotation   The number of encoder pulses per motor rotation, 1 for integrated encoders.
-   * @param angleMotorKV                   The kV applied to the steering motor to ensure your drivetrain does not drift
+   * @param moduleSteerFFCL                   The kV applied to the steering motor to ensure your drivetrain does not drift
    *                                       towards a direction when rotating while translating.
    */
   public SwerveModulePhysicalCharacteristics(
@@ -87,7 +87,7 @@ public class SwerveModulePhysicalCharacteristics
       double angleMotorRampRate,
       int driveEncoderPulsePerRotation,
       int angleEncoderPulsePerRotation,
-      double angleMotorKV)
+      double moduleSteerFFCL)
   {
     this.wheelGripCoefficientOfFriction = wheelGripCoefficientOfFriction;
     this.optimalVoltage = optimalVoltage;
@@ -103,7 +103,7 @@ public class SwerveModulePhysicalCharacteristics
     this.angleMotorCurrentLimit = angleMotorCurrentLimit;
     this.driveMotorRampRate = driveMotorRampRate;
     this.angleMotorRampRate = angleMotorRampRate;
-    this.angleMotorKV = angleMotorKV;
+    this.moduleSteerFFCL = moduleSteerFFCL;
   }
 
   /**
@@ -144,6 +144,6 @@ public class SwerveModulePhysicalCharacteristics
         driveMotorRampRate,
         angleMotorRampRate,
         driveEncoderPulsePerRotation,
-        angleEncoderPulsePerRotation, 0);
+        angleEncoderPulsePerRotation, -0.30);
   }
 }

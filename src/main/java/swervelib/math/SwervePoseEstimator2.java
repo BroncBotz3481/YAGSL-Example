@@ -26,11 +26,29 @@ import java.util.Objects;
 public class SwervePoseEstimator2 // extends SwerveDrivePoseEstimator
 {
 
+  /**
+   * Swerve drive kinematics.
+   */
   private final SwerveDriveKinematics                         m_kinematics;
+  /**
+   * Enhanced swerve drive odometry.
+   */
   private final SwerveDriveOdometry2                          m_odometry;
+  /**
+   * Matrix quotient.
+   */
   private final Matrix<N3, N1>                                m_q          = new Matrix<>(Nat.N3(), Nat.N1());
+  /**
+   * Number of swerve modules.
+   */
   private final int                                           m_numModules;
+  /**
+   * Interpolation buffer.
+   */
   private final TimeInterpolatableBuffer<InterpolationRecord> m_poseBuffer = TimeInterpolatableBuffer.createBuffer(1.5);
+  /**
+   * Vision standard deviations.
+   */
   private final Matrix<N3, N3>                                m_visionK    = new Matrix<>(Nat.N3(), Nat.N3());
 
   /**

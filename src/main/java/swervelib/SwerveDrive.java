@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
@@ -221,6 +222,17 @@ public class SwerveDrive
             translation.getX(), translation.getY(), rotation, getYaw())
         : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 
+    // Thank you to Jared Russell FRC254 for Open Loop Compensation Code
+    // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
+    double dtConstant = 0.009;
+    Pose2d robotPoseVel = new Pose2d(velocity.vxMetersPerSecond * dtConstant,
+                                     velocity.vyMetersPerSecond * dtConstant,
+                                     Rotation2d.fromRadians(velocity.omegaRadiansPerSecond * dtConstant));
+    Twist2d twistVel = SwerveMath.PoseLog(robotPoseVel);
+
+    velocity = new ChassisSpeeds(twistVel.dx / dtConstant, twistVel.dy / dtConstant,
+                                 twistVel.dtheta / dtConstant);
+
     // Heading Angular Velocity Deadband, might make a configuration option later.
     // Originally made by Team 1466 Webb Robotics.
     if (headingCorrection)
@@ -250,7 +262,7 @@ public class SwerveDrive
     // Calculate required module states via kinematics
     SwerveModuleState2[] swerveModuleStates = kinematics.toSwerveModuleStates(velocity);
 
-    setRawModuleStates(swerveModuleStates, isOpenLoop, false);
+    setRawModuleStates(swerveModuleStates, isOpenLoop);
   }
 
   /**
@@ -280,9 +292,8 @@ public class SwerveDrive
    *
    * @param desiredStates A list of SwerveModuleStates to send to the modules.
    * @param isOpenLoop    Whether to use closed-loop velocity control. Set to true to disable closed-loop.
-   * @param secondOrder   Enables usage of second order kinematics for updating.
    */
-  private void setRawModuleStates(SwerveModuleState2[] desiredStates, boolean isOpenLoop, boolean secondOrder)
+  private void setRawModuleStates(SwerveModuleState2[] desiredStates, boolean isOpenLoop)
   {
     // Desaturates wheel speeds
     if (swerveDriveConfiguration.attainableMaxTranslationalSpeedMetersPerSecond != 0 ||
@@ -300,7 +311,7 @@ public class SwerveDrive
     // Sets states
     for (SwerveModule module : swerveModules)
     {
-      module.setDesiredState(desiredStates[module.moduleNumber], isOpenLoop, false, secondOrder);
+      module.setDesiredState(desiredStates[module.moduleNumber], isOpenLoop, false);
 
       if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.HIGH.ordinal())
       {
@@ -312,10 +323,10 @@ public class SwerveDrive
       if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)
       {
         SmartDashboard.putNumber(
-            "Module[" + module.moduleNumber + "] Speed Setpoint: ",
+            "Module[" + module.configuration.name + "] Speed Setpoint: ",
             module.lastState.speedMetersPerSecond);
         SmartDashboard.putNumber(
-            "Module[" + module.moduleNumber + "] Angle Setpoint: ",
+            "Module[" + module.configuration.name + "] Angle Setpoint: ",
             module.lastState.angle.getDegrees());
       }
     }
@@ -326,40 +337,11 @@ public class SwerveDrive
    *
    * @param desiredStates A list of SwerveModuleStates to send to the modules.
    * @param isOpenLoop    Whether to use closed-loop velocity control. Set to true to disable closed-loop.
-   * @param secondOrder   Enable second order kinematics for more accurate tracking.
-   */
-  public void setModuleStates(SwerveModuleState2[] desiredStates, boolean isOpenLoop, boolean secondOrder)
-  {
-    setRawModuleStates(kinematics.toSwerveModuleStates(kinematics.toChassisSpeeds(desiredStates)),
-                       isOpenLoop,
-                       secondOrder);
-  }
-
-  /**
-   * Set the module states (azimuth and velocity) directly. Used primarily for auto paths. Enables second order
-   * kinematics.
-   *
-   * @param desiredStates A list of SwerveModuleStates to send to the modules.
-   * @param isOpenLoop    Whether to use closed-loop velocity control. Set to true to disable closed-loop.
    */
   public void setModuleStates(SwerveModuleState2[] desiredStates, boolean isOpenLoop)
   {
-    setModuleStates(desiredStates, isOpenLoop, true);
-  }
-
-  /**
-   * Set chassis speeds with closed-loop velocity control and second order kinematics.
-   *
-   * @param chassisSpeeds Chassis speeds to set.
-   * @param secondOrder   Enable second order kinematics for more accurate tracking.
-   */
-  public void setChassisSpeeds(ChassisSpeeds chassisSpeeds, boolean secondOrder)
-  {
-    SwerveDriveTelemetry.desiredChassisSpeeds[1] = chassisSpeeds.vyMetersPerSecond;
-    SwerveDriveTelemetry.desiredChassisSpeeds[0] = chassisSpeeds.vxMetersPerSecond;
-    SwerveDriveTelemetry.desiredChassisSpeeds[2] = Math.toDegrees(chassisSpeeds.omegaRadiansPerSecond);
-
-    setRawModuleStates(kinematics.toSwerveModuleStates(chassisSpeeds), false, secondOrder);
+    setRawModuleStates(kinematics.toSwerveModuleStates(kinematics.toChassisSpeeds(desiredStates)),
+                       isOpenLoop);
   }
 
   /**
@@ -369,7 +351,11 @@ public class SwerveDrive
    */
   public void setChassisSpeeds(ChassisSpeeds chassisSpeeds)
   {
-    setChassisSpeeds(chassisSpeeds, true);
+    SwerveDriveTelemetry.desiredChassisSpeeds[1] = chassisSpeeds.vyMetersPerSecond;
+    SwerveDriveTelemetry.desiredChassisSpeeds[0] = chassisSpeeds.vxMetersPerSecond;
+    SwerveDriveTelemetry.desiredChassisSpeeds[2] = Math.toDegrees(chassisSpeeds.omegaRadiansPerSecond);
+
+    setRawModuleStates(kinematics.toSwerveModuleStates(chassisSpeeds), false);
   }
 
   /**
@@ -595,7 +581,7 @@ public class SwerveDrive
   /**
    * Set the maximum speed of the drive motors, modified {@link SwerveControllerConfiguration#maxSpeed} and
    * {@link SwerveDriveConfiguration#maxSpeed} which is used for the
-   * {@link SwerveDrive#setRawModuleStates(SwerveModuleState2[], boolean, boolean)} function and
+   * {@link SwerveDrive#setRawModuleStates(SwerveModuleState2[], boolean)} function and
    * {@link SwerveController#getTargetSpeeds(double, double, double, double, double)} functions. This function overrides
    * what was placed in the JSON and could damage your motor/robot if set too high or unachievable rates.
    *
@@ -621,7 +607,7 @@ public class SwerveDrive
   /**
    * Set the maximum speed of the drive motors, modified {@link SwerveControllerConfiguration#maxSpeed} and
    * {@link SwerveDriveConfiguration#maxSpeed} which is used for the
-   * {@link SwerveDrive#setRawModuleStates(SwerveModuleState2[], boolean, boolean)} function and
+   * {@link SwerveDrive#setRawModuleStates(SwerveModuleState2[], boolean)} function and
    * {@link SwerveController#getTargetSpeeds(double, double, double, double, double)} functions. This function overrides
    * what was placed in the JSON and could damage your motor/robot if set too high or unachievable rates. Overwrites the
    * {@link SwerveModule#feedforward}.
@@ -651,7 +637,7 @@ public class SwerveDrive
         SwerveDriveTelemetry.desiredStates[(swerveModule.moduleNumber * 2) + 1] =
             desiredState.speedMetersPerSecond;
       }
-      swerveModule.setDesiredState(desiredState, false, true, false);
+      swerveModule.setDesiredState(desiredState, false, true);
 
     }
 
@@ -734,9 +720,9 @@ public class SwerveDrive
       if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)
       {
         SmartDashboard.putNumber(
-            "Module[" + module.moduleNumber + "] Relative Encoder", module.getRelativePosition());
+            "Module[" + module.configuration.name + "] Relative Encoder", module.getRelativePosition());
         SmartDashboard.putNumber(
-            "Module[" + module.moduleNumber + "] Absolute Encoder", module.getAbsolutePosition());
+            "Module[" + module.configuration.name + "] Absolute Encoder", module.getAbsolutePosition());
       }
       if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.HIGH.ordinal())
       {

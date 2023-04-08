@@ -328,7 +328,9 @@ public class TalonFXSwerve extends SwerveMotor
     {
       motor.set(
           TalonFXControlMode.Position,
-          convertToNativeSensorUnits(setpoint, position));
+          convertToNativeSensorUnits(setpoint, position),
+          DemandType.ArbitraryFeedForward,
+          feedforward);
     }
   }
 

@@ -1,4 +1,33 @@
 {
+  "HALProvider": {
+    "Other Devices": {
+      "SPARK MAX [1]": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX[50]": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX[51]/Integrated Sensor": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX[52]/Integrated Sensor": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX[8]/Integrated Sensor": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",

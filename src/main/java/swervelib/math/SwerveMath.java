@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.List;
@@ -19,23 +20,6 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
  */
 public class SwerveMath
 {
-
-  /**
-   * Calculate the angle kV which will be multiplied by the radians per second for the feedforward. Volt * seconds /
-   * degree == (maxVolts) / (maxSpeed)
-   *
-   * @param optimalVoltage    Optimal voltage to use when calculating the angle kV.
-   * @param motorFreeSpeedRPM Motor free speed in Rotations per Minute.
-   * @param angleGearRatio    Angle gear ratio, the amount of times the motor as to turn for the wheel rotation.
-   * @return angle kV for feedforward.
-   */
-  public static double calculateAngleKV(
-      double optimalVoltage, double motorFreeSpeedRPM, double angleGearRatio)
-  {
-    return -0.30;
-//    double maxAngularVelocity = 360 * (motorFreeSpeedRPM / angleGearRatio) / 60; // deg/s
-//    return optimalVoltage / maxAngularVelocity;
-  }
 
   /**
    * Calculate the meters per rotation for the integrated encoder. Calculation: 4in diameter wheels * pi [circumfrence]
@@ -213,6 +197,32 @@ public class SwerveMath
       SmartDashboard.putNumber("calcMaxAccel", maxAccel);
     }
     return maxAccel;
+  }
+
+  /**
+   * Logical inverse of the Pose exponential from 254. Taken from team 3181.
+   *
+   * @param transform Pose to perform the log on.
+   */
+  public static Twist2d PoseLog(final Pose2d transform)
+  {
+
+    final double kEps          = 1E-9;
+    final double dtheta        = transform.getRotation().getRadians();
+    final double half_dtheta   = 0.5 * dtheta;
+    final double cos_minus_one = transform.getRotation().getCos() - 1.0;
+    double       halftheta_by_tan_of_halfdtheta;
+    if (Math.abs(cos_minus_one) < kEps)
+    {
+      halftheta_by_tan_of_halfdtheta = 1.0 - 1.0 / 12.0 * dtheta * dtheta;
+    } else
+    {
+      halftheta_by_tan_of_halfdtheta = -(half_dtheta * transform.getRotation().getSin()) / cos_minus_one;
+    }
+    final Translation2d translation_part = transform.getTranslation()
+                                                    .rotateBy(new Rotation2d(halftheta_by_tan_of_halfdtheta,
+                                                                             -half_dtheta));
+    return new Twist2d(translation_part.getX(), translation_part.getY(), dtheta);
   }
 
   /**

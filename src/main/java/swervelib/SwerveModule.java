@@ -99,8 +99,7 @@ public class SwerveModule
     }
 
     // Config angle motor/controller
-    angleMotor.configureIntegratedEncoder(
-        moduleConfiguration.getPositionEncoderConversion(false));
+    angleMotor.configureIntegratedEncoder(moduleConfiguration.getPositionEncoderConversion(false));
     angleMotor.configurePIDF(moduleConfiguration.anglePIDF);
     angleMotor.configurePIDWrapping(-180, 180);
     angleMotor.setInverted(moduleConfiguration.angleMotorInverted);
@@ -142,19 +141,13 @@ public class SwerveModule
    * @param isOpenLoop   Whether to use open loop (direct percent) or direct velocity control.
    * @param force        Disables optimizations that prevent movement in the angle motor and forces the desired state
    *                     onto the swerve module.
-   * @param secondOrder  Enabled 2nd order kinematics correction.
    */
-  public void setDesiredState(SwerveModuleState2 desiredState, boolean isOpenLoop, boolean force, boolean secondOrder)
+  public void setDesiredState(SwerveModuleState2 desiredState, boolean isOpenLoop, boolean force)
   {
-    if (secondOrder)
-    {
-      desiredState.angle = Rotation2d.fromRadians(desiredState.angle.getRadians() + desiredState.omegaRadPerSecond *
-                                                                                    configuration.moduleSteerFFCL *
-                                                                                    0.065);
-    } else
-    {
-      desiredState = SwerveModuleState2.optimize(desiredState, Rotation2d.fromDegrees(getAbsolutePosition()));
-    }
+    desiredState = SwerveModuleState2.optimize(desiredState,
+                                               Rotation2d.fromDegrees(getAbsolutePosition()),
+                                               lastState,
+                                               configuration.moduleSteerFFCL);
 
     if (isOpenLoop)
     {
@@ -178,26 +171,26 @@ public class SwerveModule
 
     if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)
     {
-      SmartDashboard.putNumber("Module[" + moduleNumber + "] Speed Setpoint:", desiredState.speedMetersPerSecond);
-      SmartDashboard.putNumber("Module[" + moduleNumber + "] Angle Setpoint:", desiredState.angle.getDegrees());
-      SmartDashboard.putNumber("Module[" + moduleNumber + "] Omega:", Math.toDegrees(desiredState.omegaRadPerSecond));
+      SmartDashboard.putNumber("Module[" + configuration.name + "] Speed Setpoint:", desiredState.speedMetersPerSecond);
+      SmartDashboard.putNumber("Module[" + configuration.name + "] Angle Setpoint:", desiredState.angle.getDegrees());
+      SmartDashboard.putNumber("Module[" + configuration.name + "] Omega:",
+                               Math.toDegrees(desiredState.omegaRadPerSecond));
     }
 
     // Prevent module rotation if angle is the same as the previous angle.
     if (desiredState.angle != lastState.angle || synchronizeEncoderQueued)
     {
+      double moduleFF = desiredState.omegaRadPerSecond * configuration.moduleSteerFFCL;
       // Synchronize encoders if queued and send in the current position as the value from the absolute encoder.
       if (absoluteEncoder != null && synchronizeEncoderQueued)
       {
         double absoluteEncoderPosition = getAbsolutePosition();
         angleMotor.setPosition(absoluteEncoderPosition);
-        angleMotor.setReference(desiredState.angle.getDegrees(),
-                                0,
-                                absoluteEncoderPosition);
+        angleMotor.setReference(desiredState.angle.getDegrees(), moduleFF, absoluteEncoderPosition);
         synchronizeEncoderQueued = false;
       } else
       {
-        angleMotor.setReference(desiredState.angle.getDegrees(), 0);
+        angleMotor.setReference(desiredState.angle.getDegrees(), moduleFF);
       }
     }
 
@@ -261,7 +254,7 @@ public class SwerveModule
     }
     if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)
     {
-      SmartDashboard.putNumber("Module " + moduleNumber + "Angle", azimuth.getDegrees());
+      SmartDashboard.putNumber("Module[" + configuration.name + "] Angle", azimuth.getDegrees());
     }
     return new SwerveModulePosition(position, azimuth);
   }

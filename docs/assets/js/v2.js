@@ -18,9 +18,9 @@ function getFreeSpeedFromMotors() {
   console.log(motor_count);
   switch (highest_motor) {
     case "neo":
-      $("#freespeedrpm-input").val(5676);
+      // $("#freespeedrpm-input").val(5676);
     case "falcon":
-      $("#freespeedrpm-input").val(6800);
+      // $("#freespeedrpm-input").val(6800);
   }
 }
 

@@ -113,6 +113,8 @@ public class SwerveModuleState2 extends SwerveModuleState
       return desiredState;
     }
 
+    // Maybe the omega rad per second will always be off when optimized?
+//    optimized.omegaRadPerSecond = 0;
     return optimized;
   }
 

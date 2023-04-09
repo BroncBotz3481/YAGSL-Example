@@ -63,13 +63,14 @@ public class SwerveModuleState2 extends SwerveModuleState
   public static SwerveModuleState2 optimize(SwerveModuleState2 desiredState, Rotation2d currentAngle,
                                             SwerveModuleState2 lastState, double moduleSteerFeedForwardClosedLoop)
   {
+    SwerveModuleState2 optimized;
     if (moduleSteerFeedForwardClosedLoop == 0)
     {
 //    desiredState.angle = desiredState.angle.plus(Rotation2d.fromRadians(
 //        lastState.omegaRadPerSecond * moduleSteerFeedForwardClosedLoop * 0.065));
 //      return new SwerveModuleState2(SwerveModuleState.optimize(desiredState, currentAngle),
 //                                    desiredState.omegaRadPerSecond);
-      return new SwerveModuleState2(SwerveModuleState.optimize(desiredState, currentAngle), 0);
+      optimized = new SwerveModuleState2(SwerveModuleState.optimize(desiredState, currentAngle), 0);
 //      return desiredState;
     } else
     {
@@ -91,8 +92,21 @@ public class SwerveModuleState2 extends SwerveModuleState
           targetAngle += 180;
         }
       }
-      return new SwerveModuleState2(targetSpeed, Rotation2d.fromDegrees(targetAngle), desiredState.omegaRadPerSecond);
+      optimized = new SwerveModuleState2(targetSpeed,
+                                         Rotation2d.fromDegrees(targetAngle),
+                                         desiredState.omegaRadPerSecond *
+                                         (desiredState.speedMetersPerSecond ==
+                                          targetSpeed ? 1 : -1));
     }
+
+    // NEVER optimize if it's the same angle, it just doesn't make sense...
+    if (lastState.angle.equals(optimized.angle.rotateBy(Rotation2d.fromDegrees(180))))
+    {
+      desiredState.omegaRadPerSecond = 0;
+      return desiredState;
+    }
+
+    return optimized;
   }
 
   /**

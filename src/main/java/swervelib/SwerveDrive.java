@@ -78,28 +78,28 @@ public class SwerveDrive
   /**
    * Invert odometry readings of drive motor positions, used as a patch for debugging currently.
    */
-  public  boolean             invertOdometry               = false;
+  public        boolean                  invertOdometry               = false;
   /**
    * Correct chassis velocity in {@link SwerveDrive#drive(Translation2d, double, boolean, boolean)} using 254's
    * correction.
    */
-  public  boolean             chassisVelocityCorrection    = true;
+  public        boolean                  chassisVelocityCorrection    = true;
   /**
    * Swerve IMU device for sensing the heading of the robot.
    */
-  private SwerveIMU           imu;
+  private       SwerveIMU                imu;
   /**
    * Simulation of the swerve drive.
    */
-  private SwerveIMUSimulation simIMU;
+  private       SwerveIMUSimulation      simIMU;
   /**
    * Counter to synchronize the modules relative encoder with absolute encoder when not moving.
    */
-  private int                 moduleSynchronizationCounter = 0;
+  private       int                      moduleSynchronizationCounter = 0;
   /**
    * The last heading set in radians.
    */
-  private double              lastHeadingRadians           = 0;
+  private       double                   lastHeadingRadians           = 0;
 
   /**
    * Creates a new swerve drivebase subsystem. Robot is controlled via the {@link SwerveDrive#drive} method, or via the
@@ -862,6 +862,19 @@ public class SwerveDrive
     for (SwerveModule module : swerveModules)
     {
       module.configuration.driveMotor.setPosition(0);
+    }
+  }
+
+  /**
+   * Configure whether the {@link SwerveModuleState2} will be optimized to prevent spinning more than 90deg.
+   *
+   * @param optimizationEnabled Whether the module optimization is enabled.
+   */
+  public void setModuleStateOptimization(boolean optimizationEnabled)
+  {
+    for (SwerveModule module : swerveModules)
+    {
+      module.moduleStateOptimization = optimizationEnabled;
     }
   }
 

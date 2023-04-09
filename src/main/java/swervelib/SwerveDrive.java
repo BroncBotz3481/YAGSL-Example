@@ -18,6 +18,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -890,6 +891,25 @@ public class SwerveDrive
     {
       module.configuration.moduleSteerFFCL = moduleFeedforward;
     }
+  }
+
+  /**
+   * Enable second order kinematics with calculated values for the feedforward and return the value used.
+   *
+   * @param motorFreeSpeedRPM Steering motor free speed RPM.
+   * @return The feedforward value used for the last swerve module.
+   */
+  public double enableSecondOrderKinematics(int motorFreeSpeedRPM)
+  {
+    double feedforwardValue = 0;
+    for (SwerveModule module : swerveModules)
+    {
+      feedforwardValue = module.configuration.moduleSteerFFCL = RobotController.getBatteryVoltage() /
+                                                                (2 * Math.PI * (((double) motorFreeSpeedRPM) /
+                                                                                module.configuration.physicalCharacteristics.angleGearRatio) /
+                                                                 60);
+    }
+    return feedforwardValue;
   }
 
   /**

@@ -2,7 +2,6 @@ package swervelib.math;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 
 /**
  * Second order kinematics swerve module state.
@@ -63,6 +62,19 @@ public class SwerveModuleState2 extends SwerveModuleState
   public static SwerveModuleState2 optimize(SwerveModuleState2 desiredState, Rotation2d currentAngle,
                                             SwerveModuleState2 lastState, double moduleSteerFeedForwardClosedLoop)
   {
+    // NEVER optimize if it's the same angle, it just doesn't make sense...
+    if (currentAngle.equals(desiredState.angle.rotateBy(Rotation2d.fromDegrees(180))))
+    {
+      desiredState.speedMetersPerSecond *= -1;
+      desiredState.angle = desiredState.angle.rotateBy(Rotation2d.fromDegrees(180));
+      desiredState.omegaRadPerSecond = 0;
+      return desiredState;
+    } else if (currentAngle.equals(desiredState.angle))
+    {
+      desiredState.omegaRadPerSecond = 0;
+      return desiredState;
+    }
+
     SwerveModuleState2 optimized;
     if (moduleSteerFeedForwardClosedLoop == 0)
     {
@@ -74,35 +86,30 @@ public class SwerveModuleState2 extends SwerveModuleState
 //      return desiredState;
     } else
     {
-      double targetAngle = SwerveMath.placeInAppropriate0To360Scope(currentAngle.getDegrees(),
-                                                                    desiredState.angle.getDegrees() +
-                                                                    Units.radiansToDegrees(lastState.omegaRadPerSecond *
-                                                                                           moduleSteerFeedForwardClosedLoop *
-                                                                                           0.065));
-      double targetSpeed = desiredState.speedMetersPerSecond;
-      double delta       = targetAngle - currentAngle.getDegrees();
-      if (Math.abs(delta) > 90)
+      Rotation2d delta = desiredState.angle.plus(Rotation2d.fromRadians(lastState.omegaRadPerSecond *
+                                                                        moduleSteerFeedForwardClosedLoop *
+                                                                        0.065))
+                                           .minus(currentAngle);
+      if (Math.abs(delta.getDegrees()) > 90.0)
       {
-        targetSpeed = -targetSpeed;
-        if (delta > 90)
-        {
-          targetAngle -= 180;
-        } else
-        {
-          targetAngle += 180;
-        }
+//        optimized = new SwerveModuleState2(-desiredState.speedMetersPerSecond,
+//                                           desiredState.angle.plus(Rotation2d.fromRadians(lastState.omegaRadPerSecond *
+//                                                                                          moduleSteerFeedForwardClosedLoop *
+//                                                                                          0.065))
+//                                                             .rotateBy(Rotation2d.fromDegrees(180)),
+//                                           -desiredState.omegaRadPerSecond);
+        optimized = new SwerveModuleState2(-desiredState.speedMetersPerSecond,
+                                           desiredState.angle.rotateBy(Rotation2d.fromDegrees(180)),
+                                           -desiredState.omegaRadPerSecond);
+      } else
+      {
+        optimized = desiredState;
       }
-      optimized = new SwerveModuleState2(targetSpeed,
-                                         Rotation2d.fromDegrees(targetAngle),
-                                         desiredState.omegaRadPerSecond *
-                                         (desiredState.speedMetersPerSecond ==
-                                          targetSpeed ? 1 : -1));
     }
 
-    // NEVER optimize if it's the same angle, it just doesn't make sense...
-    if (lastState.angle.equals(optimized.angle.rotateBy(Rotation2d.fromDegrees(180))))
+    if (Math.abs(currentAngle.minus(optimized.angle).getDegrees()) > Math.abs(currentAngle.minus(desiredState.angle)
+                                                                                          .getDegrees()))
     {
-      desiredState.omegaRadPerSecond = 0;
       return desiredState;
     }
 

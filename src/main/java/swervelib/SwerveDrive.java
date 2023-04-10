@@ -313,9 +313,6 @@ public class SwerveDrive
                                               swerveDriveConfiguration.maxSpeed,
                                               swerveDriveConfiguration.attainableMaxTranslationalSpeedMetersPerSecond,
                                               swerveDriveConfiguration.attainableMaxRotationalVelocityRadiansPerSecond);
-    } else
-    {
-      SwerveKinematics2.desaturateWheelSpeeds(desiredStates, swerveDriveConfiguration.maxSpeed);
     }
 
     // Sets states

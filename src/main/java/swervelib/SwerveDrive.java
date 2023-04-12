@@ -765,8 +765,27 @@ public class SwerveDrive
   }
 
   /**
+   * Set the gyro scope offset to a desired known rotation. Unlike {@link SwerveDrive#setGyro(Rotation3d)} it DOES NOT
+   * take the current rotation into account.
+   *
+   * @param offset {@link Rotation3d} known offset of the robot for gyroscope to use.
+   */
+  public void setGyroOffset(Rotation3d offset)
+  {
+    if (SwerveDriveTelemetry.isSimulation)
+    {
+      simIMU.setAngle(offset.getZ());
+    } else
+    {
+      imu.setOffset(offset);
+    }
+  }
+
+  /**
    * Add a vision measurement to the {@link SwerveDrivePoseEstimator} and update the {@link SwerveIMU} gyro reading with
-   * the given timestamp of the vision measurement.
+   * the given timestamp of the vision measurement. <br /> <b>IT IS HIGHLY RECOMMENDED TO UPDATE YOUR GYROSCOPE OFFSET
+   * AFTER USING THIS FUNCTION!</b> <br /> To update your gyroscope readings directly use
+   * {@link SwerveDrive#setGyroOffset(Rotation3d)}.
    *
    * @param robotPose       Robot {@link Pose2d} as measured by vision.
    * @param timestamp       Timestamp the measurement was taken as time since startup, should be taken from
@@ -785,6 +804,7 @@ public class SwerveDrive
     {
       swerveDrivePoseEstimator.addVisionMeasurement(robotPose, timestamp,
                                                     visionMeasurementStdDevs.times(1.0 / trustWorthiness));
+//      setGyroOffset(new Rotation3d(robotPose.getRotation().getRadians(), 0, 0));
     } else
     {
       swerveDrivePoseEstimator.resetPosition(
@@ -816,14 +836,20 @@ public class SwerveDrive
 
 
   /**
-   * Set the expected gyroscope angle using a {@link Rotation3d} object. To reset gyro, set to a new
-   * {@link Rotation3d}.
+   * Set the expected gyroscope angle using a {@link Rotation3d} object. To reset gyro, set to a new {@link Rotation3d}
+   * subtracted from the current gyroscopic readings {@link SwerveIMU#getRotation3d()}.
    *
-   * @param gyro expected gyroscope angle.
+   * @param gyro expected gyroscope angle as {@link Rotation3d}.
    */
   public void setGyro(Rotation3d gyro)
   {
-    imu.setOffset(imu.getRawRotation3d().minus(gyro));
+    if (SwerveDriveTelemetry.isSimulation)
+    {
+      setGyroOffset(simIMU.getGyroRotation3d().minus(gyro));
+    } else
+    {
+      setGyroOffset(imu.getRawRotation3d().minus(gyro));
+    }
   }
 
   /**

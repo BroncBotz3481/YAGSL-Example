@@ -804,12 +804,16 @@ public class SwerveDrive
     {
       swerveDrivePoseEstimator.addVisionMeasurement(robotPose, timestamp,
                                                     visionMeasurementStdDevs.times(1.0 / trustWorthiness));
-//      setGyroOffset(new Rotation3d(robotPose.getRotation().getRadians(), 0, 0));
     } else
     {
       swerveDrivePoseEstimator.resetPosition(
           robotPose.getRotation(), getModulePositions(), robotPose);
     }
+
+    setGyroOffset(new Rotation3d(0, 0, robotPose.getRotation().getRadians()));
+    resetOdometry(
+        new Pose2d(swerveDrivePoseEstimator.getEstimatedPosition().getTranslation(), robotPose.getRotation()));
+    kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, robotPose.getRotation()));
   }
 
   /**

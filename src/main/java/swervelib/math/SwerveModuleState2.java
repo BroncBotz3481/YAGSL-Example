@@ -69,6 +69,11 @@ public class SwerveModuleState2 extends SwerveModuleState
     {
       optimized.omegaRadPerSecond = 0;
     }
+    if (desiredState.angle.equals(optimized.angle.rotateBy(Rotation2d.fromDegrees(180))))
+    {
+      desiredState.omegaRadPerSecond = 0;
+      return desiredState;
+    }
     return optimized;
     /*
     // NEVER optimize if it's the same angle, it just doesn't make sense...

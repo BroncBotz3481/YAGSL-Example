@@ -409,7 +409,8 @@ public class SwerveDrive
    */
   public void resetOdometry(Pose2d pose)
   {
-    swerveDrivePoseEstimator.resetPosition(getYaw(), getModulePositions(), pose);
+    swerveDrivePoseEstimator.resetPosition(pose.getRotation(), getModulePositions(), pose);
+    kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, pose.getRotation()));
   }
 
   /**
@@ -813,7 +814,6 @@ public class SwerveDrive
     setGyroOffset(new Rotation3d(0, 0, robotPose.getRotation().getRadians()));
     resetOdometry(
         new Pose2d(swerveDrivePoseEstimator.getEstimatedPosition().getTranslation(), robotPose.getRotation()));
-    kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, robotPose.getRotation()));
   }
 
   /**

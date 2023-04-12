@@ -62,8 +62,8 @@ public class SwerveModuleState2 extends SwerveModuleState
   public static SwerveModuleState2 optimize(SwerveModuleState2 desiredState, Rotation2d currentAngle,
                                             SwerveModuleState2 lastState, double moduleSteerFeedForwardClosedLoop)
   {
-    SwerveModuleState2 optimized = new SwerveModuleState2(
-        SwerveModuleState.optimize(desiredState.toSwerveModuleState(), currentAngle), desiredState.omegaRadPerSecond);
+    SwerveModuleState2 optimized = new SwerveModuleState2(SwerveModuleState.optimize(desiredState, currentAngle),
+                                                          desiredState.omegaRadPerSecond);
     if (desiredState.angle.equals(currentAngle) || desiredState.angle.equals(
         currentAngle.rotateBy(Rotation2d.fromDegrees(180))) || Math.abs(
         desiredState.angle.minus(currentAngle).getDegrees()) < 90 || moduleSteerFeedForwardClosedLoop == 0)

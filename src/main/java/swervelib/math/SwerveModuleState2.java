@@ -62,6 +62,16 @@ public class SwerveModuleState2 extends SwerveModuleState
   public static SwerveModuleState2 optimize(SwerveModuleState2 desiredState, Rotation2d currentAngle,
                                             SwerveModuleState2 lastState, double moduleSteerFeedForwardClosedLoop)
   {
+    SwerveModuleState2 optimized = new SwerveModuleState2(
+        SwerveModuleState.optimize(desiredState.toSwerveModuleState(), currentAngle), desiredState.omegaRadPerSecond);
+    if (desiredState.angle.equals(currentAngle) || desiredState.angle.equals(
+        currentAngle.rotateBy(Rotation2d.fromDegrees(180))) || Math.abs(
+        desiredState.angle.minus(currentAngle).getDegrees()) < 90 || moduleSteerFeedForwardClosedLoop == 0)
+    {
+      optimized.omegaRadPerSecond = 0;
+    }
+    return optimized;
+    /*
     // NEVER optimize if it's the same angle, it just doesn't make sense...
     if (currentAngle.equals(desiredState.angle.rotateBy(Rotation2d.fromDegrees(180))))
     {
@@ -112,6 +122,7 @@ public class SwerveModuleState2 extends SwerveModuleState
     // Maybe the omega rad per second will always be off when optimized?
 //    optimized.omegaRadPerSecond = 0;
     return optimized;
+     */
   }
 
   /**

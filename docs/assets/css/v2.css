@@ -13,3 +13,7 @@ input[type=number] {
 .v2-tooltip {
   --bs-tooltip-bg: var(--bs-secondary);
 }
+
+.pad{
+  padding: 100px;
+}

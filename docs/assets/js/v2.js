@@ -1,3 +1,6 @@
+
+
+
 function getFreeSpeedFromMotors() {
   let motor_count = {}
   let modules = ['frontright', 'frontleft', 'backright', 'backleft'];
@@ -98,6 +101,41 @@ function isNumeric(str) {
 function copyText(name) {
   let text = $(`#${name}-json`).text();
   navigator.clipboard.writeText(text);
+}
+
+
+function getText(name) {
+  let text = $(`#${name}-json`).text();
+  return text;
+}
+
+//function from https://github.com/eligrey/FileSaver.js/issues/774
+const saveAs = (blob, name) => {
+  // Namespace is used to prevent conflict w/ Chrome Poper Blocker extension (Issue https://github.com/eligrey/FileSaver.js/issues/561)
+  const a = document.createElementNS('http://www.w3.org/1999/xhtml', 'a')
+  a.download = name
+  a.rel = 'noopener'
+  a.href = URL.createObjectURL(blob)
+
+  setTimeout(() => URL.revokeObjectURL(a.href), 40 /* sec */ * 1000)
+  setTimeout(() => a.click(), 0)
+}
+
+function zipDownload() {
+  const zip = new JSZip();
+    let swf = zip.folder("swerve")
+      let cp = swf.file("controllerproperties.json", getText("controllerproperties"));
+      let sd = swf.file("swervedrive.json", getText("swervedrive"));
+      let mod = swf.folder("modules")
+        let pp = mod.file("physicalproperties.json", getText("physicalproperties"));
+        let fl = mod.file("frontleft.json", getText("frontleft"));
+        let fr = mod.file("frontright.json", getText("frontright"));
+        let bl = mod.file("backleft.json", getText("backleft"));
+        let br = mod.file("backright.json", getText("backright"));
+        let pidf = mod.file("pidfproperties.json", getText("pidfproperties"));
+
+  zip.generateAsync({type:"blob"}).then(function (blob) {saveAs(blob, "YAGSL Config.zip")});
+  console.log("Downloaded YAGSL Config zip");
 }
 
 $(function () {

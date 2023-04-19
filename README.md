@@ -34,7 +34,7 @@ We will be actively montoring this and fix any issues when we can!
 * Development happens here on `YAGSL-Example`. `YAGSL` and `YAGSL-Lib` are updated on a nightly
   basis.
 
-### TL;DR Make your configuration [here](https://broncbotz3481.github.io/YAGSL-Example/) and put it into the structure bellow.
+### TL;DR Generate and download your configuration [here](https://broncbotz3481.github.io/YAGSL-Example/) and unzip it so that it follows structure below:
 
 ```text
 deploy

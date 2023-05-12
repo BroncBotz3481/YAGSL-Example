@@ -797,7 +797,7 @@ public class SwerveDrive
    *                        {@link edu.wpi.first.math.kinematics.SwerveDriveOdometry#resetPosition(Rotation2d,
    *                        SwerveModulePosition[], Pose2d)}.
    * @param trustWorthiness Trust level of vision reading when using a soft measurement, used to multiply the standard
-   *                        deviation. Set to 1 for full trust.
+   *                        deviation. Set to 1 for full trust. Higher = Less Weight.
    */
   public void addVisionMeasurement(Pose2d robotPose, double timestamp, boolean soft, double trustWorthiness)
   {

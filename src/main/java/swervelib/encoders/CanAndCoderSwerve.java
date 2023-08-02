@@ -25,6 +25,8 @@ public class CanAndCoderSwerve extends SwerveAbsoluteEncoder {
   public CanAndCoderSwerve(SwerveMotor motor) {
     if (motor.getMotor() instanceof CANSparkMax) {
       encoder = ((CANSparkMax) motor.getMotor()).getAbsoluteEncoder(Type.kDutyCycle);
+      encoder.setPositionConversionFactor(360);
+      encoder.setVelocityConversionFactor(360);
     } else {
       throw new RuntimeException("Motor given to instantiate SparkMaxEncoder is not a CANSparkMax");
     }
@@ -63,7 +65,7 @@ public class CanAndCoderSwerve extends SwerveAbsoluteEncoder {
    */
   @Override
   public double getAbsolutePosition() {
-    return (encoder.getPosition() * 360);
+    return encoder.getPosition();
   }
 
   /**

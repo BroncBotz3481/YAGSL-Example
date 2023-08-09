@@ -68,13 +68,6 @@ public class ModuleJson
     SwerveMotor           angleMotor = angle.createMotor(false);
     SwerveAbsoluteEncoder absEncoder = encoder.createEncoder(angleMotor);
 
-    // If the absolute encoder is attached.
-    if (absEncoder == null)
-    {
-      absEncoder = angle.createIntegratedEncoder(angleMotor);
-      angleMotor.setAbsoluteEncoder(absEncoder);
-    }
-
     return new SwerveModuleConfiguration(
         drive.createMotor(true),
         angleMotor,
@@ -90,7 +83,7 @@ public class ModuleJson
         inverted.drive,
         inverted.angle,
         angleEncoderPulsePerRevolution == 0 ? physicalCharacteristics.angleEncoderPulsePerRotation
-            : angleEncoderPulsePerRevolution,
+                                            : angleEncoderPulsePerRevolution,
         name.replaceAll("\\.json", ""));
   }
 }

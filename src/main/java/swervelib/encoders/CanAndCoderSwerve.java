@@ -33,7 +33,7 @@ public class CanAndCoderSwerve extends SwerveAbsoluteEncoder
   @Override
   public void factoryDefault()
   {
-    // Do nothing
+    encoder.resetFactoryDefaults(false);
   }
 
   /**
@@ -42,7 +42,7 @@ public class CanAndCoderSwerve extends SwerveAbsoluteEncoder
   @Override
   public void clearStickyFaults()
   {
-    // Do nothing
+    encoder.clearStickyFaults();
   }
 
   /**

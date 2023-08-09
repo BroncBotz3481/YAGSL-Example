@@ -1,0 +1,50 @@
+{
+    "fileName": "ReduxLib_2023.json",
+    "name": "ReduxLib",
+    "version": "2023.1.0",
+    "uuid": "151ecca8-670b-4026-8160-cdd2679ef2bd",
+    "mavenUrls": [
+        "https://maven.reduxrobotics.com/"
+    ],
+    "jsonUrl": "https://frcsdk.reduxrobotics.com/ReduxLib_2023.json",
+    "javaDependencies": [
+        {
+            "groupId": "com.reduxrobotics.frc",
+            "artifactId": "ReduxLib-java",
+            "version": "2023.1.0"
+        }
+    ],
+    "jniDependencies": [
+        {
+            "groupId": "com.reduxrobotics.frc",
+            "artifactId": "ReduxLib-driver",
+            "version": "2023.1.0",
+            "isJar": false,
+            "skipInvalidPlatforms": true,
+            "validPlatforms": [
+                "linuxathena",
+                "linux86-64",
+                "osxuniversal",
+                "windowsx86-64"
+            ]
+        }
+    ],
+    "cppDependencies": [
+        {
+            "groupId": "com.reduxrobotics.frc",
+            "artifactId": "ReduxLib-cpp",
+            "version": "2023.1.0",
+            "libName": "ReduxLib-cpp",
+            "headerClassifier": "headers",
+            "sourcesClassifier": "sources",
+            "sharedLibrary": true,
+            "skipInvalidPlatforms": true,
+            "binaryPlatforms": [
+                "linuxathena",
+                "linux86-64",
+                "osxuniversal",
+                "windowsx86-64"
+            ]
+        }
+    ]
+}

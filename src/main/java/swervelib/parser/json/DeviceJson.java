@@ -1,6 +1,9 @@
 package swervelib.parser.json;
 
 import com.revrobotics.SparkMaxRelativeEncoder.Type;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import swervelib.encoders.AnalogAbsoluteEncoderSwerve;
 import swervelib.encoders.CANCoderSwerve;
@@ -88,6 +91,15 @@ public class DeviceJson
         return new ADXRS450Swerve();
       case "analog":
         return new AnalogGyroSwerve(id);
+      case "navx_spi":
+        return new NavXSwerve(SPI.Port.kMXP);
+      case "navx_i2c":
+        DriverStation.reportWarning(
+            "WARNING: There exists an I2C lockup issue on the roboRIO that could occur, more information here: " +
+            "\nhttps://docs.wpilib.org/en/stable/docs/yearly-overview/known-issues" +
+            ".html#onboard-i2c-causing-system-lockups",
+            false);
+        return new NavXSwerve(I2C.Port.kMXP);
       case "navx_onborard":
         return new NavXSwerve(Port.kOnboard);
       case "navx_usb":

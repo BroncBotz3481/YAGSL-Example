@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.SerialPort.Port;
 import swervelib.encoders.AnalogAbsoluteEncoderSwerve;
 import swervelib.encoders.CANCoderSwerve;
 import swervelib.encoders.CanAndCoderSwerve;
+import swervelib.encoders.PWMDutyCycleEncoderSwerve;
 import swervelib.encoders.SparkMaxEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.imu.ADIS16448Swerve;
@@ -62,9 +63,10 @@ public class DeviceJson
         return new SparkMaxEncoderSwerve(motor, 360);
       case "canandcoder_can":
         return new CanAndCoderSwerve(id);
+      case "dutycycle":
+        return new PWMDutyCycleEncoderSwerve(id);
       case "thrifty":
       case "throughbore":
-      case "dutycycle":
       case "analog":
         return new AnalogAbsoluteEncoderSwerve(id);
       case "cancoder":

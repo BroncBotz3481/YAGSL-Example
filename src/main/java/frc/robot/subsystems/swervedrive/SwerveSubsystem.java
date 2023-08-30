@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
-import swervelib.math.SwerveKinematics2;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
@@ -105,9 +105,9 @@ public class SwerveSubsystem extends SubsystemBase
   /**
    * Get the swerve drive kinematics object.
    *
-   * @return {@link SwerveKinematics2} of the swerve drive.
+   * @return {@link SwerveDriveKinematics} of the swerve drive.
    */
-  public SwerveKinematics2 getKinematics()
+  public SwerveDriveKinematics getKinematics()
   {
     return swerveDrive.kinematics;
   }

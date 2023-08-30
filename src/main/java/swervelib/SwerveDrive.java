@@ -20,6 +20,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -44,7 +45,7 @@ public class SwerveDrive
   /**
    * Swerve Kinematics object utilizing second order kinematics.
    */
-  public final SwerveDriveKinematics    kinematics;
+  public final  SwerveDriveKinematics    kinematics;
   /**
    * Swerve drive configuration.
    */
@@ -52,7 +53,7 @@ public class SwerveDrive
   /**
    * Swerve odometry.
    */
-  public final SwerveDrivePoseEstimator swerveDrivePoseEstimator;
+  public final  SwerveDrivePoseEstimator swerveDrivePoseEstimator;
   /**
    * Swerve modules.
    */
@@ -100,6 +101,10 @@ public class SwerveDrive
    * The last heading set in radians.
    */
   private       double                   lastHeadingRadians           = 0;
+  /**
+   * WPILib {@link Notifier} to keep odometry up to date.
+   */
+  private final Notifier                 odometryThread;
 
   /**
    * Creates a new swerve drivebase subsystem. Robot is controlled via the {@link SwerveDrive#drive} method, or via the
@@ -119,6 +124,7 @@ public class SwerveDrive
     swerveController = new SwerveController(controllerConfig);
     // Create Kinematics from swerve module locations.
     kinematics = new SwerveDriveKinematics(config.moduleLocationsMeters);
+    odometryThread = new Notifier(this::updateOdometry);
 
     // Create an integrator for angle if the robot is being simulated to emulate an IMU
     // If the robot is real, instantiate the IMU instead.
@@ -177,11 +183,32 @@ public class SwerveDrive
       SwerveDriveTelemetry.measuredStates = new double[SwerveDriveTelemetry.moduleCount * 2];
       SwerveDriveTelemetry.desiredStates = new double[SwerveDriveTelemetry.moduleCount * 2];
     }
+
+    odometryThread.startPeriodic(SwerveDriveTelemetry.isSimulation ? 0.01 : 0.02);
   }
 
   /**
-   * The primary method for controlling the drivebase. Takes a Translation2d and a rotation rate, and calculates and
-   * commands module states accordingly. Can use either open-loop or closed-loop velocity control for the wheel
+   * Set the odometry update period in seconds.
+   *
+   * @param period period in seconds.
+   */
+  public void setOdometryPeriod(double period)
+  {
+    odometryThread.stop();
+    odometryThread.startPeriodic(period);
+  }
+
+  /**
+   * Stop the odometry thread in favor of manually updating odometry.
+   */
+  public void stopOdometryThread()
+  {
+    odometryThread.stop();
+  }
+
+  /**
+   * The primary method for controlling the drivebase. Takes a {@link Translation2d} and a rotation rate, and calculates
+   * and commands module states accordingly. Can use either open-loop or closed-loop velocity control for the wheel
    * velocities. Also has field- and robot-relative modes, which affect how the translation vector is used. This method
    * defaults to no heading correction.
    *

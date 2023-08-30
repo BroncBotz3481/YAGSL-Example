@@ -50,7 +50,7 @@ public class NavXSwerve extends SwerveIMU
   /**
    * Constructor for the NavX swerve.
    *
-   * @param port Serial Port to connect to.
+   * @param port SPI Port to connect to.
    */
   public NavXSwerve(SPI.Port port)
   {
@@ -71,7 +71,7 @@ public class NavXSwerve extends SwerveIMU
   /**
    * Constructor for the NavX swerve.
    *
-   * @param port Serial Port to connect to.
+   * @param port I2C Port to connect to.
    */
   public NavXSwerve(I2C.Port port)
   {

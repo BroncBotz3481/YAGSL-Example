@@ -3,7 +3,6 @@ package swervelib.parser;
 import static swervelib.math.SwerveMath.calculateDegreesPerSteeringRotation;
 import static swervelib.math.SwerveMath.calculateMaxAcceleration;
 import static swervelib.math.SwerveMath.calculateMetersPerRotation;
-
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
 import swervelib.encoders.SwerveAbsoluteEncoder;
@@ -43,10 +42,6 @@ public class SwerveModuleConfiguration
    * PIDF configuration options for the drive motor closed-loop PID controller.
    */
   public       PIDFConfig                          velocityPIDF;
-  /**
-   * Angle volt-meter-per-second.
-   */
-  public       double                              moduleSteerFFCL;
   /**
    * The integrated encoder pulse per revolution.
    */
@@ -119,7 +114,6 @@ public class SwerveModuleConfiguration
     this.anglePIDF = anglePIDF;
     this.velocityPIDF = velocityPIDF;
     this.maxSpeed = maxSpeed;
-    this.moduleSteerFFCL = physicalCharacteristics.moduleSteerFFCL;
     this.physicalCharacteristics = physicalCharacteristics;
     this.angleMotorEncoderPulsePerRevolution = angleMotorEncoderPulsePerRevolution;
     this.name = name;

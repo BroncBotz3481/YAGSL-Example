@@ -16,6 +16,5 @@
     "drive": 1,
     "angle": 1
   },
-  "wheelGripCoefficientOfFriction": 1.19,
-  "angleMotorFreeSpeedRPM": 5676
+  "wheelGripCoefficientOfFriction": 1.19
 }

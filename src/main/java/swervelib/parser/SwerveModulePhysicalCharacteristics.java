@@ -42,12 +42,6 @@ public class SwerveModulePhysicalCharacteristics
    * Wheel grip tape coefficient of friction on carpet, as described by the vendor.
    */
   public final double wheelGripCoefficientOfFriction;
-  /**
-   * Angle motor kV used for second order kinematics to tune the feedforward, this variable should be adjusted so that
-   * your drive train does not drift towards the direction you are rotating while you translate. When set to 0 the
-   * calculated kV will be used.
-   */
-  public final double moduleSteerFFCL;
 
   /**
    * Construct the swerve module physical characteristics.
@@ -66,8 +60,6 @@ public class SwerveModulePhysicalCharacteristics
    *                                       overdrawing power and power loss).
    * @param driveEncoderPulsePerRotation   The number of encoder pulses per motor rotation, 1 for integrated encoders.
    * @param angleEncoderPulsePerRotation   The number of encoder pulses per motor rotation, 1 for integrated encoders.
-   * @param moduleSteerFFCL                The kV applied to the steering motor to ensure your drivetrain does not drift
-   *                                       towards a direction when rotating while translating.
    */
   public SwerveModulePhysicalCharacteristics(
       double driveGearRatio,
@@ -80,8 +72,7 @@ public class SwerveModulePhysicalCharacteristics
       double driveMotorRampRate,
       double angleMotorRampRate,
       int driveEncoderPulsePerRotation,
-      int angleEncoderPulsePerRotation,
-      double moduleSteerFFCL)
+      int angleEncoderPulsePerRotation)
   {
     this.wheelGripCoefficientOfFriction = wheelGripCoefficientOfFriction;
     this.optimalVoltage = optimalVoltage;
@@ -96,7 +87,6 @@ public class SwerveModulePhysicalCharacteristics
     this.angleMotorCurrentLimit = angleMotorCurrentLimit;
     this.driveMotorRampRate = driveMotorRampRate;
     this.angleMotorRampRate = angleMotorRampRate;
-    this.moduleSteerFFCL = moduleSteerFFCL;
   }
 
   /**
@@ -134,6 +124,6 @@ public class SwerveModulePhysicalCharacteristics
         driveMotorRampRate,
         angleMotorRampRate,
         driveEncoderPulsePerRotation,
-        angleEncoderPulsePerRotation, -0.30);
+        angleEncoderPulsePerRotation);
   }
 }

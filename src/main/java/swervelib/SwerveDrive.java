@@ -21,7 +21,6 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -45,7 +44,7 @@ public class SwerveDrive
 {
 
   /**
-   * Swerve Kinematics object utilizing second order kinematics.
+   * Swerve Kinematics object.
    */
   public final  SwerveDriveKinematics    kinematics;
   /**
@@ -384,7 +383,7 @@ public class SwerveDrive
   }
 
   /**
-   * Set chassis speeds with closed-loop velocity control and second order kinematics.
+   * Set chassis speeds with closed-loop velocity control.
    *
    * @param chassisSpeeds Chassis speeds to set.
    */
@@ -957,55 +956,6 @@ public class SwerveDrive
     {
       module.moduleStateOptimization = optimizationEnabled;
     }
-  }
-
-  /**
-   * Enable second order kinematics for simulation and modifying the feedforward. Second order kinematics could increase
-   * accuracy in odometry.
-   *
-   * @param moduleFeedforward Module feedforward to apply should be between [-1, 1] excluding 0.
-   */
-  public void enableSecondOrderKinematics(double moduleFeedforward)
-  {
-    for (SwerveModule module : swerveModules)
-    {
-      module.configuration.moduleSteerFFCL = moduleFeedforward;
-    }
-  }
-
-  /**
-   * Enable second order kinematics with calculated values for the feedforward and return the value used.
-   *
-   * @param motorFreeSpeedRPM Steering motor free speed RPM.
-   * @return The feedforward value used for the last swerve module.
-   */
-  public double enableSecondOrderKinematics(int motorFreeSpeedRPM)
-  {
-    double feedforwardValue = 0;
-    for (SwerveModule module : swerveModules)
-    {
-      feedforwardValue = module.configuration.moduleSteerFFCL = RobotController.getBatteryVoltage() /
-                                                                (2 * Math.PI * (((double) motorFreeSpeedRPM) /
-                                                                                module.configuration.physicalCharacteristics.angleGearRatio) /
-                                                                 60);
-    }
-    return feedforwardValue;
-  }
-
-  /**
-   * Enable second order kinematics for tracking purposes but completely untuned.
-   */
-  public void enableSecondOrderKinematics()
-  {
-    enableSecondOrderKinematics(-0.00000000000000001);
-  }
-
-  /**
-   * Disable second order kinematics.
-   */
-  public void disableSecondOrderKinematics()
-  {
-    enableSecondOrderKinematics(0);
   }
 
 }

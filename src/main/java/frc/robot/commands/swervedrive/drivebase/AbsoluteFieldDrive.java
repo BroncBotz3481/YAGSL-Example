@@ -24,7 +24,6 @@ public class AbsoluteFieldDrive extends CommandBase
 
   private final SwerveSubsystem swerve;
   private final DoubleSupplier  vX, vY, heading;
-  private final boolean isOpenLoop;
 
   /**
    * Used to drive a swerve robot in full field-centric mode.  vX and vY supply translation inputs, where x is
@@ -41,13 +40,12 @@ public class AbsoluteFieldDrive extends CommandBase
    * @param heading DoubleSupplier that supplies the robot's heading angle.
    */
   public AbsoluteFieldDrive(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY,
-                            DoubleSupplier heading, boolean isOpenLoop)
+                            DoubleSupplier heading)
   {
     this.swerve = swerve;
     this.vX = vX;
     this.vY = vY;
     this.heading = heading;
-    this.isOpenLoop = isOpenLoop;
 
     addRequirements(swerve);
   }
@@ -76,7 +74,7 @@ public class AbsoluteFieldDrive extends CommandBase
     SmartDashboard.putString("Translation", translation.toString());
 
     // Make the robot move
-    swerve.drive(translation, desiredSpeeds.omegaRadiansPerSecond, true, isOpenLoop);
+    swerve.drive(translation, desiredSpeeds.omegaRadiansPerSecond, true);
 
   }
 

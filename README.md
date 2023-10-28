@@ -1,3 +1,4 @@
+<a href='https://ko-fi.com/yagsl' target='_blank'><img height='35' style='border:0px;height:46px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=0' border='0' alt='Buy Me a Robot at ko-fi.com'></a>
 # Yet Another Generic Swerve Library (YAGSL) Example project
 
 YAGSL is intended to be an easy implementation of a generic swerve drive that should work for most
@@ -8,6 +9,7 @@ found [here](docs/START.md)
 This example is intended to be a starting place on how to use YAGSL. By no means is this intended to
 be the base of your robot project. YAGSL provides an easy way to generate a SwerveDrive which can be
 used in both TimedRobot and Command-Based Robot templates.
+
 
 # Overview
 
@@ -57,9 +59,11 @@ import java.io.File;
 import edu.wpi.first.wpilibj.Filesystem;
 import swervelib.parser.SwerveParser;
 import swervelib.SwerveDrive;
+import edu.wpi.first.math.util.Units;
+
 
 File swerveJsonDirectory=new File(Filesystem.getDeployDirectory(),"swerve");
-    SwerveDrive swerveDrive=new SwerveParser(swerveJsonDirectory).createSwerveDrive();
+        SwerveDrive swerveDrive=new SwerveParser(swerveJsonDirectory).createSwerveDrive(Units.feetToMeters(14.5));
 ```
 
 ### Falcon Support would not have been possible without support from Team 1466 Webb Robotics!

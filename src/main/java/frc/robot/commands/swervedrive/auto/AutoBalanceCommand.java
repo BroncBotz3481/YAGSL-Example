@@ -49,7 +49,7 @@ public class AutoBalanceCommand extends CommandBase
 
     double translationVal = MathUtil.clamp(controller.calculate(swerveSubsystem.getPitch().getDegrees(), 0.0), -0.5,
                                            0.5);
-    swerveSubsystem.drive(new Translation2d(translationVal, 0.0), 0.0, true, false);
+    swerveSubsystem.drive(new Translation2d(translationVal, 0.0), 0.0,  false);
   }
 
   /**

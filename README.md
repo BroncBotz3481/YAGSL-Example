@@ -62,8 +62,7 @@ import swervelib.SwerveDrive;
 import edu.wpi.first.math.util.Units;
 
 
-File swerveJsonDirectory=new File(Filesystem.getDeployDirectory(),"swerve");
-        SwerveDrive swerveDrive=new SwerveParser(swerveJsonDirectory).createSwerveDrive(Units.feetToMeters(14.5));
+SwerveDrive swerveDrive=new SwerveParser(new File(Filesystem.getDeployDirectory(),"swerve")).createSwerveDrive(Units.feetToMeters(14.5));
 ```
 
 ### Falcon Support would not have been possible without support from Team 1466 Webb Robotics!

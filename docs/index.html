@@ -36,6 +36,8 @@
                 <option value="navx">NavX</option>
                 <option value="navx_usb">NavX via USB</option>
                 <option value="navx_spi">NavX via SPI</option>
+                <option value="navx_onboard">NavX via "OnBoard" interface</option>
+                <option value="navx_mxp">NavX via MXP</option>
                 <option value="navx_i2c">NavX via I2C (Dangerous)</option>
                 <option value="analog">AnalogGyroscope</option>
                 <option value="adis16448">ADIS16448</option>
@@ -230,12 +232,22 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
                 Offset</label>
             </div>
             <hr/>
+            <div class="alert alert-danger" role="alert">
+              <b>ONLY SPARKMAX'S ARE SUPPORTED FOR BRUSHED MOTOR CONTROL!!</b><br/>
+              If you are using <b>brushed</b> motors you must set the <b>CAN Bus</b> option to one
+              of the following: <br/>
+              <code>greyhill_63r256</code><br/>
+              <code>throughbore</code><br/>
+              <code>throughbore_dataport</code><br/>
+              <code>greyhill_63r256_dataport</code><br/>
+              <code>srx_mag_encoder_dataport</code><br/>
+            </div>
             <div class="form-floating mb-3">
               <select class="form-select" id="frontleftdrive_type-input" name="drive_type">
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
                 <option value="talonfx">Kraken</option>
-
+                <option value="sparkmax_brushed">SparkMAX Brushed Mode</option>
               </select>
               <label class="form-label" for="frontleftdrive_type-input">Drive Motor Type</label>
             </div>
@@ -267,6 +279,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
                 <option value="talonfx">Kraken</option>
+                <option value="sparkmax_brushed">SparkMAX Brushed Mode</option>
 
               </select>
               <label class="form-label" for="frontleftangle_type-input">Angle Motor Type</label>
@@ -318,13 +331,23 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
                 Factor</label>
             </div>
             <hr/>
+            <div class="alert alert-primary" role="alert">
+              CANandCoder has a <code>pulsePerRotation</code> of 1 in YAGSL.
+            </div>
             <div class="form-floating mb-3">
               <select class="form-select" id="frontleftencoder_type-input"
                       name="encoder_type">
                 <option value="none">None</option>
-                <option value="attached">Attached</option>
+                <option value="attached">Attached (to SparkMAX)</option>
                 <option value="cancoder">CANCoder</option>
-                <option value="canandcoder">CANandCoder</option>
+                <option value="canandcoder">CANandCoder (attached to SparkMAX)</option>
+                <option value="canandcoder_can">CANandCoder (CAN)</option>
+                <option value="ma3">MA3</option>
+                <option value="ctre_mag">CTRE Mag</option>
+                <option value="rev_hex">REV Hex</option>
+                <option value="am_mag">AndyMark Mag</option>
+                <option value="dutycycle">dutycycle</option>
+                <option value="analog">analog</option>
                 <option value="thrifty">Thrifty</option>
                 <option value="throughbore">REV Through Bore</option>
               </select>
@@ -402,12 +425,23 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
                 Offset</label>
             </div>
             <hr/>
+            <div class="alert alert-danger" role="alert">
+              <b>ONLY SPARKMAX'S ARE SUPPORTED FOR BRUSHED MOTOR CONTROL!!</b><br/>
+              If you are using <b>brushed</b> motors you must set the <b>CAN Bus</b> option to one
+              of the following: <br/>
+              <code>greyhill_63r256</code><br/>
+              <code>throughbore</code><br/>
+              <code>throughbore_dataport</code><br/>
+              <code>greyhill_63r256_dataport</code><br/>
+              <code>srx_mag_encoder_dataport</code><br/>
+            </div>
             <div class="form-floating mb-3">
               <select class="form-select" id="frontrightdrive_type-input"
                       name="drive_type">
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
                 <option value="talonfx">Kraken</option>
+                <option value="sparkmax_brushed">SparkMAX Brushed Mode</option>
 
               </select>
               <label class="form-label" for="frontrightdrive_type-input">Drive Motor Type</label>
@@ -441,6 +475,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
                 <option value="talonfx">Kraken</option>
+                <option value="sparkmax_brushed">SparkMAX Brushed Mode</option>
 
               </select>
               <label class="form-label" for="frontrightangle_type-input">Angle Motor Type</label>
@@ -492,13 +527,23 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
                 Conversion Factor</label>
             </div>
             <hr/>
+            <div class="alert alert-primary" role="alert">
+              CANandCoder has a <code>pulsePerRotation</code> of 1 in YAGSL.
+            </div>
             <div class="form-floating mb-3">
               <select class="form-select" id="frontrightencoder_type-input"
                       name="encoder_type">
                 <option value="none">None</option>
-                <option value="attached">Attached</option>
+                <option value="attached">Attached (to SparkMAX)</option>
                 <option value="cancoder">CANCoder</option>
-                <option value="canandcoder">CANandCoder</option>
+                <option value="canandcoder">CANandCoder (attached to SparkMAX)</option>
+                <option value="canandcoder_can">CANandCoder (CAN)</option>
+                <option value="ma3">MA3</option>
+                <option value="ctre_mag">CTRE Mag</option>
+                <option value="rev_hex">REV Hex</option>
+                <option value="am_mag">AndyMark Mag</option>
+                <option value="dutycycle">dutycycle</option>
+                <option value="analog">analog</option>
                 <option value="thrifty">Thrifty</option>
                 <option value="throughbore">REV Through Bore</option>
               </select>
@@ -579,11 +624,23 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
                 Offset</label>
             </div>
             <hr/>
+            <div class="alert alert-danger" role="alert">
+              <b>ONLY SPARKMAX'S ARE SUPPORTED FOR BRUSHED MOTOR CONTROL!!</b><br/>
+              If you are using <b>brushed</b> motors you must set the <b>CAN Bus</b> option to one
+              of the following: <br/>
+              <code>greyhill_63r256</code><br/>
+              <code>throughbore</code><br/>
+              <code>throughbore_dataport</code><br/>
+              <code>greyhill_63r256_dataport</code><br/>
+              <code>srx_mag_encoder_dataport</code><br/>
+            </div>
             <div class="form-floating mb-3">
               <select class="form-select" id="backleftdrive_type-input" name="drive_type">
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
                 <option value="falcon">Kraken</option>
+                <option value="sparkmax_brushed">SparkMAX Brushed Mode</option>
+
               </select>
               <label class="form-label" for="backleftdrive_type-input">Drive Motor Type</label>
             </div>
@@ -614,6 +671,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
                 <option value="talonfx">Kraken</option>
+                <option value="sparkmax_brushed">SparkMAX Brushed Mode</option>
 
               </select>
               <label class="form-label" for="backleftangle_type-input">Angle Motor Type</label>
@@ -664,13 +722,23 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
                 Factor</label>
             </div>
             <hr/>
+            <div class="alert alert-primary" role="alert">
+              CANandCoder has a <code>pulsePerRotation</code> of 1 in YAGSL.
+            </div>
             <div class="form-floating mb-3">
               <select class="form-select" id="backleftencoder_type-input"
                       name="encoder_type">
                 <option value="none">None</option>
-                <option value="attached">Attached</option>
+                <option value="attached">Attached (to SparkMAX)</option>
                 <option value="cancoder">CANCoder</option>
-                <option value="canandcoder">CANandCoder</option>
+                <option value="canandcoder">CANandCoder (attached to SparkMAX)</option>
+                <option value="canandcoder_can">CANandCoder (CAN)</option>
+                <option value="ma3">MA3</option>
+                <option value="ctre_mag">CTRE Mag</option>
+                <option value="rev_hex">REV Hex</option>
+                <option value="am_mag">AndyMark Mag</option>
+                <option value="dutycycle">dutycycle</option>
+                <option value="analog">analog</option>
                 <option value="thrifty">Thrifty</option>
                 <option value="throughbore">REV Through Bore</option>
               </select>
@@ -751,11 +819,22 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
                 Offset</label>
             </div>
             <hr/>
+            <div class="alert alert-danger" role="alert">
+              <b>ONLY SPARKMAX'S ARE SUPPORTED FOR BRUSHED MOTOR CONTROL!!</b><br/>
+              If you are using <b>brushed</b> motors you must set the <b>CAN Bus</b> option to one
+              of the following: <br/>
+              <code>greyhill_63r256</code><br/>
+              <code>throughbore</code><br/>
+              <code>throughbore_dataport</code><br/>
+              <code>greyhill_63r256_dataport</code><br/>
+              <code>srx_mag_encoder_dataport</code><br/>
+            </div>
             <div class="form-floating mb-3">
               <select class="form-select" id="backrightdrive_type-input" name="drive_type">
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
                 <option value="talonfx">Kraken</option>
+                <option value="sparkmax_brushed">SparkMAX Brushed Mode</option>
 
               </select>
               <label class="form-label" for="backrightdrive_type-input">Drive Motor Type</label>
@@ -788,6 +867,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
                 <option value="talonfx">Kraken</option>
+                <option value="sparkmax_brushed">SparkMAX Brushed Mode</option>
 
               </select>
               <label class="form-label" for="backrightangle_type-input">Angle Motor Type</label>
@@ -839,13 +919,23 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
                 Factor</label>
             </div>
             <hr/>
+            <div class="alert alert-primary" role="alert">
+              CANandCoder has a <code>pulsePerRotation</code> of 1 in YAGSL.
+            </div>
             <div class="form-floating mb-3">
               <select class="form-select" id="backrightencoder_type-input"
                       name="encoder_type">
                 <option value="none">None</option>
-                <option value="attached">Attached</option>
+                <option value="attached">Attached (to SparkMAX)</option>
                 <option value="cancoder">CANCoder</option>
-                <option value="canandcoder">CANandCoder</option>
+                <option value="canandcoder">CANandCoder (attached to SparkMAX)</option>
+                <option value="canandcoder_can">CANandCoder (CAN)</option>
+                <option value="ma3">MA3</option>
+                <option value="ctre_mag">CTRE Mag</option>
+                <option value="rev_hex">REV Hex</option>
+                <option value="am_mag">AndyMark Mag</option>
+                <option value="dutycycle">dutycycle</option>
+                <option value="analog">analog</option>
                 <option value="thrifty">Thrifty</option>
                 <option value="throughbore">REV Through Bore</option>
               </select>

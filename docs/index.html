@@ -30,22 +30,13 @@
         <div class="card-body">
           <form id="swervedrive-form">
             <div class="form-floating mb-3">
-              <input aria-describedby="maxSpeed-help" class="form-control" id="maxSpeed-input"
-                     name="maxSpeed"
-                     placeholder="14.5" type="number" value="14.5">
-              <label class="form-label" for="maxSpeed-input">Max Speed</label>
-              <div class="form-text" id="maxSpeed-help">Feet per Second</div>
-            </div>
-            <div class="form-floating mb-3">
-              <input class="form-control" id="optimalVoltage-input" name="optimalVoltage"
-                     placeholder="12" type="number" value="12">
-              <label class="form-label" for="optimalVoltage-input">Optimal Voltage</label>
-            </div>
-            <div class="form-floating mb-3">
               <select class="form-select" id="imu_type-input" name="imu_type">
                 <option selected value="pigeon">Pigeon</option>
                 <option value="pigeon2">Pigeon2</option>
                 <option value="navx">NavX</option>
+                <option value="navx_usb">NavX via USB</option>
+                <option value="navx_spi">NavX via SPI</option>
+                <option value="navx_i2c">NavX via I2C (Dangerous)</option>
                 <option value="analog">AnalogGyroscope</option>
                 <option value="adis16448">ADIS16448</option>
                 <option value="adis16470">ADIS16470</option>
@@ -70,6 +61,49 @@
               <label class="form-check-label" for="invertedIMU-input">
                 Inverted IMU
               </label>
+            </div>
+            <div class="alert alert-secondary" role="alert">
+              The formula for the angle motor conversion factor is <br/> <code>360 / (angleGearRatio
+              * pulsePerRotation)</code> <br/> <br/>
+              The formula for the drive motor conversion factor is <br/> <code>(Math.PI *
+              wheelDiameter) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
+              You can also generate these by using <br/>
+              <code>SwerveMath.calculateMetersPerRotation</code>
+              <br/>
+              As in this example bellow. <br/>
+              <pre><code>
+// Angle conversion factor is 360 / (GEAR RATIO * ENCODER RESOLUTION)
+//  In this case the gear ratio is 12.8 motor revolutions per wheel rotation.
+//  The encoder resolution per motor revolution is 1 per motor revolution.
+double <var>angleConversionFactor</var> = SwerveMath.calculateDegreesPerSteeringRotation(<var>12.8</var>, <var>1</var>);
+
+// Motor conversion factor is (PI * WHEEL DIAMETER) / (GEAR RATIO * ENCODER RESOLUTION).
+//  In this case the wheel diameter is 4 inches.
+//  The gear ratio is 6.75 motor revolutions per wheel rotation.
+//  The encoder resolution per motor revolution is 1 per motor revolution.
+double <var>driveConversionFactor</var> = SwerveMath.calculateMetersPerRotation(<var>Units.inchesToMeters(4)</var>, <var>6.75</var>, <var>1</var>);
+
+// If you did not want to specify conversion factors in these JSON files you can place them as parameters for <var>createSwerveDrive</var>. <br/>
+SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed, angleConversionFactor, driveConversionFactor);
+                </code></pre>
+              These conversion factor is applied to the PID on the motor controller.
+            </div>
+            <hr/>
+            <div class="form-floating mb-3">
+
+              <input class="form-control" id="swervedriveconversion_angle-input"
+                     name="conversionFactor_angle" placeholder=""
+                     type="number" value="0">
+              <label class="form-label" for="swervedriveconversion_angle-input">Angle Motor
+                Conversion Factor</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input class="form-control" id="swervedriveconversion_drive-input"
+                     name="conversionFactor_drive"
+                     placeholder="(Math.PI * wheelDiameter) / (driveGearRatio * pulsePerRotation)"
+                     type="number" value="0">
+              <label class="form-label" for="swervedriveconversion_drive-input">Drive Motor
+                Conversion Factor</label>
             </div>
           </form>
         </div>
@@ -104,12 +138,9 @@
         <div class="card-body">
           <form id="physicalproperties-form">
             <div class="form-floating mb-3">
-              <input aria-describedby="wheelDiameter-help" class="form-control"
-                     id="wheelDiameter-input"
-                     name="wheelDiameter"
-                     placeholder="4" type="number" value="4">
-              <label class="form-label" for="wheelDiameter-input">Wheel Diameter</label>
-              <div class="form-text" id="wheelDiameter-help">Inches</div>
+              <input class="form-control" id="optimalVoltage-input" name="optimalVoltage"
+                     placeholder="12" type="number" value="12">
+              <label class="form-label" for="optimalVoltage-input">Optimal Voltage</label>
             </div>
             <div class="form-floating mb-3">
               <input class="form-control" id="wheelGripCoefficientOfFriction-input"
@@ -118,17 +149,6 @@
               <label class="form-label" for="wheelGripCoefficientOfFriction-input">Grip Coefficient
                 of
                 Friction</label>
-            </div>
-            <hr/>
-            <div class="form-floating mb-3">
-              <input class="form-control" id="gearRatio_drive-input" name="gearRatio_drive"
-                     placeholder="6.75" type="number" value="6.75">
-              <label class="form-label" for="gearRatio_drive-input">Gear Ratio Drive</label>
-            </div>
-            <div class="form-floating mb-3">
-              <input class="form-control" id="gearRatio_angle-input" name="gearRatio_angle"
-                     placeholder="12.8" type="number" value="12.8">
-              <label class="form-label" for="gearRatio_angle-input">Gear Ratio Angle</label>
             </div>
             <hr/>
             <div class="form-floating mb-3">
@@ -151,21 +171,6 @@
               <input class="form-control" id="rampRate_angle-input" name="rampRate_angle"
                      placeholder=".25" type="number" value=".25">
               <label class="form-label" for="rampRate_angle-input">Ramp Rate Angle</label>
-            </div>
-            <hr/>
-            <div class="form-floating mb-3">
-              <input class="form-control" id="encoderPulsePerRotation_drive-input"
-                     name="encoderPulsePerRotation_drive" placeholder="1" type="number"
-                     value="1">
-              <label class="form-label" for="encoderPulsePerRotation_drive-input">Encoder Ticks
-                Drive</label>
-            </div>
-            <div class="form-floating">
-              <input class="form-control" id="encoderPulsePerRotation_angle-input"
-                     name="encoderPulsePerRotation_angle" placeholder="1" type="number"
-                     value="1">
-              <label class="form-label" for="encoderPulsePerRotation_angle-input">Encoder Ticks
-                Angle</label>
             </div>
           </form>
         </div>
@@ -229,6 +234,8 @@
               <select class="form-select" id="frontleftdrive_type-input" name="drive_type">
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
+                <option value="talonfx">Kraken</option>
+
               </select>
               <label class="form-label" for="frontleftdrive_type-input">Drive Motor Type</label>
             </div>
@@ -259,6 +266,8 @@
               <select class="form-select" id="frontleftangle_type-input" name="angle_type">
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
+                <option value="talonfx">Kraken</option>
+
               </select>
               <label class="form-label" for="frontleftangle_type-input">Angle Motor Type</label>
             </div>
@@ -285,12 +294,37 @@
               </label>
             </div>
             <hr/>
+            <div class="alert alert-secondary" role="alert">
+              The formula for the angle motor conversion factor is <br/> <code>360 / (angleGearRatio
+              * pulsePerRotation)</code> <br/> <br/>
+              The formula for the drive motor conversion factor is <br/> <code>(Math.PI *
+              wheelDiameter) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
+              These conversion factor is applied to the PID on the motor controller.
+            </div>
+            <div class="form-floating mb-3">
+              <input class="form-control" id="frontleftconversion_angle-input"
+                     name="conversionFactor_angle"
+                     placeholder="360 / (angleGearRatio * pulsePerRotation)"
+                     type="number" value="0">
+              <label class="form-label" for="frontleftconversion_angle-input">Angle Motor Conversion
+                Factor</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input class="form-control" id="frontleftconversion_drive-input"
+                     name="conversionFactor_drive"
+                     placeholder="(Math.PI * wheelDiameter) / (driveGearRatio * pulsePerRotation)"
+                     type="number" value="0">
+              <label class="form-label" for="frontleftconversion_drive-input">Drive Motor Conversion
+                Factor</label>
+            </div>
+            <hr/>
             <div class="form-floating mb-3">
               <select class="form-select" id="frontleftencoder_type-input"
                       name="encoder_type">
                 <option value="none">None</option>
                 <option value="attached">Attached</option>
                 <option value="cancoder">CANCoder</option>
+                <option value="canandcoder">CANandCoder</option>
                 <option value="thrifty">Thrifty</option>
                 <option value="throughbore">REV Through Bore</option>
               </select>
@@ -373,6 +407,8 @@
                       name="drive_type">
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
+                <option value="talonfx">Kraken</option>
+
               </select>
               <label class="form-label" for="frontrightdrive_type-input">Drive Motor Type</label>
             </div>
@@ -404,6 +440,8 @@
                       name="angle_type">
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
+                <option value="talonfx">Kraken</option>
+
               </select>
               <label class="form-label" for="frontrightangle_type-input">Angle Motor Type</label>
             </div>
@@ -430,12 +468,37 @@
               </label>
             </div>
             <hr/>
+            <div class="alert alert-secondary" role="alert">
+              The formula for the angle motor conversion factor is <br/> <code>360 / (angleGearRatio
+              * pulsePerRotation)</code> <br/> <br/>
+              The formula for the drive motor conversion factor is <br/> <code>(Math.PI *
+              wheelDiameter) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
+              These conversion factor is applied to the PID on the motor controller.
+            </div>
+            <div class="form-floating mb-3">
+              <input class="form-control" id="frontrightconversion_angle-input"
+                     name="conversionFactor_angle"
+                     placeholder="360 / (angleGearRatio * pulsePerRotation)"
+                     type="number" value="0">
+              <label class="form-label" for="frontrightconversion_angle-input">Angle Motor
+                Conversion Factor</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input class="form-control" id="frontrightconversion_drive-input"
+                     name="conversionFactor_drive"
+                     placeholder="(Math.PI * wheelDiameter) / (driveGearRatio * pulsePerRotation)"
+                     type="number" value="0">
+              <label class="form-label" for="frontrightconversion_drive-input">Drive Motor
+                Conversion Factor</label>
+            </div>
+            <hr/>
             <div class="form-floating mb-3">
               <select class="form-select" id="frontrightencoder_type-input"
                       name="encoder_type">
                 <option value="none">None</option>
                 <option value="attached">Attached</option>
                 <option value="cancoder">CANCoder</option>
+                <option value="canandcoder">CANandCoder</option>
                 <option value="thrifty">Thrifty</option>
                 <option value="throughbore">REV Through Bore</option>
               </select>
@@ -520,6 +583,7 @@
               <select class="form-select" id="backleftdrive_type-input" name="drive_type">
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
+                <option value="falcon">Kraken</option>
               </select>
               <label class="form-label" for="backleftdrive_type-input">Drive Motor Type</label>
             </div>
@@ -549,6 +613,8 @@
               <select class="form-select" id="backleftangle_type-input" name="angle_type">
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
+                <option value="talonfx">Kraken</option>
+
               </select>
               <label class="form-label" for="backleftangle_type-input">Angle Motor Type</label>
             </div>
@@ -574,12 +640,37 @@
               </label>
             </div>
             <hr/>
+            <div class="alert alert-secondary" role="alert">
+              The formula for the angle motor conversion factor is <br/> <code>360 / (angleGearRatio
+              * pulsePerRotation)</code> <br/> <br/>
+              The formula for the drive motor conversion factor is <br/> <code>(Math.PI *
+              wheelDiameter) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
+              These conversion factor is applied to the PID on the motor controller.
+            </div>
+            <div class="form-floating mb-3">
+
+              <input class="form-control" id="backleftconversion_angle-input"
+                     name="conversionFactor_angle" placeholder=""
+                     type="number" value="0">
+              <label class="form-label" for="backleftconversion_angle-input">Angle Motor Conversion
+                Factor</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input class="form-control" id="backleftconversion_drive-input"
+                     name="conversionFactor_drive"
+                     placeholder="(Math.PI * wheelDiameter) / (driveGearRatio * pulsePerRotation)"
+                     type="number" value="0">
+              <label class="form-label" for="backleftconversion_drive-input">Drive Motor Conversion
+                Factor</label>
+            </div>
+            <hr/>
             <div class="form-floating mb-3">
               <select class="form-select" id="backleftencoder_type-input"
                       name="encoder_type">
                 <option value="none">None</option>
                 <option value="attached">Attached</option>
                 <option value="cancoder">CANCoder</option>
+                <option value="canandcoder">CANandCoder</option>
                 <option value="thrifty">Thrifty</option>
                 <option value="throughbore">REV Through Bore</option>
               </select>
@@ -664,6 +755,8 @@
               <select class="form-select" id="backrightdrive_type-input" name="drive_type">
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
+                <option value="talonfx">Kraken</option>
+
               </select>
               <label class="form-label" for="backrightdrive_type-input">Drive Motor Type</label>
             </div>
@@ -694,6 +787,8 @@
               <select class="form-select" id="backrightangle_type-input" name="angle_type">
                 <option selected value="sparkmax">NEO</option>
                 <option value="falcon">Falcon</option>
+                <option value="talonfx">Kraken</option>
+
               </select>
               <label class="form-label" for="backrightangle_type-input">Angle Motor Type</label>
             </div>
@@ -720,12 +815,37 @@
               </label>
             </div>
             <hr/>
+            <div class="alert alert-secondary" role="alert">
+              The formula for the angle motor conversion factor is <br/> <code>360 / (angleGearRatio
+              * pulsePerRotation)</code> <br/> <br/>
+              The formula for the drive motor conversion factor is <br/> <code>(Math.PI *
+              wheelDiameter) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
+              These conversion factor is applied to the PID on the motor controller.
+            </div>
+            <div class="form-floating mb-3">
+              <input class="form-control" id="backrightconversion_angle-input"
+                     name="conversionFactor_angle"
+                     placeholder="360 / (angleGearRatio * pulsePerRotation)"
+                     type="number" value="0">
+              <label class="form-label" for="backrightconversion_angle-input">Angle Motor Conversion
+                Factor</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input class="form-control" id="backrightconversion_drive-input"
+                     name="conversionFactor_drive"
+                     placeholder="(Math.PI * wheelDiameter) / (driveGearRatio * pulsePerRotation)"
+                     type="number" value="0">
+              <label class="form-label" for="backrightconversion_drive-input">Drive Motor Conversion
+                Factor</label>
+            </div>
+            <hr/>
             <div class="form-floating mb-3">
               <select class="form-select" id="backrightencoder_type-input"
                       name="encoder_type">
                 <option value="none">None</option>
                 <option value="attached">Attached</option>
                 <option value="cancoder">CANCoder</option>
+                <option value="canandcoder">CANandCoder</option>
                 <option value="thrifty">Thrifty</option>
                 <option value="throughbore">REV Through Bore</option>
               </select>
@@ -903,7 +1023,9 @@
     </div>
   </div>
   <div id="download-button">
-    <button class="btn btn-primary btn-lg mt-2 mb-3" id="download" type="button" onclick="zipDownload()">Download</button>
+    <button class="btn btn-primary btn-lg mt-2 mb-3" id="download" onclick="zipDownload()"
+            type="button">Download
+    </button>
   </div>
 </div>
 <script src="https://unpkg.com/@popperjs/core@2"></script>
@@ -914,8 +1036,8 @@
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script 
-      src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
 <script src="assets/js/v2.js"></script>
 
 </body>

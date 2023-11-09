@@ -280,7 +280,7 @@ public class SwerveDrive
   public void driveFieldOriented(ChassisSpeeds velocity)
   {
     ChassisSpeeds fieldOrientedVelocity = ChassisSpeeds.fromFieldRelativeSpeeds(velocity, getYaw());
-    drive(velocity);
+    drive(fieldOrientedVelocity);
   }
 
   /**

@@ -76,15 +76,17 @@ public class SwerveDrive
    */
   public        SwerveController         swerveController;
   /**
-   * Trustworthiness of the internal model of how motors should be moving Measured in expected standard deviation
-   * (meters of position and degrees of rotation)
+   * Standard deviation of encoders and gyroscopes, usually should not change. (meters of position and degrees of
+   * rotation)
    */
   public        Matrix<N3, N1> stateStdDevs                                    = VecBuilder.fill(0.1,
                                                                                                  0.1,
                                                                                                  0.1);
   /**
-   * Trustworthiness of the vision system Measured in expected standard deviation (meters of position and degrees of
-   * rotation)
+   * The standard deviation of the vision measurement, for best accuracy calculate the standard deviation at 2 or more
+   * points and fit a line to it and modify this using {@link SwerveDrive#addVisionMeasurement(Pose2d, double, Matrix)}
+   * with the calculated optimal standard deviation. (Units should be meters per pixel). By optimizing this you can get
+   * vision accurate to inches instead of feet.
    */
   public        Matrix<N3, N1> visionMeasurementStdDevs                        = VecBuilder.fill(0.9,
                                                                                                  0.9,
@@ -905,29 +907,14 @@ public class SwerveDrive
    * AFTER USING THIS FUNCTION!</b> <br /> To update your gyroscope readings directly use
    * {@link SwerveDrive#setGyroOffset(Rotation3d)}.
    *
-   * @param robotPose       Robot {@link Pose2d} as measured by vision.
-   * @param timestamp       Timestamp the measurement was taken as time since startup, should be taken from
-   *                        {@link Timer#getFPGATimestamp()} or similar sources.
-   * @param soft            Add vision estimate using the
-   *                        {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double)} function, or hard
-   *                        reset odometry with the given position with
-   *                        {@link edu.wpi.first.math.kinematics.SwerveDriveOdometry#resetPosition(Rotation2d,
-   *                        SwerveModulePosition[], Pose2d)}.
-   * @param trustWorthiness Trust level of vision reading when using a soft measurement, used to multiply the standard
-   *                        deviation. Set to 1 for full trust. Higher = Less Weight.
+   * @param robotPose Robot {@link Pose2d} as measured by vision.
+   * @param timestamp Timestamp the measurement was taken as time since startup, should be taken from
+   *                  {@link Timer#getFPGATimestamp()} or similar sources.
    */
-  public void addVisionMeasurement(Pose2d robotPose, double timestamp, boolean soft, double trustWorthiness)
+  public void addVisionMeasurement(Pose2d robotPose, double timestamp)
   {
     odometryLock.lock();
-    if (soft)
-    {
-      swerveDrivePoseEstimator.addVisionMeasurement(robotPose, timestamp,
-                                                    visionMeasurementStdDevs.times(1.0 / trustWorthiness));
-    } else
-    {
-      swerveDrivePoseEstimator.resetPosition(
-          robotPose.getRotation(), getModulePositions(), robotPose);
-    }
+    swerveDrivePoseEstimator.addVisionMeasurement(robotPose, timestamp);
     Pose2d newOdometry = new Pose2d(swerveDrivePoseEstimator.getEstimatedPosition().getTranslation(),
                                     robotPose.getRotation());
     odometryLock.unlock();
@@ -943,19 +930,18 @@ public class SwerveDrive
    * @param robotPose                Robot {@link Pose2d} as measured by vision.
    * @param timestamp                Timestamp the measurement was taken as time since startup, should be taken from
    *                                 {@link Timer#getFPGATimestamp()} or similar sources.
-   * @param soft                     Add vision estimate using the
-   *                                 {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double)} function, or
-   *                                 hard reset odometry with the given position with
-   *                                 {@link edu.wpi.first.math.kinematics.SwerveDriveOdometry#resetPosition(Rotation2d,
-   *                                 SwerveModulePosition[], Pose2d)}.
    * @param visionMeasurementStdDevs Vision measurement standard deviation that will be sent to the
-   *                                 {@link SwerveDrivePoseEstimator}.
+   *                                 {@link SwerveDrivePoseEstimator}.The standard deviation of the vision measurement,
+   *                                 for best accuracy calculate the standard deviation at 2 or more  points and fit a
+   *                                 line to it with the calculated optimal standard deviation. (Units should be meters
+   *                                 per pixel). By optimizing this you can get * vision accurate to inches instead of
+   *                                 feet.
    */
-  public void addVisionMeasurement(Pose2d robotPose, double timestamp, boolean soft,
+  public void addVisionMeasurement(Pose2d robotPose, double timestamp,
                                    Matrix<N3, N1> visionMeasurementStdDevs)
   {
     this.visionMeasurementStdDevs = visionMeasurementStdDevs;
-    addVisionMeasurement(robotPose, timestamp, soft, 1);
+    addVisionMeasurement(robotPose, timestamp);
   }
 
 

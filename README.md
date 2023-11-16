@@ -65,6 +65,27 @@ import edu.wpi.first.math.util.Units;
 SwerveDrive swerveDrive=new SwerveParser(new File(Filesystem.getDeployDirectory(),"swerve")).createSwerveDrive(Units.feetToMeters(14.5));
 ```
 
+# Migrating Old Configuration Files
+
+1. Delete `wheelDiamter`, `gearRatio`, `encoderPulsePerRotation` from `physicalproperties.json`
+2. Add `optimalVoltage` to `physicalproperties.json`
+3. Delete `maxSpeed` and `optimalVoltage` from `swervedrive.json`
+4. **IF** a swerve module doesn't have the same drive motor or steering motor as the rest of the
+   swerve drive you **MUST** specify a `conversionFactor` for BOTH the drive and steering motor in
+   the modules configuration JSON file. IF one of the motors is the same as the rest of the swerve
+   drive and you want to use that `conversionFactor`, set the `conversionFactor` in the module JSON
+   configuration to 0.
+5. You MUST specify the maximum speed when creating a `SwerveDrive`
+   through `new SwerveParser(directory).createSwerveDrive(maximumSpeed);`
+6. IF you do not want to set `conversionFactor` in `swervedrive.json`. You can pass it into the
+   constructor as a parameter like this
+
+```java
+double DriveConversionFactor=SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(WHEEL_DIAMETER),GEAR_RATIO,ENCODER_RESOLUTION);
+        double SteeringConversionFactor=SwerveMath.calculateDegreesPerSteeringRotation(GEAR_RATIO,ENCODER_RESOLUTION);
+        new SwerveParser(directory).createSwerveDrive(maximumSpeed,SteeringConversionFactor,DriveConversionFactor);
+```
+
 ### Falcon Support would not have been possible without support from Team 1466 Webb Robotics!
 
 # Configuration Tips

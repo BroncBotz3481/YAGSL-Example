@@ -81,9 +81,9 @@ SwerveDrive swerveDrive=new SwerveParser(new File(Filesystem.getDeployDirectory(
    constructor as a parameter like this
 
 ```java
-double DriveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(WHEEL_DIAMETER),GEAR_RATIO,ENCODER_RESOLUTION);
-double SteeringConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(GEAR_RATIO,ENCODER_RESOLUTION);
-SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed,SteeringConversionFactor,DriveConversionFactor);
+double DriveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(WHEEL_DIAMETER), GEAR_RATIO, ENCODER_RESOLUTION);
+double SteeringConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(GEAR_RATIO, ENCODER_RESOLUTION);
+SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed, SteeringConversionFactor, DriveConversionFactor);
 ```
 
 ### Falcon Support would not have been possible without support from Team 1466 Webb Robotics!

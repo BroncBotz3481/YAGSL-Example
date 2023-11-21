@@ -1,24 +1,35 @@
 {
   "NetworkTables": {
+    "Retained Values": {
+      "open": false
+    },
     "transitory": {
       "SmartDashboard": {
-        "open": true
+        "open": true,
+        "swerve": {
+          "open": true
+        }
       }
     },
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/LiveWindow/SwerveSubsystem": "Subsystem",
+      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/SmartDashboard/Field": "Field2d",
-      "/SmartDashboard/Pigeon 2 [13]": "Gyro"
+      "/SmartDashboard/Pigeon 2 [13]": "Gyro",
+      "/SmartDashboard/navX-Sensor[1]": "Gyro"
     }
   },
   "NetworkTables Settings": {
-    "mode": "Client (NT4)"
+    "mode": "Client (NT4)",
+    "serverTeam": "10.83.24.2"
   },
   "Plots": {
     "Plot <0>": {
       "plots": [
         {
-          "height": 886,
+          "height": 0,
           "series": [
             {
               "color": [
@@ -46,6 +57,198 @@
                 1.0
               ],
               "id": "NT:/SmartDashboard/Module[backleft] Speed Setpoint:"
+            }
+          ]
+        }
+      ],
+      "window": {
+        "visible": false
+      }
+    },
+    "Plot <1>": {
+      "plots": [
+        {
+          "height": 412,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "digital": "Auto",
+              "id": "NT:/SmartDashboard/Module[backleft] Absolute Encoder"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Module[backleft] Angle"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Module[backleft] Angle Setpoint:"
+            }
+          ]
+        }
+      ],
+      "window": {
+        "name": "Back Left"
+      }
+    },
+    "Plot <2>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "autoFit": true
+            }
+          ],
+          "height": 389,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Module[frontleft] Absolute Encoder"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Module[frontleft] Angle"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Module[frontleft] Angle Setpoint:"
+            }
+          ]
+        }
+      ],
+      "window": {
+        "name": "Front Left"
+      }
+    },
+    "Plot <3>": {
+      "plots": [
+        {
+          "height": 410,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Module[backright] Absolute Encoder"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Module[backright] Angle"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Module[backright] Angle Setpoint:"
+            }
+          ]
+        }
+      ],
+      "window": {
+        "name": "Back RIght"
+      }
+    },
+    "Plot <4>": {
+      "plots": [
+        {
+          "height": 393,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Module[frontright] Absolute Encoder"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Module[frontright] Angle"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Module[frontright] Angle Setpoint:"
+            }
+          ]
+        }
+      ],
+      "window": {
+        "name": "Front Right"
+      }
+    },
+    "Plot <5>": {
+      "plots": [
+        {
+          "height": 332,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/navX-Sensor[1]/Value"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/swerve/robotRotation"
             }
           ]
         }

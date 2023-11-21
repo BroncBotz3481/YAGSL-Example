@@ -24,6 +24,7 @@ public class AbsoluteDrive extends CommandBase
   private final SwerveSubsystem swerve;
   private final DoubleSupplier  vX, vY;
   private final DoubleSupplier headingHorizontal, headingVertical;
+  private boolean firstLoop = true;
 
   /**
    * Used to drive a swerve robot in full field-centric mode.  vX and vY supply translation inputs, where x is
@@ -60,23 +61,6 @@ public class AbsoluteDrive extends CommandBase
   @Override
   public void initialize()
   {
-    // Prevent Movement After Auto 
-    // Get the curretHeading
-    double currentHeading = swerve.getHeading().getRadians();
-    
-    // Set the Current Heading to the desired Heading
-    ChassisSpeeds desiredSpeeds = swerve.getTargetSpeeds(0, 0, Math.sin(currentHeading), Math.cos(currentHeading));
-
-    //Calculate Translation to send to drive
-    Translation2d translation = SwerveController.getTranslation2d(desiredSpeeds);
-    translation = SwerveMath.limitVelocity(translation, swerve.getFieldVelocity(), swerve.getPose(),
-                                           Constants.LOOP_TIME, Constants.ROBOT_MASS, List.of(Constants.CHASSIS),
-                                           swerve.getSwerveDriveConfiguration());
-    SmartDashboard.putNumber("LimitedTranslation", translation.getX());
-    SmartDashboard.putString("Translation", translation.toString());
-
-    // Make the robot not move from its position after auto
-    swerve.drive(translation, desiredSpeeds.omegaRadiansPerSecond, true);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -85,10 +69,21 @@ public class AbsoluteDrive extends CommandBase
   {
 
     // Get the desired chassis speeds based on a 2 joystick module.
-
     ChassisSpeeds desiredSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(),
                                                          headingHorizontal.getAsDouble(),
                                                          headingVertical.getAsDouble());
+
+    // Prevent Movement After Auto 
+    if(firstLoop){
+      // Get the curretHeading
+      double firstLoopHeading = swerve.getHeading().getRadians();
+    
+      // Set the Current Heading to the desired Heading
+      desiredSpeeds = swerve.getTargetSpeeds(0, 0, Math.sin(firstLoopHeading), Math.cos(firstLoopHeading));
+
+      //No Longer First Loop
+      firstLoop = false;
+    }
 
     // Limit velocity to prevent tippy
     Translation2d translation = SwerveController.getTranslation2d(desiredSpeeds);

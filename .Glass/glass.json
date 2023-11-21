@@ -108,11 +108,6 @@
     "Plot <2>": {
       "plots": [
         {
-          "axis": [
-            {
-              "autoFit": true
-            }
-          ],
           "height": 389,
           "series": [
             {

@@ -60,6 +60,23 @@ public class AbsoluteDrive extends CommandBase
   @Override
   public void initialize()
   {
+    // Prevent Movement After Auto 
+    // Get the curretHeading
+    double currentHeading = swerve.getHeading().getRadians();
+    
+    // Set the Current Heading to the desired Heading
+    ChassisSpeeds desiredSpeeds = swerve.getTargetSpeeds(0, 0, Math.sin(currentHeading), Math.cos(currentHeading));
+
+    //Calculate Translation to send to drive
+    Translation2d translation = SwerveController.getTranslation2d(desiredSpeeds);
+    translation = SwerveMath.limitVelocity(translation, swerve.getFieldVelocity(), swerve.getPose(),
+                                           Constants.LOOP_TIME, Constants.ROBOT_MASS, List.of(Constants.CHASSIS),
+                                           swerve.getSwerveDriveConfiguration());
+    SmartDashboard.putNumber("LimitedTranslation", translation.getX());
+    SmartDashboard.putString("Translation", translation.toString());
+
+    // Make the robot not move from its position after auto
+    swerve.drive(translation, desiredSpeeds.omegaRadiansPerSecond, true);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

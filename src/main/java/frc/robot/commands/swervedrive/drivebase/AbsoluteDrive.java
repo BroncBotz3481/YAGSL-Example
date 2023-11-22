@@ -24,7 +24,7 @@ public class AbsoluteDrive extends CommandBase
   private final SwerveSubsystem swerve;
   private final DoubleSupplier  vX, vY;
   private final DoubleSupplier headingHorizontal, headingVertical;
-  private boolean firstLoop = true;
+  private boolean initRotation = false;
 
   /**
    * Used to drive a swerve robot in full field-centric mode.  vX and vY supply translation inputs, where x is
@@ -61,6 +61,7 @@ public class AbsoluteDrive extends CommandBase
   @Override
   public void initialize()
   {
+    initRotation = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -74,7 +75,7 @@ public class AbsoluteDrive extends CommandBase
                                                          headingVertical.getAsDouble());
 
     // Prevent Movement After Auto
-    if(firstLoop)
+    if(initRotation)
     {
       if(headingHorizontal.getAsDouble() == 0 && headingVertical.getAsDouble() == 0)
       {
@@ -84,8 +85,8 @@ public class AbsoluteDrive extends CommandBase
         // Set the Current Heading to the desired Heading
         desiredSpeeds = swerve.getTargetSpeeds(0, 0, Math.sin(firstLoopHeading), Math.cos(firstLoopHeading));
       }
-      //No Longer First Loop
-      firstLoop = false;
+      //Dont Init Rotation Again
+      initRotation = false;
     }
 
     // Limit velocity to prevent tippy

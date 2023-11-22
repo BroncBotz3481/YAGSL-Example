@@ -74,7 +74,7 @@ public class AbsoluteDrive extends CommandBase
                                                          headingVertical.getAsDouble());
 
     // Prevent Movement After Auto 
-    if(firstLoop){
+    if(firstLoop && headingHorizontal.getAsDouble() != 0 && headingVertical.getAsDouble() != 0){
       // Get the curretHeading
       double firstLoopHeading = swerve.getHeading().getRadians();
     

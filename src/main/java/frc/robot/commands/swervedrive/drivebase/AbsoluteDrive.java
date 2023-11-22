@@ -73,14 +73,17 @@ public class AbsoluteDrive extends CommandBase
                                                          headingHorizontal.getAsDouble(),
                                                          headingVertical.getAsDouble());
 
-    // Prevent Movement After Auto 
-    if(firstLoop && headingHorizontal.getAsDouble() != 0 && headingVertical.getAsDouble() != 0){
-      // Get the curretHeading
-      double firstLoopHeading = swerve.getHeading().getRadians();
-    
-      // Set the Current Heading to the desired Heading
-      desiredSpeeds = swerve.getTargetSpeeds(0, 0, Math.sin(firstLoopHeading), Math.cos(firstLoopHeading));
-
+    // Prevent Movement After Auto
+    if(firstLoop)
+    {
+      if(headingHorizontal.getAsDouble() == 0 && headingVertical.getAsDouble() == 0)
+      {
+        // Get the curretHeading
+        double firstLoopHeading = swerve.getHeading().getRadians();
+      
+        // Set the Current Heading to the desired Heading
+        desiredSpeeds = swerve.getTargetSpeeds(0, 0, Math.sin(firstLoopHeading), Math.cos(firstLoopHeading));
+      }
       //No Longer First Loop
       firstLoop = false;
     }

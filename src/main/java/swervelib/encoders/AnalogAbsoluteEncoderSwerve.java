@@ -90,12 +90,29 @@ public class AnalogAbsoluteEncoderSwerve extends SwerveAbsoluteEncoder
     return encoder;
   }
 
-  /*
-   * Cannot Set the offset of an Analog absolute Encoder
+  /**
+   * Cannot Set the offset of an Analog Absolute Encoder.
+   * 
+   * @param offset the offset the Absolute Encoder uses as the zero point.
+   * 
+   * @return Will always be false as setting the offset is unsupported of an Analog absolute encoder.
    */
   @Override
-  public void setAbsoluteEncoderOffset(double offset)
+  public boolean setAbsoluteEncoderOffset(double offset)
   {
     //Do Nothing
+    return false;
+  }
+
+    /**
+   * Cannot Set or get the offset of an Analog absolute Encoder.
+   * 
+   * @return will always return 0.0
+   */
+  @Override
+  public double getAbsoluteEncoderOffset()
+  {
+    //Do Nothing
+    return 0.0;
   }
 }

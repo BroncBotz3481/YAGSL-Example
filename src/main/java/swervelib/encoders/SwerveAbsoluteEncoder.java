@@ -47,7 +47,16 @@ public abstract class SwerveAbsoluteEncoder
   public abstract Object getAbsoluteEncoder();
 
   /**
-   * Sets the Absolute Encoder offset at the Encoder Level
+   * Sets the Absolute Encoder offset at the Encoder Level.
+   * 
+   * @param offset the offset the Absolute Encoder uses as the zero point.
+   * 
+   * @return if setting Absolute Encoder Offset was successful or not.
    */
-  public abstract void setAbsoluteEncoderOffset(double offset);
+  public abstract boolean setAbsoluteEncoderOffset(double offset);
+
+  /**
+   * Get the current Absolute Encoder offset as reported by the Encoder.
+   */
+  public abstract double getAbsoluteEncoderOffset();
 }

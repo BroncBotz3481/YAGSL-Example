@@ -138,12 +138,33 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
     return encoder;
   }
 
-  /*
-   * Sets the Absolute Encoder Offset inside of the CANcoder's Memory
+  /**
+   * Sets the Absolute Encoder Offset inside of the CANcoder's Memory.
+   * 
+   * @param offset the offset the Absolute Encoder uses as the zero point.
+   * 
+   * @return if setting Absolute Encoder Offset was successful or not.
    */
   @Override
-  public void setAbsoluteEncoderOffset(double offset)
+  public boolean setAbsoluteEncoderOffset(double offset)
   {
-    encoder.configMagnetOffset(offset);
+    ErrorCode error = encoder.configMagnetOffset(offset);
+    if(error == ErrorCode.OK)
+    {
+      return true;
+    }
+    DriverStation.reportWarning("Failure to set Absolute Encoder Offset Error: "+error, false);
+    return false;
+  }
+
+  /**
+   * Get the Offset zero point of the Magnet as configured inside the CANcoder's Memory. 
+   * 
+   * @return current zero point of the magnet.
+   */
+  @Override
+  public double getAbsoluteEncoderOffset()
+  {
+    return encoder.configGetMagnetOffset();
   }
 }

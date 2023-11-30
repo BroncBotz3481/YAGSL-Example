@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.math.SwerveMath;
@@ -26,7 +27,7 @@ public class SwerveModule
   /**
    * Angle offset from the absolute encoder.
    */
-  private final double                    angleOffset;
+  private double                    angleOffset;
   /**
    * Swerve Motors.
    */
@@ -64,6 +65,10 @@ public class SwerveModule
    * Encoder synchronization queued.
    */
   private boolean                synchronizeEncoderQueued = false;
+  /**
+   * Previously used Absoulte Encoder offset that was stored in the Encoder's Memory.
+   */
+  private double oldAbsoluteEncoderOffset = 0;
 
   /**
    * Construct the swerve module and initialize the swerve module motors and absolute encoder.
@@ -105,6 +110,7 @@ public class SwerveModule
     absoluteEncoder = moduleConfiguration.absoluteEncoder;
     if (absoluteEncoder != null)
     {
+      oldAbsoluteEncoderOffset = absoluteEncoder.getAbsoluteEncoderOffset();
       absoluteEncoder.factoryDefault();
       absoluteEncoder.configure(moduleConfiguration.absoluteEncoderInverted);
       angleMotor.setPosition(getAbsolutePosition());
@@ -386,5 +392,38 @@ public class SwerveModule
   public SwerveModuleConfiguration getConfiguration()
   {
     return configuration;
+  }
+
+  /**
+   * Push absolute encoder offset in the memory of the encoder or controller.
+   * Also removes the internal angle offset.
+   * 
+   * @param offset the offset the AbsoluteEncoder should use.
+   */
+  public void pushOffsetsToControllers(double offset)
+  {
+    oldAbsoluteEncoderOffset = absoluteEncoder.getAbsoluteEncoderOffset();
+    if(absoluteEncoder.setAbsoluteEncoderOffset(offset) == true){
+      angleOffset = 0;
+    }
+    else{
+      DriverStation.reportWarning("Pushing the Absolute Encoder offset to the encoder failed on module #"+moduleNumber, false);
+    }
+  }
+
+  /**
+   * Restore internal offset in YAGSL and either sets absolute encoder offset to 0 or restores old value.
+   * 
+   * @param restoreMemory Whether or not the origional offset value should be restored.
+   */
+  public void restoreInternalOffset(boolean restoreMemory)
+  {
+    if(restoreMemory){
+      absoluteEncoder.setAbsoluteEncoderOffset(oldAbsoluteEncoderOffset);
+    }
+    else{
+      absoluteEncoder.setAbsoluteEncoderOffset(0);
+    }
+    angleOffset = configuration.angleOffset;
   }
 }

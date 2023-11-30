@@ -45,4 +45,9 @@ public abstract class SwerveAbsoluteEncoder
    * @return Absolute encoder object.
    */
   public abstract Object getAbsoluteEncoder();
+
+  /**
+   * Sets the Absolute Encoder offset at the Encoder Level
+   */
+  public abstract void setAbsoluteEncoderOffset(double offset);
 }

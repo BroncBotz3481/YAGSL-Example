@@ -83,4 +83,13 @@ public class PWMDutyCycleEncoderSwerve extends SwerveAbsoluteEncoder
     // Do nothing
   }
 
+  /*
+   * Sets the Offset of the Encoder in the WPILib Encoder Library
+   */
+  @Override
+  public void setAbsoluteEncoderOffset(double offset)
+  {
+    encoder.setPositionOffset(offset);
+  }
+
 }

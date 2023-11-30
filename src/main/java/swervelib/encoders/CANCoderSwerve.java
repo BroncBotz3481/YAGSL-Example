@@ -137,4 +137,13 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
   {
     return encoder;
   }
+
+  /*
+   * Sets the Absolute Encoder Offset inside of the CANcoder's Memory
+   */
+  @Override
+  public void setAbsoluteEncoderOffset(double offset)
+  {
+    encoder.configMagnetOffset(offset);
+  }
 }

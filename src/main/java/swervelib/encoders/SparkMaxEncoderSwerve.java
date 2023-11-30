@@ -105,4 +105,13 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
   {
     return encoder;
   }
+
+  /*
+   * Sets the Absolute Encoder Offset inside of the SparkMax's Memory
+   */
+  @Override
+  public void setAbsoluteEncoderOffset(double offset)
+  {
+    encoder.setZeroOffset(offset);
+  }
 }

@@ -77,4 +77,13 @@ public class CanAndCoderSwerve extends SwerveAbsoluteEncoder
   {
     return encoder;
   }
+
+  /*
+   * Cannot Set the offset of the CanAndCoder
+   */
+  @Override
+  public void setAbsoluteEncoderOffset(double offset)
+  {
+    //CanAndCoder does not support Absolute Offset Changing
+  }
 }

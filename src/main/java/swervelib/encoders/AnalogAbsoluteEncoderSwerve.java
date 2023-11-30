@@ -89,4 +89,13 @@ public class AnalogAbsoluteEncoderSwerve extends SwerveAbsoluteEncoder
   {
     return encoder;
   }
+
+  /*
+   * Cannot Set the offset of an Analog absolute Encoder
+   */
+  @Override
+  public void setAbsoluteEncoderOffset(double offset)
+  {
+    //Do Nothing
+  }
 }

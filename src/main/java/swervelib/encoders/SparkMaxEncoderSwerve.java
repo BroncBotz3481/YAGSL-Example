@@ -116,9 +116,14 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
   @Override
   public boolean setAbsoluteEncoderOffset(double offset)
   {
-    REVLibError error = encoder.setZeroOffset(offset);
-    if(error == REVLibError.kOk){
-      return true;
+    REVLibError error = null;
+    for(int i=0; i < maximumRetries; i++)
+    {
+      error = encoder.setZeroOffset(offset);
+      if(error == REVLibError.kOk)
+      {
+        return true;
+      }
     }
     DriverStation.reportWarning("Failure to set Absolute Encoder Offset Error: "+ error, false);
     return false;

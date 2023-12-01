@@ -1082,9 +1082,7 @@ public class SwerveDrive
   }
 
   /**
-   * Restores Internal YAGSL Encoder offsets and either sets the Encoder's Internal Offset to 0 or to the previously stored value.
-   * 
-   * @param restoreMemory Whether the memory inside the encoder is restored or not.
+   * Restores Internal YAGSL Encoder offsets and sets the Encoder stored offset back to 0
    */
   public void restoreInternalOffset(boolean restoreMemory)
   {

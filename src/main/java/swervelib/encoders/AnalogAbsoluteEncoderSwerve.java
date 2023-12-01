@@ -102,7 +102,7 @@ public class AnalogAbsoluteEncoderSwerve extends SwerveAbsoluteEncoder
   public boolean setAbsoluteEncoderOffset(double offset)
   {
     //Do Nothing
-    DriverStation.reportWarning("Cannot Set Absolute Encoder Offset of Analog Encoders", false);
+    DriverStation.reportWarning("Cannot Set Absolute Encoder Offset of Analog Encoders Channel #"+encoder.getChannel(), false);
     return false;
   }
 }

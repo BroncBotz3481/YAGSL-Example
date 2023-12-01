@@ -120,18 +120,7 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
     if(error == REVLibError.kOk){
       return true;
     }
-    DriverStation.reportWarning("Failure to set Absolute Encoder Offset Error: "+error, false);
+    DriverStation.reportWarning("Failure to set Absolute Encoder Offset Error: "+ error, false);
     return false;
-  }
-
-  /**
-   * Get the Absolute Encoder Offset inside of the SparkMax's Memory.
-   * 
-   * @return The zero offset of the absolute encoder with the position conversion factor applied from the Sparkmax's Memory.
-   */
-  @Override
-  public double getAbsoluteEncoderOffset()
-  {
-    return encoder.getZeroOffset();
   }
 }

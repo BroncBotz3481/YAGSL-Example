@@ -2,6 +2,7 @@ package swervelib.encoders;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * Swerve Absolute Encoder for Thrifty Encoders and other analog encoders.
@@ -101,18 +102,7 @@ public class AnalogAbsoluteEncoderSwerve extends SwerveAbsoluteEncoder
   public boolean setAbsoluteEncoderOffset(double offset)
   {
     //Do Nothing
+    DriverStation.reportWarning("Cannot Set Absolute Encoder Offset of Analog Encoders", false);
     return false;
-  }
-
-    /**
-   * Cannot Set or get the offset of an Analog absolute Encoder.
-   * 
-   * @return will always return 0.0
-   */
-  @Override
-  public double getAbsoluteEncoderOffset()
-  {
-    //Do Nothing
-    return 0.0;
   }
 }

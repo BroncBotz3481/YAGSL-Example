@@ -54,9 +54,4 @@ public abstract class SwerveAbsoluteEncoder
    * @return if setting Absolute Encoder Offset was successful or not.
    */
   public abstract boolean setAbsoluteEncoderOffset(double offset);
-
-  /**
-   * Get the current Absolute Encoder offset as reported by the Encoder.
-   */
-  public abstract double getAbsoluteEncoderOffset();
 }

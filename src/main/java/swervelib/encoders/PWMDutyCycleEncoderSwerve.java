@@ -97,16 +97,4 @@ public class PWMDutyCycleEncoderSwerve extends SwerveAbsoluteEncoder
 
     return true;
   }
-
-  /**
-   * Get the Offset of the Encoder in the WPILib Encoder Library.
-   * 
-   * @return Current Zero Point Offset.
-   */
-  @Override
-  public double getAbsoluteEncoderOffset()
-  {
-    return encoder.getPositionOffset();
-  }
-
 }

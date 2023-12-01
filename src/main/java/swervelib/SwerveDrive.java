@@ -1077,7 +1077,7 @@ public class SwerveDrive
   {
     for (SwerveModule module : swerveModules)
     {
-      module.pushOffsetsToControllers(module.configuration.angleOffset);
+      module.pushOffsetsToControllers();
     }
   }
 
@@ -1090,7 +1090,7 @@ public class SwerveDrive
   {
     for (SwerveModule module : swerveModules)
     {
-      module.restoreInternalOffset(restoreMemory);
+      module.restoreInternalOffset();
     }
   }
 

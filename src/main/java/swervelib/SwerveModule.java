@@ -65,10 +65,6 @@ public class SwerveModule
    * Encoder synchronization queued.
    */
   private boolean                synchronizeEncoderQueued = false;
-  /**
-   * Previously used Absoulte Encoder offset that was stored in the Encoder's Memory.
-   */
-  private double oldAbsoluteEncoderOffset = 0;
 
   /**
    * Construct the swerve module and initialize the swerve module motors and absolute encoder.
@@ -110,7 +106,6 @@ public class SwerveModule
     absoluteEncoder = moduleConfiguration.absoluteEncoder;
     if (absoluteEncoder != null)
     {
-      oldAbsoluteEncoderOffset = absoluteEncoder.getAbsoluteEncoderOffset();
       absoluteEncoder.factoryDefault();
       absoluteEncoder.configure(moduleConfiguration.absoluteEncoderInverted);
       angleMotor.setPosition(getAbsolutePosition());
@@ -397,33 +392,29 @@ public class SwerveModule
   /**
    * Push absolute encoder offset in the memory of the encoder or controller.
    * Also removes the internal angle offset.
-   * 
-   * @param offset the offset the AbsoluteEncoder should use.
    */
-  public void pushOffsetsToControllers(double offset)
+  public void pushOffsetsToControllers()
   {
-    oldAbsoluteEncoderOffset = absoluteEncoder.getAbsoluteEncoderOffset();
-    if(absoluteEncoder.setAbsoluteEncoderOffset(offset) == true){
-      angleOffset = 0;
+    if(absoluteEncoder != null)
+    {
+      if(absoluteEncoder.setAbsoluteEncoderOffset(angleOffset)){
+        angleOffset = 0;
+      }
+      else{
+        DriverStation.reportWarning("Pushing the Absolute Encoder offset to the encoder failed on module #"+moduleNumber, false);
+      }
     }
     else{
-      DriverStation.reportWarning("Pushing the Absolute Encoder offset to the encoder failed on module #"+moduleNumber, false);
+      DriverStation.reportWarning("There is no Absolute Encoder on module #"+moduleNumber, false);
     }
   }
 
   /**
    * Restore internal offset in YAGSL and either sets absolute encoder offset to 0 or restores old value.
-   * 
-   * @param restoreMemory Whether or not the origional offset value should be restored.
    */
-  public void restoreInternalOffset(boolean restoreMemory)
+  public void restoreInternalOffset()
   {
-    if(restoreMemory){
-      absoluteEncoder.setAbsoluteEncoderOffset(oldAbsoluteEncoderOffset);
-    }
-    else{
-      absoluteEncoder.setAbsoluteEncoderOffset(0);
-    }
+    absoluteEncoder.setAbsoluteEncoderOffset(0);
     angleOffset = configuration.angleOffset;
   }
 }

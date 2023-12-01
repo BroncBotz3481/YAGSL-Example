@@ -93,16 +93,4 @@ public class CanAndCoderSwerve extends SwerveAbsoluteEncoder
     DriverStation.reportWarning("Cannot Set Absolute Encoder Offset of CanAndCoders", false);
     return false;
   }
-
-  /**
-   * Cannot get or set the offset of the CanAndCoder.
-   * 
-   * @return Will always return 0.0 
-   */
-  @Override
-  public double getAbsoluteEncoderOffset()
-  {
-    //CanAndCoder does not support Absolute Offset Changing
-    return 0.0;
-  }
 }

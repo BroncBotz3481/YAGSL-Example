@@ -91,10 +91,6 @@ public class CanAndCoderSwerve extends SwerveAbsoluteEncoder
   @Override
   public boolean setAbsoluteEncoderOffset(double offset)
   {
-    CANandcoderSettings settings = new CANandcoderSettings();
-    settings = encoder.getSettings();
-    offset = (offset/360) * 16383;
-    settings.ZERO_OFFSET.((byte) offset);
     //CanAndCoder does not support Absolute Offset Changing
     DriverStation.reportWarning("Cannot Set Absolute Encoder Offset of CanAndCoders ID: "+encoder.getAddress(), false);
     return false;

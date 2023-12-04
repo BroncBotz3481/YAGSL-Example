@@ -125,7 +125,7 @@
               The formula for the angle motor conversion factor is <br/> <code>360 / (angleGearRatio
               * pulsePerRotation)</code> <br/> <br/>
               The formula for the drive motor conversion factor is <br/> <code>(Math.PI *
-              wheelDiameter) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
+              wheelDiameterInMeters) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
               You can also generate these by using <br/>
               <code>SwerveMath.calculateMetersPerRotation</code>
               <br/>
@@ -159,7 +159,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
             <div class="form-floating mb-3">
               <input class="form-control" id="swervedriveconversion_drive-input"
                      name="conversionFactor_drive"
-                     placeholder="(Math.PI * wheelDiameter) / (driveGearRatio * pulsePerRotation)"
+                     placeholder="(Math.PI * wheelDiameterInMeters) / (driveGearRatio * pulsePerRotation)"
                      type="number" value="0">
               <label class="form-label" for="swervedriveconversion_drive-input">Drive Motor
                 Conversion Factor</label>
@@ -312,7 +312,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
               The formula for the angle motor conversion factor is <br/> <code>360 / (angleGearRatio
               * pulsePerRotation)</code> <br/> <br/>
               The formula for the drive motor conversion factor is <br/> <code>(Math.PI *
-              wheelDiameter) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
+              wheelDiameterInMeters) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
               These conversion factor is applied to the PID on the motor controller.
             </div>
             <div class="form-floating mb-3">
@@ -326,7 +326,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
             <div class="form-floating mb-3">
               <input class="form-control" id="frontleftconversion_drive-input"
                      name="conversionFactor_drive"
-                     placeholder="(Math.PI * wheelDiameter) / (driveGearRatio * pulsePerRotation)"
+                     placeholder="(Math.PI * wheelDiameterInMeters) / (driveGearRatio * pulsePerRotation)"
                      type="number" value="0">
               <label class="form-label" for="frontleftconversion_drive-input">Drive Motor Conversion
                 Factor</label>
@@ -508,7 +508,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
               The formula for the angle motor conversion factor is <br/> <code>360 / (angleGearRatio
               * pulsePerRotation)</code> <br/> <br/>
               The formula for the drive motor conversion factor is <br/> <code>(Math.PI *
-              wheelDiameter) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
+              wheelDiameterInMeters) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
               These conversion factor is applied to the PID on the motor controller.
             </div>
             <div class="form-floating mb-3">
@@ -522,7 +522,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
             <div class="form-floating mb-3">
               <input class="form-control" id="frontrightconversion_drive-input"
                      name="conversionFactor_drive"
-                     placeholder="(Math.PI * wheelDiameter) / (driveGearRatio * pulsePerRotation)"
+                     placeholder="(Math.PI * wheelDiameterInMeters) / (driveGearRatio * pulsePerRotation)"
                      type="number" value="0">
               <label class="form-label" for="frontrightconversion_drive-input">Drive Motor
                 Conversion Factor</label>
@@ -703,7 +703,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
               The formula for the angle motor conversion factor is <br/> <code>360 / (angleGearRatio
               * pulsePerRotation)</code> <br/> <br/>
               The formula for the drive motor conversion factor is <br/> <code>(Math.PI *
-              wheelDiameter) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
+              wheelDiameterInMeters) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
               These conversion factor is applied to the PID on the motor controller.
             </div>
             <div class="form-floating mb-3">
@@ -717,7 +717,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
             <div class="form-floating mb-3">
               <input class="form-control" id="backleftconversion_drive-input"
                      name="conversionFactor_drive"
-                     placeholder="(Math.PI * wheelDiameter) / (driveGearRatio * pulsePerRotation)"
+                     placeholder="(Math.PI * wheelDiameterInMeters) / (driveGearRatio * pulsePerRotation)"
                      type="number" value="0">
               <label class="form-label" for="backleftconversion_drive-input">Drive Motor Conversion
                 Factor</label>
@@ -900,7 +900,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
               The formula for the angle motor conversion factor is <br/> <code>360 / (angleGearRatio
               * pulsePerRotation)</code> <br/> <br/>
               The formula for the drive motor conversion factor is <br/> <code>(Math.PI *
-              wheelDiameter) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
+              wheelDiameterInMeters) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
               These conversion factor is applied to the PID on the motor controller.
             </div>
             <div class="form-floating mb-3">
@@ -914,7 +914,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
             <div class="form-floating mb-3">
               <input class="form-control" id="backrightconversion_drive-input"
                      name="conversionFactor_drive"
-                     placeholder="(Math.PI * wheelDiameter) / (driveGearRatio * pulsePerRotation)"
+                     placeholder="(Math.PI * wheelDiameterInMeters) / (driveGearRatio * pulsePerRotation)"
                      type="number" value="0">
               <label class="form-label" for="backrightconversion_drive-input">Drive Motor Conversion
                 Factor</label>

@@ -137,7 +137,7 @@
 double <var>angleConversionFactor</var> = SwerveMath.calculateDegreesPerSteeringRotation(<var>12.8</var>, <var>1</var>);
 
 // Motor conversion factor is (PI * WHEEL DIAMETER) / (GEAR RATIO * ENCODER RESOLUTION).
-//  In this case the wheel diameter is 4 inches.
+//  In this case the wheel diameter is 4 inches, which must be converted to meters to get meters/second.
 //  The gear ratio is 6.75 motor revolutions per wheel rotation.
 //  The encoder resolution per motor revolution is 1 per motor revolution.
 double <var>driveConversionFactor</var> = SwerveMath.calculateMetersPerRotation(<var>Units.inchesToMeters(4)</var>, <var>6.75</var>, <var>1</var>);

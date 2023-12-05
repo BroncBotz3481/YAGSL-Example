@@ -62,9 +62,10 @@ public class DeviceJson
     switch (type)
     {
       case "none":
+        return null;
       case "integrated":
       case "attached":
-        return null;
+        return new SparkMaxEncoderSwerve(motor, 1);
       case "sparkmax_analog":
         return new SparkMaxAnalogEncoderSwerve(motor);
       case "canandcoder":
@@ -182,25 +183,5 @@ public class DeviceJson
       default:
         throw new RuntimeException(type + " is not a recognized absolute encoder type.");
     }
-  }
-
-  /**
-   * Create a {@link SwerveAbsoluteEncoder} from the data port on the motor controller.
-   *
-   * @param motor The motor to create the absolute encoder from.
-   * @return {@link SwerveAbsoluteEncoder} from the motor controller.
-   */
-  public SwerveAbsoluteEncoder createIntegratedEncoder(SwerveMotor motor)
-  {
-    switch (type)
-    {
-      case "sparkmax":
-        return new SparkMaxEncoderSwerve(motor, 1);
-      case "falcon":
-      case "talonfx":
-        return null;
-    }
-    throw new RuntimeException(
-        "Could not create absolute encoder from data port of " + type + " id " + id);
   }
 }

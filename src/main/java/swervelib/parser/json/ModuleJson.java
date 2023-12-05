@@ -1,5 +1,6 @@
 package swervelib.parser.json;
 
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.MotorFeedbackSensor;
 import edu.wpi.first.math.util.Units;
 import swervelib.encoders.SwerveAbsoluteEncoder;
@@ -72,18 +73,12 @@ public class ModuleJson
     SwerveAbsoluteEncoder absEncoder = encoder.createEncoder(angleMotor);
 
     // If the absolute encoder is attached.
-    if (absEncoder != null)
+    if (absEncoder != null && angleMotor.getMotor() instanceof CANSparkMax)
     {
       if (absEncoder.getAbsoluteEncoder() instanceof MotorFeedbackSensor)
       {
         angleMotor.setAbsoluteEncoder(absEncoder);
       }
-    }
-
-    if (absEncoder == null)
-    {
-      absEncoder = angle.createIntegratedEncoder(angleMotor);
-      angleMotor.setAbsoluteEncoder(absEncoder);
     }
 
     // Set the conversion factors to null if they are both 0.

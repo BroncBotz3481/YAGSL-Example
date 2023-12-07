@@ -1,7 +1,6 @@
 package swervelib.encoders;
 
 import com.reduxrobotics.sensors.canandcoder.CANandcoder;
-import com.reduxrobotics.sensors.canandcoder.CANandcoderSettings;
 
 import edu.wpi.first.wpilibj.DriverStation;
 

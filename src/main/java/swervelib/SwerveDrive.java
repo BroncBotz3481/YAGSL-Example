@@ -1084,7 +1084,7 @@ public class SwerveDrive
   /**
    * Restores Internal YAGSL Encoder offsets and sets the Encoder stored offset back to 0
    */
-  public void restoreInternalOffset(boolean restoreMemory)
+  public void restoreInternalOffset()
   {
     for (SwerveModule module : swerveModules)
     {

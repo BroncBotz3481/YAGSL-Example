@@ -201,35 +201,12 @@ public class SparkMaxSwerve extends SwerveMotor
   @Override
   public void configureIntegratedEncoder(double positionConversionFactor)
   {
-    if (absoluteEncoder == null)
-    {
-      configureSparkMax(() -> encoder.setPositionConversionFactor(positionConversionFactor));
-      configureSparkMax(() -> encoder.setVelocityConversionFactor(positionConversionFactor / 60));
+    configureSparkMax(() -> encoder.setPositionConversionFactor(positionConversionFactor));
+    configureSparkMax(() -> encoder.setVelocityConversionFactor(positionConversionFactor / 60));
 
-      // Taken from
-      // https://github.com/frc3512/SwerveBot-2022/blob/9d31afd05df6c630d5acb4ec2cf5d734c9093bf8/src/main/java/frc/lib/util/CANSparkMaxUtil.java#L67
-      configureCANStatusFrames(10, 20, 20, 500, 500);
-    } else
-    {
-      configureSparkMax(() -> {
-        if (absoluteEncoder.getAbsoluteEncoder() instanceof AbsoluteEncoder)
-        {
-          return ((AbsoluteEncoder) absoluteEncoder.getAbsoluteEncoder()).setPositionConversionFactor(positionConversionFactor);
-        } else
-        {
-          return ((SparkMaxAnalogSensor)absoluteEncoder.getAbsoluteEncoder()).setPositionConversionFactor(positionConversionFactor);
-        }
-      });
-      configureSparkMax(() -> {
-        if (absoluteEncoder.getAbsoluteEncoder() instanceof AbsoluteEncoder)
-        {
-          return ((AbsoluteEncoder) absoluteEncoder.getAbsoluteEncoder()).setVelocityConversionFactor(positionConversionFactor / 60);
-        } else
-        {
-          return ((SparkMaxAnalogSensor)absoluteEncoder.getAbsoluteEncoder()).setVelocityConversionFactor(positionConversionFactor / 60);
-        }
-      });
-    }
+    // Taken from
+    // https://github.com/frc3512/SwerveBot-2022/blob/9d31afd05df6c630d5acb4ec2cf5d734c9093bf8/src/main/java/frc/lib/util/CANSparkMaxUtil.java#L67
+    configureCANStatusFrames(10, 20, 20, 500, 500);
   }
 
   /**

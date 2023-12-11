@@ -65,7 +65,7 @@ public class DeviceJson
         return null;
       case "integrated":
       case "attached":
-        return new SparkMaxEncoderSwerve(motor, 1);
+        return new SparkMaxEncoderSwerve(motor, 360);
       case "sparkmax_analog":
         return new SparkMaxAnalogEncoderSwerve(motor);
       case "canandcoder":

@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.math.SwerveMath;
@@ -26,7 +27,7 @@ public class SwerveModule
   /**
    * Angle offset from the absolute encoder.
    */
-  private final double                    angleOffset;
+  private double                    angleOffset;
   /**
    * Swerve Motors.
    */
@@ -388,6 +389,34 @@ public class SwerveModule
     return configuration;
   }
 
+  /**
+   * Push absolute encoder offset in the memory of the encoder or controller.
+   * Also removes the internal angle offset.
+   */
+  public void pushOffsetsToControllers()
+  {
+    if(absoluteEncoder != null)
+    {
+      if(absoluteEncoder.setAbsoluteEncoderOffset(angleOffset)){
+        angleOffset = 0;
+      }
+      else{
+        DriverStation.reportWarning("Pushing the Absolute Encoder offset to the encoder failed on module #"+moduleNumber, false);
+      }
+    }
+    else{
+      DriverStation.reportWarning("There is no Absolute Encoder on module #"+moduleNumber, false);
+    }
+  }
+
+  /**
+   * Restore internal offset in YAGSL and either sets absolute encoder offset to 0 or restores old value.
+   */
+  public void restoreInternalOffset()
+  {
+    absoluteEncoder.setAbsoluteEncoderOffset(0);
+    angleOffset = configuration.angleOffset;
+  }
   /**
    * Get if the last Absolute Encoder had a read issue, such as it does not exist.
    *

@@ -1,4 +1,3 @@
-<a href='https://ko-fi.com/yagsl' target='_blank'><img height='35' style='border:0px;height:46px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=0' border='0' alt='Buy Me a Robot at ko-fi.com'></a>
 # Yet Another Generic Swerve Library (YAGSL) Example project
 
 YAGSL is intended to be an easy implementation of a generic swerve drive that should work for most
@@ -35,6 +34,9 @@ We will be actively montoring this and fix any issues when we can!
 
 * Development happens here on `YAGSL-Example`. `YAGSL` and `YAGSL-Lib` are updated on a nightly
   basis.
+
+# Support our developers!
+<a href='https://ko-fi.com/yagsl' target='_blank'><img height='35' style='border:0px;height:46px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=0' border='0' alt='Buy Me a Robot at ko-fi.com'></a>
 
 ### TL;DR Generate and download your configuration [here](https://broncbotz3481.github.io/YAGSL-Example/) and unzip it so that it follows structure below:
 
@@ -104,3 +106,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
 * Implement momentum velocity limitations in SwerveMath.
 
 ### Ensure the IMU is centered on the robot
+
+# Maintainers
+- @thenetworkgrinch
+- @Technologyman00

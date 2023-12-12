@@ -9,6 +9,7 @@ import swervelib.encoders.AnalogAbsoluteEncoderSwerve;
 import swervelib.encoders.CANCoderSwerve;
 import swervelib.encoders.CanAndCoderSwerve;
 import swervelib.encoders.PWMDutyCycleEncoderSwerve;
+import swervelib.encoders.SparkMaxAnalogEncoderSwerve;
 import swervelib.encoders.SparkMaxEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.imu.ADIS16448Swerve;
@@ -61,9 +62,12 @@ public class DeviceJson
     switch (type)
     {
       case "none":
+        return null;
       case "integrated":
       case "attached":
-        return null;
+        return new SparkMaxEncoderSwerve(motor, 1);
+      case "sparkmax_analog":
+        return new SparkMaxAnalogEncoderSwerve(motor);
       case "canandcoder":
         return new SparkMaxEncoderSwerve(motor, 360);
       case "canandcoder_can":
@@ -107,6 +111,7 @@ public class DeviceJson
         return new ADXRS450Swerve();
       case "analog":
         return new AnalogGyroSwerve(id);
+      case "navx":
       case "navx_spi":
         return new NavXSwerve(SPI.Port.kMXP);
       case "navx_i2c":
@@ -116,19 +121,16 @@ public class DeviceJson
             ".html#onboard-i2c-causing-system-lockups",
             false);
         return new NavXSwerve(I2C.Port.kMXP);
-      case "navx_onborard":
-        return new NavXSwerve(Port.kOnboard);
       case "navx_usb":
         return new NavXSwerve(Port.kUSB);
       case "navx_mxp":
-      case "navx":
         return new NavXSwerve(Port.kMXP);
       case "pigeon":
         return new PigeonSwerve(id);
       case "pigeon2":
         return new Pigeon2Swerve(id, canbus != null ? canbus : "");
       default:
-        throw new RuntimeException(type + " is not a recognized absolute encoder type.");
+        throw new RuntimeException(type + " is not a recognized imu/gyroscope type.");
     }
   }
 
@@ -179,27 +181,7 @@ public class DeviceJson
       case "talonsrx":
         return new TalonSRXSwerve(id, isDriveMotor);
       default:
-        throw new RuntimeException(type + " is not a recognized absolute encoder type.");
+        throw new RuntimeException(type + " is not a recognized motor type.");
     }
-  }
-
-  /**
-   * Create a {@link SwerveAbsoluteEncoder} from the data port on the motor controller.
-   *
-   * @param motor The motor to create the absolute encoder from.
-   * @return {@link SwerveAbsoluteEncoder} from the motor controller.
-   */
-  public SwerveAbsoluteEncoder createIntegratedEncoder(SwerveMotor motor)
-  {
-    switch (type)
-    {
-      case "sparkmax":
-        return new SparkMaxEncoderSwerve(motor, 1);
-      case "falcon":
-      case "talonfx":
-        return null;
-    }
-    throw new RuntimeException(
-        "Could not create absolute encoder from data port of " + type + " id " + id);
   }
 }

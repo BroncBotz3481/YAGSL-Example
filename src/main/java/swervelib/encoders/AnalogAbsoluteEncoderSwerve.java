@@ -1,6 +1,7 @@
 package swervelib.encoders;
 
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -104,5 +105,17 @@ public class AnalogAbsoluteEncoderSwerve extends SwerveAbsoluteEncoder
     //Do Nothing
     DriverStation.reportWarning("Cannot Set Absolute Encoder Offset of Analog Encoders Channel #"+encoder.getChannel(), false);
     return false;
+   }
+   
+  /**
+   * Get the velocity in degrees/sec.
+   *
+   * @return velocity in degrees/sec.
+   */
+  @Override
+  public double getVelocity()
+  {
+    DriverStation.reportWarning("The Analog Absolute encoder may not report accurate velocities!",true);
+    return encoder.getValue();
   }
 }

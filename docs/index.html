@@ -125,7 +125,7 @@
               The formula for the angle motor conversion factor is <br/> <code>360 / (angleGearRatio
               * pulsePerRotation)</code> <br/> <br/>
               The formula for the drive motor conversion factor is <br/> <code>(Math.PI *
-              wheelDiameter) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
+              wheelDiameterInMeters) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
               You can also generate these by using <br/>
               <code>SwerveMath.calculateMetersPerRotation</code>
               <br/>
@@ -136,8 +136,8 @@
 //  The encoder resolution per motor revolution is 1 per motor revolution.
 double <var>angleConversionFactor</var> = SwerveMath.calculateDegreesPerSteeringRotation(<var>12.8</var>, <var>1</var>);
 
-// Motor conversion factor is (PI * WHEEL DIAMETER) / (GEAR RATIO * ENCODER RESOLUTION).
-//  In this case the wheel diameter is 4 inches.
+// Motor conversion factor is (PI * WHEEL DIAMETER IN METERS) / (GEAR RATIO * ENCODER RESOLUTION).
+//  In this case the wheel diameter is 4 inches, which must be converted to meters to get meters/second.
 //  The gear ratio is 6.75 motor revolutions per wheel rotation.
 //  The encoder resolution per motor revolution is 1 per motor revolution.
 double <var>driveConversionFactor</var> = SwerveMath.calculateMetersPerRotation(<var>Units.inchesToMeters(4)</var>, <var>6.75</var>, <var>1</var>);
@@ -159,7 +159,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
             <div class="form-floating mb-3">
               <input class="form-control" id="swervedriveconversion_drive-input"
                      name="conversionFactor_drive"
-                     placeholder="(Math.PI * wheelDiameter) / (driveGearRatio * pulsePerRotation)"
+                     placeholder="(Math.PI * wheelDiameterInMeters) / (driveGearRatio * pulsePerRotation)"
                      type="number" value="0">
               <label class="form-label" for="swervedriveconversion_drive-input">Drive Motor
                 Conversion Factor</label>
@@ -312,7 +312,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
               The formula for the angle motor conversion factor is <br/> <code>360 / (angleGearRatio
               * pulsePerRotation)</code> <br/> <br/>
               The formula for the drive motor conversion factor is <br/> <code>(Math.PI *
-              wheelDiameter) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
+              wheelDiameterInMeters) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
               These conversion factor is applied to the PID on the motor controller.
             </div>
             <div class="form-floating mb-3">
@@ -326,7 +326,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
             <div class="form-floating mb-3">
               <input class="form-control" id="frontleftconversion_drive-input"
                      name="conversionFactor_drive"
-                     placeholder="(Math.PI * wheelDiameter) / (driveGearRatio * pulsePerRotation)"
+                     placeholder="(Math.PI * wheelDiameterInMeters) / (driveGearRatio * pulsePerRotation)"
                      type="number" value="0">
               <label class="form-label" for="frontleftconversion_drive-input">Drive Motor Conversion
                 Factor</label>
@@ -340,6 +340,8 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
                       name="encoder_type">
                 <option value="none">None</option>
                 <option value="attached">Attached (to SparkMAX)</option>
+                <option value="sparkmax_analog">Attached (to SparkMAX Analog Pin)</option>
+                <option value="sparkmax_analog">Attached (to SparkMAX Analog Pin)</option>
                 <option value="cancoder">CANCoder</option>
                 <option value="canandcoder">CANandCoder (attached to SparkMAX)</option>
                 <option value="canandcoder_can">CANandCoder (CAN)</option>
@@ -508,7 +510,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
               The formula for the angle motor conversion factor is <br/> <code>360 / (angleGearRatio
               * pulsePerRotation)</code> <br/> <br/>
               The formula for the drive motor conversion factor is <br/> <code>(Math.PI *
-              wheelDiameter) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
+              wheelDiameterInMeters) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
               These conversion factor is applied to the PID on the motor controller.
             </div>
             <div class="form-floating mb-3">
@@ -522,7 +524,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
             <div class="form-floating mb-3">
               <input class="form-control" id="frontrightconversion_drive-input"
                      name="conversionFactor_drive"
-                     placeholder="(Math.PI * wheelDiameter) / (driveGearRatio * pulsePerRotation)"
+                     placeholder="(Math.PI * wheelDiameterInMeters) / (driveGearRatio * pulsePerRotation)"
                      type="number" value="0">
               <label class="form-label" for="frontrightconversion_drive-input">Drive Motor
                 Conversion Factor</label>
@@ -536,6 +538,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
                       name="encoder_type">
                 <option value="none">None</option>
                 <option value="attached">Attached (to SparkMAX)</option>
+                <option value="sparkmax_analog">Attached (to SparkMAX Analog Pin)</option>
                 <option value="cancoder">CANCoder</option>
                 <option value="canandcoder">CANandCoder (attached to SparkMAX)</option>
                 <option value="canandcoder_can">CANandCoder (CAN)</option>
@@ -703,7 +706,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
               The formula for the angle motor conversion factor is <br/> <code>360 / (angleGearRatio
               * pulsePerRotation)</code> <br/> <br/>
               The formula for the drive motor conversion factor is <br/> <code>(Math.PI *
-              wheelDiameter) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
+              wheelDiameterInMeters) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
               These conversion factor is applied to the PID on the motor controller.
             </div>
             <div class="form-floating mb-3">
@@ -717,7 +720,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
             <div class="form-floating mb-3">
               <input class="form-control" id="backleftconversion_drive-input"
                      name="conversionFactor_drive"
-                     placeholder="(Math.PI * wheelDiameter) / (driveGearRatio * pulsePerRotation)"
+                     placeholder="(Math.PI * wheelDiameterInMeters) / (driveGearRatio * pulsePerRotation)"
                      type="number" value="0">
               <label class="form-label" for="backleftconversion_drive-input">Drive Motor Conversion
                 Factor</label>
@@ -731,6 +734,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
                       name="encoder_type">
                 <option value="none">None</option>
                 <option value="attached">Attached (to SparkMAX)</option>
+                <option value="sparkmax_analog">Attached (to SparkMAX Analog Pin)</option>
                 <option value="cancoder">CANCoder</option>
                 <option value="canandcoder">CANandCoder (attached to SparkMAX)</option>
                 <option value="canandcoder_can">CANandCoder (CAN)</option>
@@ -900,7 +904,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
               The formula for the angle motor conversion factor is <br/> <code>360 / (angleGearRatio
               * pulsePerRotation)</code> <br/> <br/>
               The formula for the drive motor conversion factor is <br/> <code>(Math.PI *
-              wheelDiameter) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
+              wheelDiameterInMeters) / (driveGearRatio * pulsePerRotation)</code> <br/> <br/>
               These conversion factor is applied to the PID on the motor controller.
             </div>
             <div class="form-floating mb-3">
@@ -914,7 +918,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
             <div class="form-floating mb-3">
               <input class="form-control" id="backrightconversion_drive-input"
                      name="conversionFactor_drive"
-                     placeholder="(Math.PI * wheelDiameter) / (driveGearRatio * pulsePerRotation)"
+                     placeholder="(Math.PI * wheelDiameterInMeters) / (driveGearRatio * pulsePerRotation)"
                      type="number" value="0">
               <label class="form-label" for="backrightconversion_drive-input">Drive Motor Conversion
                 Factor</label>
@@ -928,6 +932,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
                       name="encoder_type">
                 <option value="none">None</option>
                 <option value="attached">Attached (to SparkMAX)</option>
+                <option value="sparkmax_analog">Attached (to SparkMAX Analog Pin)</option>
                 <option value="cancoder">CANCoder</option>
                 <option value="canandcoder">CANandCoder (attached to SparkMAX)</option>
                 <option value="canandcoder_can">CANandCoder (CAN)</option>

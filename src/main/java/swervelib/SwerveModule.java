@@ -257,7 +257,7 @@ public class SwerveModule
     if (!SwerveDriveTelemetry.isSimulation)
     {
       velocity = driveMotor.getVelocity();
-      azimuth = Rotation2d.fromDegrees(angleMotor.getPosition());
+      azimuth = Rotation2d.fromDegrees(getAbsolutePosition());
     } else
     {
       return simModule.getState();
@@ -277,7 +277,7 @@ public class SwerveModule
     if (!SwerveDriveTelemetry.isSimulation)
     {
       position = driveMotor.getPosition();
-      azimuth = Rotation2d.fromDegrees(angleMotor.getPosition());
+      azimuth = Rotation2d.fromDegrees(getAbsolutePosition());
     } else
     {
       return simModule.getPosition();
@@ -416,5 +416,17 @@ public class SwerveModule
   {
     absoluteEncoder.setAbsoluteEncoderOffset(0);
     angleOffset = configuration.angleOffset;
+  }
+  /**
+   * Get if the last Absolute Encoder had a read issue, such as it does not exist.
+   *
+   * @return If the last Absolute Encoder had a read issue, or absolute encoder does not exist.
+   */
+  public boolean getAbsoluteEncoderReadIssue()
+  {
+    if(absoluteEncoder == null)
+      return true;
+    else
+      return absoluteEncoder.readingError;
   }
 }

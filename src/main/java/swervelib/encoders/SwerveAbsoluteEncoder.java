@@ -54,4 +54,9 @@ public abstract class SwerveAbsoluteEncoder
    * @return if setting Absolute Encoder Offset was successful or not.
    */
   public abstract boolean setAbsoluteEncoderOffset(double offset);
+  /*
+   * Get the velocity in degrees/sec.
+   * @return velocity in degrees/sec.
+   */
+  public abstract double getVelocity();
 }

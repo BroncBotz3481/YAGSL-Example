@@ -155,5 +155,16 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
     }
     DriverStation.reportWarning("Failure to set CANCoder " + encoder.getDeviceID() + " Absolute Encoder Offset Error: "+error, false);
     return false;
+   }
+   
+  /**
+   * Get the velocity in degrees/sec.
+   *
+   * @return velocity in degrees/sec.
+   */
+  @Override
+  public double getVelocity()
+  {
+    return encoder.getVelocity();
   }
 }

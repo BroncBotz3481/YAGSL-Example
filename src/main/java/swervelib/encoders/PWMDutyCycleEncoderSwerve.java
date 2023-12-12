@@ -98,9 +98,8 @@ public class PWMDutyCycleEncoderSwerve extends SwerveAbsoluteEncoder
 
   /**
    * Sets the offset of the Encoder in the WPILib Encoder Library.
-   * 
+   *
    * @param offset the offset the Absolute Encoder uses as the zero point.
-   * 
    * @return Always true due to no external device commands.
    */
   @Override

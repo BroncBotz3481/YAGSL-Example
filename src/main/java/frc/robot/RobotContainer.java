@@ -75,10 +75,10 @@ public class RobotContainer
                                                                                                   OperatorConstants.LEFT_X_DEADBAND),
                                                                       () -> MathUtil.applyDeadband(driverXbox.getRightX(),
                                                                                                   OperatorConstants.RIGHT_X_DEADBAND), 
-                                                                      driverXbox.getYButton(), 
-                                                                      driverXbox.getBButton(), 
-                                                                      driverXbox.getXButton(), 
-                                                                      driverXbox.getAButton());
+                                                                      driverXbox::getYButton, 
+                                                                      driverXbox::getAButton, 
+                                                                      driverXbox::getXButton, 
+                                                                      driverXbox::getBButton);
 
     TeleopDrive simClosedFieldRel = new TeleopDrive(drivebase,
                                                     () -> MathUtil.applyDeadband(driverXbox.getLeftY(),

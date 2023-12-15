@@ -7,11 +7,13 @@ package frc.robot.commands.swervedrive.drivebase;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import swervelib.SwerveController;
 import swervelib.math.SwerveMath;
@@ -26,7 +28,7 @@ public class AbsoluteDriveAdv extends CommandBase
   private final DoubleSupplier  vX, vY;
   private final DoubleSupplier headingAdjust;
   private boolean initRotation = false;
-  private final boolean lookAway, lookTowards, lookLeft, lookRight;
+  private final BooleanSupplier lookAway, lookTowards, lookLeft, lookRight;
 
   /**
    * Used to drive a swerve robot in full field-centric mode.  vX and vY supply translation inputs, where x is
@@ -48,7 +50,7 @@ public class AbsoluteDriveAdv extends CommandBase
    * @param lookRight         Face the robot right
    */
   public AbsoluteDriveAdv(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier headingAdjust,
-                                                   boolean lookAway, boolean lookTowards, boolean lookLeft, boolean lookRight)
+                                                   BooleanSupplier lookAway, BooleanSupplier lookTowards, BooleanSupplier lookLeft, BooleanSupplier lookRight)
   {
     this.swerve = swerve;
     this.vX = vX;
@@ -78,19 +80,19 @@ public class AbsoluteDriveAdv extends CommandBase
     
     // These are written to allow combinations for 45 angles
     // Face Away from Drivers
-    if(lookAway){
+    if(lookAway.getAsBoolean()){
       headingX = 1;
     }
     // Face Right
-    if(lookRight){
+    if(lookRight.getAsBoolean()){
       headingY = 1;
     }
     // Face Left
-    if(lookLeft){
+    if(lookLeft.getAsBoolean()){
       headingY = -1;
     }
     // Face Towards the Drivers
-    if(lookTowards){
+    if(lookTowards.getAsBoolean()){
       headingX = -1;
     }
 

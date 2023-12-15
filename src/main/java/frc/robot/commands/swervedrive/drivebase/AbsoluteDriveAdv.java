@@ -97,8 +97,8 @@ public class AbsoluteDriveAdv extends CommandBase
     }
 
     //Dont overwrite a button press
-    if(headingX == 0 && headingY == 0){
-      newHeading = Rotation2d.fromRadians(Constants.OperatorConstants.TURN_CONSTANT * headingAdjust.getAsDouble())
+    if(headingX == 0 && headingY == 0 && Math.abs(headingAdjust.getAsDouble()) > 0){
+      newHeading = Rotation2d.fromRadians(Constants.OperatorConstants.TURN_CONSTANT * -headingAdjust.getAsDouble())
                                                                       .plus(swerve.getHeading());
       headingX = newHeading.getSin();
       headingY = newHeading.getCos();

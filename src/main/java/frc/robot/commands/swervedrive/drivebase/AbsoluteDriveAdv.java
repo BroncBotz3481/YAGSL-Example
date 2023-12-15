@@ -4,6 +4,7 @@
 
 package frc.robot.commands.swervedrive.drivebase;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -46,8 +47,8 @@ public class AbsoluteDriveAdv extends CommandBase
    * @param lookLeft          Face the robot left
    * @param lookRight         Face the robot right
    */
-  public AbsoluteDriveAdv(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier headingAdjust, boolean lookAway, 
-                                                    boolean lookTowards, boolean lookLeft, boolean lookRight)
+  public AbsoluteDriveAdv(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier headingAdjust,
+                                                   boolean lookAway, boolean lookTowards, boolean lookLeft, boolean lookRight)
   {
     this.swerve = swerve;
     this.vX = vX;
@@ -73,7 +74,7 @@ public class AbsoluteDriveAdv extends CommandBase
   {
     double headingX = 0;
     double headingY = 0;
-    double newHeading = 0;
+    Rotation2d newHeading = Rotation2d.fromRadians(0);
     
     // These are written to allow combinations for 45 angles
     // Face Away from Drivers
@@ -95,9 +96,10 @@ public class AbsoluteDriveAdv extends CommandBase
 
     //Dont overwrite a button press
     if(headingX == 0 && headingY == 0){
-      newHeading = swerve.getHeading().getRadians() + (Constants.OperatorConstants.TURN_CONSTANT * headingAdjust.getAsDouble());
-      headingX = Math.sin(newHeading);
-      headingY = Math.cos(newHeading);
+      newHeading = Rotation2d.fromRadians(Constants.OperatorConstants.TURN_CONSTANT * headingAdjust.getAsDouble())
+                                                                      .plus(swerve.getHeading());
+      headingX = newHeading.getSin();
+      headingY = newHeading.getCos();
     }
 
     ChassisSpeeds desiredSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(),
@@ -110,10 +112,10 @@ public class AbsoluteDriveAdv extends CommandBase
       if(headingX == 0 && headingY == 0)
       {
         // Get the curretHeading
-        double firstLoopHeading = swerve.getHeading().getRadians();
-      
+        Rotation2d firstLoopHeading = swerve.getHeading();
+
         // Set the Current Heading to the desired Heading
-        desiredSpeeds = swerve.getTargetSpeeds(0, 0, Math.sin(firstLoopHeading), Math.cos(firstLoopHeading));
+        desiredSpeeds = swerve.getTargetSpeeds(0, 0, firstLoopHeading.getSin(), firstLoopHeading.getCos());
       }
       //Dont Init Rotation Again
       initRotation = false;

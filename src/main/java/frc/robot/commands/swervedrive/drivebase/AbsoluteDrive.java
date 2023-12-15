@@ -4,6 +4,7 @@
 
 package frc.robot.commands.swervedrive.drivebase;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -80,10 +81,10 @@ public class AbsoluteDrive extends CommandBase
       if(headingHorizontal.getAsDouble() == 0 && headingVertical.getAsDouble() == 0)
       {
         // Get the curretHeading
-        double firstLoopHeading = swerve.getHeading().getRadians();
+        Rotation2d firstLoopHeading = swerve.getHeading();
       
         // Set the Current Heading to the desired Heading
-        desiredSpeeds = swerve.getTargetSpeeds(0, 0, Math.sin(firstLoopHeading), Math.cos(firstLoopHeading));
+        desiredSpeeds = swerve.getTargetSpeeds(0, 0, firstLoopHeading.getSin(), firstLoopHeading.getCos());
       }
       //Dont Init Rotation Again
       initRotation = false;

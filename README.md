@@ -111,5 +111,5 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
 - @thenetworkgrinch
 - @Technologyman00 
 
-# Special Thanks to Team 7900! Trial N' Error
+# Special Thanks to Team 7900! Trial N' Terror
 Without the debugging and aid of Team 7900 the project could never be as stable or active as it is. 

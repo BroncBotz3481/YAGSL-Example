@@ -1,18 +1,18 @@
 {
-    "fileName": "PathplannerLib.json",
+    "fileName": "PathplannerLib2023.json",
     "name": "PathplannerLib",
-    "version": "2024.0.0-beta-5.1",
+    "version": "2023.4.4",
     "uuid": "1b42324f-17c6-4875-8e77-1c312bc8c786",
-    "frcYear": "2024",
+    "frcYear": "2023",
     "mavenUrls": [
         "https://3015rangerrobotics.github.io/pathplannerlib/repo"
     ],
-    "jsonUrl": "https://3015rangerrobotics.github.io/pathplannerlib/PathplannerLib.json",
+    "jsonUrl": "https://3015rangerrobotics.github.io/pathplannerlib/PathplannerLib2023.json",
     "javaDependencies": [
         {
             "groupId": "com.pathplanner.lib",
             "artifactId": "PathplannerLib-java",
-            "version": "2024.0.0-beta-5.1"
+            "version": "2023.4.4"
         }
     ],
     "jniDependencies": [],
@@ -20,7 +20,7 @@
         {
             "groupId": "com.pathplanner.lib",
             "artifactId": "PathplannerLib-cpp",
-            "version": "2024.0.0-beta-5.1",
+            "version": "2023.4.4",
             "libName": "PathplannerLib",
             "headerClassifier": "headers",
             "sharedLibrary": false,
@@ -29,9 +29,7 @@
                 "windowsx86-64",
                 "linuxx86-64",
                 "osxuniversal",
-                "linuxathena",
-                "linuxarm32",
-                "linuxarm64"
+                "linuxathena"
             ]
         }
     ]

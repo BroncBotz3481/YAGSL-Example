@@ -14,7 +14,6 @@ import swervelib.encoders.SparkMaxEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.imu.ADIS16448Swerve;
 import swervelib.imu.ADIS16470Swerve;
-import swervelib.imu.ADXRS450Swerve;
 import swervelib.imu.AnalogGyroSwerve;
 import swervelib.imu.NavXSwerve;
 import swervelib.imu.Pigeon2Swerve;
@@ -107,8 +106,6 @@ public class DeviceJson
         return new ADIS16448Swerve();
       case "adis16470":
         return new ADIS16470Swerve();
-      case "adxrs450":
-        return new ADXRS450Swerve();
       case "analog":
         return new AnalogGyroSwerve(id);
       case "navx":

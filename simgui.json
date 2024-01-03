@@ -21,6 +21,16 @@
           "open": true
         }
       },
+      "Talon FX (v6)[2]/Rotor Sensor": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX (v6)[51]": {
+        "header": {
+          "open": true
+        }
+      },
       "Talon FX[50]": {
         "header": {
           "open": true
@@ -51,9 +61,11 @@
       "/LiveWindow/Ungrouped/Pigeon 2 [13]": "Gyro",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Pigeon 2 (v6) [13]": "Gyro",
       "/SmartDashboard/Pigeon 2 [13]": "Gyro",
       "/SmartDashboard/SendableChooser[0]": "String Chooser",
-      "/SmartDashboard/navX-Sensor[1]": "Gyro"
+      "/SmartDashboard/navX-Sensor[1]": "Gyro",
+      "/SmartDashboard/navX-Sensor[4]": "Gyro"
     },
     "windows": {
       "/SmartDashboard/Field": {

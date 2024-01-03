@@ -120,7 +120,7 @@ public class SwerveSubsystem extends SubsystemBase
 
     if (setOdomToStart)
     {
-      resetOdometry(path.getStartingDifferentialPose());
+      resetOdometry(new Pose2d(path.getPoint(0).position, getHeading()));
     }
 
     // Create a path following command using AutoBuilder. This will also trigger event markers.

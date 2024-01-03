@@ -396,14 +396,7 @@ public class SwerveDrive
     // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
     if (chassisVelocityCorrection)
     {
-      double dtConstant = 0.009;
-      Pose2d robotPoseVel = new Pose2d(velocity.vxMetersPerSecond * dtConstant,
-                                       velocity.vyMetersPerSecond * dtConstant,
-                                       Rotation2d.fromRadians(velocity.omegaRadiansPerSecond * dtConstant));
-      Twist2d twistVel = SwerveMath.PoseLog(robotPoseVel);
-
-      velocity = new ChassisSpeeds(twistVel.dx / dtConstant, twistVel.dy / dtConstant,
-                                   twistVel.dtheta / dtConstant);
+      velocity = ChassisSpeeds.discretize(velocity, 0.02);
     }
 
     // Heading Angular Velocity Deadband, might make a configuration option later.
@@ -487,15 +480,6 @@ public class SwerveDrive
                                            2] = module.lastState.angle.getDegrees();
         SwerveDriveTelemetry.desiredStates[(module.moduleNumber * 2) +
                                            1] = module.lastState.speedMetersPerSecond;
-      }
-      if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)
-      {
-        SmartDashboard.putNumber(
-            "Module[" + module.configuration.name + "] Speed Setpoint: ",
-            module.lastState.speedMetersPerSecond);
-        SmartDashboard.putNumber(
-            "Module[" + module.configuration.name + "] Angle Setpoint: ",
-            module.lastState.angle.getDegrees());
       }
     }
   }

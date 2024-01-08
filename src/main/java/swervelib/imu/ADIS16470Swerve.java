@@ -68,7 +68,7 @@ public class ADIS16470Swerve extends SwerveIMU
    */
   public Rotation3d getRawRotation3d()
   {
-    return new Rotation3d(0, 0, Math.toRadians(imu.getAngle()));
+    return new Rotation3d(0, 0, Math.toRadians(-imu.getAngle()));
   }
 
   /**

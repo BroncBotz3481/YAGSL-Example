@@ -123,7 +123,7 @@ public class SwerveSubsystem extends SubsystemBase
    *
    * @param pathName       PathPlanner path name.
    * @param setOdomToStart Set the odometry position to the start of the path.
-   * @return {@link AutoBuilder#followPathWithEvents(PathPlannerPath)} path command.
+   * @return {@link AutoBuilder#followPath(PathPlannerPath)} path command.
    */
   public Command getAutonomousCommand(String pathName, boolean setOdomToStart)
   {

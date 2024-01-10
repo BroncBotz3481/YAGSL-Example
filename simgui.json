@@ -103,5 +103,8 @@
         }
       }
     }
+  },
+  "NetworkTables Info": {
+    "visible": true
   }
 }

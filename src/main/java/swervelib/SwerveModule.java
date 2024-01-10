@@ -182,6 +182,8 @@ public class SwerveModule
       driveMotor.set(percentOutput);
     } else
     {
+      // Taken from the CTRE SwerveModule class.
+      // https://api.ctr-electronics.com/phoenix6/release/java/src-html/com/ctre/phoenix6/mechanisms/swerve/SwerveModule.html#line.46
       /* From FRC 900's whitepaper, we add a cosine compensator to the applied drive velocity */
       /* To reduce the "skew" that occurs when changing direction */
       double steerMotorError = desiredState.angle.getDegrees() - getAbsolutePosition();

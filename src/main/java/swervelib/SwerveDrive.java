@@ -403,13 +403,16 @@ public class SwerveDrive
     // Originally made by Team 1466 Webb Robotics.
     if (headingCorrection)
     {
-      if (Math.abs(velocity.omegaRadiansPerSecond) < 0.01)
+      if (Math.abs(velocity.omegaRadiansPerSecond) < 0.01
+          && (Math.abs(velocity.vxMetersPerSecond) > 0.01 
+          || Math.abs(velocity.vyMetersPerSecond) > 0.01)) 
       {
         velocity.omegaRadiansPerSecond =
             swerveController.headingCalculate(lastHeadingRadians, getYaw().getRadians());
       } else
       {
         lastHeadingRadians = getYaw().getRadians();
+        headingCorrection = false;
       }
     }
 

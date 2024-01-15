@@ -1,11 +1,11 @@
 package swervelib.motors;
 
 import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.MotorFeedbackSensor;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
@@ -38,7 +38,7 @@ public class SparkMaxSwerve extends SwerveMotor
   /**
    * Closed-loop PID controller.
    */
-  public  SparkPIDController pid;
+  public  SparkPIDController    pid;
   /**
    * Factory default already occurred.
    */
@@ -361,14 +361,18 @@ public class SparkMaxSwerve extends SwerveMotor
       configureSparkMax(() ->
                             pid.setReference(
                                 setpoint,
-                                ControlType.kVelocity));
+                                ControlType.kVelocity,
+                                pidSlot,
+                                feedforward));
     } else
     {
       configureSparkMax(() ->
                             pid.setReference(
                                 setpoint,
-                                ControlType.kPosition));
-      if(SwerveDriveTelemetry.isSimulation)
+                                ControlType.kPosition,
+                                pidSlot,
+                                feedforward));
+      if (SwerveDriveTelemetry.isSimulation)
       {
         encoder.setPosition(setpoint);
       }

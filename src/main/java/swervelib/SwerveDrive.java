@@ -898,6 +898,7 @@ public class SwerveDrive
         if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)
         {
           module.updateTelemetry();
+          SmartDashboard.putNumber("Adjusted IMU Yaw", getYaw().getDegrees());
         }
         if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.HIGH.ordinal())
         {

@@ -5,13 +5,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.math.SwerveMath;
 import swervelib.motors.SwerveMotor;
 import swervelib.parser.SwerveModuleConfiguration;
 import swervelib.simulation.SwerveModuleSimulation;
+import swervelib.telemetry.Alert;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
@@ -61,6 +61,14 @@ public class SwerveModule
    * Encoder synchronization queued.
    */
   private       boolean                synchronizeEncoderQueued = false;
+  /**
+   * An {@link Alert} for if pushing the Absolute Encoder offset to the encoder fails.
+   */
+  private       Alert                  encoderOffsetWarning = new Alert("Motors", "Pushing the Absolute Encoder offset to the encoder failed on module #" + moduleNumber, Alert.AlertType.WARNING);
+  /**
+   * An {@link Alert} for if there is no Absolute Encoder on the module.
+   */
+  private       Alert                  noEncoderWarning = new Alert("Motors", "There is no Absolute Encoder on module #" + moduleNumber, Alert.AlertType.WARNING);
 
   /**
    * Construct the swerve module and initialize the swerve module motors and absolute encoder.
@@ -397,14 +405,11 @@ public class SwerveModule
       if (absoluteEncoder.setAbsoluteEncoderOffset(angleOffset))
       {
         angleOffset = 0;
-      } else
-      {
-        DriverStation.reportWarning(
-            "Pushing the Absolute Encoder offset to the encoder failed on module #" + moduleNumber, false);
+      } else {
+        encoderOffsetWarning.set(true);
       }
-    } else
-    {
-      DriverStation.reportWarning("There is no Absolute Encoder on module #" + moduleNumber, false);
+    } else {
+      noEncoderWarning.set(true);
     }
   }
 

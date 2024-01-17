@@ -120,7 +120,11 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
       readingError = true;
       readingFaulty.set(true);
       return 0;
-    }else readingFaulty.set(false);
+    }else
+    {
+      readingFaulty.set(false);
+    }
+
     StatusSignal<Double> angle = encoder.getAbsolutePosition().refresh();
 
     // Taken from democat's library.

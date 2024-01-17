@@ -131,8 +131,8 @@ public class TalonFXSwerve extends SwerveMotor {
 //    positionConversionFactor = 1 / positionConversionFactor;
 
     configuration.MotionMagic =
-        configuration.MotionMagic.withMotionMagicCruiseVelocity(100 / positionConversionFactor)
-                                 .withMotionMagicAcceleration((100 / positionConversionFactor) / 0.100)
+        configuration.MotionMagic.withMotionMagicCruiseVelocity(100.0 / positionConversionFactor)
+                                 .withMotionMagicAcceleration((100.0 / positionConversionFactor) / 0.100)
                                  .withMotionMagicExpo_kV(0.12 * positionConversionFactor)
                                  .withMotionMagicExpo_kA(0.1);
 

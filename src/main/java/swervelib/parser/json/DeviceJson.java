@@ -26,6 +26,7 @@ import swervelib.motors.SparkMaxSwerve;
 import swervelib.motors.SwerveMotor;
 import swervelib.motors.TalonFXSwerve;
 import swervelib.motors.TalonSRXSwerve;
+import swervelib.telemetry.Alert;
 
 /**
  * Device JSON parsed class. Used to access the JSON data.
@@ -45,6 +46,14 @@ public class DeviceJson
    * The CAN bus name which the device resides on if using CAN.
    */
   public String canbus = "";
+  /**
+   * An {@link Alert} for if the CAN ID is greater than 40.
+   */
+  private Alert canIdWarning = new Alert("JSON", "CAN IDs greater than 40 can cause undefined behaviour, please use a CAN ID below 40!", Alert.AlertType.WARNING);
+  /**
+   * An {@link Alert} for if there is an I2C lockup issue on the roboRIO.
+   */
+  private Alert i2cLockupWarning = new Alert("IMU", "I2C lockup issue detected on roboRIO. Check console for more information.", Alert.AlertType.WARNING);
 
   /**
    * Create a {@link SwerveAbsoluteEncoder} from the current configuration.
@@ -57,8 +66,7 @@ public class DeviceJson
   {
     if (id > 40)
     {
-      DriverStation.reportWarning("CAN IDs greater than 40 can cause undefined behaviour, please use a CAN ID below 40!",
-                                  false);
+      canIdWarning.set(true);
     }
     switch (type)
     {
@@ -99,8 +107,7 @@ public class DeviceJson
   {
     if (id > 40)
     {
-      DriverStation.reportWarning("CAN IDs greater than 40 can cause undefined behaviour, please use a CAN ID below 40!",
-                                  false);
+      canIdWarning.set(true);
     }
     switch (type)
     {
@@ -121,6 +128,7 @@ public class DeviceJson
             "\nhttps://docs.wpilib.org/en/stable/docs/yearly-overview/known-issues" +
             ".html#onboard-i2c-causing-system-lockups",
             false);
+        i2cLockupWarning.set(true);
         return new NavXSwerve(I2C.Port.kMXP);
       case "navx_usb":
         return new NavXSwerve(Port.kUSB);
@@ -145,8 +153,7 @@ public class DeviceJson
   {
     if (id > 40)
     {
-      DriverStation.reportWarning("CAN IDs greater than 40 can cause undefined behaviour, please use a CAN ID below 40!",
-                                  false);
+      canIdWarning.set(true);
     }
     switch (type)
     {

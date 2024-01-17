@@ -4,9 +4,10 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
-import edu.wpi.first.wpilibj.DriverStation;
+
 import java.util.function.Supplier;
 import swervelib.motors.SwerveMotor;
+import swervelib.telemetry.Alert;
 
 /**
  * SparkMax absolute encoder, attached through the data port.
@@ -18,6 +19,15 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
    * The {@link AbsoluteEncoder} representing the duty cycle encoder attached to the SparkMax.
    */
   public AbsoluteEncoder encoder;
+  /** An {@link Alert} for if there is a failure configuring the encoder. */
+  private Alert failureConfiguring = new Alert(
+      "Encoders",
+      "Failure configuring SparkMax Analog Encoder",
+      Alert.AlertType.WARNING_TRACE);
+  private Alert offsetFailure = new Alert(
+      "Encoders",
+      "Failure to set Absolute Encoder Offset",
+      Alert.AlertType.WARNING_TRACE);
 
   /**
    * Create the {@link SparkMaxEncoderSwerve} object as a duty cycle from the {@link CANSparkMax} motor.
@@ -52,7 +62,7 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
         return;
       }
     }
-    DriverStation.reportWarning("Failure configuring encoder", true);
+    failureConfiguring.set(true);
   }
 
   /**
@@ -124,7 +134,8 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
         return true;
       }
     }
-    DriverStation.reportWarning("Failure to set Absolute Encoder Offset Error: " + error, false);
+    offsetFailure.setText("Failure to set Absolute Encoder Offset Error: " + error);
+    offsetFailure.set(true);
     return false;
   }
 

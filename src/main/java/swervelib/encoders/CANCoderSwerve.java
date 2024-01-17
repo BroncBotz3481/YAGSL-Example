@@ -9,7 +9,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.MagnetHealthValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-import edu.wpi.first.wpilibj.DriverStation;
+import swervelib.telemetry.Alert;
 
 /**
  * Swerve Absolute Encoder for CTRE CANCoders.
@@ -21,6 +21,28 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
    * CANCoder with WPILib sendable and support.
    */
   public CANcoder encoder;
+  /** An {@link Alert} for if the CANCoder magnet field is less than ideal. */
+  private Alert magnetFieldLessThanIdeal = new Alert(
+      "Encoders",
+      "CANCoder " + encoder.getDeviceID() + " magnetic field is less than ideal.",
+      Alert.AlertType.WARNING);
+  /** An {@link Alert} for if the CANCoder reading is faulty. */
+  private Alert readingFaulty = new Alert(
+      "Encoders",
+      "CANCoder " + encoder.getDeviceID() + " reading was faulty.",
+      Alert.AlertType.WARNING);
+  /** An {@link Alert} for if the CANCoder reading is faulty and the reading is ignored. */
+  private Alert readingIgnored = new Alert(
+      "Encoders",
+      "CANCoder " + encoder.getDeviceID() + " reading was faulty, ignoring.",
+      Alert.AlertType.WARNING);
+  /** An {@link Alert} for if the absolute encoder offset cannot be set. */
+  private Alert cannotSetOffset = new Alert(
+      "Encoders",
+      "Failure to set CANCoder "
+          + encoder.getDeviceID()
+          + " Absolute Encoder Offset",
+      Alert.AlertType.WARNING);
 
   /**
    * Initialize the CANCoder on the standard CANBus.
@@ -91,15 +113,18 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
 
     if (strength != MagnetHealthValue.Magnet_Green)
     {
-      DriverStation.reportWarning(
-          "CANCoder " + encoder.getDeviceID() + " magnetic field is less than ideal.\n", false);
-    }
+      magnetFieldLessThanIdeal.set(true);
+    } else magnetFieldLessThanIdeal.set(false);
     if (strength == MagnetHealthValue.Magnet_Invalid || strength == MagnetHealthValue.Magnet_Red)
     {
       readingError = true;
-      DriverStation.reportWarning("CANCoder " + encoder.getDeviceID() + " reading was faulty.\n", false);
-//      return 0;
+      readingFaulty.set(true);
+      return 0;
+    }else
+    {
+      readingFaulty.set(false);
     }
+
     StatusSignal<Double> angle = encoder.getAbsolutePosition().refresh();
 
     // Taken from democat's library.
@@ -115,8 +140,8 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
     if (angle.getStatus() != StatusCode.OK)
     {
       readingError = true;
-      DriverStation.reportWarning("CANCoder " + encoder.getDeviceID() + " reading was faulty, ignoring.\n", false);
-    }
+      readingIgnored.set(true);
+    } else readingIgnored.set(false);
 
     return angle.getValue() * 360;
   }
@@ -149,12 +174,16 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
       return false;
     }
     error = cfg.apply(magCfg.withMagnetOffset(offset / 360));
-    if (error == StatusCode.OK)
-    {
+    cannotSetOffset.setText(
+        "Failure to set CANCoder "
+            + encoder.getDeviceID()
+            + " Absolute Encoder Offset Error: "
+            + error);
+    if (error == StatusCode.OK) {
+      cannotSetOffset.set(false);
       return true;
     }
-    DriverStation.reportWarning(
-        "Failure to set CANCoder " + encoder.getDeviceID() + " Absolute Encoder Offset Error: " + error, false);
+    cannotSetOffset.set(true);
     return false;
   }
 

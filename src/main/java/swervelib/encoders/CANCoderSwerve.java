@@ -98,7 +98,7 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
     {
       readingError = true;
       DriverStation.reportWarning("CANCoder " + encoder.getDeviceID() + " reading was faulty.\n", false);
-      return 0;
+//      return 0;
     }
     StatusSignal<Double> angle = encoder.getAbsolutePosition().refresh();
 

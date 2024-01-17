@@ -3,6 +3,7 @@ package swervelib.motors;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -24,15 +25,15 @@ public class TalonFXSwerve extends SwerveMotor
   /**
    * Whether the absolute encoder is integrated.
    */
-  private final boolean            absoluteEncoder         = false;
+  private final boolean         absoluteEncoder         = false;
   /**
-   * Motion magic angle voltage setter.
+   * Position angle voltage setter.
    */
-  private final MotionMagicVoltage m_angleVoltageSetter    = new MotionMagicVoltage(0);
+  private final PositionVoltage m_angleVoltageSetter    = new PositionVoltage(0);
   /**
    * Velocity voltage setter for controlling drive motor.
    */
-  private final VelocityVoltage    m_velocityVoltageSetter = new VelocityVoltage(0);
+  private final VelocityVoltage m_velocityVoltageSetter = new VelocityVoltage(0);
 //  /**
 //   * Motion Magic exponential voltage setters.
 //   */
@@ -156,11 +157,11 @@ public class TalonFXSwerve extends SwerveMotor
 
     //  positionConversionFactor = 1 / positionConversionFactor;
 
-    configuration.MotionMagic = configuration.MotionMagic
-        .withMotionMagicCruiseVelocity(100.0 / positionConversionFactor)
-        .withMotionMagicAcceleration((100.0 / positionConversionFactor) / 0.100)
-        .withMotionMagicExpo_kV(0.12 * positionConversionFactor)
-        .withMotionMagicExpo_kA(0.1);
+//    configuration.MotionMagic = configuration.MotionMagic
+//        .withMotionMagicCruiseVelocity(100.0 / positionConversionFactor)
+//        .withMotionMagicAcceleration((100.0 / positionConversionFactor) / 0.100)
+//        .withMotionMagicExpo_kV(0.12 * positionConversionFactor)
+//        .withMotionMagicExpo_kA(0.1);
 
     configuration.Feedback = configuration.Feedback
         .withSensorToMechanismRatio(positionConversionFactor)

@@ -22,8 +22,10 @@ public class PWMDutyCycleEncoderSwerve extends SwerveAbsoluteEncoder
    * Inversion state.
    */
   private       boolean          isInverted;
-  /** An {@link Alert}  for if the encoder cannot report accurate velocities. */
-  private Alert inaccurateVelocities = new Alert(
+  /**
+   * An {@link Alert}  for if the encoder cannot report accurate velocities.
+   */
+  private       Alert            inaccurateVelocities = new Alert(
       "Encoders",
       "The PWM Duty Cycle encoder may not report accurate velocities!",
       Alert.AlertType.WARNING_TRACE);

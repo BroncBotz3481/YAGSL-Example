@@ -4,7 +4,6 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
-
 import java.util.function.Supplier;
 import swervelib.motors.SwerveMotor;
 import swervelib.telemetry.Alert;
@@ -18,13 +17,15 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
   /**
    * The {@link AbsoluteEncoder} representing the duty cycle encoder attached to the SparkMax.
    */
-  public AbsoluteEncoder encoder;
-  /** An {@link Alert} for if there is a failure configuring the encoder. */
-  private Alert failureConfiguring = new Alert(
+  public  AbsoluteEncoder encoder;
+  /**
+   * An {@link Alert} for if there is a failure configuring the encoder.
+   */
+  private Alert           failureConfiguring = new Alert(
       "Encoders",
       "Failure configuring SparkMax Analog Encoder",
       Alert.AlertType.WARNING_TRACE);
-  private Alert offsetFailure = new Alert(
+  private Alert           offsetFailure      = new Alert(
       "Encoders",
       "Failure to set Absolute Encoder Offset",
       Alert.AlertType.WARNING_TRACE);

@@ -7,9 +7,8 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import swervelib.telemetry.Alert;
-
 import java.util.Optional;
+import swervelib.telemetry.Alert;
 
 /**
  * Communicates with the NavX as the IMU.
@@ -24,8 +23,10 @@ public class NavXSwerve extends SwerveIMU
   /**
    * Offset for the NavX.
    */
-  private Rotation3d offset = new Rotation3d();
-  /** An {@link Alert} for if there is an error instantiating the NavX. */
+  private Rotation3d offset    = new Rotation3d();
+  /**
+   * An {@link Alert} for if there is an error instantiating the NavX.
+   */
   private Alert      navXError = new Alert("IMU", "Error instantiating NavX.", Alert.AlertType.ERROR_TRACE);
 
   /**

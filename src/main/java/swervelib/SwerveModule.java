@@ -64,11 +64,17 @@ public class SwerveModule
   /**
    * An {@link Alert} for if pushing the Absolute Encoder offset to the encoder fails.
    */
-  private       Alert                  encoderOffsetWarning = new Alert("Motors", "Pushing the Absolute Encoder offset to the encoder failed on module #" + moduleNumber, Alert.AlertType.WARNING);
+  private       Alert                  encoderOffsetWarning     = new Alert("Motors",
+                                                                            "Pushing the Absolute Encoder offset to the encoder failed on module #" +
+                                                                            moduleNumber,
+                                                                            Alert.AlertType.WARNING);
   /**
    * An {@link Alert} for if there is no Absolute Encoder on the module.
    */
-  private       Alert                  noEncoderWarning = new Alert("Motors", "There is no Absolute Encoder on module #" + moduleNumber, Alert.AlertType.WARNING);
+  private       Alert                  noEncoderWarning         = new Alert("Motors",
+                                                                            "There is no Absolute Encoder on module #" +
+                                                                            moduleNumber,
+                                                                            Alert.AlertType.WARNING);
 
   /**
    * Construct the swerve module and initialize the swerve module motors and absolute encoder.
@@ -405,10 +411,12 @@ public class SwerveModule
       if (absoluteEncoder.setAbsoluteEncoderOffset(angleOffset))
       {
         angleOffset = 0;
-      } else {
+      } else
+      {
         encoderOffsetWarning.set(true);
       }
-    } else {
+    } else
+    {
       noEncoderWarning.set(true);
     }
   }

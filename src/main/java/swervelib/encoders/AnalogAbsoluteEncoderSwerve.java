@@ -18,14 +18,18 @@ public class AnalogAbsoluteEncoderSwerve extends SwerveAbsoluteEncoder
   /**
    * Inversion state of the encoder.
    */
-  private boolean     inverted = false;
-  /** An {@link Alert} for if the absolute encoder offset cannot be set. */
-  private Alert cannotSetOffset = new Alert(
+  private boolean     inverted             = false;
+  /**
+   * An {@link Alert} for if the absolute encoder offset cannot be set.
+   */
+  private Alert       cannotSetOffset      = new Alert(
       "Encoders",
       "Cannot Set Absolute Encoder Offset of Analog Encoders Channel #" + encoder.getChannel(),
       Alert.AlertType.WARNING);
-  /** An {@link Alert} detailing how the analog absolute encoder may not report accurate velocities. */
-  private Alert inaccurateVelocities = new Alert(
+  /**
+   * An {@link Alert} detailing how the analog absolute encoder may not report accurate velocities.
+   */
+  private Alert       inaccurateVelocities = new Alert(
       "Encoders",
       "The Analog Absolute encoder may not report accurate velocities!",
       Alert.AlertType.WARNING_TRACE);

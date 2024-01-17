@@ -154,7 +154,7 @@ public class TalonFXSwerve extends SwerveMotor
     TalonFXConfigurator cfg = motor.getConfigurator();
     cfg.refresh(configuration);
 
-    positionConversionFactor = 1 / positionConversionFactor;
+    //  positionConversionFactor = 1 / positionConversionFactor;
 
     configuration.MotionMagic = configuration.MotionMagic
         .withMotionMagicCruiseVelocity(100 / positionConversionFactor)

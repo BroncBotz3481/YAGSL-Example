@@ -35,29 +35,29 @@ public class DeviceJson
 {
 
   /**
-   * The device type, e.g. pigeon/pigeon2/sparkmax/talonfx/navx
-   */
-  public  String type;
-  /**
-   * The CAN ID or pin ID of the device.
-   */
-  public  int    id;
-  /**
-   * The CAN bus name which the device resides on if using CAN.
-   */
-  public  String canbus           = "";
-  /**
    * An {@link Alert} for if the CAN ID is greater than 40.
    */
-  private Alert  canIdWarning     = new Alert("JSON",
-                                              "CAN IDs greater than 40 can cause undefined behaviour, please use a CAN ID below 40!",
-                                              Alert.AlertType.WARNING);
+  private final Alert  canIdWarning     = new Alert("JSON",
+                                                    "CAN IDs greater than 40 can cause undefined behaviour, please use a CAN ID below 40!",
+                                                    Alert.AlertType.WARNING);
   /**
    * An {@link Alert} for if there is an I2C lockup issue on the roboRIO.
    */
-  private Alert  i2cLockupWarning = new Alert("IMU",
-                                              "I2C lockup issue detected on roboRIO. Check console for more information.",
-                                              Alert.AlertType.WARNING);
+  private final Alert  i2cLockupWarning = new Alert("IMU",
+                                                    "I2C lockup issue detected on roboRIO. Check console for more information.",
+                                                    Alert.AlertType.WARNING);
+  /**
+   * The device type, e.g. pigeon/pigeon2/sparkmax/talonfx/navx
+   */
+  public        String type;
+  /**
+   * The CAN ID or pin ID of the device.
+   */
+  public        int    id;
+  /**
+   * The CAN bus name which the device resides on if using CAN.
+   */
+  public        String canbus           = "";
 
   /**
    * Create a {@link SwerveAbsoluteEncoder} from the current configuration.

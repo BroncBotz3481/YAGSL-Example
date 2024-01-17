@@ -18,21 +18,15 @@ public class AnalogAbsoluteEncoderSwerve extends SwerveAbsoluteEncoder
   /**
    * Inversion state of the encoder.
    */
-  private boolean     inverted             = false;
+  private boolean     inverted = false;
   /**
    * An {@link Alert} for if the absolute encoder offset cannot be set.
    */
-  private Alert       cannotSetOffset      = new Alert(
-      "Encoders",
-      "Cannot Set Absolute Encoder Offset of Analog Encoders Channel #" + encoder.getChannel(),
-      Alert.AlertType.WARNING);
+  private Alert       cannotSetOffset;
   /**
    * An {@link Alert} detailing how the analog absolute encoder may not report accurate velocities.
    */
-  private Alert       inaccurateVelocities = new Alert(
-      "Encoders",
-      "The Analog Absolute encoder may not report accurate velocities!",
-      Alert.AlertType.WARNING_TRACE);
+  private Alert       inaccurateVelocities;
 
   /**
    * Construct the Thrifty Encoder as a Swerve Absolute Encoder.
@@ -42,6 +36,14 @@ public class AnalogAbsoluteEncoderSwerve extends SwerveAbsoluteEncoder
   public AnalogAbsoluteEncoderSwerve(AnalogInput encoder)
   {
     this.encoder = encoder;
+    cannotSetOffset = new Alert(
+        "Encoders",
+        "Cannot Set Absolute Encoder Offset of Analog Encoders Channel #" + encoder.getChannel(),
+        Alert.AlertType.WARNING);
+    inaccurateVelocities = new Alert(
+        "Encoders",
+        "The Analog Absolute encoder may not report accurate velocities!",
+        Alert.AlertType.WARNING_TRACE);
   }
 
   /**

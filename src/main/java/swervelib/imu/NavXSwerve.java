@@ -23,11 +23,11 @@ public class NavXSwerve extends SwerveIMU
   /**
    * Offset for the NavX.
    */
-  private Rotation3d offset    = new Rotation3d();
+  private Rotation3d offset = new Rotation3d();
   /**
    * An {@link Alert} for if there is an error instantiating the NavX.
    */
-  private Alert      navXError = new Alert("IMU", "Error instantiating NavX.", Alert.AlertType.ERROR_TRACE);
+  private Alert      navXError;
 
   /**
    * Constructor for the NavX swerve.
@@ -36,6 +36,7 @@ public class NavXSwerve extends SwerveIMU
    */
   public NavXSwerve(SerialPort.Port port)
   {
+    navXError = new Alert("IMU", "Error instantiating NavX.", Alert.AlertType.ERROR_TRACE);
     try
     {
       /* Communicate w/navX-MXP via the MXP SPI Bus.                                     */

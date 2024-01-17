@@ -24,33 +24,19 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
   /**
    * An {@link Alert} for if the CANCoder magnet field is less than ideal.
    */
-  private Alert    magnetFieldLessThanIdeal = new Alert(
-      "Encoders",
-      "CANCoder " + encoder.getDeviceID() + " magnetic field is less than ideal.",
-      Alert.AlertType.WARNING);
+  private Alert    magnetFieldLessThanIdeal;
   /**
    * An {@link Alert} for if the CANCoder reading is faulty.
    */
-  private Alert    readingFaulty            = new Alert(
-      "Encoders",
-      "CANCoder " + encoder.getDeviceID() + " reading was faulty.",
-      Alert.AlertType.WARNING);
+  private Alert    readingFaulty;
   /**
    * An {@link Alert} for if the CANCoder reading is faulty and the reading is ignored.
    */
-  private Alert    readingIgnored           = new Alert(
-      "Encoders",
-      "CANCoder " + encoder.getDeviceID() + " reading was faulty, ignoring.",
-      Alert.AlertType.WARNING);
+  private Alert    readingIgnored;
   /**
    * An {@link Alert} for if the absolute encoder offset cannot be set.
    */
-  private Alert    cannotSetOffset          = new Alert(
-      "Encoders",
-      "Failure to set CANCoder "
-      + encoder.getDeviceID()
-      + " Absolute Encoder Offset",
-      Alert.AlertType.WARNING);
+  private Alert    cannotSetOffset;
 
   /**
    * Initialize the CANCoder on the standard CANBus.
@@ -71,6 +57,24 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
   public CANCoderSwerve(int id, String canbus)
   {
     encoder = new CANcoder(id, canbus);
+    magnetFieldLessThanIdeal = new Alert(
+        "Encoders",
+        "CANCoder " + encoder.getDeviceID() + " magnetic field is less than ideal.",
+        Alert.AlertType.WARNING);
+    readingFaulty = new Alert(
+        "Encoders",
+        "CANCoder " + encoder.getDeviceID() + " reading was faulty.",
+        Alert.AlertType.WARNING);
+    readingIgnored = new Alert(
+        "Encoders",
+        "CANCoder " + encoder.getDeviceID() + " reading was faulty, ignoring.",
+        Alert.AlertType.WARNING);
+    cannotSetOffset = new Alert(
+        "Encoders",
+        "Failure to set CANCoder "
+        + encoder.getDeviceID()
+        + " Absolute Encoder Offset",
+        Alert.AlertType.WARNING);
   }
 
   /**

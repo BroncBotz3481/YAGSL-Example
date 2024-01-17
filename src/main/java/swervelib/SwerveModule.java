@@ -34,6 +34,14 @@ public class SwerveModule
    */
   private final SwerveAbsoluteEncoder  absoluteEncoder;
   /**
+   * An {@link Alert} for if pushing the Absolute Encoder offset to the encoder fails.
+   */
+  private final Alert                  encoderOffsetWarning;
+  /**
+   * An {@link Alert} for if there is no Absolute Encoder on the module.
+   */
+  private final Alert                  noEncoderWarning;
+  /**
    * Module number for kinematics, usually 0 to 3. front left -> front right -> back left -> back right.
    */
   public        int                    moduleNumber;
@@ -61,20 +69,6 @@ public class SwerveModule
    * Encoder synchronization queued.
    */
   private       boolean                synchronizeEncoderQueued = false;
-  /**
-   * An {@link Alert} for if pushing the Absolute Encoder offset to the encoder fails.
-   */
-  private       Alert                  encoderOffsetWarning     = new Alert("Motors",
-                                                                            "Pushing the Absolute Encoder offset to the encoder failed on module #" +
-                                                                            moduleNumber,
-                                                                            Alert.AlertType.WARNING);
-  /**
-   * An {@link Alert} for if there is no Absolute Encoder on the module.
-   */
-  private       Alert                  noEncoderWarning         = new Alert("Motors",
-                                                                            "There is no Absolute Encoder on module #" +
-                                                                            moduleNumber,
-                                                                            Alert.AlertType.WARNING);
 
   /**
    * Construct the swerve module and initialize the swerve module motors and absolute encoder.
@@ -143,6 +137,15 @@ public class SwerveModule
     }
 
     lastState = getState();
+
+    noEncoderWarning = new Alert("Motors",
+                                 "There is no Absolute Encoder on module #" +
+                                 moduleNumber,
+                                 Alert.AlertType.WARNING);
+    encoderOffsetWarning = new Alert("Motors",
+                                     "Pushing the Absolute Encoder offset to the encoder failed on module #" +
+                                     moduleNumber,
+                                     Alert.AlertType.WARNING);
   }
 
   /**

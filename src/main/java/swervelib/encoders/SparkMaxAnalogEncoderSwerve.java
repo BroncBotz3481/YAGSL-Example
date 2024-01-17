@@ -21,17 +21,11 @@ public class SparkMaxAnalogEncoderSwerve extends SwerveAbsoluteEncoder
   /**
    * An {@link Alert} for if there is a failure configuring the encoder.
    */
-  private Alert             failureConfiguring              = new Alert(
-      "Encoders",
-      "Failure configuring SparkMax Analog Encoder",
-      Alert.AlertType.WARNING_TRACE);
+  private Alert             failureConfiguring;
   /**
    * An {@link Alert} for if the absolute encoder does not support integrated offsets.
    */
-  private Alert             doesNotSupportIntegratedOffsets = new Alert(
-      "Encoders",
-      "SparkMax Analog Sensors do not support integrated offsets",
-      Alert.AlertType.WARNING_TRACE);
+  private Alert             doesNotSupportIntegratedOffsets;
 
 
   /**
@@ -49,6 +43,15 @@ public class SparkMaxAnalogEncoderSwerve extends SwerveAbsoluteEncoder
     {
       throw new RuntimeException("Motor given to instantiate SparkMaxEncoder is not a CANSparkMax");
     }
+    failureConfiguring = new Alert(
+        "Encoders",
+        "Failure configuring SparkMax Analog Encoder",
+        Alert.AlertType.WARNING_TRACE);
+    doesNotSupportIntegratedOffsets = new Alert(
+        "Encoders",
+        "SparkMax Analog Sensors do not support integrated offsets",
+        Alert.AlertType.WARNING_TRACE);
+
   }
 
   /**

@@ -21,14 +21,11 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
   /**
    * An {@link Alert} for if there is a failure configuring the encoder.
    */
-  private Alert           failureConfiguring = new Alert(
-      "Encoders",
-      "Failure configuring SparkMax Analog Encoder",
-      Alert.AlertType.WARNING_TRACE);
-  private Alert           offsetFailure      = new Alert(
-      "Encoders",
-      "Failure to set Absolute Encoder Offset",
-      Alert.AlertType.WARNING_TRACE);
+  private Alert           failureConfiguring;
+  /**
+   * An {@link Alert} for if there is a failure configuring the encoder offset.
+   */
+  private Alert           offsetFailure;
 
   /**
    * Create the {@link SparkMaxEncoderSwerve} object as a duty cycle from the {@link CANSparkMax} motor.
@@ -47,6 +44,14 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
     {
       throw new RuntimeException("Motor given to instantiate SparkMaxEncoder is not a CANSparkMax");
     }
+    failureConfiguring = new Alert(
+        "Encoders",
+        "Failure configuring SparkMax Analog Encoder",
+        Alert.AlertType.WARNING_TRACE);
+    offsetFailure = new Alert(
+        "Encoders",
+        "Failure to set Absolute Encoder Offset",
+        Alert.AlertType.WARNING_TRACE);
   }
 
   /**

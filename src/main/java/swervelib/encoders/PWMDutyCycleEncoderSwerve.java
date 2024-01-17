@@ -25,11 +25,7 @@ public class PWMDutyCycleEncoderSwerve extends SwerveAbsoluteEncoder
   /**
    * An {@link Alert}  for if the encoder cannot report accurate velocities.
    */
-  private       Alert            inaccurateVelocities = new Alert(
-      "Encoders",
-      "The PWM Duty Cycle encoder may not report accurate velocities!",
-      Alert.AlertType.WARNING_TRACE);
-
+  private       Alert            inaccurateVelocities;
 
   /**
    * Constructor for the PWM duty cycle encoder.
@@ -39,6 +35,11 @@ public class PWMDutyCycleEncoderSwerve extends SwerveAbsoluteEncoder
   public PWMDutyCycleEncoderSwerve(int pin)
   {
     encoder = new DutyCycleEncoder(pin);
+    inaccurateVelocities = new Alert(
+        "Encoders",
+        "The PWM Duty Cycle encoder may not report accurate velocities!",
+        Alert.AlertType.WARNING_TRACE);
+
   }
 
   /**

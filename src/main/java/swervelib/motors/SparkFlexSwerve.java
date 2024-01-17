@@ -43,21 +43,15 @@ public class SparkFlexSwerve extends SwerveMotor
   /**
    * Factory default already occurred.
    */
-  private boolean               factoryDefaultOccurred       = false;
+  private boolean               factoryDefaultOccurred = false;
   /**
    * An {@link Alert} for if there is an error configuring the motor.
    */
-  private Alert                 failureConfiguring           = new Alert("Motors",
-                                                                         "Failure configuring motor " +
-                                                                         motor.getDeviceId(),
-                                                                         Alert.AlertType.WARNING_TRACE);
+  private Alert                 failureConfiguring;
   /**
    * An {@link Alert} for if the absolute encoder's offset is set in the json instead of the hardware client.
    */
-  private Alert                 absoluteEncoderOffsetWarning = new Alert("Motors",
-                                                                         "IF possible configure the duty cycle encoder offset in the REV Hardware Client instead of using the " +
-                                                                         "absoluteEncoderOffset in the Swerve Module JSON!",
-                                                                         Alert.AlertType.WARNING);
+  private Alert                 absoluteEncoderOffsetWarning;
 
   /**
    * Initialize the swerve motor.
@@ -79,6 +73,15 @@ public class SparkFlexSwerve extends SwerveMotor
 
     // Spin off configurations in a different thread.
     // configureSparkMax(() -> motor.setCANTimeout(0)); // Commented out because it prevents feedback.
+    failureConfiguring = new Alert("Motors",
+                                   "Failure configuring motor " +
+                                   motor.getDeviceId(),
+                                   Alert.AlertType.WARNING_TRACE);
+    absoluteEncoderOffsetWarning = new Alert("Motors",
+                                             "IF possible configure the duty cycle encoder offset in the REV Hardware Client instead of using the " +
+                                             "absoluteEncoderOffset in the Swerve Module JSON!",
+                                             Alert.AlertType.WARNING);
+
   }
 
   /**

@@ -78,7 +78,6 @@ public class SwerveSubsystem extends SubsystemBase
     }
     swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
 
-    swerveDrive.setGyroOffset(new Rotation3d(0, 0, Units.degreesToRadians(90)));
     setupPathPlanner();
   }
 
@@ -358,7 +357,7 @@ public class SwerveSubsystem extends SubsystemBase
     return swerveDrive.swerveController.getTargetSpeeds(xInput,
                                                         yInput,
                                                         angle.getRadians(),
-                                                        getHeading().getRadians() - Units.degreesToRadians(90),
+                                                        getHeading().getRadians(),
                                                         maximumSpeed);
   }
 

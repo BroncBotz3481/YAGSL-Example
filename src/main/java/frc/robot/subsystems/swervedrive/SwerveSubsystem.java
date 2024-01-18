@@ -177,6 +177,7 @@ public class SwerveSubsystem extends SubsystemBase
    *
    * @param translationX Translation in the X direction.
    * @param translationY Translation in the Y direction.
+   * @param rotation Rotation as a value between [-1, 1] converted to radians.
    * @return Drive command.
    */
   public Command simDriveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier rotation)

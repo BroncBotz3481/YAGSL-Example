@@ -83,7 +83,7 @@ public class SwerveDriveConfiguration
   }
 
   /**
-   * Assume the first module is the furthest. Usually front-left.
+   * Calculate the Drive Base Radius
    *
    * @return Drive base radius from center of robot to the farthest wheel in meters.
    */

@@ -322,7 +322,7 @@ public class SwerveDrive
    * Set the heading correction capabilities of YAGSL.
    *
    * @param state    {@link SwerveDrive#headingCorrection} state.
-   * @param deadband {@link SwerveDrive#HEADING_CORRECTION_DEADBAND} state.
+   * @param deadband {@link SwerveDrive#HEADING_CORRECTION_DEADBAND} deadband.
    */
   public void setHeadingCorrection(boolean state, double deadband)
   {

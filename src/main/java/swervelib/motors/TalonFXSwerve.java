@@ -240,12 +240,12 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public void configurePIDF(PIDFConfig config)
   {
-    if(!isDriveMotor)
-    {
-      config.p *= 360;
-      config.i *= 360;
-      config.d *= 360;
-    }
+//    if(!isDriveMotor)
+//    {
+//      config.p *= 360;
+//      config.i *= 360;
+//      config.d *= 360;
+//    }
 
     TalonFXConfigurator cfg = motor.getConfigurator();
     cfg.refresh(configuration.Slot0);
@@ -383,7 +383,7 @@ public class TalonFXSwerve extends SwerveMotor
     {
       position = position < 0 ? (position % 360) + 360 : position;
       TalonFXConfigurator cfg = motor.getConfigurator();
-      cfg.setPosition(position);
+      cfg.setPosition(position / conversionFactor);
     }
   }
 

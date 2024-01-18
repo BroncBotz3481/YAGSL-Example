@@ -167,11 +167,8 @@ public class TalonFXSwerve extends SwerveMotor
                                  .withMotionMagicExpo_kV(0.12 * positionConversionFactor)
                                  .withMotionMagicExpo_kA(0.1);
 
-    configuration.Feedback = configuration.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor);
-    if (isDriveMotor)
-    {
-      configuration.Feedback = configuration.Feedback.withSensorToMechanismRatio(positionConversionFactor);
-    }
+    configuration.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+                          .withSensorToMechanismRatio(positionConversionFactor);
 
     cfg.apply(configuration);
     // Taken from democat's library.
@@ -341,7 +338,7 @@ public class TalonFXSwerve extends SwerveMotor
       motor.setControl(m_velocityVoltageSetter.withVelocity(setpoint).withFeedForward(feedforward));
     } else
     {
-      motor.setControl(m_angleVoltageSetter.withPosition((setpoint - 180) / conversionFactor));
+      motor.setControl(m_angleVoltageSetter.withPosition(setpoint / 360));
     }
   }
 

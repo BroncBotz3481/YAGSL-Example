@@ -383,7 +383,7 @@ public class TalonFXSwerve extends SwerveMotor
     {
       position = position < 0 ? (position % 360) + 360 : position;
       TalonFXConfigurator cfg = motor.getConfigurator();
-      cfg.setPosition(position / conversionFactor);
+      cfg.setPosition(position / 360);
     }
   }
 

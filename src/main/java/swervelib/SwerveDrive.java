@@ -658,9 +658,7 @@ public class SwerveDrive
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
     if (!SwerveDriveTelemetry.isSimulation)
     {
-      return swerveDriveConfiguration.invertedIMU
-             ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getZ())
-             : Rotation2d.fromRadians(imu.getRotation3d().getZ());
+      return Rotation2d.fromRadians(imu.getRotation3d().getZ());
     } else
     {
       return simIMU.getYaw();
@@ -677,9 +675,7 @@ public class SwerveDrive
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
     if (!SwerveDriveTelemetry.isSimulation)
     {
-      return swerveDriveConfiguration.invertedIMU
-             ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getY())
-             : Rotation2d.fromRadians(imu.getRotation3d().getY());
+      return Rotation2d.fromRadians(imu.getRotation3d().getY());
     } else
     {
       return simIMU.getPitch();
@@ -696,9 +692,7 @@ public class SwerveDrive
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
     if (!SwerveDriveTelemetry.isSimulation)
     {
-      return swerveDriveConfiguration.invertedIMU
-             ? Rotation2d.fromRadians(imu.getRotation3d().unaryMinus().getX())
-             : Rotation2d.fromRadians(imu.getRotation3d().getX());
+      return Rotation2d.fromRadians(imu.getRotation3d().getX());
     } else
     {
       return simIMU.getRoll();
@@ -715,9 +709,7 @@ public class SwerveDrive
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
     if (!SwerveDriveTelemetry.isSimulation)
     {
-      return swerveDriveConfiguration.invertedIMU
-             ? imu.getRotation3d().unaryMinus()
-             : imu.getRotation3d();
+      return imu.getRotation3d();
     } else
     {
       return simIMU.getGyroRotation3d();

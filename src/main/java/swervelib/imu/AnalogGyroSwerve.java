@@ -20,6 +20,10 @@ public class AnalogGyroSwerve extends SwerveIMU
    * Offset for the analog gyro.
    */
   private       Rotation3d offset = new Rotation3d();
+  /**
+   * Inversion for the gyro
+   */
+  private boolean invertedIMU = false;
 
   /**
    * Analog port in which the gyroscope is connected. Can only be attached to analog ports 0 or 1.
@@ -68,12 +72,25 @@ public class AnalogGyroSwerve extends SwerveIMU
   }
 
   /**
+   * Set the gyro to invert its default direction
+   * 
+   * @param invertIMU invert gyro direction
+   */
+  public void setInverted(boolean invertIMU)
+  {
+    invertedIMU = invertIMU;
+  }
+
+  /**
    * Fetch the {@link Rotation3d} from the IMU without any zeroing. Robot relative.
    *
    * @return {@link Rotation3d} from the IMU.
    */
   public Rotation3d getRawRotation3d()
   {
+    if(invertedIMU){
+      return new Rotation3d(0, 0, Math.toRadians(-gyro.getAngle())).unaryMinus();
+    }
     return new Rotation3d(0, 0, Math.toRadians(-gyro.getAngle()));
   }
 

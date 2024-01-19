@@ -138,7 +138,9 @@ public class Pigeon2Swerve extends SwerveIMU
     StatusSignal<Double> yAcc = imu.getAccelerationX();
     StatusSignal<Double> zAcc = imu.getAccelerationX();
 
-    return Optional.of(new Translation3d(xAcc.refresh().getValue(), yAcc.refresh().getValue(), zAcc.refresh().getValue()).times(9.81 / 16384.0));
+    return Optional.of(new Translation3d(xAcc.refresh().getValue(),
+                                         yAcc.refresh().getValue(),
+                                         zAcc.refresh().getValue()).times(9.81 / 16384.0));
   }
 
   /**

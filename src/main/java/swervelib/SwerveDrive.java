@@ -646,7 +646,7 @@ public class SwerveDrive
   public void resetOdometry(Pose2d pose)
   {
     odometryLock.lock();
-    swerveDrivePoseEstimator.resetPosition(pose.getRotation(), getModulePositions(), pose);
+    swerveDrivePoseEstimator.resetPosition(getYaw(), getModulePositions(), pose);
     odometryLock.unlock();
     kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, pose.getRotation()));
   }

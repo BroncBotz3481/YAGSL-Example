@@ -25,6 +25,10 @@ public class NavXSwerve extends SwerveIMU
    */
   private Rotation3d offset = new Rotation3d();
   /**
+   * Inversion for the gyro
+   */
+  private boolean invertedIMU = false;
+  /**
    * An {@link Alert} for if there is an error instantiating the NavX.
    */
   private Alert      navXError;
@@ -125,6 +129,16 @@ public class NavXSwerve extends SwerveIMU
   }
 
   /**
+   * Set the gyro to invert its default direction
+   * 
+   * @param invertIMU invert gyro direction
+   */
+  public void setInverted(boolean invertIMU)
+  {
+    invertedIMU = invertIMU;
+  }
+
+  /**
    * Fetch the {@link Rotation3d} from the IMU without any zeroing. Robot relative.
    *
    * @return {@link Rotation3d} from the IMU.
@@ -132,6 +146,9 @@ public class NavXSwerve extends SwerveIMU
   @Override
   public Rotation3d getRawRotation3d()
   {
+    if(invertedIMU){
+      return gyro.getRotation3d().unaryMinus();
+    }
     return gyro.getRotation3d();
   }
 

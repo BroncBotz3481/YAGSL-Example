@@ -21,6 +21,10 @@ public class ADIS16470Swerve extends SwerveIMU
    * Offset for the ADIS16470.
    */
   private       Rotation3d    offset = new Rotation3d();
+  /**
+   * Inversion for the gyro
+   */
+  private boolean invertedIMU = false;
 
   /**
    * Construct the ADIS16470 imu and reset default configurations. Publish the gyro to the SmartDashboard.
@@ -63,12 +67,25 @@ public class ADIS16470Swerve extends SwerveIMU
   }
 
   /**
+   * Set the gyro to invert its default direction
+   * 
+   * @param invertIMU invert gyro direction
+   */
+  public void setInverted(boolean invertIMU)
+  {
+    invertedIMU = invertIMU;
+  }
+
+  /**
    * Fetch the {@link Rotation3d} from the IMU without any zeroing. Robot relative.
    *
    * @return {@link Rotation3d} from the IMU.
    */
   public Rotation3d getRawRotation3d()
   {
+    if(invertedIMU){
+      return new Rotation3d(0, 0, Math.toRadians(-imu.getAngle(IMUAxis.kYaw))).unaryMinus();
+    }
     return new Rotation3d(0, 0, Math.toRadians(-imu.getAngle(IMUAxis.kYaw)));
   }
 

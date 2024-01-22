@@ -55,6 +55,7 @@ public class SwerveDriveConfiguration
     this.moduleCount = moduleConfigs.length;
     this.imu = swerveIMU;
     this.invertedIMU = invertedIMU;
+    swerveIMU.setInverted(invertedIMU);
     this.modules = createModules(moduleConfigs, driveFeedforward);
     this.moduleLocationsMeters = new Translation2d[moduleConfigs.length];
     for (SwerveModule module : modules)

@@ -136,7 +136,7 @@ public class DeviceJson
         return new NavXSwerve(I2C.Port.kMXP);
       case "navx_usb":
         return new NavXSwerve(Port.kUSB);
-      case "navx_mxp":
+      case "navx_mxp_serial":
         return new NavXSwerve(Port.kMXP);
       case "pigeon":
         return new PigeonSwerve(id);

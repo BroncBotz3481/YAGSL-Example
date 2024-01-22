@@ -20,11 +20,11 @@ public class PigeonSwerve extends SwerveIMU
   /**
    * Offset for the Pigeon.
    */
-  private Rotation3d offset = new Rotation3d();
+  private Rotation3d offset      = new Rotation3d();
   /**
    * Inversion for the gyro
    */
-  private boolean invertedIMU = false;
+  private boolean    invertedIMU = false;
 
   /**
    * Generate the SwerveIMU for pigeon.
@@ -68,7 +68,7 @@ public class PigeonSwerve extends SwerveIMU
 
   /**
    * Set the gyro to invert its default direction
-   * 
+   *
    * @param invertIMU invert gyro direction
    */
   public void setInverted(boolean invertIMU)
@@ -86,10 +86,8 @@ public class PigeonSwerve extends SwerveIMU
   {
     double[] wxyz = new double[4];
     imu.get6dQuaternion(wxyz);
-    if(invertedIMU){
-      return new Rotation3d(new Quaternion(wxyz[0], wxyz[1], wxyz[2], wxyz[3])).unaryMinus();
-    }
-    return new Rotation3d(new Quaternion(wxyz[0], wxyz[1], wxyz[2], wxyz[3]));
+    Rotation3d reading = new Rotation3d(new Quaternion(wxyz[0], wxyz[1], wxyz[2], wxyz[3]));
+    return invertedIMU ? reading.unaryMinus() : reading;
   }
 
   /**

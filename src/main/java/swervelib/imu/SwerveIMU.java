@@ -28,9 +28,9 @@ public abstract class SwerveIMU
   public abstract void setOffset(Rotation3d offset);
 
   /**
-   * Set the gyro to invert its default direction
-   * 
-   * @param invert gyro direction
+   * Set the gyro to invert its default direction.
+   *
+   * @param invertIMU gyro direction
    */
   public abstract void setInverted(boolean invertIMU);
 

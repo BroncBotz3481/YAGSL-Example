@@ -1,5 +1,7 @@
 package swervelib;
 
+import com.revrobotics.CANSparkMax;
+
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -212,6 +214,11 @@ public class SwerveModule
       {
         cosineScalar = 0.0;
       }
+      // TODO remove thjis
+      //cosineScalar = 1.0;
+      CANSparkMax cdm = (CANSparkMax) driveMotor.getMotor();
+      SmartDashboard.putNumber("motor." + cdm.getDeviceId() + ".cosineScalar", cosineScalar);
+      SmartDashboard.putNumber("motor." + cdm.getDeviceId() + ".steermotorerror", steerMotorError);
 
       double velocity = desiredState.speedMetersPerSecond * (cosineScalar);
       driveMotor.setReference(velocity, feedforward.calculate(velocity));
@@ -250,6 +257,8 @@ public class SwerveModule
     {
       SmartDashboard.putNumber("Module[" + configuration.name + "] Speed Setpoint", desiredState.speedMetersPerSecond);
       SmartDashboard.putNumber("Module[" + configuration.name + "] Angle Setpoint", desiredState.angle.getDegrees());
+      SmartDashboard.putNumber("Module[" + configuration.name + "] Angle Absolute Position", getAbsolutePosition());
+      SmartDashboard.putNumber("Module[" + configuration.name + "] Angle Relative Position", getRelativePosition());
     }
   }
 

@@ -56,7 +56,7 @@ public class ModuleJson
   /**
    * Should do cosine compensation when not pointing correct direction;.
    */
-  public boolean           shouldCosineCompensate = false;
+  public boolean           useCosineCompensator = true;
 
   /**
    * Create the swerve module configuration based off of parsed data.
@@ -136,6 +136,6 @@ public class ModuleJson
         inverted.drive,
         inverted.angle,
         name.replaceAll("\\.json", ""),
-        shouldCosineCompensate);
+        useCosineCompensator);
   }
 }

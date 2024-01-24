@@ -202,7 +202,7 @@ public class SwerveModule
     } else
     {
       double cosineScalar = 1.0;
-      if (configuration.shouldCosineCompensate) {
+      if (configuration.useCosineCompensator) {
         // Taken from the CTRE SwerveModule class.
         // https://api.ctr-electronics.com/phoenix6/release/java/src-html/com/ctre/phoenix6/mechanisms/swerve/SwerveModule.html#line.46
         /* From FRC 900's whitepaper, we add a cosine compensator to the applied drive velocity */
@@ -216,10 +216,6 @@ public class SwerveModule
         {
           cosineScalar = 0.0;
         }
-
-        CANSparkMax cdm = (CANSparkMax) driveMotor.getMotor();
-        SmartDashboard.putNumber("motor." + cdm.getDeviceId() + ".cosineScalar", cosineScalar);
-        SmartDashboard.putNumber("motor." + cdm.getDeviceId() + ".steermotorerror", steerMotorError);
       }
 
       double velocity = desiredState.speedMetersPerSecond * (cosineScalar);

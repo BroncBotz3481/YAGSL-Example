@@ -17,6 +17,7 @@ This configuration file interacts directly with swerve kinematics.
 | absoluteEncoderOffset   | Degrees                     | Y        | Absolute encoder offset from 0 in degrees.                                |
 | absoluteEncoderInverted | Bool                        | N        | Inversion state of the Absolute Encoder.                                  |
 | location                | [MotorConfig](#MotorConfig) | Y        | The location of the swerve module from the center of the robot in inches. |
+| useCosineCompensator    | Bool                        | N        | Whether or not to modulate drive motors when pointed in wrong direction (defaults to True) |
 
 ### MotorConfig
 

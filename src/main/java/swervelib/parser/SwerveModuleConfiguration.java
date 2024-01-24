@@ -65,7 +65,7 @@ public class SwerveModuleConfiguration
   /**
    * Should do cosine compensation when not pointing correct direction;.
    */
-  public boolean           shouldCosineCompensate;
+  public boolean               useCosineCompensator;
 
   /**
    * Construct a configuration object for swerve modules.
@@ -84,7 +84,7 @@ public class SwerveModuleConfiguration
    * @param physicalCharacteristics Physical characteristics of the swerve module.
    * @param name                    The name for the swerve module.
    * @param conversionFactors       Conversion factors to be applied to the drive and angle motors.
-   * @oaram shouldCosineCompensate  Should use consineCompensation.
+   * @param useCosineCompensator    Should use cosineCompensation.
    */
   public SwerveModuleConfiguration(
       SwerveMotor driveMotor,
@@ -101,7 +101,7 @@ public class SwerveModuleConfiguration
       boolean driveMotorInverted,
       boolean angleMotorInverted,
       String name,
-      boolean shouldCosineCompensate)
+      boolean useCosineCompensator)
   {
     this.driveMotor = driveMotor;
     this.angleMotor = angleMotor;
@@ -116,7 +116,7 @@ public class SwerveModuleConfiguration
     this.velocityPIDF = velocityPIDF;
     this.physicalCharacteristics = physicalCharacteristics;
     this.name = name;
-    this.shouldCosineCompensate = shouldCosineCompensate;
+    this.useCosineCompensator = useCosineCompensator;
   }
 
   /**
@@ -134,7 +134,7 @@ public class SwerveModuleConfiguration
    * @param velocityPIDF            Velocity PIDF configuration.
    * @param physicalCharacteristics Physical characteristics of the swerve module.
    * @param name                    Name for the module.
-   * @oaram shouldCosineCompensate  Should use consineCompensation.
+   * @param useCosineCompensator    Should use cosineCompensation.
    */
   public SwerveModuleConfiguration(
       SwerveMotor driveMotor,
@@ -148,7 +148,7 @@ public class SwerveModuleConfiguration
       PIDFConfig velocityPIDF,
       SwerveModulePhysicalCharacteristics physicalCharacteristics,
       String name,
-      boolean shouldCosineCompensate)
+      boolean useCosineCompensator)
   {
     this(
         driveMotor,
@@ -165,7 +165,7 @@ public class SwerveModuleConfiguration
         false,
         false,
         name, 
-        shouldCosineCompensate);
+        useCosineCompensator);
   }
 
 

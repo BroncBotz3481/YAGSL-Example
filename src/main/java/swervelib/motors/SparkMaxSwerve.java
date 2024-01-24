@@ -339,7 +339,6 @@ public class SparkMaxSwerve extends SwerveMotor
   @Override
   public void set(double percentOutput)
   {
-    SmartDashboard.putNumber(dashboardName("percent"), percentOutput);
     motor.set(percentOutput);
   }
 

@@ -454,7 +454,7 @@ public class SwerveDrive
       {
         if (!correctionEnabled)
         {
-          lastHeadingRadians = getOdometryHeading().getRadians();
+          lastHeadingRadians = getOdometryHeading().getRadians() + Math.PI;
           correctionEnabled = true;
         }
         velocity.omegaRadiansPerSecond =

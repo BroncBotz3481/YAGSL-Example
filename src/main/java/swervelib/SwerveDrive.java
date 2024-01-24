@@ -1030,9 +1030,7 @@ public class SwerveDrive
 
   /**
    * Add a vision measurement to the {@link SwerveDrivePoseEstimator} and update the {@link SwerveIMU} gyro reading with
-   * the given timestamp of the vision measurement. <br /> <b>IT IS HIGHLY RECOMMENDED TO UPDATE YOUR GYROSCOPE OFFSET
-   * AFTER USING THIS FUNCTION!</b> <br /> To update your gyroscope readings directly use
-   * {@link SwerveDrive#setGyroOffset(Rotation3d)}.
+   * the given timestamp of the vision measurement.
    *
    * @param robotPose Robot {@link Pose2d} as measured by vision.
    * @param timestamp Timestamp the measurement was taken as time since startup, should be taken from

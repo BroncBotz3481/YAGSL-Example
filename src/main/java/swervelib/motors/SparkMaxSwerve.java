@@ -12,8 +12,6 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkAnalogSensor;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import java.util.function.Supplier;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.parser.PIDFConfig;
@@ -359,10 +357,8 @@ public class SparkMaxSwerve extends SwerveMotor
 //        isDriveMotor ? SparkMAX_slotIdx.Velocity.ordinal() : SparkMAX_slotIdx.Position.ordinal();
     int pidSlot = 0;
 
-    SmartDashboard.putNumber(dashboardName("feedforward"), feedforward);
     if (isDriveMotor)
     {
-      SmartDashboard.putNumber(dashboardName("velocity.setpoint"), setpoint);
       configureSparkMax(() ->
                             pid.setReference(
                                 setpoint,
@@ -371,7 +367,6 @@ public class SparkMaxSwerve extends SwerveMotor
                                 feedforward));
     } else
     {
-      SmartDashboard.putNumber(dashboardName("position.setpoint"), setpoint);
       configureSparkMax(() ->
                             pid.setReference(
                                 setpoint,
@@ -432,10 +427,6 @@ public class SparkMaxSwerve extends SwerveMotor
     {
       configureSparkMax(() -> encoder.setPosition(position));
     }
-  }
-
-  String dashboardName(String s) {
-    return "motor." + motor.getDeviceId() + "." + s;
   }
 
   /**

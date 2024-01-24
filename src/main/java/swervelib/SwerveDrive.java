@@ -535,14 +535,6 @@ public class SwerveDrive
    */
   private void setRawModuleStates(SwerveModuleState[] desiredStates, boolean isOpenLoop)
   {
-    {
-      List<Double> velocities = new ArrayList<>();
-      for (var swerveModuleState : desiredStates) {
-        velocities.add(swerveModuleState.speedMetersPerSecond);
-      }
-      Double[] speeds = velocities.toArray(new Double[velocities.size()]);
-      SmartDashboard.putNumberArray ("rawspeeds", speeds);
-    }
     // Desaturates wheel speeds
     if (attainableMaxTranslationalSpeedMetersPerSecond != 0 || attainableMaxRotationalVelocityRadiansPerSecond != 0)
     {
@@ -554,22 +546,11 @@ public class SwerveDrive
     {
       SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, maxSpeedMPS);
     }
-    {
-      List<Double> velocities = new ArrayList<>();
-      for (var swerveModuleState : desiredStates) {
-        velocities.add(swerveModuleState.speedMetersPerSecond);
-      }
-      Double[] speeds = velocities.toArray(new Double[velocities.size()]);
-      SmartDashboard.putNumberArray ("desaturatedspeeds", speeds);
-    }
-
 
     // Sets states
     for (SwerveModule module : swerveModules)
     {
       module.setDesiredState(desiredStates[module.moduleNumber], isOpenLoop, false);
-
-      SmartDashboard.putString ("module." + module.configuration.name + ".status", "open:" + isOpenLoop + ", drivespeed=" + desiredStates[module.moduleNumber].speedMetersPerSecond);
 
       if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.HIGH.ordinal())
       {

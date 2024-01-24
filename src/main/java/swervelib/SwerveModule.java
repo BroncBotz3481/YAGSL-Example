@@ -1,7 +1,5 @@
 package swervelib;
 
-import com.revrobotics.CANSparkMax;
-
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -255,8 +253,6 @@ public class SwerveModule
     {
       SmartDashboard.putNumber("Module[" + configuration.name + "] Speed Setpoint", desiredState.speedMetersPerSecond);
       SmartDashboard.putNumber("Module[" + configuration.name + "] Angle Setpoint", desiredState.angle.getDegrees());
-      SmartDashboard.putNumber("Module[" + configuration.name + "] Angle Absolute Position", getAbsolutePosition());
-      SmartDashboard.putNumber("Module[" + configuration.name + "] Angle Relative Position", getRelativePosition());
     }
   }
 

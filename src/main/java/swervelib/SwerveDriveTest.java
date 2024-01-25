@@ -3,7 +3,7 @@ package swervelib;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import swervelib.telemetry.SwerveDriveTelemetry;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * Class to perform tests on the swerve drive.
@@ -58,11 +58,13 @@ public class SwerveDriveTest
 
   /**
    * Find the minimum amount of power required to move the swerve drive motors.
-   * @param swerveDrive {@link SwerveDrive} to control.
-   * @param minMovement Minimum amount of movement to drive motors.
+   *
+   * @param swerveDrive      {@link SwerveDrive} to control.
+   * @param minMovement      Minimum amount of movement to drive motors.
+   * @param testDelaySeconds Time in seconds for the motor to move.
    * @return minimum voltage required.
    */
-  public static double findDriveMotorKV(SwerveDrive swerveDrive, double minMovement)
+  public static double findDriveMotorKV(SwerveDrive swerveDrive, double minMovement, double testDelaySeconds)
   {
     double[] startingEncoders = new double[4];
     double   kV               = 0;
@@ -74,19 +76,24 @@ public class SwerveDriveTest
       startingEncoders[i] = Math.abs(modules[i].getDriveMotor().getPosition());
     }
 
-    for(double kV_new = 0; kV_new < 0.1; kV_new += 0.0001)
+    for (double kV_new = 0; kV_new < 0.1; kV_new += 0.0001)
     {
+
       SwerveDriveTest.powerDriveMotors(swerveDrive, kV);
-      boolean foundkV = false;
-      for (int i = 0; i < modules.length; i++)
+      boolean foundkV          = false;
+      double  startTimeSeconds = Timer.getFPGATimestamp();
+      while ((Timer.getFPGATimestamp() - startTimeSeconds) < testDelaySeconds && !foundkV)
       {
-        if((modules[i].getDriveMotor().getPosition() - startingEncoders[i]) > minMovement)
+        for (int i = 0; i < modules.length; i++)
         {
-          foundkV = true;
-          break;
+          if ((modules[i].getDriveMotor().getPosition() - startingEncoders[i]) > minMovement)
+          {
+            foundkV = true;
+            break;
+          }
         }
       }
-      if(foundkV)
+      if (foundkV)
       {
         SwerveDriveTest.powerDriveMotors(swerveDrive, 0);
         kV = kV_new;

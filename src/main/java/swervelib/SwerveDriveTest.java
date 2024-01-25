@@ -21,10 +21,24 @@ public class SwerveDriveTest
     for (SwerveModule swerveModule : swerveDrive.getModules())
     {
       swerveModule.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)), false, true);
-
     }
 
     // Update kinematics because we are not using setModuleStates
+    swerveDrive.kinematics.toSwerveModuleStates(new ChassisSpeeds());
+  }
+
+  /**
+   * Set the angle of the modules to a given {@link Rotation2d}
+   *
+   * @param swerveDrive {@link SwerveDrive} to use.
+   * @param moduleAngle {@link Rotation2d} to set every module to.
+   */
+  public static void angleModules(SwerveDrive swerveDrive, Rotation2d moduleAngle)
+  {
+    for (SwerveModule swerveModule : swerveDrive.getModules())
+    {
+      swerveModule.setDesiredState(new SwerveModuleState(0, moduleAngle), false, true);
+    }
     swerveDrive.kinematics.toSwerveModuleStates(new ChassisSpeeds());
   }
 

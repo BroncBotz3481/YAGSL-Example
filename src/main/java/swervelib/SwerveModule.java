@@ -112,7 +112,6 @@ public class SwerveModule
     {
       absoluteEncoder.factoryDefault();
       absoluteEncoder.configure(moduleConfiguration.absoluteEncoderInverted);
-      angleMotor.setPosition(getAbsolutePosition());
     }
 
     // Config angle motor/controller
@@ -121,6 +120,12 @@ public class SwerveModule
     angleMotor.configurePIDWrapping(0, 180);
     angleMotor.setInverted(moduleConfiguration.angleMotorInverted);
     angleMotor.setMotorBrake(false);
+
+    // Set the position AFTER settings the conversion factor.
+    if (absoluteEncoder != null)
+    {
+      angleMotor.setPosition(getAbsolutePosition());
+    }
 
     // Config drive motor/controller
     driveMotor.configureIntegratedEncoder(moduleConfiguration.conversionFactors.drive);

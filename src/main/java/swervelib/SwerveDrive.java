@@ -177,6 +177,7 @@ public class SwerveDrive
                        Rotation2d.fromDegrees(0))); // x,y,heading in radians; Vision measurement std dev, higher=less weight
 
     zeroGyro();
+    setMaximumSpeed(maxSpeedMPS);
 
     // Initialize Telemetry
     if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.LOW.ordinal())
@@ -820,6 +821,7 @@ public class SwerveDrive
     swerveDriveConfiguration.physicalCharacteristics.optimalVoltage = optimalVoltage;
     for (SwerveModule module : swerveModules)
     {
+      module.maxSpeed = maximumSpeed;
       if (updateModuleFeedforward)
       {
         module.feedforward = SwerveMath.createDriveFeedforward(optimalVoltage,

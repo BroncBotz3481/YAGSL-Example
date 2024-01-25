@@ -209,7 +209,7 @@ public class SwerveParser
           module.createModuleConfiguration(
               pidfPropertiesJson.angle,
               pidfPropertiesJson.drive,
-              physicalPropertiesJson.createPhysicalProperties(),
+              physicalPropertiesJson.createPhysicalProperties(maxSpeed),
               swerveDriveJson.modules[i]);
     }
     SwerveDriveConfiguration swerveDriveConfiguration =
@@ -218,7 +218,7 @@ public class SwerveParser
             swerveDriveJson.imu.createIMU(),
             swerveDriveJson.invertedIMU,
             driveFeedforward,
-            physicalPropertiesJson.createPhysicalProperties());
+            physicalPropertiesJson.createPhysicalProperties(maxSpeed));
 
     return new SwerveDrive(
         swerveDriveConfiguration,

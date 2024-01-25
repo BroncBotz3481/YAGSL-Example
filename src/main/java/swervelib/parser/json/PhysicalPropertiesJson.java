@@ -37,7 +37,7 @@ public class PhysicalPropertiesJson
    *
    * @return {@link SwerveModulePhysicalCharacteristics} based on parsed data.
    */
-  public SwerveModulePhysicalCharacteristics createPhysicalProperties()
+  public SwerveModulePhysicalCharacteristics createPhysicalProperties(double maxSpeed)
   {
     return new SwerveModulePhysicalCharacteristics(
         conversionFactor,
@@ -46,7 +46,8 @@ public class PhysicalPropertiesJson
         currentLimit.drive,
         currentLimit.angle,
         rampRate.drive,
-        rampRate.angle);
+        rampRate.angle,
+        maxSpeed);
   }
 }
 

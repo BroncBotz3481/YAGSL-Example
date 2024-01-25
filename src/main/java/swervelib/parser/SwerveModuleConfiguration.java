@@ -6,80 +6,91 @@ import swervelib.motors.SwerveMotor;
 import swervelib.parser.json.MotorConfigDouble;
 
 /**
- * Swerve Module configuration class which is used to configure {@link swervelib.SwerveModule}.
+ * Swerve Module configuration class which is used to configure
+ * {@link swervelib.SwerveModule}.
  */
-public class SwerveModuleConfiguration
-{
+public class SwerveModuleConfiguration {
 
   /**
    * Conversion factor for drive motor onboard PID's and angle PID's. Use
-   * {@link swervelib.math.SwerveMath#calculateMetersPerRotation(double, double, double)} and
-   * {@link swervelib.math.SwerveMath#calculateDegreesPerSteeringRotation(double, double)} respectively to calculate the
+   * {@link swervelib.math.SwerveMath#calculateMetersPerRotation(double, double, double)}
+   * and
+   * {@link swervelib.math.SwerveMath#calculateDegreesPerSteeringRotation(double, double)}
+   * respectively to calculate the
    * conversion factors.
    */
-  public final MotorConfigDouble                   conversionFactors;
+  public final MotorConfigDouble conversionFactors;
   /**
    * Angle offset in degrees for the Swerve Module.
    */
-  public final double                              angleOffset;
+  public final double angleOffset;
   /**
    * Whether the absolute encoder is inverted.
    */
-  public final boolean                             absoluteEncoderInverted;
+  public final boolean absoluteEncoderInverted;
   /**
    * State of inversion of the drive motor.
    */
-  public final boolean                             driveMotorInverted;
+  public final boolean driveMotorInverted;
   /**
    * State of inversion of the angle motor.
    */
-  public final boolean                             angleMotorInverted;
+  public final boolean angleMotorInverted;
   /**
    * PIDF configuration options for the angle motor closed-loop PID controller.
    */
-  public       PIDFConfig                          anglePIDF;
+  public PIDFConfig anglePIDF;
   /**
    * PIDF configuration options for the drive motor closed-loop PID controller.
    */
-  public       PIDFConfig                          velocityPIDF;
+  public PIDFConfig velocityPIDF;
   /**
    * Swerve module location relative to the robot.
    */
-  public       Translation2d                       moduleLocation;
+  public Translation2d moduleLocation;
   /**
    * Physical characteristics of the swerve module.
    */
-  public       SwerveModulePhysicalCharacteristics physicalCharacteristics;
+  public SwerveModulePhysicalCharacteristics physicalCharacteristics;
   /**
    * The drive motor and angle motor of this swerve module.
    */
-  public       SwerveMotor                         driveMotor, angleMotor;
+  public SwerveMotor driveMotor, angleMotor;
   /**
    * The Absolute Encoder for the swerve module.
    */
   public SwerveAbsoluteEncoder absoluteEncoder;
+
+  /*
+   * THe maximum speed that the module can drive.
+   */
+  public double maxSpeed;
   /**
    * Name for the swerve module for telemetry.
    */
-  public String                name;
+  public String name;
 
   /**
    * Construct a configuration object for swerve modules.
    *
    * @param driveMotor              Drive {@link SwerveMotor}.
    * @param angleMotor              Angle {@link SwerveMotor}
-   * @param absoluteEncoder         Absolute encoder {@link SwerveAbsoluteEncoder}.
+   * @param absoluteEncoder         Absolute encoder
+   *                                {@link SwerveAbsoluteEncoder}.
    * @param angleOffset             Absolute angle offset to 0.
    * @param absoluteEncoderInverted Absolute encoder inverted.
    * @param angleMotorInverted      State of inversion of the angle motor.
    * @param driveMotorInverted      Drive motor inverted.
-   * @param xMeters                 Module location in meters from the center horizontally.
-   * @param yMeters                 Module location in meters from center vertically.
+   * @param xMeters                 Module location in meters from the center
+   *                                horizontally.
+   * @param yMeters                 Module location in meters from center
+   *                                vertically.
    * @param anglePIDF               Angle PIDF configuration.
    * @param velocityPIDF            Velocity PIDF configuration.
    * @param physicalCharacteristics Physical characteristics of the swerve module.
    * @param name                    The name for the swerve module.
-   * @param conversionFactors       Conversion factors to be applied to the drive and angle motors.
+   * @param conversionFactors       Conversion factors to be applied to the drive
+   *                                and angle motors.
    */
   public SwerveModuleConfiguration(
       SwerveMotor driveMotor,
@@ -95,8 +106,8 @@ public class SwerveModuleConfiguration
       boolean absoluteEncoderInverted,
       boolean driveMotorInverted,
       boolean angleMotorInverted,
-      String name)
-  {
+      double maxSpeed,
+      String name) {
     this.driveMotor = driveMotor;
     this.angleMotor = angleMotor;
     this.conversionFactors = conversionFactors;
@@ -109,20 +120,26 @@ public class SwerveModuleConfiguration
     this.anglePIDF = anglePIDF;
     this.velocityPIDF = velocityPIDF;
     this.physicalCharacteristics = physicalCharacteristics;
+    this.maxSpeed = maxSpeed;
     this.name = name;
   }
 
   /**
-   * Construct a configuration object for swerve modules. Assumes the absolute encoder and drive motor are not
+   * Construct a configuration object for swerve modules. Assumes the absolute
+   * encoder and drive motor are not
    * inverted.
    *
    * @param driveMotor              Drive {@link SwerveMotor}.
    * @param angleMotor              Angle {@link SwerveMotor}
-   * @param conversionFactors       Conversion factors for angle/azimuth motors drive factors.
-   * @param absoluteEncoder         Absolute encoder {@link SwerveAbsoluteEncoder}.
+   * @param conversionFactors       Conversion factors for angle/azimuth motors
+   *                                drive factors.
+   * @param absoluteEncoder         Absolute encoder
+   *                                {@link SwerveAbsoluteEncoder}.
    * @param angleOffset             Absolute angle offset to 0.
-   * @param xMeters                 Module location in meters from the center horizontally.
-   * @param yMeters                 Module location in meters from center vertically.
+   * @param xMeters                 Module location in meters from the center
+   *                                horizontally.
+   * @param yMeters                 Module location in meters from center
+   *                                vertically.
    * @param anglePIDF               Angle PIDF configuration.
    * @param velocityPIDF            Velocity PIDF configuration.
    * @param physicalCharacteristics Physical characteristics of the swerve module.
@@ -139,8 +156,8 @@ public class SwerveModuleConfiguration
       PIDFConfig anglePIDF,
       PIDFConfig velocityPIDF,
       SwerveModulePhysicalCharacteristics physicalCharacteristics,
-      String name)
-  {
+      double maxSpeed,
+      String name) {
     this(
         driveMotor,
         angleMotor,
@@ -155,8 +172,8 @@ public class SwerveModuleConfiguration
         false,
         false,
         false,
+        maxSpeed,
         name);
   }
-
 
 }

@@ -131,6 +131,7 @@ public class ModuleJson
         absoluteEncoderInverted,
         inverted.drive,
         inverted.angle,
+        physicalCharacteristics.maxSpeed,
         name.replaceAll("\\.json", ""));
   }
 }

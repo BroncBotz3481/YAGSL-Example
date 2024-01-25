@@ -32,6 +32,11 @@ public class SwerveModulePhysicalCharacteristics
   public       MotorConfigDouble conversionFactor;
 
   /**
+   * The maximum speed that the module can drive.
+   */
+  public final double maxSpeed;
+
+  /**
    * Construct the swerve module physical characteristics.
    *
    * @param conversionFactors              The conversion factors for the drive and angle motors, created by
@@ -47,6 +52,7 @@ public class SwerveModulePhysicalCharacteristics
    *                                       over drawing power from battery)
    * @param angleMotorRampRate             The time in seconds to go from 0 to full throttle on the motor. (Prevents
    *                                       overdrawing power and power loss).
+   * @param maxSpeed                       The maximum speed that the module can drive.
    */
   public SwerveModulePhysicalCharacteristics(
       MotorConfigDouble conversionFactors,
@@ -55,7 +61,8 @@ public class SwerveModulePhysicalCharacteristics
       int driveMotorCurrentLimit,
       int angleMotorCurrentLimit,
       double driveMotorRampRate,
-      double angleMotorRampRate)
+      double angleMotorRampRate,
+      double maxSpeed)
   {
     this.wheelGripCoefficientOfFriction = wheelGripCoefficientOfFriction;
     this.optimalVoltage = optimalVoltage;
@@ -74,6 +81,7 @@ public class SwerveModulePhysicalCharacteristics
     this.angleMotorCurrentLimit = angleMotorCurrentLimit;
     this.driveMotorRampRate = driveMotorRampRate;
     this.angleMotorRampRate = angleMotorRampRate;
+    this.maxSpeed = maxSpeed;
   }
 
   /**
@@ -92,7 +100,8 @@ public class SwerveModulePhysicalCharacteristics
   public SwerveModulePhysicalCharacteristics(
       MotorConfigDouble conversionFactors,
       double driveMotorRampRate,
-      double angleMotorRampRate)
+      double angleMotorRampRate,
+      double maxSpeed)
   {
     this(
         conversionFactors,
@@ -101,6 +110,7 @@ public class SwerveModulePhysicalCharacteristics
         40,
         20,
         driveMotorRampRate,
-        angleMotorRampRate);
+        angleMotorRampRate,
+        maxSpeed);
   }
 }

@@ -89,6 +89,9 @@ public class SwerveModule
     configuration = moduleConfiguration;
     angleOffset = moduleConfiguration.angleOffset;
 
+    // Initialize the maximum speed for the module
+    this.maxSpeed = moduleConfiguration.maxSpeed;
+
     // Initialize Feedforward for drive motor.
     feedforward = driveFeedforward;
 

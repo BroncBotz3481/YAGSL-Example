@@ -5,6 +5,7 @@
 package frc.robot.subsystems.swervedrive;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -148,6 +149,28 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   /**
+   * Use PathPlanner Path finding to go to a point on the field.
+   *
+   * @param pose Target {@link Pose2d} to go to.
+   * @return PathFinding command
+   */
+  public Command driveToPose(Pose2d pose)
+  {
+// Create the constraints to use while pathfinding
+    PathConstraints constraints = new PathConstraints(
+        swerveDrive.getMaximumVelocity(), 4.0,
+        swerveDrive.getMaximumAngularVelocity(), Units.degreesToRadians(720));
+
+// Since AutoBuilder is configured, we can use it to build pathfinding commands
+    return AutoBuilder.pathfindToPose(
+        pose,
+        constraints,
+        0.0, // Goal end velocity in meters/sec
+        0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
+                                     );
+  }
+
+  /**
    * Command to drive the robot using translative values and heading as a setpoint.
    *
    * @param translationX Translation in the X direction. Cubed for smoother controls.
@@ -177,7 +200,7 @@ public class SwerveSubsystem extends SubsystemBase
    *
    * @param translationX Translation in the X direction.
    * @param translationY Translation in the Y direction.
-   * @param rotation Rotation as a value between [-1, 1] converted to radians.
+   * @param rotation     Rotation as a value between [-1, 1] converted to radians.
    * @return Drive command.
    */
   public Command simDriveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier rotation)
@@ -336,9 +359,8 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   /**
-   * Gets the current yaw angle of the robot, as reported by the swerve pose estimator in the underlying
-   * drivebase.  Note, this is not the raw gyro reading, this may be corrected from calls to
-   * resetOdometry().
+   * Gets the current yaw angle of the robot, as reported by the swerve pose estimator in the underlying drivebase.
+   * Note, this is not the raw gyro reading, this may be corrected from calls to resetOdometry().
    *
    * @return The yaw angle
    */

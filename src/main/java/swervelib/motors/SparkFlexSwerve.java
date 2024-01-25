@@ -412,7 +412,7 @@ public class SparkFlexSwerve extends SwerveMotor
   @Override
   public double getVoltage()
   {
-    return motor.getBusVoltage();
+    return motor.getAppliedOutput() * motor.getBusVoltage();
   }
 
   /**

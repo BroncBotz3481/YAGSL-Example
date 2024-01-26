@@ -451,8 +451,7 @@ public class SwerveDrive
       {
         velocity.omegaRadiansPerSecond =
             swerveController.headingCalculate(getOdometryHeading().getRadians(), lastHeadingRadians);
-      }
-      else
+      } else
       {
         lastHeadingRadians = getOdometryHeading().getRadians();
       }
@@ -677,6 +676,33 @@ public class SwerveDrive
       positions[module.moduleNumber] = module.getPosition();
     }
     return positions;
+  }
+
+  /**
+   * Getter for the {@link SwerveIMU}.
+   *
+   * @return generated {@link SwerveIMU}
+   */
+  public SwerveIMU getGyro()
+  {
+    return swerveDriveConfiguration.imu;
+  }
+
+  /**
+   * Set the expected gyroscope angle using a {@link Rotation3d} object. To reset gyro, set to a new {@link Rotation3d}
+   * subtracted from the current gyroscopic readings {@link SwerveIMU#getRotation3d()}.
+   *
+   * @param gyro expected gyroscope angle as {@link Rotation3d}.
+   */
+  public void setGyro(Rotation3d gyro)
+  {
+    if (SwerveDriveTelemetry.isSimulation)
+    {
+      setGyroOffset(simIMU.getGyroRotation3d().minus(gyro));
+    } else
+    {
+      setGyroOffset(imu.getRawRotation3d().minus(gyro));
+    }
   }
 
   /**
@@ -1040,24 +1066,6 @@ public class SwerveDrive
 
 //    setGyroOffset(new Rotation3d(0, 0, robotPose.getRotation().getRadians()));
 //    resetOdometry(newOdometry);
-  }
-
-
-  /**
-   * Set the expected gyroscope angle using a {@link Rotation3d} object. To reset gyro, set to a new {@link Rotation3d}
-   * subtracted from the current gyroscopic readings {@link SwerveIMU#getRotation3d()}.
-   *
-   * @param gyro expected gyroscope angle as {@link Rotation3d}.
-   */
-  public void setGyro(Rotation3d gyro)
-  {
-    if (SwerveDriveTelemetry.isSimulation)
-    {
-      setGyroOffset(simIMU.getGyroRotation3d().minus(gyro));
-    } else
-    {
-      setGyroOffset(imu.getRawRotation3d().minus(gyro));
-    }
   }
 
   /**

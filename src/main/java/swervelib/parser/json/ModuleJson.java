@@ -56,7 +56,7 @@ public class ModuleJson
   /**
    * Should do cosine compensation when not pointing correct direction;.
    */
-  public boolean           useCosineCompensator = true;
+  public boolean           useCosineCompensator    = true;
 
   /**
    * Create the swerve module configuration based off of parsed data.

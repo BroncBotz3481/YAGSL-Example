@@ -164,7 +164,7 @@ public class SwerveModuleConfiguration
         false,
         false,
         false,
-        name, 
+        name,
         useCosineCompensator);
   }
 

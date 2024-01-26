@@ -205,7 +205,8 @@ public class SwerveModule
     } else
     {
       double cosineScalar = 1.0;
-      if (configuration.useCosineCompensator) {
+      if (configuration.useCosineCompensator)
+      {
         // Taken from the CTRE SwerveModule class.
         // https://api.ctr-electronics.com/phoenix6/release/java/src-html/com/ctre/phoenix6/mechanisms/swerve/SwerveModule.html#line.46
         /* From FRC 900's whitepaper, we add a cosine compensator to the applied drive velocity */

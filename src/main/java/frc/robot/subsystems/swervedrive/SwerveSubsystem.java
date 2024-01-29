@@ -21,10 +21,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import java.io.File;
 import java.util.function.DoubleSupplier;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
+import swervelib.SwerveDriveTest;
 import swervelib.math.SwerveMath;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
@@ -215,6 +217,30 @@ public class SwerveSubsystem extends SubsystemBase
                                                                       swerveDrive.getMaximumVelocity()));
     });
   }
+
+  /**
+   * Command to characterize the robot drive motors using SysId
+   * @return SysId Drive Command
+   */
+  public Command sysIdDriveMotorCommand() {
+    return SwerveDriveTest.generateSysIdCommand(
+          SwerveDriveTest.setDriveSysIdRoutine(
+              new Config(),
+              this, swerveDrive),
+          3.0, 5.0, 3.0);
+}
+
+/**
+ * Command to characterize the robot angle motors using SysId
+ * @return SysId Angle Command
+ */
+public Command sysIdAngleMotorCommand() {
+    return SwerveDriveTest.generateSysIdCommand(
+          SwerveDriveTest.setAngleSysIdRoutine(
+              new Config(),
+              this, swerveDrive),
+          3.0, 5.0, 3.0);
+}
 
   /**
    * Command to drive the robot using translative values and heading as angular velocity.

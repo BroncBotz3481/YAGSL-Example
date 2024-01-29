@@ -1,9 +1,25 @@
 package swervelib;
 
+import static edu.wpi.first.units.MutableMeasure.mutable;
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 
 /**
@@ -64,7 +80,7 @@ public class SwerveDriveTest
   {
     for (SwerveModule swerveModule : swerveDrive.getModules())
     {
-      swerveModule.getDriveMotor().setVoltage(volts);
+      swerveModule.getDriveMotor().setVoltage(volts * (swerveModule.getConfiguration().driveMotorInverted ? -1.0 : 1.0));
     }
   }
 
@@ -194,5 +210,81 @@ public class SwerveDriveTest
     }
     DriverStation.reportWarning("Average Coupling Ratio: " + (couplingRatioSum / 4.0), false);
     return (couplingRatioSum / 4.0);
+  }
+
+  private static final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+  private static final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
+  private static final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
+  private static final MutableMeasure<Angle> m_rotations = mutable(Rotations.of(0));
+  private static final MutableMeasure<Velocity<Angle>> m_angVelocity = mutable(RotationsPerSecond.of(0));
+
+  public static Config createConfigCustomTimeout(double timeout) {
+    return new Config(null, null, Seconds.of(timeout));
+  }
+
+  public static void logDriveMotorActivity(SwerveModule module, SysIdRoutineLog log) {
+    SmartDashboard.putNumber("Drive Volt " + module.moduleNumber, module.getDriveMotor().getVoltage());
+    SmartDashboard.putNumber("Drive Pos " + module.moduleNumber, module.getPosition().distanceMeters);
+    SmartDashboard.putNumber("Drive Vel " + module.moduleNumber, module.getDriveMotor().getVelocity());
+    log.motor("drive-" + module.moduleNumber)
+        .voltage(
+            m_appliedVoltage.mut_replace(
+                module.getDriveMotor().getVoltage(), Volts))
+        .linearPosition(m_distance.mut_replace(module.getPosition().distanceMeters, Meters))
+        .linearVelocity(
+            m_velocity.mut_replace(module.getDriveMotor().getVelocity(), MetersPerSecond));
+
+  }
+
+  public static SysIdRoutine setDriveSysIdRoutine(Config config, SubsystemBase swerveSubsystem,
+      SwerveDrive swerveDrive) {
+    return new SysIdRoutine(config, new SysIdRoutine.Mechanism(
+        (Measure<Voltage> voltage) -> {
+          SwerveDriveTest.centerModules(swerveDrive);
+          SwerveDriveTest.powerDriveMotorsVoltage(swerveDrive, voltage.in(Volts));
+        },
+        log -> {
+          for (SwerveModule module : swerveDrive.getModules()) {
+            logDriveMotorActivity(module, log);
+          }
+        }, swerveSubsystem));
+  }
+
+  public static void logAngularMotorActivity(SwerveModule module, SysIdRoutineLog log) {
+    SmartDashboard.putNumber("Angle Volt " + module.moduleNumber, module.getAngleMotor().getVoltage());
+    SmartDashboard.putNumber("Angle Pos " + module.moduleNumber, module.getAbsolutePosition());
+    SmartDashboard.putNumber("Angle Vel " + module.moduleNumber, module.getAbsoluteEncoder().getVelocity());
+    log.motor("angle-" + module.moduleNumber)
+        .voltage(
+            m_appliedVoltage.mut_replace(
+                module.getAngleMotor().getVoltage(), Volts))
+        .angularPosition(
+            m_rotations.mut_replace(module.getAbsolutePosition(), Rotations))
+        .angularVelocity(m_angVelocity.mut_replace(module.getAngleMotor().getVelocity(),
+            RotationsPerSecond));
+  }
+
+  public static SysIdRoutine setAngleSysIdRoutine(Config config, SubsystemBase swerveSubsystem,
+      SwerveDrive swerveDrive) {
+    return new SysIdRoutine(config, new SysIdRoutine.Mechanism(
+        (Measure<Voltage> voltage) -> {
+          SwerveDriveTest.powerAngleMotors(swerveDrive, voltage.in(Volts));
+          SwerveDriveTest.powerDriveMotorsVoltage(swerveDrive, 0);
+        },
+        log -> {
+          for (SwerveModule module : swerveDrive.getModules()) {
+            logAngularMotorActivity(module, log);
+          }
+        }, swerveSubsystem));
+  }
+
+  public static Command generateSysIdCommand(SysIdRoutine sysIdRoutine, double delay, double quasiTimeout, double dynamicTimeout) {
+    return Commands.waitSeconds(quasiTimeout).deadlineWith(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward))
+        .andThen(Commands.waitSeconds(delay))
+        .andThen(Commands.waitSeconds(quasiTimeout).deadlineWith(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse)))
+        .andThen(Commands.waitSeconds(delay))
+        .andThen(Commands.waitSeconds(dynamicTimeout).deadlineWith(sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward)))
+        .andThen(Commands.waitSeconds(delay))
+        .andThen(Commands.waitSeconds(dynamicTimeout).deadlineWith(sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse)));
   }
 }

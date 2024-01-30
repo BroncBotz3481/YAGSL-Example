@@ -218,10 +218,20 @@ public class SwerveDriveTest
   private static final MutableMeasure<Angle> m_rotations = mutable(Rotations.of(0));
   private static final MutableMeasure<Velocity<Angle>> m_angVelocity = mutable(RotationsPerSecond.of(0));
 
+  /**
+   * Creates a SysIdRoutine.Config with a custom final timeout
+   * @param timeout - the most a SysIdRoutine should run
+   * @return A custom SysIdRoutine.Config
+   */
   public static Config createConfigCustomTimeout(double timeout) {
     return new Config(null, null, Seconds.of(timeout));
   }
 
+  /**
+   * Logs info about the drive motor to the SysIdRoutineLog
+   * @param module - the swerve module being logged
+   * @param log - the logger
+   */
   public static void logDriveMotorActivity(SwerveModule module, SysIdRoutineLog log) {
     SmartDashboard.putNumber("Drive Volt " + module.moduleNumber, module.getDriveMotor().getVoltage());
     SmartDashboard.putNumber("Drive Pos " + module.moduleNumber, module.getPosition().distanceMeters);
@@ -236,6 +246,13 @@ public class SwerveDriveTest
 
   }
 
+  /**
+   * Sets up the SysId runner and logger for the drive motors
+   * @param config - The SysIdRoutine.Config to use
+   * @param swerveSubsystem - the subsystem to add to requirements
+   * @param swerveDrive - the SwerveDrive from which to access motor info
+   * @return A SysIdRoutine runner
+   */
   public static SysIdRoutine setDriveSysIdRoutine(Config config, SubsystemBase swerveSubsystem,
       SwerveDrive swerveDrive) {
     return new SysIdRoutine(config, new SysIdRoutine.Mechanism(
@@ -250,6 +267,11 @@ public class SwerveDriveTest
         }, swerveSubsystem));
   }
 
+  /**
+   * Logs info about the angle motor to the SysIdRoutineLog
+   * @param module - the swerve module being logged
+   * @param log - the logger
+   */
   public static void logAngularMotorActivity(SwerveModule module, SysIdRoutineLog log) {
     SmartDashboard.putNumber("Angle Volt " + module.moduleNumber, module.getAngleMotor().getVoltage());
     SmartDashboard.putNumber("Angle Pos " + module.moduleNumber, module.getAbsolutePosition());
@@ -264,6 +286,13 @@ public class SwerveDriveTest
             RotationsPerSecond));
   }
 
+  /**
+   * Sets up the SysId runner and logger for the angle motors
+   * @param config - The SysIdRoutine.Config to use
+   * @param swerveSubsystem - the subsystem to add to requirements
+   * @param swerveDrive - the SwerveDrive from which to access motor info
+   * @return A SysIdRoutineRunner
+   */
   public static SysIdRoutine setAngleSysIdRoutine(Config config, SubsystemBase swerveSubsystem,
       SwerveDrive swerveDrive) {
     return new SysIdRoutine(config, new SysIdRoutine.Mechanism(
@@ -278,6 +307,15 @@ public class SwerveDriveTest
         }, swerveSubsystem));
   }
 
+  /**
+   * Creates a command that can be mapped to a button or other trigger
+   * Delays can be set to customize the length of each part of the SysId Routine
+   * @param sysIdRoutine - The Sys Id routine runner
+   * @param delay - seconds between each portion to allow motors to spin down, etc...
+   * @param quasiTimeout - seconds to run the Quasistatic routines, so robot doesn't get too far
+   * @param dynamicTimeout - seconds to run the Dynamic routines, 2-3 secs should be enough
+   * @return
+   */
   public static Command generateSysIdCommand(SysIdRoutine sysIdRoutine, double delay, double quasiTimeout, double dynamicTimeout) {
     return Commands.waitSeconds(quasiTimeout).deadlineWith(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward))
         .andThen(Commands.waitSeconds(delay))

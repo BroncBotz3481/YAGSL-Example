@@ -288,17 +288,17 @@ public class SwerveDriveTest
    * @param log - the logger
    */
   public static void logAngularMotorActivity(SwerveModule module, SysIdRoutineLog log) {
-    SmartDashboard.putNumber("Angle Volt " + module.moduleNumber, module.getAngleMotor().getVoltage());
-    SmartDashboard.putNumber("Angle Pos " + module.moduleNumber, module.getAbsolutePosition());
-    SmartDashboard.putNumber("Angle Vel " + module.moduleNumber, module.getAbsoluteEncoder().getVelocity());
-    log.motor("angle-" + module.moduleNumber)
+    SmartDashboard.putNumber("Module[" + module.configuration.name + "] SysId Angle Voltage", module.getAngleMotor().getVoltage());
+    SmartDashboard.putNumber("Module[" + module.configuration.name + "] SysId Angle Position", module.getAbsolutePosition());
+    SmartDashboard.putNumber("Module[" + module.configuration.name + "] SysId Absolute Encoder Velocity", module.getAbsoluteEncoder().getVelocity());
+    log.motor("angle-" + module.configuration.name)
         .voltage(
             m_appliedVoltage.mut_replace(
                 module.getAngleMotor().getVoltage(), Volts))
         .angularPosition(
-            m_rotations.mut_replace(module.getAbsolutePosition(), Rotations))
+            m_rotations.mut_replace(module.getAbsolutePosition(), Degrees))
         .angularVelocity(m_angVelocity.mut_replace(module.getAngleMotor().getVelocity(),
-            RotationsPerSecond));
+            DegreesPerSecond));
   }
 
   /**
@@ -312,7 +312,7 @@ public class SwerveDriveTest
       SwerveDrive swerveDrive) {
     return new SysIdRoutine(config, new SysIdRoutine.Mechanism(
         (Measure<Voltage> voltage) -> {
-          SwerveDriveTest.powerAngleMotors(swerveDrive, voltage.in(Volts));
+          SwerveDriveTest.powerAngleMotorsVoltage(swerveDrive, voltage.in(Volts));
           SwerveDriveTest.powerDriveMotorsVoltage(swerveDrive, 0);
         },
         log -> {

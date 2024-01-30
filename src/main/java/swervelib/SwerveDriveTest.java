@@ -44,7 +44,7 @@ public class SwerveDriveTest
   {
     for (SwerveModule swerveModule : swerveDrive.getModules())
     {
-      swerveModule.setDesiredState(new SwerveModuleState(0, moduleAngle), false, true);
+      swerveModule.getAngleMotor().setReference(moduleAngle.getDegrees(), 0);
     }
   }
 
@@ -259,10 +259,10 @@ public class SwerveDriveTest
    */
   public static void logDriveMotorActivity(SwerveModule module, SysIdRoutineLog log)
   {
-    SmartDashboard.putNumber("Drive Volt " + module.moduleNumber, module.getDriveMotor().getVoltage());
-    SmartDashboard.putNumber("Drive Pos " + module.moduleNumber, module.getPosition().distanceMeters);
-    SmartDashboard.putNumber("Drive Vel " + module.moduleNumber, module.getDriveMotor().getVelocity());
-    log.motor("drive-" + module.moduleNumber)
+    SmartDashboard.putNumber("Module[" + module.configuration.name + "] SysId Drive Voltage", module.getDriveMotor().getVoltage());
+    SmartDashboard.putNumber("Module[" + module.configuration.name + "] SysId Drive Position", module.getPosition().distanceMeters);
+    SmartDashboard.putNumber("Module[" + module.configuration.name + "] SysId Drive Velocity", module.getDriveMotor().getVelocity());
+    log.motor("drive-" + module.configuration.name)
        .voltage(
            m_appliedVoltage.mut_replace(
                module.getDriveMotor().getVoltage(), Volts))

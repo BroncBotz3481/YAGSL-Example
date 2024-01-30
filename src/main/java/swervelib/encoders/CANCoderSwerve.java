@@ -45,7 +45,8 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
    */
   public CANCoderSwerve(int id)
   {
-    encoder = new CANcoder(id);
+    // Empty string uses the default canbus for the system
+    this(id, "");
   }
 
   /**

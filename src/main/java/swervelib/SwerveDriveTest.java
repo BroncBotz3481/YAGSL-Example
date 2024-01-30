@@ -212,10 +212,25 @@ public class SwerveDriveTest
     return (couplingRatioSum / 4.0);
   }
 
+  /**
+   * Tracks the voltage being applied to a motor
+   */
   private static final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+  /**
+   * Tracks the distance travelled of a position motor
+   */
   private static final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
+  /**
+   * Tracks the velocity of a positional motor
+   */
   private static final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
+  /**
+   * Tracks the rotations of an angular motor
+   */
   private static final MutableMeasure<Angle> m_rotations = mutable(Rotations.of(0));
+  /**
+   * Tracks the velocity of an angular motor
+   */
   private static final MutableMeasure<Velocity<Angle>> m_angVelocity = mutable(RotationsPerSecond.of(0));
 
   /**

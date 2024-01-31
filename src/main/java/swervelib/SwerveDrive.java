@@ -623,7 +623,7 @@ public class SwerveDrive
     odometryLock.lock();
     swerveDrivePoseEstimator.resetPosition(getYaw(), getModulePositions(), pose);
     odometryLock.unlock();
-    kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, pose.getRotation()));
+    kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, getYaw()));
   }
 
   /**
@@ -704,12 +704,12 @@ public class SwerveDrive
   {
     // Resets the real gyro or the angle accumulator, depending on whether the robot is being
     // simulated
-    if (!SwerveDriveTelemetry.isSimulation)
-    {
-      imu.setOffset(imu.getRawRotation3d());
-    } else
+    if (SwerveDriveTelemetry.isSimulation)
     {
       simIMU.setAngle(0);
+    } else
+    {
+      setGyroOffset(imu.getRawRotation3d());
     }
     swerveController.lastAngleScalar = 0;
     lastHeadingRadians = 0;

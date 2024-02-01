@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -233,7 +232,7 @@ public class SwerveDriveTest
   /**
    * Tracks the rotations of an angular motor
    */
-  private static final MutableMeasure<Angle>              m_rotations      = mutable(Rotations.of(0));
+  private static final MutableMeasure<Angle>              m_anglePosition  = mutable(Degrees.of(0));
   /**
    * Tracks the velocity of an angular motor
    */
@@ -314,7 +313,7 @@ public class SwerveDriveTest
            m_appliedVoltage.mut_replace(
                module.getAngleMotor().getVoltage() / RobotController.getBatteryVoltage(), Volts))
        .angularPosition(
-           m_rotations.mut_replace(module.getAbsolutePosition(), Degrees))
+           m_anglePosition.mut_replace(module.getAbsolutePosition(), Degrees))
        .angularVelocity(m_angVelocity.mut_replace(module.getAngleMotor().getVelocity(),
                                                   DegreesPerSecond));
   }
@@ -356,15 +355,12 @@ public class SwerveDriveTest
   public static Command generateSysIdCommand(SysIdRoutine sysIdRoutine, double delay, double quasiTimeout,
                                              double dynamicTimeout)
   {
-    return Commands.waitSeconds(quasiTimeout).deadlineWith(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward))
+    return sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward).withTimeout(quasiTimeout)
                    .andThen(Commands.waitSeconds(delay))
-                   .andThen(Commands.waitSeconds(quasiTimeout)
-                                    .deadlineWith(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse)))
+                   .andThen(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse).withTimeout(quasiTimeout))
                    .andThen(Commands.waitSeconds(delay))
-                   .andThen(Commands.waitSeconds(dynamicTimeout)
-                                    .deadlineWith(sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward)))
+                   .andThen(sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward).withTimeout(dynamicTimeout))
                    .andThen(Commands.waitSeconds(delay))
-                   .andThen(Commands.waitSeconds(dynamicTimeout)
-                                    .deadlineWith(sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse)));
+                   .andThen(sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse).withTimeout(dynamicTimeout));
   }
 }

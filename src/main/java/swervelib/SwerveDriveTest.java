@@ -298,8 +298,6 @@ public class SwerveDriveTest
    * @param swerveSubsystem - the subsystem to add to requirements
    * @param swerveDrive     - the SwerveDrive from which to access motor info
    * @return A SysIdRoutine runner
-   * @apiNote Although SysIdRoutine expects to be logging Voltage, this function logs in Duty-Cycle (percent output) 
-   * because it results in correctly adjusted values in the analysis for use in this library. 
    */
   public static SysIdRoutine setDriveSysIdRoutine(Config config, SubsystemBase swerveSubsystem,
                                                   SwerveDrive swerveDrive)
@@ -393,8 +391,6 @@ public class SwerveDriveTest
    * @param quasiTimeout   - seconds to run the Quasistatic routines, so robot doesn't get too far
    * @param dynamicTimeout - seconds to run the Dynamic routines, 2-3 secs should be enough
    * @return A command that can be mapped to a button or other trigger
-   * @apiNote Although SysIdRoutine expects to be logging Voltage, this function logs in Duty-Cycle (percent output) 
-   * because it results in correctly adjusted values in the analysis for use in this library. 
    */
   public static Command generateSysIdCommand(SysIdRoutine sysIdRoutine, double delay, double quasiTimeout,
                                              double dynamicTimeout)

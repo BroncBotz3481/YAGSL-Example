@@ -32,6 +32,7 @@ import swervelib.imu.Pigeon2Swerve;
 import swervelib.imu.SwerveIMU;
 import swervelib.math.SwerveMath;
 import swervelib.motors.TalonFXSwerve;
+import swervelib.parser.Cache;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.simulation.SwerveIMUSimulation;
@@ -103,6 +104,10 @@ public class SwerveDrive
    */
   private       SwerveIMU                imu;
   /**
+   * IMU reading cache for robot readings.
+   */
+  public final  Cache<Rotation3d>        imuReadingCache;
+  /**
    * Simulation of the swerve drive.
    */
   private       SwerveIMUSimulation      simIMU;
@@ -155,10 +160,12 @@ public class SwerveDrive
     if (SwerveDriveTelemetry.isSimulation)
     {
       simIMU = new SwerveIMUSimulation();
+      imuReadingCache = new Cache<>(simIMU::getGyroRotation3d, 5L);
     } else
     {
       imu = config.imu;
       imu.factoryDefault();
+      imuReadingCache = new Cache<>(imu::getRotation3d, 5L);
     }
 
     this.swerveModules = config.modules;
@@ -724,13 +731,7 @@ public class SwerveDrive
   public Rotation2d getYaw()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (!SwerveDriveTelemetry.isSimulation)
-    {
-      return Rotation2d.fromRadians(imu.getRotation3d().getZ());
-    } else
-    {
-      return simIMU.getYaw();
-    }
+    return Rotation2d.fromRadians(imuReadingCache.getValue().getZ());
   }
 
   /**
@@ -741,13 +742,7 @@ public class SwerveDrive
   public Rotation2d getPitch()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (!SwerveDriveTelemetry.isSimulation)
-    {
-      return Rotation2d.fromRadians(imu.getRotation3d().getY());
-    } else
-    {
-      return simIMU.getPitch();
-    }
+    return Rotation2d.fromRadians(imuReadingCache.getValue().getY());
   }
 
   /**
@@ -758,13 +753,7 @@ public class SwerveDrive
   public Rotation2d getRoll()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (!SwerveDriveTelemetry.isSimulation)
-    {
-      return Rotation2d.fromRadians(imu.getRotation3d().getX());
-    } else
-    {
-      return simIMU.getRoll();
-    }
+    return Rotation2d.fromRadians(imuReadingCache.getValue().getX());
   }
 
   /**
@@ -775,13 +764,7 @@ public class SwerveDrive
   public Rotation3d getGyroRotation3d()
   {
     // Read the imu if the robot is real or the accumulator if the robot is simulated.
-    if (!SwerveDriveTelemetry.isSimulation)
-    {
-      return imu.getRotation3d();
-    } else
-    {
-      return simIMU.getGyroRotation3d();
-    }
+    return imuReadingCache.getValue();
   }
 
   /**

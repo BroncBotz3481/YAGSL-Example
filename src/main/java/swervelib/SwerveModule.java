@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.math.SwerveMath;
 import swervelib.motors.SwerveMotor;
+import swervelib.parser.Cache;
 import swervelib.parser.SwerveModuleConfiguration;
 import swervelib.simulation.SwerveModuleSimulation;
 import swervelib.telemetry.Alert;
@@ -69,6 +70,19 @@ public class SwerveModule
    * Encoder synchronization queued.
    */
   private       boolean                synchronizeEncoderQueued = false;
+  /**
+   * Absolute encoder position cache.
+   */
+  public final  Cache<Double>          absolutePositionCache;
+  /**
+   * Drive motor position cache.
+   */
+  public final  Cache<Double>          drivePositionCache;
+  /**
+   * Drive motor velocity cache.
+   */
+  public final  Cache<Double>          driveVelocityCache;
+
 
   /**
    * Construct the swerve module and initialize the swerve module motors and absolute encoder.
@@ -114,6 +128,9 @@ public class SwerveModule
       absoluteEncoder.configure(moduleConfiguration.absoluteEncoderInverted);
     }
 
+    // Setup the cache for the absolute encoder position.
+    absolutePositionCache = new Cache<>(this::getRawAbsolutePosition, 20);
+
     // Config angle motor/controller
     angleMotor.configureIntegratedEncoder(moduleConfiguration.conversionFactors.angle);
     angleMotor.configurePIDF(moduleConfiguration.anglePIDF);
@@ -135,6 +152,9 @@ public class SwerveModule
 
     driveMotor.burnFlash();
     angleMotor.burnFlash();
+
+    drivePositionCache = new Cache<>(driveMotor::getPosition, 20L);
+    driveVelocityCache = new Cache<>(driveMotor::getVelocity, 20L);
 
     if (SwerveDriveTelemetry.isSimulation)
     {
@@ -198,8 +218,9 @@ public class SwerveModule
   {
     desiredState = SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(getAbsolutePosition()));
     // Cosine compensation.
-    double velocity = configuration.useCosineCompensator ? getCosineCompensatedVelocity(desiredState)
-                                                         : desiredState.speedMetersPerSecond;
+    double velocity = configuration.useCosineCompensator
+                      ? getCosineCompensatedVelocity(desiredState)
+                      : desiredState.speedMetersPerSecond;
 
     if (isOpenLoop)
     {
@@ -298,7 +319,7 @@ public class SwerveModule
     Rotation2d azimuth;
     if (!SwerveDriveTelemetry.isSimulation)
     {
-      velocity = driveMotor.getVelocity();
+      velocity = driveVelocityCache.getValue();
       azimuth = Rotation2d.fromDegrees(getAbsolutePosition());
     } else
     {
@@ -318,7 +339,7 @@ public class SwerveModule
     Rotation2d azimuth;
     if (!SwerveDriveTelemetry.isSimulation)
     {
-      position = driveMotor.getPosition();
+      position = drivePositionCache.getValue();
       azimuth = Rotation2d.fromDegrees(getAbsolutePosition());
     } else
     {
@@ -333,6 +354,16 @@ public class SwerveModule
    * @return Absolute encoder angle in degrees in the range [0, 360).
    */
   public double getAbsolutePosition()
+  {
+    return absolutePositionCache.getValue();
+  }
+
+  /**
+   * Get the absolute position. Falls back to relative position on reading failure.
+   *
+   * @return Absolute encoder angle in degrees in the range [0, 360).
+   */
+  public double getRawAbsolutePosition()
   {
     double angle;
     if (absoluteEncoder != null)

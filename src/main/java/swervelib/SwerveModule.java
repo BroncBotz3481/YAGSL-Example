@@ -129,7 +129,7 @@ public class SwerveModule
     }
 
     // Setup the cache for the absolute encoder position.
-    absolutePositionCache = new Cache<>(this::getRawAbsolutePosition, 20);
+    absolutePositionCache = new Cache<>(this::getRawAbsolutePosition, 15);
 
     // Config angle motor/controller
     angleMotor.configureIntegratedEncoder(moduleConfiguration.conversionFactors.angle);
@@ -153,8 +153,8 @@ public class SwerveModule
     driveMotor.burnFlash();
     angleMotor.burnFlash();
 
-    drivePositionCache = new Cache<>(driveMotor::getPosition, 20L);
-    driveVelocityCache = new Cache<>(driveMotor::getVelocity, 20L);
+    drivePositionCache = new Cache<>(driveMotor::getPosition, 15);
+    driveVelocityCache = new Cache<>(driveMotor::getVelocity, 15);
 
     if (SwerveDriveTelemetry.isSimulation)
     {

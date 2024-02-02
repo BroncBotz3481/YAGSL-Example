@@ -221,6 +221,24 @@ public class SwerveDrive
   }
 
   /**
+   * Update the cache validity period for the robot.
+   *
+   * @param imu             IMU reading cache validity period in milliseconds.
+   * @param driveMotor      Drive motor reading cache in milliseconds.
+   * @param absoluteEncoder Absolute encoder reading cache in milliseconds.
+   */
+  public void updateCacheValidityPeriods(long imu, long driveMotor, long absoluteEncoder)
+  {
+    imuReadingCache.updateValidityPeriod(imu);
+    for (SwerveModule module : swerveModules)
+    {
+      module.drivePositionCache.updateValidityPeriod(driveMotor);
+      module.driveVelocityCache.updateValidityPeriod(driveMotor);
+      module.absolutePositionCache.updateValidityPeriod(absoluteEncoder);
+    }
+  }
+
+  /**
    * Check all components to ensure that Tuner X Swerve Generator is recommended instead.
    */
   private void checkIfTunerXCompatible()

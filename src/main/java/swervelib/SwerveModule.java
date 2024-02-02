@@ -161,6 +161,12 @@ public class SwerveModule
       simModule = new SwerveModuleSimulation();
     }
 
+    // Force a cache update on init.
+    driveVelocityCache.update();
+    drivePositionCache.update();
+    absolutePositionCache.update();
+
+    // Save the current state.
     lastState = getState();
 
     noEncoderWarning = new Alert("Motors",

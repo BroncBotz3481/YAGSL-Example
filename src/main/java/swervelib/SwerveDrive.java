@@ -702,6 +702,7 @@ public class SwerveDrive
     {
       setGyroOffset(imu.getRawRotation3d().minus(gyro));
     }
+    imuReadingCache.update();
   }
 
   /**
@@ -718,6 +719,7 @@ public class SwerveDrive
     {
       setGyroOffset(imu.getRawRotation3d());
     }
+    imuReadingCache.update();
     swerveController.lastAngleScalar = 0;
     lastHeadingRadians = 0;
     resetOdometry(new Pose2d(getPose().getTranslation(), new Rotation2d()));
@@ -999,6 +1001,7 @@ public class SwerveDrive
     {
       imu.setOffset(offset);
     }
+    imuReadingCache.update();
   }
 
   /**

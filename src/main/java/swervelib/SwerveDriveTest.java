@@ -312,7 +312,7 @@ public class SwerveDriveTest
         log -> {
           for (SwerveModule module : swerveDrive.getModules())
           {
-            logDriveMotorDutyCycle(module, log);
+            logDriveMotorVoltage(module, log);
           }
         }, swerveSubsystem));
   }
@@ -379,7 +379,7 @@ public class SwerveDriveTest
         log -> {
           for (SwerveModule module : swerveDrive.getModules())
           {
-            logAngularMotorDutyCycle(module, log);
+            logAngularMotorVoltage(module, log);
           }
         }, swerveSubsystem));
   }

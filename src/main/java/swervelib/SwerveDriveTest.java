@@ -251,12 +251,12 @@ public class SwerveDriveTest
   }
 
   /**
-   * Logs output, position and velocuty info form the drive motor to the SysIdRoutineLog
+   * Logs output, position and velocuty info form the drive motor to the SysIdRoutineLog <br /> Although SysIdRoutine
+   * expects to be logging Voltage, this function logs in Duty-Cycle (percent output) because it results in correctly
+   * adjusted values in the analysis for use in this library.
    *
    * @param module - the swerve module being logged
    * @param log    - the logger
-   * @apiNote Although SysIdRoutine expects to be logging Voltage, this function logs in Duty-Cycle (percent output)
-   * because it results in correctly adjusted values in the analysis for use in this library.
    */
   public static void logDriveMotorDutyCycle(SwerveModule module, SysIdRoutineLog log)
   {
@@ -321,12 +321,12 @@ public class SwerveDriveTest
   }
 
   /**
-   * Logs info about the angle motor to the SysIdRoutineLog
+   * Logs info about the angle motor to the SysIdRoutineLog. <br /> Although SysIdRoutine expects to be logging Voltage,
+   * this function logs in Duty-Cycle (percent output) because it results in correctly adjusted values in the analysis
+   * for use in this library.
    *
    * @param module - the swerve module being logged
    * @param log    - the logger
-   * @apiNote Although SysIdRoutine expects to be logging Voltage, this function logs in Duty-Cycle (percent output)
-   * because it results in correctly adjusted values in the analysis for use in this library.
    */
   public static void logAngularMotorDutyCycle(SwerveModule module, SysIdRoutineLog log)
   {

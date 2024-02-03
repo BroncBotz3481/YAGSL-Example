@@ -301,15 +301,16 @@ public class SwerveDriveTest
    * @param config          - The SysIdRoutine.Config to use
    * @param swerveSubsystem - the subsystem to add to requirements
    * @param swerveDrive     - the SwerveDrive from which to access motor info
+   * @param maxVolts        - The maximum voltage that should be applied to the drive motors.
    * @return A SysIdRoutine runner
    */
   public static SysIdRoutine setDriveSysIdRoutine(Config config, SubsystemBase swerveSubsystem,
-                                                  SwerveDrive swerveDrive)
+                                                  SwerveDrive swerveDrive, double maxVolts)
   {
     return new SysIdRoutine(config, new SysIdRoutine.Mechanism(
         (Measure<Voltage> voltage) -> {
           SwerveDriveTest.centerModules(swerveDrive);
-          SwerveDriveTest.powerDriveMotorsVoltage(swerveDrive, voltage.in(Volts));
+          SwerveDriveTest.powerDriveMotorsVoltage(swerveDrive, Math.min(voltage.in(Volts), maxVolts));
         },
         log -> {
           for (SwerveModule module : swerveDrive.getModules())

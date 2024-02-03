@@ -27,6 +27,18 @@ public class SwerveModule
    */
   public final  SwerveModuleConfiguration configuration;
   /**
+   * Absolute encoder position cache.
+   */
+  public final  Cache<Double>          absolutePositionCache;
+  /**
+   * Drive motor position cache.
+   */
+  public final  Cache<Double>          drivePositionCache;
+  /**
+   * Drive motor velocity cache.
+   */
+  public final  Cache<Double>          driveVelocityCache;
+  /**
    * Swerve Motors.
    */
   private final SwerveMotor               angleMotor, driveMotor;
@@ -70,18 +82,6 @@ public class SwerveModule
    * Encoder synchronization queued.
    */
   private       boolean                synchronizeEncoderQueued = false;
-  /**
-   * Absolute encoder position cache.
-   */
-  public final  Cache<Double>          absolutePositionCache;
-  /**
-   * Drive motor position cache.
-   */
-  public final  Cache<Double>          drivePositionCache;
-  /**
-   * Drive motor velocity cache.
-   */
-  public final  Cache<Double>          driveVelocityCache;
 
 
   /**

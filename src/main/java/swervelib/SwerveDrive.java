@@ -62,6 +62,10 @@ public class SwerveDrive
    */
   public final  SwerveDrivePoseEstimator swerveDrivePoseEstimator;
   /**
+   * IMU reading cache for robot readings.
+   */
+  public final  Cache<Rotation3d>        imuReadingCache;
+  /**
    * Swerve modules.
    */
   private final SwerveModule[]           swerveModules;
@@ -105,10 +109,6 @@ public class SwerveDrive
    * Swerve IMU device for sensing the heading of the robot.
    */
   private       SwerveIMU                imu;
-  /**
-   * IMU reading cache for robot readings.
-   */
-  public final  Cache<Rotation3d>        imuReadingCache;
   /**
    * Simulation of the swerve drive.
    */

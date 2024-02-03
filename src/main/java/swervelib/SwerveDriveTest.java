@@ -35,6 +35,27 @@ public class SwerveDriveTest
 {
 
   /**
+   * Tracks the voltage being applied to a motor
+   */
+  private static final MutableMeasure<Voltage>            m_appliedVoltage = mutable(Volts.of(0));
+  /**
+   * Tracks the distance travelled of a position motor
+   */
+  private static final MutableMeasure<Distance>           m_distance       = mutable(Meters.of(0));
+  /**
+   * Tracks the velocity of a positional motor
+   */
+  private static final MutableMeasure<Velocity<Distance>> m_velocity       = mutable(MetersPerSecond.of(0));
+  /**
+   * Tracks the rotations of an angular motor
+   */
+  private static final MutableMeasure<Angle>              m_anglePosition  = mutable(Degrees.of(0));
+  /**
+   * Tracks the velocity of an angular motor
+   */
+  private static final MutableMeasure<Velocity<Angle>>    m_angVelocity    = mutable(DegreesPerSecond.of(0));
+
+  /**
    * Set the angle of the modules to a given {@link Rotation2d}
    *
    * @param swerveDrive {@link SwerveDrive} to use.
@@ -217,27 +238,6 @@ public class SwerveDriveTest
     DriverStation.reportWarning("Average Coupling Ratio: " + (couplingRatioSum / 4.0), false);
     return (couplingRatioSum / 4.0);
   }
-
-  /**
-   * Tracks the voltage being applied to a motor
-   */
-  private static final MutableMeasure<Voltage>            m_appliedVoltage = mutable(Volts.of(0));
-  /**
-   * Tracks the distance travelled of a position motor
-   */
-  private static final MutableMeasure<Distance>           m_distance       = mutable(Meters.of(0));
-  /**
-   * Tracks the velocity of a positional motor
-   */
-  private static final MutableMeasure<Velocity<Distance>> m_velocity       = mutable(MetersPerSecond.of(0));
-  /**
-   * Tracks the rotations of an angular motor
-   */
-  private static final MutableMeasure<Angle>              m_anglePosition  = mutable(Degrees.of(0));
-  /**
-   * Tracks the velocity of an angular motor
-   */
-  private static final MutableMeasure<Velocity<Angle>>    m_angVelocity    = mutable(DegreesPerSecond.of(0));
 
   /**
    * Creates a SysIdRoutine.Config with a custom final timeout

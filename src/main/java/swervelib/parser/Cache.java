@@ -12,7 +12,7 @@ public class Cache<T>
   /**
    * Cached value.
    */
-  private   T           value;
+  private T           value;
   /**
    * Supplier for cached value.
    */

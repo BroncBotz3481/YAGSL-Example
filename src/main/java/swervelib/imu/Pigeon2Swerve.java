@@ -15,7 +15,11 @@ import java.util.Optional;
  */
 public class Pigeon2Swerve extends SwerveIMU
 {
-  
+
+  /**
+   * Wait time for status frames to show up.
+   */
+  private final double     STATUS_TIMEOUT_SECONDS = 0.02;
   /**
    * Pigeon2 IMU device.
    */
@@ -23,15 +27,11 @@ public class Pigeon2Swerve extends SwerveIMU
   /**
    * Offset for the Pigeon 2.
    */
-  private Rotation3d offset      = new Rotation3d();
+  private       Rotation3d offset                 = new Rotation3d();
   /**
    * Inversion for the gyro
    */
-  private boolean    invertedIMU = false;
-  /**
-   * Wait time for status frames to show up.
-   */
-  private final double STATUS_TIMEOUT_SECONDS = 0.02;
+  private       boolean    invertedIMU            = false;
 
   /**
    * Generate the SwerveIMU for pigeon.

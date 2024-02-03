@@ -18,29 +18,29 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
 {
 
   /**
+   * Wait time for status frames to show up.
+   */
+  private final double   STATUS_TIMEOUT_SECONDS = 0.02;
+  /**
    * CANCoder with WPILib sendable and support.
    */
-  public  CANcoder encoder;
+  public        CANcoder encoder;
   /**
    * An {@link Alert} for if the CANCoder magnet field is less than ideal.
    */
-  private Alert    magnetFieldLessThanIdeal;
+  private       Alert    magnetFieldLessThanIdeal;
   /**
    * An {@link Alert} for if the CANCoder reading is faulty.
    */
-  private Alert    readingFaulty;
+  private       Alert    readingFaulty;
   /**
    * An {@link Alert} for if the CANCoder reading is faulty and the reading is ignored.
    */
-  private Alert    readingIgnored;
+  private       Alert    readingIgnored;
   /**
    * An {@link Alert} for if the absolute encoder offset cannot be set.
    */
-  private Alert    cannotSetOffset;
-  /**
-   * Wait time for status frames to show up.
-   */
-  private final double STATUS_TIMEOUT_SECONDS = 0.02;
+  private       Alert    cannotSetOffset;
 
   /**
    * Initialize the CANCoder on the standard CANBus.

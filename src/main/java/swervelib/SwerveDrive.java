@@ -23,7 +23,9 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -1087,6 +1089,21 @@ public class SwerveDrive
   public SwerveModule[] getModules()
   {
     return swerveDriveConfiguration.modules;
+  }
+
+  /**
+   * Get the {@link SwerveModule}'s as a {@link HashMap} where the key is the swerve module configuration name.
+   *
+   * @return {@link HashMap}(Module Name, SwerveModule)
+   */
+  public Map<String, SwerveModule> getModuleMap()
+  {
+    Map<String, SwerveModule> map = new HashMap<String, SwerveModule>();
+    for (SwerveModule module : swerveModules)
+    {
+      map.put(module.configuration.name, module);
+    }
+    return map;
   }
 
   /**

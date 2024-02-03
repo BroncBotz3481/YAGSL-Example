@@ -8,8 +8,6 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Distance;
@@ -27,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import java.util.function.Supplier;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 
 /**
@@ -34,6 +33,27 @@ import swervelib.encoders.SwerveAbsoluteEncoder;
  */
 public class SwerveDriveTest
 {
+
+  /**
+   * Tracks the voltage being applied to a motor
+   */
+  private static final MutableMeasure<Voltage>            m_appliedVoltage = mutable(Volts.of(0));
+  /**
+   * Tracks the distance travelled of a position motor
+   */
+  private static final MutableMeasure<Distance>           m_distance       = mutable(Meters.of(0));
+  /**
+   * Tracks the velocity of a positional motor
+   */
+  private static final MutableMeasure<Velocity<Distance>> m_velocity       = mutable(MetersPerSecond.of(0));
+  /**
+   * Tracks the rotations of an angular motor
+   */
+  private static final MutableMeasure<Angle>              m_anglePosition  = mutable(Degrees.of(0));
+  /**
+   * Tracks the velocity of an angular motor
+   */
+  private static final MutableMeasure<Velocity<Angle>>    m_angVelocity    = mutable(DegreesPerSecond.of(0));
 
   /**
    * Set the angle of the modules to a given {@link Rotation2d}
@@ -220,27 +240,6 @@ public class SwerveDriveTest
   }
 
   /**
-   * Tracks the voltage being applied to a motor
-   */
-  private static final MutableMeasure<Voltage>            m_appliedVoltage = mutable(Volts.of(0));
-  /**
-   * Tracks the distance travelled of a position motor
-   */
-  private static final MutableMeasure<Distance>           m_distance       = mutable(Meters.of(0));
-  /**
-   * Tracks the velocity of a positional motor
-   */
-  private static final MutableMeasure<Velocity<Distance>> m_velocity       = mutable(MetersPerSecond.of(0));
-  /**
-   * Tracks the rotations of an angular motor
-   */
-  private static final MutableMeasure<Angle>              m_anglePosition  = mutable(Degrees.of(0));
-  /**
-   * Tracks the velocity of an angular motor
-   */
-  private static final MutableMeasure<Velocity<Angle>>    m_angVelocity    = mutable(DegreesPerSecond.of(0));
-
-  /**
    * Creates a SysIdRoutine.Config with a custom final timeout
    *
    * @param timeout - the most a SysIdRoutine should run
@@ -252,34 +251,39 @@ public class SwerveDriveTest
   }
 
   /**
-   * Logs output, position and velocuty info form the drive motor to the SysIdRoutineLog
+   * Logs output, position and velocuty info form the drive motor to the SysIdRoutineLog <br /> Although SysIdRoutine
+   * expects to be logging Voltage, this function logs in Duty-Cycle (percent output) because it results in correctly
+   * adjusted values in the analysis for use in this library.
+   *
    * @param module - the swerve module being logged
    * @param log    - the logger
-   * @apiNote Although SysIdRoutine expects to be logging Voltage, this function logs in Duty-Cycle (percent output) 
-   * because it results in correctly adjusted values in the analysis for use in this library. 
    */
-  public static void logDriveMotorDutyCycle(SwerveModule module, SysIdRoutineLog log) {
+  public static void logDriveMotorDutyCycle(SwerveModule module, SysIdRoutineLog log)
+  {
     logDriveMotorActivity(module, log, () -> module.getDriveMotor().getVoltage() / RobotController.getBatteryVoltage());
   }
 
   /**
    * Logs voltage, position and velocuty info form the drive motor to the SysIdRoutineLog
+   *
    * @param module - the swerve module being logged
    * @param log    - the logger
    */
-  public static void logDriveMotorVoltage(SwerveModule module, SysIdRoutineLog log) {
+  public static void logDriveMotorVoltage(SwerveModule module, SysIdRoutineLog log)
+  {
     logDriveMotorActivity(module, log, () -> module.getDriveMotor().getVoltage());
   }
 
   /**
    * Logs power, position and velocuty info form the drive motor to the SysIdRoutineLog
-   * @param module - the swerve module being logged
-   * @param log    - the logger
-   * @param powerSupplied  - a functional supplier of the power to be logged
+   *
+   * @param module        - the swerve module being logged
+   * @param log           - the logger
+   * @param powerSupplied - a functional supplier of the power to be logged
    */
   public static void logDriveMotorActivity(SwerveModule module, SysIdRoutineLog log, Supplier<Double> powerSupplied)
   {
-    double power = powerSupplied.get();
+    double power    = powerSupplied.get();
     double distance = module.getPosition().distanceMeters;
     double velocity = module.getDriveMotor().getVelocity();
     SmartDashboard.putNumber("Module[" + module.configuration.name + "] SysId Drive Power", power);
@@ -297,15 +301,16 @@ public class SwerveDriveTest
    * @param config          - The SysIdRoutine.Config to use
    * @param swerveSubsystem - the subsystem to add to requirements
    * @param swerveDrive     - the SwerveDrive from which to access motor info
+   * @param maxVolts        - The maximum voltage that should be applied to the drive motors.
    * @return A SysIdRoutine runner
    */
   public static SysIdRoutine setDriveSysIdRoutine(Config config, SubsystemBase swerveSubsystem,
-                                                  SwerveDrive swerveDrive)
+                                                  SwerveDrive swerveDrive, double maxVolts)
   {
     return new SysIdRoutine(config, new SysIdRoutine.Mechanism(
         (Measure<Voltage> voltage) -> {
           SwerveDriveTest.centerModules(swerveDrive);
-          SwerveDriveTest.powerDriveMotorsVoltage(swerveDrive, voltage.in(Volts));
+          SwerveDriveTest.powerDriveMotorsVoltage(swerveDrive, Math.min(voltage.in(Volts), maxVolts));
         },
         log -> {
           for (SwerveModule module : swerveDrive.getModules())
@@ -316,15 +321,18 @@ public class SwerveDriveTest
   }
 
   /**
-   * Logs info about the angle motor to the SysIdRoutineLog
+   * Logs info about the angle motor to the SysIdRoutineLog. <br /> Although SysIdRoutine expects to be logging Voltage,
+   * this function logs in Duty-Cycle (percent output) because it results in correctly adjusted values in the analysis
+   * for use in this library.
    *
    * @param module - the swerve module being logged
    * @param log    - the logger
-   * @apiNote Although SysIdRoutine expects to be logging Voltage, this function logs in Duty-Cycle (percent output) 
-   * because it results in correctly adjusted values in the analysis for use in this library. 
    */
-  public static void logAngularMotorDutyCycle(SwerveModule module, SysIdRoutineLog log) {
-    logAngularMotorActivity(module, log, () -> module.getAngleMotor().getVoltage() / RobotController.getBatteryVoltage());
+  public static void logAngularMotorDutyCycle(SwerveModule module, SysIdRoutineLog log)
+  {
+    logAngularMotorActivity(module,
+                            log,
+                            () -> module.getAngleMotor().getVoltage() / RobotController.getBatteryVoltage());
   }
 
   /**
@@ -333,21 +341,22 @@ public class SwerveDriveTest
    * @param module - the swerve module being logged
    * @param log    - the logger
    */
-  public static void logAngularMotorVoltage(SwerveModule module, SysIdRoutineLog log) {
+  public static void logAngularMotorVoltage(SwerveModule module, SysIdRoutineLog log)
+  {
     logAngularMotorActivity(module, log, () -> module.getAngleMotor().getVoltage());
   }
 
   /**
    * Logs info about the angle motor to the SysIdRoutineLog
    *
-   * @param module - the swerve module being logged
-   * @param log    - the logger
-   * @param powerSupplied  - a functional supplier of the power to be logged
+   * @param module        - the swerve module being logged
+   * @param log           - the logger
+   * @param powerSupplied - a functional supplier of the power to be logged
    */
   public static void logAngularMotorActivity(SwerveModule module, SysIdRoutineLog log, Supplier<Double> powerSupplied)
   {
-    double power = powerSupplied.get();
-    double angle = module.getAbsolutePosition();
+    double power    = powerSupplied.get();
+    double angle    = module.getAbsolutePosition();
     double velocity = module.getAbsoluteEncoder().getVelocity();
     SmartDashboard.putNumber("Module[" + module.configuration.name + "] SysId Angle Power", power);
     SmartDashboard.putNumber("Module[" + module.configuration.name + "] SysId Angle Position", angle);
@@ -383,8 +392,8 @@ public class SwerveDriveTest
   }
 
   /**
-   * Creates a command that can be mapped to a button or other trigger. Delays can be set to customize the length of each
-   * part of the SysId Routine
+   * Creates a command that can be mapped to a button or other trigger. Delays can be set to customize the length of
+   * each part of the SysId Routine
    *
    * @param sysIdRoutine   - The Sys Id routine runner
    * @param delay          - seconds between each portion to allow motors to spin down, etc...
@@ -396,11 +405,11 @@ public class SwerveDriveTest
                                              double dynamicTimeout)
   {
     return sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward).withTimeout(quasiTimeout)
-                   .andThen(Commands.waitSeconds(delay))
-                   .andThen(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse).withTimeout(quasiTimeout))
-                   .andThen(Commands.waitSeconds(delay))
-                   .andThen(sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward).withTimeout(dynamicTimeout))
-                   .andThen(Commands.waitSeconds(delay))
-                   .andThen(sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse).withTimeout(dynamicTimeout));
+                       .andThen(Commands.waitSeconds(delay))
+                       .andThen(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse).withTimeout(quasiTimeout))
+                       .andThen(Commands.waitSeconds(delay))
+                       .andThen(sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward).withTimeout(dynamicTimeout))
+                       .andThen(Commands.waitSeconds(delay))
+                       .andThen(sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse).withTimeout(dynamicTimeout));
   }
 }

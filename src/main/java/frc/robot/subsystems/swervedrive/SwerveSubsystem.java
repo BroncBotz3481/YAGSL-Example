@@ -218,27 +218,31 @@ public class SwerveSubsystem extends SubsystemBase
 
   /**
    * Command to characterize the robot drive motors using SysId
+   *
    * @return SysId Drive Command
    */
-  public Command sysIdDriveMotorCommand() {
+  public Command sysIdDriveMotorCommand()
+  {
     return SwerveDriveTest.generateSysIdCommand(
-          SwerveDriveTest.setDriveSysIdRoutine(
-              new Config(),
-              this, swerveDrive, 12),
-          3.0, 5.0, 3.0);
-}
+        SwerveDriveTest.setDriveSysIdRoutine(
+            new Config(),
+            this, swerveDrive, 12),
+        3.0, 5.0, 3.0);
+  }
 
-/**
- * Command to characterize the robot angle motors using SysId
- * @return SysId Angle Command
- */
-public Command sysIdAngleMotorCommand() {
+  /**
+   * Command to characterize the robot angle motors using SysId
+   *
+   * @return SysId Angle Command
+   */
+  public Command sysIdAngleMotorCommand()
+  {
     return SwerveDriveTest.generateSysIdCommand(
-          SwerveDriveTest.setAngleSysIdRoutine(
-              new Config(),
-              this, swerveDrive),
-          3.0, 5.0, 3.0);
-}
+        SwerveDriveTest.setAngleSysIdRoutine(
+            new Config(),
+            this, swerveDrive),
+        3.0, 5.0, 3.0);
+  }
 
   /**
    * Command to drive the robot using translative values and heading as angular velocity.

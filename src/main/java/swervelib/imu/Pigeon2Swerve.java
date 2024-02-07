@@ -106,31 +106,7 @@ public class Pigeon2Swerve extends SwerveIMU
   @Override
   public Rotation3d getRawRotation3d()
   {
-    // TODO: Switch to suppliers.
-    StatusSignal<Double> w = imu.getQuatW();
-    StatusSignal<Double> x = imu.getQuatX();
-    StatusSignal<Double> y = imu.getQuatY();
-    StatusSignal<Double> z = imu.getQuatZ();
-    if(w.getStatus() != StatusCode.OK)
-    {
-      w = w.waitForUpdate(STATUS_TIMEOUT_SECONDS);
-    }
-    if(x.getStatus() != StatusCode.OK)
-    {
-      x = x.waitForUpdate(STATUS_TIMEOUT_SECONDS);
-    }
-    if(y.getStatus() != StatusCode.OK)
-    {
-      y = y.waitForUpdate(STATUS_TIMEOUT_SECONDS);
-    }
-    if(z.getStatus() != StatusCode.OK)
-    {
-      z = z.waitForUpdate(STATUS_TIMEOUT_SECONDS);
-    }
-    Rotation3d reading = new Rotation3d(new Quaternion(w.getValue(),
-                                                       x.getValue(),
-                                                       y.getValue(),
-                                                       z.getValue()));
+    Rotation3d reading = imu.getRotation3d();
     return invertedIMU ? reading.unaryMinus() : reading;
   }
 

@@ -1,11 +1,9 @@
 package swervelib.imu;
 
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.configs.Pigeon2Configurator;
 import com.ctre.phoenix6.hardware.Pigeon2;
-import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,7 +18,7 @@ public class Pigeon2Swerve extends SwerveIMU
   /**
    * Wait time for status frames to show up.
    */
-  public static double     STATUS_TIMEOUT_SECONDS = 0.04;
+  public static double STATUS_TIMEOUT_SECONDS = 0.04;
   /**
    * Pigeon2 IMU device.
    */
@@ -28,11 +26,11 @@ public class Pigeon2Swerve extends SwerveIMU
   /**
    * Offset for the Pigeon 2.
    */
-  private       Rotation3d offset                 = new Rotation3d();
+  private Rotation3d offset      = new Rotation3d();
   /**
    * Inversion for the gyro
    */
-  private       boolean    invertedIMU            = false;
+  private boolean    invertedIMU = false;
 
   /**
    * Generate the SwerveIMU for pigeon.

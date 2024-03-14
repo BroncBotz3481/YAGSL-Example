@@ -390,6 +390,10 @@ public class SwerveSubsystem extends SubsystemBase
     swerveDrive.zeroGyro();
   }
 
+  /**
+  * Checks if the alliance is red, defaults to false if alliance isn't available.
+  * @return true if the red alliance, false if blue. Defaults to false if none is available.
+  */
   private boolean isRedAlliance() 
   {
     var alliance = DriverStation.getAlliance();

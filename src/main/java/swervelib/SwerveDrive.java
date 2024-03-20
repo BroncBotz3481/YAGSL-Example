@@ -502,6 +502,61 @@ public class SwerveDrive
     setRawModuleStates(swerveModuleStates, isOpenLoop);
   }
 
+    /**
+   * The primary method for controlling the drivebase. Takes a {@link ChassisSpeeds}, and calculates and commands module
+   * states accordingly. Can use either open-loop or closed-loop velocity control for the wheel velocities. Applies
+   * heading correction if enabled and necessary.
+   *
+   * @param velocity               The chassis speeds to set the robot to achieve.
+   * @param isOpenLoop             Whether to use closed-loop velocity control. Set to true to disable closed-loop.
+   * @param centerOfRotationMeters The center of rotation in meters, 0 is the center of the robot.
+   * @param dtSeconds              The duration of the timestep the speeds should be applied for.  
+   */
+  public void drive(ChassisSpeeds velocity, boolean isOpenLoop, Translation2d centerOfRotationMeters, double dtSeconds)
+  {
+
+    // Thank you to Jared Russell FRC254 for Open Loop Compensation Code
+    // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
+    if (chassisVelocityCorrection)
+    {
+      velocity = ChassisSpeeds.discretize(velocity, dtSeconds);
+    }
+
+    // Heading Angular Velocity Deadband, might make a configuration option later.
+    // Originally made by Team 1466 Webb Robotics.
+    // Modified by Team 7525 Pioneers and BoiledBurntBagel of 6036
+    if (headingCorrection)
+    {
+      if (Math.abs(velocity.omegaRadiansPerSecond) < HEADING_CORRECTION_DEADBAND
+          && (Math.abs(velocity.vxMetersPerSecond) > HEADING_CORRECTION_DEADBAND
+              || Math.abs(velocity.vyMetersPerSecond) > HEADING_CORRECTION_DEADBAND))
+      {
+        velocity.omegaRadiansPerSecond =
+            swerveController.headingCalculate(getOdometryHeading().getRadians(), lastHeadingRadians);
+      } else
+      {
+        lastHeadingRadians = getOdometryHeading().getRadians();
+      }
+    }
+
+    // Display commanded speed for testing
+    if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.INFO)
+    {
+      SmartDashboard.putString("RobotVelocity", velocity.toString());
+    }
+    if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.LOW.ordinal())
+    {
+      SwerveDriveTelemetry.desiredChassisSpeeds[1] = velocity.vyMetersPerSecond;
+      SwerveDriveTelemetry.desiredChassisSpeeds[0] = velocity.vxMetersPerSecond;
+      SwerveDriveTelemetry.desiredChassisSpeeds[2] = Math.toDegrees(velocity.omegaRadiansPerSecond);
+    }
+
+    // Calculate required module states via kinematics
+    SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(velocity, centerOfRotationMeters);
+
+    setRawModuleStates(swerveModuleStates, isOpenLoop);
+  }
+
 
   /**
    * Set the maximum speeds for desaturation.

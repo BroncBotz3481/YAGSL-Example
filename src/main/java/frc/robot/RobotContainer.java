@@ -42,6 +42,15 @@ public class RobotContainer
     // Configure the trigger bindings
     configureBindings();
 
+
+
+    // Applies deadbands and inverts controls because joysticks
+    // are back-right positive while robot
+    // controls are front-left positive
+    // left stick controls translation
+    // right stick controls the rotational velocity 
+    // buttons are quick rotation positions to different ways to face
+    // WARNING: default buttons are on the same buttons as the ones defined in configureBindings
     AbsoluteDriveAdv closedAbsoluteDriveAdv = new AbsoluteDriveAdv(drivebase,
                                                                    () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
                                                                                                 OperatorConstants.LEFT_Y_DEADBAND),

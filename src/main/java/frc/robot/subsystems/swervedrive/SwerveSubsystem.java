@@ -10,7 +10,10 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -18,6 +21,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -82,7 +86,7 @@ public class SwerveSubsystem extends SubsystemBase
       throw new RuntimeException(e);
     }
     swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
-    swerveDrive.setCosineCompensator(!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
+    swerveDrive.setCosineCompensator(false);//!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
     setupPathPlanner();
   }
 
@@ -131,6 +135,58 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   /**
+   * AprilTag field layout.
+   */
+  private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+
+  /**
+   * Get the distance to the speaker.
+   *
+   * @return Distance to speaker in meters.
+   */
+  public double getDistanceToSpeaker()
+  {
+    int allianceAprilTag = DriverStation.getAlliance().get() == Alliance.Blue ? 7 : 4;
+    // Taken from PhotonUtils.getDistanceToPose
+    Pose3d speakerAprilTagPose = aprilTagFieldLayout.getTagPose(allianceAprilTag).get();
+    return getPose().getTranslation().getDistance(speakerAprilTagPose.toPose2d().getTranslation());
+  }
+
+  /**
+   * Get the yaw to aim at the speaker.
+   *
+   * @return {@link Rotation2d} of which you need to achieve.
+   */
+  public Rotation2d getSpeakerYaw()
+  {
+    int allianceAprilTag = DriverStation.getAlliance().get() == Alliance.Blue ? 7 : 4;
+    // Taken from PhotonUtils.getYawToPose()
+    Pose3d        speakerAprilTagPose = aprilTagFieldLayout.getTagPose(allianceAprilTag).get();
+    Translation2d relativeTrl         = speakerAprilTagPose.toPose2d().relativeTo(getPose()).getTranslation();
+    return new Rotation2d(relativeTrl.getX(), relativeTrl.getY()).plus(swerveDrive.getOdometryHeading());
+  }
+
+  /**
+   * Aim the robot at the speaker.
+   *
+   * @param tolerance Tolerance in degrees.
+   * @return Command to turn the robot to the speaker.
+   */
+  public Command aimAtSpeaker(double tolerance)
+  {
+    SwerveController controller = swerveDrive.getSwerveController();
+    return run(
+        () -> {
+          drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,
+                                                      0,
+                                                      controller.headingCalculate(getHeading().getRadians(),
+                                                                                  getSpeakerYaw().getRadians()),
+                                                      getHeading())
+               );
+        }).until(() -> getSpeakerYaw().minus(getHeading()).getDegrees() < tolerance);
+  }
+
+  /**
    * Aim the robot at the target returned by PhotonVision.
    *
    * @param camera {@link PhotonCamera} to communicate with.
@@ -138,6 +194,7 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public Command aimAtTarget(PhotonCamera camera)
   {
+
     return run(() -> {
       PhotonPipelineResult result = camera.getLatestResult();
       if (result.hasTargets())
@@ -153,7 +210,7 @@ public class SwerveSubsystem extends SubsystemBase
   /**
    * Get the path follower with events.
    *
-   * @param pathName       PathPlanner path name.
+   * @param pathName PathPlanner path name.
    * @return {@link AutoBuilder#followPath(PathPlannerPath)} path command.
    */
   public Command getAutonomousCommand(String pathName)
@@ -391,10 +448,11 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   /**
-  * Checks if the alliance is red, defaults to false if alliance isn't available.
-  * @return true if the red alliance, false if blue. Defaults to false if none is available.
-  */
-  private boolean isRedAlliance() 
+   * Checks if the alliance is red, defaults to false if alliance isn't available.
+   *
+   * @return true if the red alliance, false if blue. Defaults to false if none is available.
+   */
+  private boolean isRedAlliance()
   {
     var alliance = DriverStation.getAlliance();
     return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;
@@ -402,20 +460,22 @@ public class SwerveSubsystem extends SubsystemBase
 
   /**
    * This will zero (calibrate) the robot to assume the current position is facing forward
-   * 
+   * <p>
    * If red alliance rotate the robot 180 after the drviebase zero command
    */
-  public void zeroGyroWithAlliance() 
+  public void zeroGyroWithAlliance()
   {
-    if (isRedAlliance()) {
+    if (isRedAlliance())
+    {
       zeroGyro();
       //Set the pose 180 degrees
       resetOdometry(new Pose2d(getPose().getTranslation(), Rotation2d.fromDegrees(180)));
-    } else {
-       zeroGyro();      
+    } else
+    {
+      zeroGyro();
     }
-  }  
-  
+  }
+
   /**
    * Sets the drive motors to brake/coast mode.
    *

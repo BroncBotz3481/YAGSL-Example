@@ -347,6 +347,19 @@ public class SwerveDrive
   }
 
   /**
+   * Tertiary method of controlling the drive base given velocity in both field oriented and robot oriented at the same time. 
+   * The inputs are added together so this is not intneded to be used to give the driver both methods of control.
+   * 
+   * @param fieldOrientedVelocity The field oriented velocties to use
+   * @param robotOrientedVelocity The robot oriented velocties to use
+   */
+  public void driveFieldOrientedandRobotOriented(ChassisSpeeds fieldOrientedVelocity, ChassisSpeeds robotOrientedVelocity)
+  {
+    ChassisSpeeds TotalVelocties = ChassisSpeeds.fromFieldRelativeSpeeds(fieldOrientedVelocity, getOdometryHeading()).plus(robotOrientedVelocity);
+    drive(TotalVelocties);
+  }
+
+  /**
    * Secondary method of controlling the drive base given velocity and adjusting it for field oriented use.
    *
    * @param velocity Velocity of the robot desired.

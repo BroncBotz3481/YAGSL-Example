@@ -252,7 +252,7 @@ public class SwerveModule
     this.antiJitterEnabled = antiJitter;
     if (antiJitter)
     {
-      pushOffsetsToControllers();
+      pushOffsetsToEncoders();
     } else
     {
       restoreInternalOffset();
@@ -580,7 +580,7 @@ public class SwerveModule
   /**
    * Push absolute encoder offset in the memory of the encoder or controller. Also removes the internal angle offset.
    */
-  public void pushOffsetsToControllers()
+  public void pushOffsetsToEncoders()
   {
     if (absoluteEncoder != null && angleOffset == configuration.angleOffset)
     {

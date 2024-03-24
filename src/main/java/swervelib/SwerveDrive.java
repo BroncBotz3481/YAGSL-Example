@@ -1125,11 +1125,11 @@ public class SwerveDrive
    * Pushes the Absolute Encoder offsets to the Encoder or Motor Controller, depending on type. Also removes the
    * internal offsets to prevent double offsetting.
    */
-  public void pushOffsetsToControllers()
+  public void pushOffsetsToEncoders()
   {
     for (SwerveModule module : swerveModules)
     {
-      module.pushOffsetsToControllers();
+      module.pushOffsetsToEncoders();
     }
   }
 

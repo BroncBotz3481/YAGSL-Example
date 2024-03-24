@@ -104,7 +104,7 @@ public class SwerveDrive
   /**
    * Amount of seconds the duration of the timestep the speeds should be applied for.
    */
-  public        double                   discretizationdtSeconds                         = 0.02;
+  private        double                   discretizationdtSeconds                         = 0.02;
   /**
    * Deadband for speeds in heading correction.
    */
@@ -1159,6 +1159,12 @@ public class SwerveDrive
     }
   }
 
+  /**
+   * Sets the Chassis discretization seconds as well as enableing/disabling the Chassis velocity correction
+   * 
+   * @param enable
+   * @param dtSeconds
+   */
   public void setChassisDiscretization(boolean enable, double dtSeconds){
     chassisVelocityCorrection = enable;
     discretizationdtSeconds = dtSeconds;

@@ -253,12 +253,12 @@ public class SwerveSubsystem extends SubsystemBase
   public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier headingX,
                               DoubleSupplier headingY)
   {
+    Translation2d smoothedInput = SwerveMath.smoothJoystickInput(new Translation2d(translationX.getAsDouble(), translationY.getAsDouble()));
+
     // swerveDrive.setHeadingCorrection(true); // Normally you would want heading correction for this kind of control.
     return run(() -> {
-      double xInput = Math.pow(translationX.getAsDouble(), 3); // Smooth controll out
-      double yInput = Math.pow(translationY.getAsDouble(), 3); // Smooth controll out
       // Make the robot move
-      driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(xInput, yInput,
+      driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(smoothedInput.getX(), smoothedInput.getY(),
                                                                       headingX.getAsDouble(),
                                                                       headingY.getAsDouble(),
                                                                       swerveDrive.getOdometryHeading().getRadians(),
@@ -325,10 +325,12 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier angularRotationX)
   {
+    Translation2d smoothedInput = SwerveMath.smoothJoystickInput(new Translation2d(translationX.getAsDouble(), translationY.getAsDouble()));
+
     return run(() -> {
       // Make the robot move
-      swerveDrive.drive(new Translation2d(Math.pow(translationX.getAsDouble(), 3) * swerveDrive.getMaximumVelocity(),
-                                          Math.pow(translationY.getAsDouble(), 3) * swerveDrive.getMaximumVelocity()),
+      swerveDrive.drive(new Translation2d(smoothedInput.getX() * swerveDrive.getMaximumVelocity(),
+                                          smoothedInput.getY() * swerveDrive.getMaximumVelocity()),
                         Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumAngularVelocity(),
                         true,
                         false);

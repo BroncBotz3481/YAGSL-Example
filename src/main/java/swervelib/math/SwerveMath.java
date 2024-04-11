@@ -410,4 +410,16 @@ public class SwerveMath
       moduleState.angle = lastModuleState.angle;
     }
   }
+
+  /**
+   * Smooth joystick axes via cubing their combined magnitude.
+   * @param rawJoystickInput  {@link Translation2d} representing the raw joystick input as a translation from 0,0
+   * @return @link Translation2d} representing the smoothed joystick inputs.
+   */
+  public static Translation2d smoothJoystickInput(Translation2d rawJoystickInput) {
+    double smoothedMagnitude = Math.pow(rawJoystickInput.getNorm(), 3);
+
+    Rotation2d theta = rawJoystickInput.getAngle();
+    return new Translation2d(smoothedMagnitude * theta.getCos(), smoothedMagnitude*theta.getSin());
+  }
 }

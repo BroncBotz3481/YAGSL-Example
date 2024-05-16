@@ -4,7 +4,9 @@ import static swervelib.telemetry.SwerveDriveTelemetry.canIdWarning;
 import static swervelib.telemetry.SwerveDriveTelemetry.i2cLockupWarning;
 import static swervelib.telemetry.SwerveDriveTelemetry.serialCommsIssueWarning;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.revrobotics.SparkRelativeEncoder.Type;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SPI;
@@ -188,7 +190,9 @@ public class DeviceJson
       case "talonfx":
         return new TalonFXSwerve(id, canbus != null ? canbus : "", isDriveMotor);
       case "talonsrx":
-        return new TalonSRXSwerve(id, isDriveMotor);
+        return new TalonSRXSwerve(id, isDriveMotor, FeedbackDevice.QuadEncoder);
+      case "talonsrx_pwm":
+        return new TalonSRXSwerve(id, isDriveMotor, FeedbackDevice.PulseWidthEncodedPosition);
       default:
         throw new RuntimeException(type + " is not a recognized motor type.");
     }

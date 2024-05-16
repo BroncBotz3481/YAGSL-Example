@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import edu.wpi.first.wpilibj.Timer;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.math.SwerveMath;
@@ -53,12 +54,13 @@ public class TalonSRXSwerve extends SwerveMotor
    *
    * @param motor        Motor to use.
    * @param isDriveMotor Whether this motor is a drive motor.
+   * @param feedbackDevice Feedback sensor to use.
    */
-  public TalonSRXSwerve(WPI_TalonSRX motor, boolean isDriveMotor)
+  public TalonSRXSwerve(WPI_TalonSRX motor, boolean isDriveMotor, FeedbackDevice feedbackDevice)
   {
     this.isDriveMotor = isDriveMotor;
     this.motor = motor;
-    motor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
+    motor.configSelectedFeedbackSensor(feedbackDevice);
 
     factoryDefaults();
     clearStickyFaults();
@@ -70,10 +72,11 @@ public class TalonSRXSwerve extends SwerveMotor
    *
    * @param id           ID of the TalonSRX on the canbus.
    * @param isDriveMotor Whether the motor is a drive or steering motor.
+   * @param feedbackDevice Feedback sensor to use.
    */
-  public TalonSRXSwerve(int id, boolean isDriveMotor)
+  public TalonSRXSwerve(int id, boolean isDriveMotor, FeedbackDevice feedbackDevice)
   {
-    this(new WPI_TalonSRX(id), isDriveMotor);
+    this(new WPI_TalonSRX(id), isDriveMotor, feedbackDevice);
   }
 
   /**

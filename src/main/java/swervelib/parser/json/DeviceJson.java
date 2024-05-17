@@ -93,6 +93,8 @@ public class DeviceJson
         return new CANCoderSwerve(id, canbus != null ? canbus : "");
       case "talonsrx_pwm":
         return new TalonSRXEncoderSwerve(motor, FeedbackDevice.PulseWidthEncodedPosition);
+      case "talonsrx_analog": 
+        return new TalonSRXEncoderSwerve(motor, FeedbackDevice.Analog);
       default:
         throw new RuntimeException(type + " is not a recognized absolute encoder type.");
     }

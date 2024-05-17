@@ -10,7 +10,7 @@ import swervelib.motors.SwerveMotor;
  */
 public class TalonSRXEncoderSwerve extends SwerveAbsoluteEncoder {
 
-    private final double sensorUnitsPerDegree;
+    private final double degreesPerSensorUnit;
     private final WPI_TalonSRX talon;
 
     public TalonSRXEncoderSwerve(SwerveMotor motor, FeedbackDevice feedbackDevice) {
@@ -18,9 +18,9 @@ public class TalonSRXEncoderSwerve extends SwerveAbsoluteEncoder {
             this.talon = talon;
             talon.configSelectedFeedbackSensor(feedbackDevice);
             // https://v5.docs.ctr-electronics.com/en/stable/ch14_MCSensor.html#sensor-resolution
-            sensorUnitsPerDegree = switch (feedbackDevice) {
-                case Analog -> 1024.0 / 360.0;
-                default -> 4096.0 / 360.0;
+            degreesPerSensorUnit = switch (feedbackDevice) {
+                case Analog -> 360.0 / 1024.0;
+                default -> 360.0 / 4096.0;
             };
         } 
         else {
@@ -45,7 +45,7 @@ public class TalonSRXEncoderSwerve extends SwerveAbsoluteEncoder {
 
     @Override
     public double getAbsolutePosition() {
-        return talon.getSelectedSensorPosition() * sensorUnitsPerDegree;
+        return talon.getSelectedSensorPosition() * degreesPerSensorUnit;
     }
 
     @Override
@@ -55,13 +55,13 @@ public class TalonSRXEncoderSwerve extends SwerveAbsoluteEncoder {
 
     @Override
     public boolean setAbsoluteEncoderOffset(double offset) {
-        talon.setSelectedSensorPosition(talon.getSelectedSensorPosition() + offset / sensorUnitsPerDegree);
+        talon.setSelectedSensorPosition(talon.getSelectedSensorPosition() + offset / degreesPerSensorUnit);
         return true;
     }
 
     @Override
     public double getVelocity() {
-        return talon.getSelectedSensorVelocity() * 10 * sensorUnitsPerDegree;
+        return talon.getSelectedSensorVelocity() * 10 * degreesPerSensorUnit;
     }
     
 }

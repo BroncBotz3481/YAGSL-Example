@@ -31,7 +31,7 @@ public class TalonSRXSwerve extends SwerveMotor
   /**
    * Whether the absolute encoder is integrated.
    */
-  private final boolean               absoluteEncoder        = false;
+  private boolean absoluteEncoder = false;
   /**
    * TalonSRX motor controller.
    */
@@ -61,6 +61,9 @@ public class TalonSRXSwerve extends SwerveMotor
     this.isDriveMotor = isDriveMotor;
     this.motor = motor;
     motor.configSelectedFeedbackSensor(feedbackDevice);
+    if (feedbackDevice == FeedbackDevice.PulseWidthEncodedPosition || feedbackDevice == FeedbackDevice.Analog) {
+      absoluteEncoder = true;
+    }
 
     factoryDefaults();
     clearStickyFaults();

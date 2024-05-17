@@ -6,13 +6,18 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import swervelib.motors.SwerveMotor;
 
 /**
- * Talon SRX integrated encoder
+ * Talon SRX attached absolute encoder.
  */
 public class TalonSRXEncoderSwerve extends SwerveAbsoluteEncoder {
 
     private final double degreesPerSensorUnit;
     private final WPI_TalonSRX talon;
 
+    /**
+     * Creates a {@link TalonSRXEncoderSwerve}.
+     * @param motor motor to poll the sensor from.
+     * @param feedbackDevice the feedback device the sensor uses e.g. PWM or Analog.
+     */
     public TalonSRXEncoderSwerve(SwerveMotor motor, FeedbackDevice feedbackDevice) {
         if (motor.getMotor() instanceof WPI_TalonSRX talon) {
             this.talon = talon;

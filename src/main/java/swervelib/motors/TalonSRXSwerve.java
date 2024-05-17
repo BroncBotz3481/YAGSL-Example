@@ -31,7 +31,7 @@ public class TalonSRXSwerve extends SwerveMotor
   /**
    * Whether the absolute encoder is integrated.
    */
-  private final boolean absoluteEncoder                      = false;
+  private final boolean               absoluteEncoder        = false;
   /**
    * TalonSRX motor controller.
    */
@@ -54,15 +54,16 @@ public class TalonSRXSwerve extends SwerveMotor
    *
    * @param motor        Motor to use.
    * @param isDriveMotor Whether this motor is a drive motor.
-   * @param feedbackDevice Feedback sensor to use.
    */
   public TalonSRXSwerve(WPI_TalonSRX motor, boolean isDriveMotor)
   {
     this.isDriveMotor = isDriveMotor;
     this.motor = motor;
     motor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
+
     factoryDefaults();
     clearStickyFaults();
+
   }
 
   /**
@@ -70,7 +71,6 @@ public class TalonSRXSwerve extends SwerveMotor
    *
    * @param id           ID of the TalonSRX on the canbus.
    * @param isDriveMotor Whether the motor is a drive or steering motor.
-   * @param feedbackDevice Feedback sensor to use.
    */
   public TalonSRXSwerve(int id, boolean isDriveMotor)
   {

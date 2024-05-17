@@ -10,13 +10,18 @@ import swervelib.motors.SwerveMotor;
  */
 public class TalonSRXEncoderSwerve extends SwerveAbsoluteEncoder {
 
-    private final double sensorUnitsPerDegree = 4096.0 / 360.0;
+    private final double sensorUnitsPerDegree;
     private final WPI_TalonSRX talon;
 
     public TalonSRXEncoderSwerve(SwerveMotor motor, FeedbackDevice feedbackDevice) {
         if (motor.getMotor() instanceof WPI_TalonSRX talon) {
             this.talon = talon;
             talon.configSelectedFeedbackSensor(feedbackDevice);
+            // https://v5.docs.ctr-electronics.com/en/stable/ch14_MCSensor.html#sensor-resolution
+            sensorUnitsPerDegree = switch (feedbackDevice) {
+                case Analog -> 1024.0 / 360.0;
+                default -> 4096.0 / 360.0;
+            };
         } 
         else {
             throw new RuntimeException("Motor given to instantiate TalonSRXEncoder is not a WPI_TalonSRX");

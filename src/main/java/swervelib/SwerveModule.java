@@ -171,11 +171,6 @@ public class SwerveModule
     {
       angleMotor.setPosition(getAbsolutePosition());
     }
-    else {
-      if (angleMotor.isAttachedAbsoluteEncoder()) {
-        angleMotor.setPosition(angleOffset);
-      }
-    }
 
     // Config drive motor/controller
     driveMotor.configureIntegratedEncoder(moduleConfiguration.conversionFactors.drive);

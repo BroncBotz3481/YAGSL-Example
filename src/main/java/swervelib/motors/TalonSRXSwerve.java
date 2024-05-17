@@ -31,7 +31,7 @@ public class TalonSRXSwerve extends SwerveMotor
   /**
    * Whether the absolute encoder is integrated.
    */
-  private boolean absoluteEncoder = false;
+  private final boolean absoluteEncoder                      = false;
   /**
    * TalonSRX motor controller.
    */
@@ -56,18 +56,13 @@ public class TalonSRXSwerve extends SwerveMotor
    * @param isDriveMotor Whether this motor is a drive motor.
    * @param feedbackDevice Feedback sensor to use.
    */
-  public TalonSRXSwerve(WPI_TalonSRX motor, boolean isDriveMotor, FeedbackDevice feedbackDevice)
+  public TalonSRXSwerve(WPI_TalonSRX motor, boolean isDriveMotor)
   {
     this.isDriveMotor = isDriveMotor;
     this.motor = motor;
-    motor.configSelectedFeedbackSensor(feedbackDevice);
-    if (feedbackDevice == FeedbackDevice.PulseWidthEncodedPosition || feedbackDevice == FeedbackDevice.Analog) {
-      absoluteEncoder = true;
-    }
-
+    motor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     factoryDefaults();
     clearStickyFaults();
-
   }
 
   /**
@@ -77,9 +72,9 @@ public class TalonSRXSwerve extends SwerveMotor
    * @param isDriveMotor Whether the motor is a drive or steering motor.
    * @param feedbackDevice Feedback sensor to use.
    */
-  public TalonSRXSwerve(int id, boolean isDriveMotor, FeedbackDevice feedbackDevice)
+  public TalonSRXSwerve(int id, boolean isDriveMotor)
   {
-    this(new WPI_TalonSRX(id), isDriveMotor, feedbackDevice);
+    this(new WPI_TalonSRX(id), isDriveMotor);
   }
 
   /**
@@ -383,7 +378,7 @@ public class TalonSRXSwerve extends SwerveMotor
   @Override
   public void setPosition(double position)
   {
-    if (!SwerveDriveTelemetry.isSimulation)
+    if (!absoluteEncoder && !SwerveDriveTelemetry.isSimulation)
     {
       motor.setSelectedSensorPosition(position / positionConversionFactor, 0, 0);
     }

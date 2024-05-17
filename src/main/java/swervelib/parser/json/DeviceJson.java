@@ -18,6 +18,7 @@ import swervelib.encoders.PWMDutyCycleEncoderSwerve;
 import swervelib.encoders.SparkMaxAnalogEncoderSwerve;
 import swervelib.encoders.SparkMaxEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
+import swervelib.encoders.TalonSRXEncoderSwerve;
 import swervelib.imu.ADIS16448Swerve;
 import swervelib.imu.ADIS16470Swerve;
 import swervelib.imu.ADXRS450Swerve;
@@ -90,6 +91,8 @@ public class DeviceJson
         return new AnalogAbsoluteEncoderSwerve(id);
       case "cancoder":
         return new CANCoderSwerve(id, canbus != null ? canbus : "");
+      case "talonsrx_pwm":
+        return new TalonSRXEncoderSwerve(motor, FeedbackDevice.PulseWidthEncodedPosition);
       default:
         throw new RuntimeException(type + " is not a recognized absolute encoder type.");
     }
@@ -190,9 +193,7 @@ public class DeviceJson
       case "talonfx":
         return new TalonFXSwerve(id, canbus != null ? canbus : "", isDriveMotor);
       case "talonsrx":
-        return new TalonSRXSwerve(id, isDriveMotor, FeedbackDevice.QuadEncoder);
-      case "talonsrx_pwm":
-        return new TalonSRXSwerve(id, isDriveMotor, FeedbackDevice.PulseWidthEncodedPosition);
+        return new TalonSRXSwerve(id, isDriveMotor);
       default:
         throw new RuntimeException(type + " is not a recognized motor type.");
     }

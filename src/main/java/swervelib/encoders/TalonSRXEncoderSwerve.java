@@ -10,7 +10,13 @@ import swervelib.motors.SwerveMotor;
  */
 public class TalonSRXEncoderSwerve extends SwerveAbsoluteEncoder {
 
+    /**
+     * Multiplying by this converts native Talon SRX units into degrees.
+     */
     private final double degreesPerSensorUnit;
+    /**
+     * Reference to a Talon SRX for polling its attached absolute encoder.
+     */
     private final WPI_TalonSRX talon;
 
     /**

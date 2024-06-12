@@ -36,7 +36,6 @@ import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
 import swervelib.math.SwerveMath;
-import swervelib.math.Vector2d;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
@@ -49,7 +48,7 @@ public class SwerveSubsystem extends SubsystemBase
   /**
    * Swerve drive object.
    */
-  private final SwerveDrive swerveDrive;
+  private final SwerveDrive         swerveDrive;
   /**
    * AprilTag field layout.
    */
@@ -252,8 +251,9 @@ public class SwerveSubsystem extends SubsystemBase
   {
     // swerveDrive.setHeadingCorrection(true); // Normally you would want heading correction for this kind of control.
     return run(() -> {
-      Translation2d scaledInputs = new Vector2d(translationX.getAsDouble(), translationY.getAsDouble()).pow(3)
-                                                                                                       .getTranslation();
+
+      Translation2d scaledInputs = SwerveMath.cubeTranslation(new Translation2d(translationX.getAsDouble(),
+                                                                                translationY.getAsDouble()));
 
       // Make the robot move
       driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(scaledInputs.getX(), scaledInputs.getY(),
@@ -325,9 +325,9 @@ public class SwerveSubsystem extends SubsystemBase
   {
     return run(() -> {
       // Make the robot move
-      swerveDrive.drive(new Vector2d(new Translation2d(translationX.getAsDouble() * swerveDrive.getMaximumVelocity(),
-                                                       translationY.getAsDouble() *
-                                                       swerveDrive.getMaximumVelocity())).pow(3).getTranslation(),
+      swerveDrive.drive(SwerveMath.cubeTranslation(new Translation2d(
+                            translationX.getAsDouble() * swerveDrive.getMaximumVelocity(),
+                            translationY.getAsDouble() * swerveDrive.getMaximumVelocity())),
                         Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumAngularVelocity(),
                         true,
                         false);
@@ -508,7 +508,7 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, double headingX, double headingY)
   {
-    Translation2d scaledInputs = new Vector2d(xInput, yInput).pow(3).getTranslation();
+    Translation2d scaledInputs = SwerveMath.cubeTranslation(new Translation2d(xInput, yInput));
     return swerveDrive.swerveController.getTargetSpeeds(scaledInputs.getX(),
                                                         scaledInputs.getY(),
                                                         headingX,
@@ -528,7 +528,7 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, Rotation2d angle)
   {
-    Translation2d scaledInputs = new Vector2d(xInput, yInput).pow(3).getTranslation();
+    Translation2d scaledInputs = SwerveMath.cubeTranslation(new Translation2d(xInput, yInput));
 
     return swerveDrive.swerveController.getTargetSpeeds(scaledInputs.getX(),
                                                         scaledInputs.getY(),

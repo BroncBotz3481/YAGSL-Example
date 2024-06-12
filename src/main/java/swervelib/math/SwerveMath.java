@@ -412,14 +412,13 @@ public class SwerveMath
   }
 
   /**
-   * Get the scaled {@link Translation2d} with the given scalar to change the magnitude of the {@link Vector2d}.
+   * Cube the {@link Translation2d} magnitude given in Polar coordinates.
    *
-   * @param cartesian {@link Translation2d} cartesian coordinates.
-   * @param scalar    Scalar to change the polar radius of the {@link Vector2d} by.
-   * @return {@link Translation2d} scaled by the given input.
+   * @param translation {@link Translation2d} to manipulate.
+   * @return Cubed magnitude from {@link Translation2d}.
    */
-  public static Translation2d scaleTranslation2d(Translation2d cartesian, double scalar)
+  public static Translation2d cubeTranslation(Translation2d translation)
   {
-    return new Vector2d(cartesian).scale(scalar).getTranslation();
+    return new Translation2d(Math.pow(translation.getNorm(), 3), translation.getAngle());
   }
 }

@@ -206,12 +206,12 @@ public class SwerveModule
                                      moduleNumber,
                                      Alert.AlertType.WARNING);
 
-    rawAbsoluteAngleName = "Module[" + configuration.name + "] Raw Absolute Encoder";
-    adjAbsoluteAngleName = "Module[" + configuration.name + "] Adjusted Absolute Encoder";
-    absoluteEncoderIssueName = "Module[" + configuration.name + "] Absolute Encoder Read Issue";
-    rawAngleName = "Module[" + configuration.name + "] Raw Angle Encoder";
-    rawDriveName = "Module[" + configuration.name + "] Raw Drive Encoder";
-    rawDriveVelName = "Module[" + configuration.name + "] Raw Drive Velocity";
+    rawAbsoluteAngleName = "swerve/modules/" + configuration.name + "/Raw Absolute Encoder";
+    adjAbsoluteAngleName = "swerve/modules/" + configuration.name + "/Adjusted Absolute Encoder";
+    absoluteEncoderIssueName = "swerve/modules/" + configuration.name + "/Absolute Encoder Read Issue";
+    rawAngleName = "swerve/modules/" + configuration.name + "/Raw Angle Encoder";
+    rawDriveName = "swerve/modules/" + configuration.name + "/Raw Drive Encoder";
+    rawDriveVelName = "swerve/modules/" + configuration.name + "/Raw Drive Velocity";
   }
 
   /**
@@ -379,8 +379,8 @@ public class SwerveModule
 
     if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)
     {
-      SmartDashboard.putNumber("Module[" + configuration.name + "] Speed Setpoint", desiredState.speedMetersPerSecond);
-      SmartDashboard.putNumber("Module[" + configuration.name + "] Angle Setpoint", desiredState.angle.getDegrees());
+      SmartDashboard.putNumber("swerve/modules/" + configuration.name + "/Speed Setpoint", desiredState.speedMetersPerSecond);
+      SmartDashboard.putNumber("swerve/modules/" + configuration.name + "/Angle Setpoint", desiredState.angle.getDegrees());
     }
   }
 

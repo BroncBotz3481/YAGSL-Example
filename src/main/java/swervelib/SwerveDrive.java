@@ -1175,8 +1175,8 @@ public class SwerveDrive
   /**
    * Sets the Chassis discretization seconds as well as enableing/disabling the Chassis velocity correction
    * 
-   * @param enable
-   * @param dtSeconds
+   * @param enable Enable chassis velocity correction, which will use {@link ChassisSpeeds#discretize(ChassisSpeeds, double)} with the following.
+   * @param dtSeconds The duration of the timestep the speeds should be applied for.
    */
   public void setChassisDiscretization(boolean enable, double dtSeconds){
     chassisVelocityCorrection = enable;

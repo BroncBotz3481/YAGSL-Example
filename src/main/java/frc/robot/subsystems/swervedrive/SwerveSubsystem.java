@@ -36,6 +36,7 @@ import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
 import swervelib.math.SwerveMath;
+import swervelib.math.Vector2d;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
@@ -49,6 +50,10 @@ public class SwerveSubsystem extends SubsystemBase
    * Swerve drive object.
    */
   private final SwerveDrive swerveDrive;
+  /**
+   * AprilTag field layout.
+   */
+  private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -130,11 +135,6 @@ public class SwerveSubsystem extends SubsystemBase
         this // Reference to this subsystem to set requirements
                                   );
   }
-
-  /**
-   * AprilTag field layout.
-   */
-  private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
   /**
    * Get the distance to the speaker.
@@ -252,10 +252,11 @@ public class SwerveSubsystem extends SubsystemBase
   {
     // swerveDrive.setHeadingCorrection(true); // Normally you would want heading correction for this kind of control.
     return run(() -> {
-      double xInput = Math.pow(translationX.getAsDouble(), 3); // Smooth controll out
-      double yInput = Math.pow(translationY.getAsDouble(), 3); // Smooth controll out
+      Translation2d scaledInputs = new Vector2d(translationX.getAsDouble(), translationY.getAsDouble()).pow(3)
+                                                                                                       .getTranslation();
+
       // Make the robot move
-      driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(xInput, yInput,
+      driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(scaledInputs.getX(), scaledInputs.getY(),
                                                                       headingX.getAsDouble(),
                                                                       headingY.getAsDouble(),
                                                                       swerveDrive.getOdometryHeading().getRadians(),
@@ -324,8 +325,9 @@ public class SwerveSubsystem extends SubsystemBase
   {
     return run(() -> {
       // Make the robot move
-      swerveDrive.drive(new Translation2d(Math.pow(translationX.getAsDouble(), 3) * swerveDrive.getMaximumVelocity(),
-                                          Math.pow(translationY.getAsDouble(), 3) * swerveDrive.getMaximumVelocity()),
+      swerveDrive.drive(new Vector2d(new Translation2d(translationX.getAsDouble() * swerveDrive.getMaximumVelocity(),
+                                                       translationY.getAsDouble() *
+                                                       swerveDrive.getMaximumVelocity())).pow(3).getTranslation(),
                         Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumAngularVelocity(),
                         true,
                         false);
@@ -506,10 +508,9 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, double headingX, double headingY)
   {
-    xInput = Math.pow(xInput, 3);
-    yInput = Math.pow(yInput, 3);
-    return swerveDrive.swerveController.getTargetSpeeds(xInput,
-                                                        yInput,
+    Translation2d scaledInputs = new Vector2d(xInput, yInput).pow(3).getTranslation();
+    return swerveDrive.swerveController.getTargetSpeeds(scaledInputs.getX(),
+                                                        scaledInputs.getY(),
                                                         headingX,
                                                         headingY,
                                                         getHeading().getRadians(),
@@ -527,10 +528,10 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, Rotation2d angle)
   {
-    xInput = Math.pow(xInput, 3);
-    yInput = Math.pow(yInput, 3);
-    return swerveDrive.swerveController.getTargetSpeeds(xInput,
-                                                        yInput,
+    Translation2d scaledInputs = new Vector2d(xInput, yInput).pow(3).getTranslation();
+
+    return swerveDrive.swerveController.getTargetSpeeds(scaledInputs.getX(),
+                                                        scaledInputs.getY(),
                                                         angle.getRadians(),
                                                         getHeading().getRadians(),
                                                         Constants.MAX_SPEED);

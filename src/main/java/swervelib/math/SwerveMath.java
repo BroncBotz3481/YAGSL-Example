@@ -410,4 +410,16 @@ public class SwerveMath
       moduleState.angle = lastModuleState.angle;
     }
   }
+
+  /**
+   * Get the scaled {@link Translation2d} with the given scalar to change the magnitude of the {@link Vector2d}.
+   *
+   * @param cartesian {@link Translation2d} cartesian coordinates.
+   * @param scalar    Scalar to change the polar radius of the {@link Vector2d} by.
+   * @return {@link Translation2d} scaled by the given input.
+   */
+  public static Translation2d scaleTranslation2d(Translation2d cartesian, double scalar)
+  {
+    return new Vector2d(cartesian).scale(scalar).getTranslation();
+  }
 }

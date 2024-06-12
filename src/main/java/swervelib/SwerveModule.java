@@ -83,13 +83,13 @@ public class SwerveModule
    */
   public        int                    moduleNumber;
   /**
-   * Feedforward for the drive motor during closed loop control.
-   */
-  private       SimpleMotorFeedforward driveMotorFeedforward;
-  /**
    * Maximum speed of the drive motors in meters per second.
    */
   public        double                 maxSpeed;
+  /**
+   * Feedforward for the drive motor during closed loop control.
+   */
+  private       SimpleMotorFeedforward driveMotorFeedforward;
   /**
    * Anti-Jitter AKA auto-centering disabled.
    */
@@ -275,6 +275,16 @@ public class SwerveModule
   }
 
   /**
+   * Get the current drive motor PIDF values.
+   *
+   * @return {@link PIDFConfig} of the drive motor.
+   */
+  public PIDFConfig getDrivePIDF()
+  {
+    return configuration.velocityPIDF;
+  }
+
+  /**
    * Set the drive PIDF values.
    *
    * @param config {@link PIDFConfig} of that should be set.
@@ -286,13 +296,13 @@ public class SwerveModule
   }
 
   /**
-   * Get the current drive motor PIDF values.
+   * Get the current angle/azimuth/steering motor PIDF values.
    *
-   * @return {@link PIDFConfig} of the drive motor.
+   * @return {@link PIDFConfig} of the angle motor.
    */
-  public PIDFConfig getDrivePIDF()
+  public PIDFConfig getAnglePIDF()
   {
-    return configuration.velocityPIDF;
+    return configuration.anglePIDF;
   }
 
   /**
@@ -304,16 +314,6 @@ public class SwerveModule
   {
     configuration.anglePIDF = config;
     angleMotor.configurePIDF(config);
-  }
-
-  /**
-   * Get the current angle/azimuth/steering motor PIDF values.
-   *
-   * @return {@link PIDFConfig} of the angle motor.
-   */
-  public PIDFConfig getAnglePIDF()
-  {
-    return configuration.anglePIDF;
   }
 
   /**
@@ -638,7 +638,8 @@ public class SwerveModule
     }
     SmartDashboard.putNumber(rawAngleName, angleMotor.getPosition());
     SmartDashboard.putNumber(rawDriveName, driveMotor.getPosition());
-    SmartDashboard.putNumber(rawDriveVelName, driveMotor.getVelocity()); SmartDashboard.putNumber(adjAbsoluteAngleName, getAbsolutePosition());
+    SmartDashboard.putNumber(rawDriveVelName, driveMotor.getVelocity());
+    SmartDashboard.putNumber(adjAbsoluteAngleName, getAbsolutePosition());
     SmartDashboard.putNumber(absoluteEncoderIssueName, getAbsoluteEncoderReadIssue() ? 1 : 0);
   }
 }

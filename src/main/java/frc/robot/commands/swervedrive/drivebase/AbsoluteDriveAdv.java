@@ -103,7 +103,7 @@ public class AbsoluteDriveAdv extends Command
     // Prevent Movement After Auto
     if (resetHeading)
     {
-      if (headingX == 0 && headingY == 0 && Math.abs(headingAdjust.getAsDouble()) > 0)
+      if (headingX == 0 && headingY == 0 && Math.abs(headingAdjust.getAsDouble()) == 0)
       {
         // Get the curret Heading
         Rotation2d currentHeading = swerve.getHeading();

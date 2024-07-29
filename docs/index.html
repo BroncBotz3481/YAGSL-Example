@@ -120,50 +120,40 @@
                      placeholder="20" type="number" value="20">
               <label class="form-label" for="currentLimit_angle-input">Current Limit Angle</label>
             </div>
-            <hr/>
-            <div class="alert alert-secondary" role="alert">
-              The formula for the conversion factors is described in depth <a
-                href="https://yagsl.gitbook.io/yagsl/fundamentals/swerve-modules#conversion-factor">here</a>.
-              <br/>
-              IF you are using an absolute encoder attached to your SparkMAX this should be <code>360</code>
-              for the angle motor conversion factor.
-              You can also generate these by using <br/>
-              <code>SwerveMath.calculateMetersPerRotation</code>
-              <br/>
-              As in this example bellow. <br/>
-              <pre><code>
-// Angle conversion factor is 360 / (GEAR RATIO * ENCODER RESOLUTION)
-//  In this case the gear ratio is 12.8 motor revolutions per wheel rotation.
-//  The encoder resolution per motor revolution is 1 per motor revolution.
-double <var>angleConversionFactor</var> = SwerveMath.calculateDegreesPerSteeringRotation(<var>12.8</var>, <var>1</var>);
-
-// Motor conversion factor is (PI * WHEEL DIAMETER IN METERS) / (GEAR RATIO * ENCODER RESOLUTION).
-//  In this case the wheel diameter is 4 inches, which must be converted to meters to get meters/second.
-//  The gear ratio is 6.75 motor revolutions per wheel rotation.
-//  The encoder resolution per motor revolution is 1 per motor revolution.
-double <var>driveConversionFactor</var> = SwerveMath.calculateMetersPerRotation(<var>Units.inchesToMeters(4)</var>, <var>6.75</var>, <var>1</var>);
-
-// If you did not want to specify conversion factors in these JSON files you can place them as parameters for <var>createSwerveDrive</var>. <br/>
-SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed, angleConversionFactor, driveConversionFactor);
-                </code></pre>
-              These conversion factor is applied to the PID on the motor controller.
-            </div>
-            <hr/>
             <div class="form-floating mb-3">
 
               <input class="form-control" id="swervedriveconversion_angle-input"
-                     name="conversionFactor_angle" placeholder=""
+                     name="conversionFactor_angle_gearRatio" placeholder=""
                      type="number" value="0">
-              <label class="form-label" for="swervedriveconversion_angle-input">Angle Motor
-                Conversion Factor</label>
+              <label class="form-label" for="swervedriveconversion_angle-input">Angle/Steering/Azimuth Gear Ratio</label>
+            </div>
+            <div class="form-floating mb-3">
+
+              <input class="form-control" id="swervedriveconversion_angle_factor-input"
+                     name="conversionFactor_angle_factor" placeholder=""
+                     type="number" value="0">
+              <label class="form-label" for="swervedriveconversion_angle_factor-input">Angle/Steering/Azimuth Conversion Factor (optional)</label>
             </div>
             <div class="form-floating mb-3">
               <input class="form-control" id="swervedriveconversion_drive-input"
-                     name="conversionFactor_drive"
-                     placeholder="(Math.PI * wheelDiameterInMeters) / (driveGearRatio)"
+                     name="conversionFactor_drive_diameter"
+                     placeholder="0in"
                      type="number" value="0">
-              <label class="form-label" for="swervedriveconversion_drive-input">Drive Motor
-                Conversion Factor</label>
+              <label class="form-label" for="swervedriveconversion_drive-input">Wheel Diameter (in)</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input class="form-control" id="swervedriveconversion_drive_gearRatio-input"
+                     name="conversionFactor_drive_gearRatio"
+                     placeholder="0"
+                     type="number" value="0">
+              <label class="form-label" for="swervedriveconversion_drive_gearRatio-input">Drive Gear Ratio</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input class="form-control" id="swervedriveconversion_drive_factor-input"
+                     name="conversionFactor_drive_factor"
+                     placeholder="0"
+                     type="number" value="0">
+              <label class="form-label" for="swervedriveconversion_drive_factor-input">Drive Conversion Factor (optional)</label>
             </div>
             <hr/>
             <div class="form-floating mb-3">

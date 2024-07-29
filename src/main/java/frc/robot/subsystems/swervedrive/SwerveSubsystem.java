@@ -252,8 +252,8 @@ public class SwerveSubsystem extends SubsystemBase
     // swerveDrive.setHeadingCorrection(true); // Normally you would want heading correction for this kind of control.
     return run(() -> {
 
-      Translation2d scaledInputs = SwerveMath.cubeTranslation(new Translation2d(translationX.getAsDouble(),
-                                                                                translationY.getAsDouble()));
+      Translation2d scaledInputs = SwerveMath.scaleTranslation(new Translation2d(translationX.getAsDouble(),
+                                                                                translationY.getAsDouble()), 0.8);
 
       // Make the robot move
       driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(scaledInputs.getX(), scaledInputs.getY(),
@@ -325,9 +325,9 @@ public class SwerveSubsystem extends SubsystemBase
   {
     return run(() -> {
       // Make the robot move
-      swerveDrive.drive(SwerveMath.cubeTranslation(new Translation2d(
+      swerveDrive.drive(SwerveMath.scaleTranslation(new Translation2d(
                             translationX.getAsDouble() * swerveDrive.getMaximumVelocity(),
-                            translationY.getAsDouble() * swerveDrive.getMaximumVelocity())),
+                            translationY.getAsDouble() * swerveDrive.getMaximumVelocity()), 0.8),
                         Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumAngularVelocity(),
                         true,
                         false);

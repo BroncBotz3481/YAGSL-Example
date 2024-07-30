@@ -39,6 +39,10 @@ public class SwerveModule
    */
   public final  Cache<Double>             driveVelocityCache;
   /**
+   * Module number for kinematics, usually 0 to 3. front left -> front right -> back left -> back right.
+   */
+  public final  int                    moduleNumber;
+  /**
    * Swerve Motors.
    */
   private final SwerveMotor               angleMotor, driveMotor;
@@ -78,10 +82,6 @@ public class SwerveModule
    * NT3 Raw drive motor.
    */
   private final String                 rawDriveVelName;
-  /**
-   * Module number for kinematics, usually 0 to 3. front left -> front right -> back left -> back right.
-   */
-  public final  int                    moduleNumber;
   /**
    * Maximum speed of the drive motors in meters per second.
    */

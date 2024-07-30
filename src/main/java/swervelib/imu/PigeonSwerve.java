@@ -119,8 +119,8 @@ public class PigeonSwerve extends SwerveIMU
    * Fetch the rotation rate from the IMU in degrees per second. If rotation rate isn't supported returns empty.
    * @return {@link Double} of the rotation rate as an {@link Optional}.
    */
-  public Optional<Double> getRate() {
-    return Optional.of(imu.getRate());
+  public double getRate() {
+    return imu.getRate();
   }
 
   /**

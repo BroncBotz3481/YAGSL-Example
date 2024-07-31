@@ -12,25 +12,25 @@ public class SwerveDriveConfiguration
 {
 
   /**
+   * Number of modules on the robot.
+   */
+  public final int                                 moduleCount;
+  /**
    * Swerve Module locations.
    */
-  public Translation2d[]                     moduleLocationsMeters;
+  public       Translation2d[]                     moduleLocationsMeters;
   /**
    * Swerve IMU
    */
-  public SwerveIMU                           imu;
-  /**
-   * Number of modules on the robot.
-   */
-  public int                                 moduleCount;
+  public       SwerveIMU                           imu;
   /**
    * Swerve Modules.
    */
-  public SwerveModule[]                      modules;
+  public       SwerveModule[]                      modules;
   /**
    * Physical characteristics of the swerve drive from physicalproperties.json.
    */
-  public SwerveModulePhysicalCharacteristics physicalCharacteristics;
+  public       SwerveModulePhysicalCharacteristics physicalCharacteristics;
 
   /**
    * Create swerve drive configuration.

@@ -1,6 +1,3 @@
-
-
-
 function getFreeSpeedFromMotors() {
   let motor_count = {}
   let modules = ['frontright', 'frontleft', 'backright', 'backleft'];
@@ -52,14 +49,31 @@ function jsonify(name) {
   let formdata = $(`#${name}-form`).serializeArray();
   formdata.forEach((val) => {
     if (val.name.includes('_')) {
-      let struct = val.name.substring(0, val.name.indexOf('_'));
+      let structStart = val.name.indexOf('_')
+      let struct = val.name.substring(0, structStart);
+      let subStruct = null;
       if (data[struct] === undefined) {
         data[struct] = {};
       }
-      data[struct][val.name.substring(val.name.indexOf('_') + 1)] =
-          isNumeric(val.value) ?
-              parseFloat(val.value) :
-              (val.value === "" ? null : val.value);
+      let subStructStart = val.name.indexOf('_', structStart + 1);
+      if (subStructStart !== -1) {
+        subStruct = val.name.substring(structStart + 1, subStructStart)
+        if (data[struct][subStruct] === undefined) {
+          data[struct][subStruct] = {}
+        }
+      }
+      if (subStruct == null) {
+        data[struct][val.name.substring(val.name.lastIndexOf('_') + 1)] =
+            isNumeric(val.value) ?
+                parseFloat(val.value) :
+                (val.value === "" ? null : val.value);
+      } else {
+        data[struct][subStruct][val.name.substring(
+            val.name.lastIndexOf('_') + 1)] =
+            isNumeric(val.value) ?
+                parseFloat(val.value) :
+                (val.value === "" ? null : val.value);
+      }
     } else {
       data[val.name] = isNumeric(val.value) ?
           parseFloat(val.value) :
@@ -103,7 +117,6 @@ function copyText(name) {
   navigator.clipboard.writeText(text);
 }
 
-
 function getText(name) {
   let text = $(`#${name}-json`).text();
   return text;
@@ -123,18 +136,21 @@ const saveAs = (blob, name) => {
 
 function zipDownload() {
   const zip = new JSZip();
-    let swf = zip.folder("swerve")
-      let cp = swf.file("controllerproperties.json", getText("controllerproperties"));
-      let sd = swf.file("swervedrive.json", getText("swervedrive"));
-      let mod = swf.folder("modules")
-        let pp = mod.file("physicalproperties.json", getText("physicalproperties"));
-        let fl = mod.file("frontleft.json", getText("frontleft"));
-        let fr = mod.file("frontright.json", getText("frontright"));
-        let bl = mod.file("backleft.json", getText("backleft"));
-        let br = mod.file("backright.json", getText("backright"));
-        let pidf = mod.file("pidfproperties.json", getText("pidfproperties"));
+  let swf = zip.folder("swerve")
+  let cp = swf.file("controllerproperties.json",
+      getText("controllerproperties"));
+  let sd = swf.file("swervedrive.json", getText("swervedrive"));
+  let mod = swf.folder("modules")
+  let pp = mod.file("physicalproperties.json", getText("physicalproperties"));
+  let fl = mod.file("frontleft.json", getText("frontleft"));
+  let fr = mod.file("frontright.json", getText("frontright"));
+  let bl = mod.file("backleft.json", getText("backleft"));
+  let br = mod.file("backright.json", getText("backright"));
+  let pidf = mod.file("pidfproperties.json", getText("pidfproperties"));
 
-  zip.generateAsync({type:"blob"}).then(function (blob) {saveAs(blob, "YAGSL Config.zip")});
+  zip.generateAsync({type: "blob"}).then(function (blob) {
+    saveAs(blob, "YAGSL Config.zip")
+  });
   console.log("Downloaded YAGSL Config zip");
 }
 

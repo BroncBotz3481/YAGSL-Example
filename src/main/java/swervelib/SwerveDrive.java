@@ -1069,7 +1069,7 @@ public class SwerveDrive
    * after the autonomous period, or to change trust as distance to a vision target increases.
    *
    * @param visionMeasurementStdDevs Standard deviations of the vision measurements. Increase these numbers to trust
-   *                                 global measurements from vision less. This matrix is in the form [x, y, theta]ᵀ,
+   *                                 global measurements from vision less. This matrix is in the form [x, y, theta],
    *                                 with units in meters and radians.
    */
   public void setVisionMeasurementStdDevs(Matrix<N3, N1> visionMeasurementStdDevs)

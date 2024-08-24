@@ -1,5 +1,7 @@
 package swervelib;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.MotorFeedbackSensor;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -591,13 +593,23 @@ public class SwerveModule
   {
     if (absoluteEncoder != null && angleOffset == configuration.angleOffset)
     {
-      if (absoluteEncoder.setAbsoluteEncoderOffset(angleOffset))
+      // If the absolute encoder is attached.
+      if (angleMotor.getMotor() instanceof CANSparkMax)
       {
-        angleOffset = 0;
-      } else
-      {
-        encoderOffsetWarning.set(true);
+        if (absoluteEncoder.getAbsoluteEncoder() instanceof MotorFeedbackSensor)
+        {
+          angleMotor.setAbsoluteEncoder(absoluteEncoder);
+          if (absoluteEncoder.setAbsoluteEncoderOffset(angleOffset))
+          {
+            angleOffset = 0;
+          } else
+          {
+            angleMotor.setAbsoluteEncoder(null);
+            encoderOffsetWarning.set(true);
+          }
+        }
       }
+
     } else
     {
       noEncoderWarning.set(true);

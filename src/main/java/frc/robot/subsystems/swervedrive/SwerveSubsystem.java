@@ -124,6 +124,17 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   /**
+   * Get the pose while updating with vision readings.
+   *
+   * @return The robots pose with the vision estimates in place.
+   */
+  public Pose2d getVisionPose()
+  {
+    vision.updatePoseEstimation(swerveDrive);
+    return swerveDrive.getPose();
+  }
+
+  /**
    * Setup AutoBuilder for PathPlanner.
    */
   public void setupPathPlanner()
@@ -436,17 +447,6 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public Pose2d getPose()
   {
-    return swerveDrive.getPose();
-  }
-
-  /**
-   * Get the pose while updating with vision readings.
-   *
-   * @return The robots pose with the vision estimates in place.
-   */
-  public Pose2d getVisionPose()
-  {
-    vision.updatePoseEstimation(swerveDrive);
     return swerveDrive.getPose();
   }
 

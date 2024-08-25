@@ -47,92 +47,125 @@ public class Vision
   private double longDistangePoseEstimationCount = 0;
 
   /**
-   * Left PhotonCamera instance.
+   * Camera Enum to select each camera
    */
-  private PhotonCamera leftCam;
-  /**
-   * Right PhotonCamera instance.
-   */
-  private PhotonCamera rightCam;
-  /**
-   * Center Photon Camera instance
-   */
-  private PhotonCamera centerCam;
+  enum Cameras
+  {
+    /**
+     * Left Camera
+     */
+    LEFT_CAM("left",
+             new Rotation3d(0, Math.toRadians(-24.094), Math.toRadians(30)),
+             new Translation3d(Units.inchesToMeters(12.056),
+                               Units.inchesToMeters(10.981),
+                               Units.inchesToMeters(8.44))),
+    /**
+     * Right Camera
+     */
+    RIGHT_CAM("right",
+              new Rotation3d(0, Math.toRadians(-24.094), Math.toRadians(-30)),
+              new Translation3d(Units.inchesToMeters(12.056),
+                                Units.inchesToMeters(-10.981),
+                                Units.inchesToMeters(8.44))),
+    /**
+     * Center Camera
+     */
+    CENTER_CAM("center",
+               new Rotation3d(0, Units.degreesToRadians(18), 0),
+               new Translation3d(Units.inchesToMeters(-4.628),
+                                 Units.inchesToMeters(-10.687),
+                                 Units.inchesToMeters(16.129)));
+
+    /**
+     * Transform of the camera rotation and translation relative to the center of the robot
+     */
+    private final Transform3d robotToCamTransform;
+
+    /**
+     * Latency alert to use when high latency is detected.
+     */
+    public final Alert latencyAlert;
+
+    /**
+     * Camera instance for comms.
+     */
+    public final PhotonCamera        camera;
+    /**
+     * Simulated camera instance which only exists during simulations.
+     */
+    public       PhotonCameraSim     cameraSim;
+    /**
+     * Pose estimator for camera.
+     */
+    public final PhotonPoseEstimator poseEstimator;
+
+
+    /**
+     * Construct a Photon Camera class with help.
+     *
+     * @param name                  Name of the PhotonVision camera found in the PV UI.
+     * @param robotToCamRotation    {@link Rotation3d} of the camera.
+     * @param robotToCamTranslation {@link Translation3d} relative to the center of the robot.
+     */
+    Cameras(String name, Rotation3d robotToCamRotation, Translation3d robotToCamTranslation)
+    {
+      latencyAlert = new Alert("'" + name + "' Camera is experiencing high latency.", AlertType.WARNING);
+
+      camera = new PhotonCamera(name);
+
+      // https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
+      robotToCamTransform = new Transform3d(robotToCamTranslation, robotToCamRotation);
+
+      poseEstimator = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo),
+                                              PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+                                              robotToCamTransform);
+      poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+
+      if (Robot.isSimulation())
+      {
+        SimCameraProperties cameraProp = new SimCameraProperties();
+        // A 640 x 480 camera with a 100 degree diagonal FOV.
+        cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(100));
+        // Approximate detection noise with average and standard deviation error in pixels.
+        cameraProp.setCalibError(0.25, 0.08);
+        // Set the camera image capture framerate (Note: this is limited by robot loop rate).
+        cameraProp.setFPS(30);
+        // The average and standard deviation in milliseconds of image data latency.
+        cameraProp.setAvgLatencyMs(35);
+        cameraProp.setLatencyStdDevMs(5);
+
+        cameraSim = new PhotonCameraSim(camera, cameraProp);
+        cameraSim.enableDrawWireframe(true);
+      }
+    }
+
+    /**
+     * Add camera to {@link VisionSystemSim} for simulated photon vision.
+     *
+     * @param systemSim {@link VisionSystemSim} to use.
+     */
+    public void addToVisionSim(VisionSystemSim systemSim)
+    {
+      if (Robot.isSimulation())
+      {
+        systemSim.addCamera(cameraSim, robotToCamTransform);
+      }
+    }
+  }
 
   /**
    * April Tag Field Layout of the year.
    */
   private final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
 
-  /**
-   * Left Camera Photon Pose Estimator
-   */
-  private PhotonPoseEstimator leftPoseEstimator;
-  /**
-   * Right Camera Photon Pose Estimator
-   */
-  private PhotonPoseEstimator rightPoseEstimator;
-  /**
-   * Center Camera Photon Pose Estimator
-   */
-  private PhotonPoseEstimator centerPoseEstimator;
-
-  /**
-   * Left camera relative to the center of the robot.
-   */
-  private final Translation3d leftRobotToCamTranslation = new Translation3d(Units.inchesToMeters(12.056),
-                                                                            Units.inchesToMeters(10.981),
-                                                                            Units.inchesToMeters(8.44));
-  /**
-   * Left camera relative to the center of the robot rotationally.
-   */
-  private final Rotation3d    leftRobotToCamRotation    = new Rotation3d(0,
-                                                                         Math.toRadians(-24.094),
-                                                                         Math.toRadians(30));
-
-  /**
-   * Right camera relative to the center of the robot.
-   */
-  private final Translation3d rightRobotToCamTranslation  = new Translation3d(Units.inchesToMeters(12.056),
-                                                                              Units.inchesToMeters(-10.981),
-                                                                              Units.inchesToMeters(8.44));
-  /**
-   * Right camera relative to the center of the robot rotationally.
-   */
-  private final Rotation3d    rightRobotToCamRotation     = new Rotation3d(0,
-                                                                           Math.toRadians(-24.094),
-                                                                           Math.toRadians(-30));
-  /**
-   * Center camera relative to the center of the robot.
-   */
-  private final Translation3d centerRobotToCamTranslation = new Translation3d(Units.inchesToMeters(-4.628),
-                                                                              Units.inchesToMeters(-10.687),
-                                                                              Units.inchesToMeters(16.129));
-  /**
-   * Center camera relative to the center of the robot rotationally.
-   */
-  private final Rotation3d    centerRobotToCamRotation    = new Rotation3d(0, Units.degreesToRadians(18), 0);
 
   /**
    * Photon Vision Simulation
    */
-  private VisionSystemSim     visionSim;
+  private VisionSystemSim visionSim;
   /**
    * Photon Vision camera properties simulation.
    */
-  private SimCameraProperties cameraProp;
-  /**
-   * Left camera for simulation.
-   */
-  private PhotonCameraSim     simLeftCam;
-  /**
-   * Right Camera for simulation.
-   */
-  private PhotonCameraSim     simRightCam;
-  /**
-   * Center camera for simulation
-   */
-  private PhotonCameraSim     simCenterCam;
 
   /**
    * Current pose from the pose estimator using wheel odometry.
@@ -142,15 +175,6 @@ public class Vision
    * Field from {@link swervelib.SwerveDrive#field}
    */
   private Field2d          field2d;
-
-  /**
-   * Left camera latency Alert.
-   */
-  public Alert leftCamLatancyAlert  = new Alert("Left Camera is experiencing high latency", AlertType.WARNING);
-  /**
-   * Right camera latency Alert.
-   */
-  public Alert rightCamLatancyAlert = new Alert("Right Camera is experiencing high latency", AlertType.WARNING);
 
   /**
    * Constructor for the Vision class.
@@ -163,60 +187,15 @@ public class Vision
     this.currentPose = currentPose;
     this.field2d = field;
 
-    leftCam = new PhotonCamera("left");
-    rightCam = new PhotonCamera("right");
-    centerCam = new PhotonCamera("center");
-
-    // https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
-    Transform3d leftRobotToCam   = new Transform3d(leftRobotToCamTranslation, leftRobotToCamRotation);
-    Transform3d rightRobotToCam  = new Transform3d(rightRobotToCamTranslation, rightRobotToCamRotation);
-    Transform3d centerRobotToCam = new Transform3d(centerRobotToCamTranslation, centerRobotToCamRotation);
-
-    leftPoseEstimator = new PhotonPoseEstimator(fieldLayout,
-                                                PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                                                leftCam,
-                                                leftRobotToCam);
-    rightPoseEstimator = new PhotonPoseEstimator(fieldLayout,
-                                                 PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                                                 rightCam,
-                                                 rightRobotToCam);
-    centerPoseEstimator = new PhotonPoseEstimator(fieldLayout,
-                                                  PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                                                  centerCam,
-                                                  centerRobotToCam);
-
-    leftPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-    rightPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-    centerPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-
     if (Robot.isSimulation())
     {
       visionSim = new VisionSystemSim("Vision");
       visionSim.addAprilTags(fieldLayout);
 
-      cameraProp = new SimCameraProperties();
-      // A 640 x 480 camera with a 100 degree diagonal FOV.
-      cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(100));
-      // Approximate detection noise with average and standard deviation error in pixels.
-      cameraProp.setCalibError(0.25, 0.08);
-      // Set the camera image capture framerate (Note: this is limited by robot loop rate).
-      cameraProp.setFPS(30);
-      // The average and standard deviation in milliseconds of image data latency.
-      cameraProp.setAvgLatencyMs(35);
-      cameraProp.setLatencyStdDevMs(5);
-
-      simLeftCam = new PhotonCameraSim(leftCam, cameraProp);
-      simLeftCam.enableDrawWireframe(true);
-
-      simRightCam = new PhotonCameraSim(rightCam, cameraProp);
-      simRightCam.enableDrawWireframe(true);
-
-      simCenterCam = new PhotonCameraSim(centerCam, cameraProp);
-      simCenterCam.enableDrawWireframe(true);
-
-      visionSim.addCamera(simLeftCam, leftRobotToCam);
-      visionSim.addCamera(simRightCam, rightRobotToCam);
-      visionSim.addCamera(simCenterCam, centerRobotToCam);
+      for (Cameras c : Cameras.values())
+      {
+        c.addToVisionSim(visionSim);
+      }
 
       openSimCameraViews();
     }
@@ -234,21 +213,17 @@ public class Vision
    */
   public ArrayList<EstimatedRobotPose> getEstimatedGlobalPose()
   {
-    Optional<EstimatedRobotPose> leftPoseEst  = filterPose(leftPoseEstimator.update());
-    Optional<EstimatedRobotPose> rightPoseEst = filterPose(rightPoseEstimator.update());
-    //Optional<EstimatedRobotPose> centerPoseEst = Optional.empty();
-
     ArrayList<EstimatedRobotPose> poses = new ArrayList<>();
-    if (leftPoseEst.isPresent())
-    {
-      poses.add(leftPoseEst.get());
-      field2d.getObject("Left est pose").setPose(leftPoseEst.get().estimatedPose.toPose2d());
-    }
 
-    if (rightPoseEst.isPresent())
+    for (Cameras c : Cameras.values())
     {
-      poses.add(rightPoseEst.get());
-      field2d.getObject("Right est pose").setPose(rightPoseEst.get().estimatedPose.toPose2d());
+      Optional<EstimatedRobotPose> poseEst = filterPose(c.poseEstimator.update());
+
+      if (poseEst.isPresent())
+      {
+        poses.add(poseEst.get());
+        field2d.getObject(c + " est pose").setPose(poseEst.get().estimatedPose.toPose2d());
+      }
     }
 
     return poses;
@@ -307,35 +282,8 @@ public class Vision
    */
   public PhotonPipelineResult getLatestResult(Cameras camera)
   {
-    PhotonCamera    cam;
-    PhotonCameraSim simCam;
-    switch (camera)
-    {
-      case LEFT_CAM:
-      {
-        cam = leftCam;
-        simCam = simLeftCam;
-        break;
-      }
-      case RIGHT_CAM:
-      {
-        cam = rightCam;
-        simCam = simRightCam;
-        break;
-      }
-      case CENTER_CAM:
-      {
-        cam = centerCam;
-        simCam = simCenterCam;
-        break;
-      }
-      default:
-      {
-        return null;
-      }
-    }
 
-    return Robot.isReal() ? cam.getLatestResult() : simCam.getCamera().getLatestResult();
+    return Robot.isReal() ? camera.camera.getLatestResult() : camera.cameraSim.getCamera().getLatestResult();
   }
 
   /**
@@ -452,17 +400,12 @@ public class Vision
   {
 
     List<PhotonTrackedTarget> targets = new ArrayList<PhotonTrackedTarget>();
-    if (hasTargets(Cameras.LEFT_CAM))
+    for (Cameras c : Cameras.values())
     {
-      targets.addAll(getLatestResult(Cameras.LEFT_CAM).targets);
-    }
-    if (hasTargets(Cameras.RIGHT_CAM))
-    {
-      targets.addAll(getLatestResult(Cameras.RIGHT_CAM).targets);
-    }
-    if (hasTargets(Cameras.CENTER_CAM))
-    {
-      targets.addAll(getLatestResult(Cameras.CENTER_CAM).targets);
+      if (hasTargets(c))
+      {
+        targets.addAll(getLatestResult(c).targets);
+      }
     }
 
     List<Pose2d> poses = new ArrayList<>();
@@ -475,23 +418,5 @@ public class Vision
     field2d.getObject("tracked targets").setPoses(poses);
   }
 
-  /**
-   * Camera Enum to select each camera
-   */
-  enum Cameras
-  {
-    /**
-     * Left Camera
-     */
-    LEFT_CAM,
-    /**
-     * Right Camera
-     */
-    RIGHT_CAM,
-    /**
-     * Center Camera
-     */
-    CENTER_CAM
-  }
 
 }

@@ -1,55 +1,55 @@
 {
-  "fileName": "ReduxLib_2024.json",
-  "name": "ReduxLib",
-  "version": "2024.1.1",
-  "frcYear": 2024,
-  "uuid": "151ecca8-670b-4026-8160-cdd2679ef2bd",
-  "mavenUrls": [
-    "https://maven.reduxrobotics.com/"
-  ],
-  "jsonUrl": "https://frcsdk.reduxrobotics.com/ReduxLib_2024.json",
-  "javaDependencies": [
-    {
-      "groupId": "com.reduxrobotics.frc",
-      "artifactId": "ReduxLib-java",
-      "version": "2024.1.1"
-    }
-  ],
-  "jniDependencies": [
-    {
-      "groupId": "com.reduxrobotics.frc",
-      "artifactId": "ReduxLib-driver",
-      "version": "2024.1.1",
-      "isJar": false,
-      "skipInvalidPlatforms": true,
-      "validPlatforms": [
-        "linuxathena",
-        "linuxx86-64",
-        "linuxarm32",
-        "linuxarm64",
-        "osxuniversal",
-        "windowsx86-64"
-      ]
-    }
-  ],
-  "cppDependencies": [
-    {
-      "groupId": "com.reduxrobotics.frc",
-      "artifactId": "ReduxLib-cpp",
-      "version": "2024.1.1",
-      "libName": "ReduxLib-cpp",
-      "headerClassifier": "headers",
-      "sourcesClassifier": "sources",
-      "sharedLibrary": true,
-      "skipInvalidPlatforms": true,
-      "binaryPlatforms": [
-        "linuxathena",
-        "linuxx86-64",
-        "linuxarm32",
-        "linuxarm64",
-        "osxuniversal",
-        "windowsx86-64"
-      ]
-    }
-  ]
+    "fileName": "ReduxLib_2024.json",
+    "name": "ReduxLib",
+    "version": "2024.2.0",
+    "frcYear": 2024,
+    "uuid": "151ecca8-670b-4026-8160-cdd2679ef2bd",
+    "mavenUrls": [
+        "https://maven.reduxrobotics.com/"
+    ],
+    "jsonUrl": "https://frcsdk.reduxrobotics.com/ReduxLib_2024.json",
+    "javaDependencies": [
+        {
+            "groupId": "com.reduxrobotics.frc",
+            "artifactId": "ReduxLib-java",
+            "version": "2024.2.0"
+        }
+    ],
+    "jniDependencies": [
+        {
+            "groupId": "com.reduxrobotics.frc",
+            "artifactId": "ReduxLib-driver",
+            "version": "2024.2.0",
+            "isJar": false,
+            "skipInvalidPlatforms": true,
+            "validPlatforms": [
+                "linuxathena",
+                "linuxx86-64",
+                "linuxarm32",
+                "linuxarm64",
+                "osxuniversal",
+                "windowsx86-64"
+            ]
+        }
+    ],
+    "cppDependencies": [
+        {
+            "groupId": "com.reduxrobotics.frc",
+            "artifactId": "ReduxLib-cpp",
+            "version": "2024.2.0",
+            "libName": "ReduxLib-cpp",
+            "headerClassifier": "headers",
+            "sourcesClassifier": "sources",
+            "sharedLibrary": true,
+            "skipInvalidPlatforms": true,
+            "binaryPlatforms": [
+                "linuxathena",
+                "linuxx86-64",
+                "linuxarm32",
+                "linuxarm64",
+                "osxuniversal",
+                "windowsx86-64"
+            ]
+        }
+    ]
 }

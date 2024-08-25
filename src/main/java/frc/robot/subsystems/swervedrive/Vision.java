@@ -162,7 +162,7 @@ public class Vision
   /**
    * Photon Vision Simulation
    */
-  private VisionSystemSim visionSim;
+  public VisionSystemSim visionSim;
   /**
    * Photon Vision camera properties simulation.
    */
@@ -201,6 +201,19 @@ public class Vision
     }
   }
 
+
+  /**
+   * Update the pose estimation inside of {@link SwerveDrive} with all of the given poses.
+   *
+   * @param swerveDrive {@link SwerveDrive} instance.
+   */
+  public void updatePoseEstimation(SwerveDrive swerveDrive)
+  {
+    for (EstimatedRobotPose i : getEstimatedGlobalPose())
+    {
+      swerveDrive.addVisionMeasurement(i.estimatedPose.toPose2d(), i.timestampSeconds);
+    }
+  }
 
   /**
    * generates the estimated robot pose. Returns empty if:
@@ -256,7 +269,7 @@ public class Vision
       }
 
       //est pose is very far from recorded robot pose
-      if (getDistanceFromPose(pose.get().estimatedPose.toPose2d()) > 1)
+      if (PhotonUtils.getDistanceToPose(currentPose.get(), pose.get().estimatedPose.toPose2d()) > 1)
       {
         longDistangePoseEstimationCount++;
 
@@ -287,44 +300,6 @@ public class Vision
   }
 
   /**
-   * Check if the latest result of a given Camera has any April Tags in view.
-   *
-   * @param camera Camera to check.
-   * @return If the given Camera has any April Tags
-   */
-  public boolean hasTargets(Cameras camera)
-  {
-    return getLatestResult(camera).hasTargets();
-  }
-
-  /**
-   * Get the distance from the pose to the current pose.
-   *
-   * @param pose Pose to check.
-   * @return Distance to the pose.
-   */
-  public double getDistanceFromPose(Pose2d pose)
-  {
-    return PhotonUtils.getDistanceToPose(currentPose.get(), pose);
-  }
-
-  /**
-   * Get AprilTag pose.
-   *
-   * @param id AprilTagID
-   * @return Pose of Tag.
-   */
-  public Pose2d getTagPose(int id)
-  {
-    Optional<Pose3d> tag = fieldLayout.getTagPose(id);
-    if (tag.isPresent())
-    {
-      return tag.get().toPose2d();
-    }
-    return null;
-  }
-
-  /**
    * Get distance of the robot from the AprilTag pose.
    *
    * @param id AprilTag ID
@@ -333,11 +308,7 @@ public class Vision
   public double getDistanceFromAprilTag(int id)
   {
     Optional<Pose3d> tag = fieldLayout.getTagPose(id);
-    if (tag.isPresent())
-    {
-      return getDistanceFromPose(tag.get().toPose2d());
-    }
-    return -1;
+    return tag.map(pose3d -> PhotonUtils.getDistanceToPose(currentPose.get(), pose3d.toPose2d())).orElse(-1.0);
   }
 
   /**
@@ -402,7 +373,7 @@ public class Vision
     List<PhotonTrackedTarget> targets = new ArrayList<PhotonTrackedTarget>();
     for (Cameras c : Cameras.values())
     {
-      if (hasTargets(c))
+      if (getLatestResult(c).hasTargets())
       {
         targets.addAll(getLatestResult(c).targets);
       }
@@ -411,8 +382,11 @@ public class Vision
     List<Pose2d> poses = new ArrayList<>();
     for (PhotonTrackedTarget target : targets)
     {
-      Pose2d targetPose = getTagPose(target.getFiducialId());
-      poses.add(targetPose);
+      if (fieldLayout.getTagPose(target.getFiducialId()).isPresent())
+      {
+        Pose2d targetPose = fieldLayout.getTagPose(target.getFiducialId()).get().toPose2d();
+        poses.add(targetPose);
+      }
     }
 
     field2d.getObject("tracked targets").setPoses(poses);

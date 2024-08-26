@@ -2,14 +2,19 @@ package frc.robot.subsystems.swervedrive;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import java.awt.Desktop;
 import java.io.IOException;
@@ -209,14 +214,18 @@ public class Vision
    */
   public void updatePoseEstimation(SwerveDrive swerveDrive)
   {
-    for (EstimatedRobotPose i : getEstimatedGlobalPose())
+    for (Cameras camera : Cameras.values())
     {
-      swerveDrive.addVisionMeasurement(i.estimatedPose.toPose2d(), i.timestampSeconds);
+      Optional<EstimatedRobotPose> poseEst = getEstimatedGlobalPose(camera);
+      if (poseEst.isPresent()) {
+        var pose = poseEst.get();
+        swerveDrive.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds, getEstimationStdDevs(camera));
+      }
     }
   }
 
   /**
-   * generates the estimated robot pose. Returns empty if:
+   * Generates the estimated robot pose. Returns empty if:
    * <ul>
    *  <li> No Pose Estimates could be generated</li>
    * <li> The generated pose estimate was considered not accurate</li>
@@ -224,23 +233,46 @@ public class Vision
    *
    * @return an {@link EstimatedRobotPose} with an estimated pose, timestamp, and targets used to create the estimate
    */
-  public ArrayList<EstimatedRobotPose> getEstimatedGlobalPose()
+  public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Cameras camera)
   {
-    ArrayList<EstimatedRobotPose> poses = new ArrayList<>();
-
-    for (Cameras c : Cameras.values())
+    // Alternative method if you want to use both a pose filter and standard deviations based on distance + tags seen.
+    // Optional<EstimatedRobotPose> poseEst = filterPose(camera.poseEstimator.update());
+    Optional<EstimatedRobotPose> poseEst = camera.poseEstimator.update();
+    if (poseEst.isPresent())
     {
-      Optional<EstimatedRobotPose> poseEst = filterPose(c.poseEstimator.update());
-
-      if (poseEst.isPresent())
-      {
-        poses.add(poseEst.get());
-        field2d.getObject(c + " est pose").setPose(poseEst.get().estimatedPose.toPose2d());
-      }
+      field2d.getObject(camera + " est pose").setPose(poseEst.get().estimatedPose.toPose2d());
     }
-
-    return poses;
+    return poseEst;
   }
+
+  /**
+     * The standard deviations of the estimated pose from {@link #getEstimatedGlobalPose()}, for use
+     * with {@link edu.wpi.first.math.estimator.SwerveDrivePoseEstimator SwerveDrivePoseEstimator}.
+     * This should only be used when there are targets visible.
+     */
+    public Matrix<N3, N1> getEstimationStdDevs(Cameras camera) {
+        var estStdDevs = Constants.Vision.kSingleTagStdDevs;
+        var targets = getLatestResult(camera).getTargets();
+        int numTags = 0;
+        double avgDist = 0;
+        for (var tgt : targets) {
+            var tagPose = camera.poseEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
+            if (tagPose.isEmpty()) continue;
+            numTags++;
+            avgDist += tagPose.get().toPose2d().getTranslation()
+              .getDistance(getEstimatedGlobalPose(camera).get().estimatedPose.toPose2d().getTranslation());
+        }
+        if (numTags == 0) return estStdDevs;
+        avgDist /= numTags;
+        // Decrease std devs if multiple targets are visible
+        if (numTags > 1) estStdDevs = Constants.Vision.kMultiTagStdDevs;
+        // Increase std devs based on (average) distance
+        if (numTags == 1 && avgDist > 4)
+            estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+        else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
+
+        return estStdDevs;
+    }
 
   /**
    * Filter pose via the ambiguity and find best estimate between all of the camera's throwing out distances more than

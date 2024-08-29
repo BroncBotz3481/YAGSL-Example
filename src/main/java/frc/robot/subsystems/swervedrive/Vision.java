@@ -209,10 +209,13 @@ public class Vision
    */
   public void updatePoseEstimation(SwerveDrive swerveDrive)
   {
-    for (EstimatedRobotPose i : getEstimatedGlobalPose())
-    {
-      swerveDrive.addVisionMeasurement(i.estimatedPose.toPose2d(), i.timestampSeconds);
-    }
+    ArrayList<EstimatedRobotPose> estimatedRobotPoses = getEstimatedGlobalPose();
+    if(Robot.isReal()) {
+      for (EstimatedRobotPose i : estimatedRobotPoses)
+      {
+        swerveDrive.addVisionMeasurement(i.estimatedPose.toPose2d(), i.timestampSeconds);
+      }
+    } else visionSim.update(swerveDrive.getPose());
   }
 
   /**

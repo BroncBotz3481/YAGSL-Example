@@ -14,7 +14,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import frc.robot.Constants;
 import frc.robot.Robot;
 import java.awt.Desktop;
 import java.io.IOException;
@@ -63,7 +62,8 @@ public class Vision
              new Rotation3d(0, Math.toRadians(-24.094), Math.toRadians(30)),
              new Translation3d(Units.inchesToMeters(12.056),
                                Units.inchesToMeters(10.981),
-                               Units.inchesToMeters(8.44))),
+                               Units.inchesToMeters(8.44)),
+             VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5,0.5,1)),
     /**
      * Right Camera
      */
@@ -71,7 +71,8 @@ public class Vision
               new Rotation3d(0, Math.toRadians(-24.094), Math.toRadians(-30)),
               new Translation3d(Units.inchesToMeters(12.056),
                                 Units.inchesToMeters(-10.981),
-                                Units.inchesToMeters(8.44))),
+                                Units.inchesToMeters(8.44)),
+              VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5,0.5,1)),
     /**
      * Center Camera
      */
@@ -79,7 +80,8 @@ public class Vision
                new Rotation3d(0, Units.degreesToRadians(18), 0),
                new Translation3d(Units.inchesToMeters(-4.628),
                                  Units.inchesToMeters(-10.687),
-                                 Units.inchesToMeters(16.129)));
+                                 Units.inchesToMeters(16.129)),
+               VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5,0.5,1));
 
     /**
      * Transform of the camera rotation and translation relative to the center of the robot
@@ -104,15 +106,22 @@ public class Vision
      */
     public final PhotonPoseEstimator poseEstimator;
 
+    public final Matrix<N3, N1> singleTagStdDevs;
+
+    public final Matrix<N3, N1> multiTagStdDevs;
 
     /**
-     * Construct a Photon Camera class with help.
+     * Construct a Photon Camera class with help. Standard deviations are fake values, 
+     * experiment and determine estimation noise on an actual robot. 
      *
      * @param name                  Name of the PhotonVision camera found in the PV UI.
      * @param robotToCamRotation    {@link Rotation3d} of the camera.
      * @param robotToCamTranslation {@link Translation3d} relative to the center of the robot.
+     * @param singleTagStdDevs      Single AprilTag standard deviations of estimated poses from the camera.
+     * @param multiTagStdDevs       Multi AprilTag standard deviations of estimated poses from the camera.
      */
-    Cameras(String name, Rotation3d robotToCamRotation, Translation3d robotToCamTranslation)
+    Cameras(String name, Rotation3d robotToCamRotation, Translation3d robotToCamTranslation, 
+            Matrix<N3, N1> singleTagStdDevs, Matrix<N3, N1> multiTagStdDevsMatrix)
     {
       latencyAlert = new Alert("'" + name + "' Camera is experiencing high latency.", AlertType.WARNING);
 
@@ -125,6 +134,9 @@ public class Vision
                                               PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
                                               robotToCamTransform);
       poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+
+      this.singleTagStdDevs = singleTagStdDevs;
+      this.multiTagStdDevs = multiTagStdDevsMatrix;
 
       if (Robot.isSimulation())
       {
@@ -249,9 +261,11 @@ public class Vision
      * The standard deviations of the estimated pose from {@link #getEstimatedGlobalPose()}, for use
      * with {@link edu.wpi.first.math.estimator.SwerveDrivePoseEstimator SwerveDrivePoseEstimator}.
      * This should only be used when there are targets visible.
+     * @param camera    Desired camera to get the standard deviation of the estimated pose.
      */
     public Matrix<N3, N1> getEstimationStdDevs(Cameras camera) {
-        var estStdDevs = Constants.Vision.kSingleTagStdDevs;
+        var poseEst = getEstimatedGlobalPose(camera);
+        var estStdDevs = camera.singleTagStdDevs;
         var targets = getLatestResult(camera).getTargets();
         int numTags = 0;
         double avgDist = 0;
@@ -259,13 +273,14 @@ public class Vision
             var tagPose = camera.poseEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
             if (tagPose.isEmpty()) continue;
             numTags++;
-            avgDist += tagPose.get().toPose2d().getTranslation()
-              .getDistance(getEstimatedGlobalPose(camera).get().estimatedPose.toPose2d().getTranslation());
+            if (poseEst.isPresent()) {
+              avgDist += PhotonUtils.getDistanceToPose(poseEst.get().estimatedPose.toPose2d(), tagPose.get().toPose2d());
+            }
         }
         if (numTags == 0) return estStdDevs;
         avgDist /= numTags;
         // Decrease std devs if multiple targets are visible
-        if (numTags > 1) estStdDevs = Constants.Vision.kMultiTagStdDevs;
+        if (numTags > 1) estStdDevs = camera.multiTagStdDevs;
         // Increase std devs based on (average) distance
         if (numTags == 1 && avgDist > 4)
             estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);

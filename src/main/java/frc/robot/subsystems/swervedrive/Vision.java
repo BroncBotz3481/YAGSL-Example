@@ -2,6 +2,8 @@ package frc.robot.subsystems.swervedrive;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -10,6 +12,8 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import frc.robot.Robot;
@@ -60,7 +64,8 @@ public class Vision
              new Rotation3d(0, Math.toRadians(-24.094), Math.toRadians(30)),
              new Translation3d(Units.inchesToMeters(12.056),
                                Units.inchesToMeters(10.981),
-                               Units.inchesToMeters(8.44))),
+                               Units.inchesToMeters(8.44)),
+             VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5,0.5,1)),
     /**
      * Right Camera
      */
@@ -68,7 +73,8 @@ public class Vision
               new Rotation3d(0, Math.toRadians(-24.094), Math.toRadians(-30)),
               new Translation3d(Units.inchesToMeters(12.056),
                                 Units.inchesToMeters(-10.981),
-                                Units.inchesToMeters(8.44))),
+                                Units.inchesToMeters(8.44)),
+              VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5,0.5,1)),
     /**
      * Center Camera
      */
@@ -76,7 +82,8 @@ public class Vision
                new Rotation3d(0, Units.degreesToRadians(18), 0),
                new Translation3d(Units.inchesToMeters(-4.628),
                                  Units.inchesToMeters(-10.687),
-                                 Units.inchesToMeters(16.129)));
+                                 Units.inchesToMeters(16.129)),
+               VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5,0.5,1));
 
     /**
      * Transform of the camera rotation and translation relative to the center of the robot
@@ -101,15 +108,22 @@ public class Vision
      */
     public final PhotonPoseEstimator poseEstimator;
 
+    public final Matrix<N3, N1> singleTagStdDevs;
+
+    public final Matrix<N3, N1> multiTagStdDevs;
 
     /**
-     * Construct a Photon Camera class with help.
+     * Construct a Photon Camera class with help. Standard deviations are fake values, 
+     * experiment and determine estimation noise on an actual robot. 
      *
      * @param name                  Name of the PhotonVision camera found in the PV UI.
      * @param robotToCamRotation    {@link Rotation3d} of the camera.
      * @param robotToCamTranslation {@link Translation3d} relative to the center of the robot.
+     * @param singleTagStdDevs      Single AprilTag standard deviations of estimated poses from the camera.
+     * @param multiTagStdDevs       Multi AprilTag standard deviations of estimated poses from the camera.
      */
-    Cameras(String name, Rotation3d robotToCamRotation, Translation3d robotToCamTranslation)
+    Cameras(String name, Rotation3d robotToCamRotation, Translation3d robotToCamTranslation, 
+            Matrix<N3, N1> singleTagStdDevs, Matrix<N3, N1> multiTagStdDevsMatrix)
     {
       latencyAlert = new Alert("'" + name + "' Camera is experiencing high latency.", AlertType.WARNING);
 
@@ -122,6 +136,9 @@ public class Vision
                                               PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
                                               robotToCamTransform);
       poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+
+      this.singleTagStdDevs = singleTagStdDevs;
+      this.multiTagStdDevs = multiTagStdDevsMatrix;
 
       if (Robot.isSimulation())
       {
@@ -211,17 +228,20 @@ public class Vision
    */
   public void updatePoseEstimation(SwerveDrive swerveDrive)
   {
-    ArrayList<EstimatedRobotPose> estimatedRobotPoses = getEstimatedGlobalPose();
     if(Robot.isReal()) {
-      for (EstimatedRobotPose i : estimatedRobotPoses)
+      for (Cameras camera : Cameras.values())
       {
-        swerveDrive.addVisionMeasurement(i.estimatedPose.toPose2d(), i.timestampSeconds);
+        Optional<EstimatedRobotPose> poseEst = getEstimatedGlobalPose(camera);
+        if (poseEst.isPresent()) {
+          var pose = poseEst.get();
+          swerveDrive.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds, getEstimationStdDevs(camera));
+        }
       }
     } else visionSim.update(swerveDrive.getPose());
   }
 
   /**
-   * generates the estimated robot pose. Returns empty if:
+   * Generates the estimated robot pose. Returns empty if:
    * <ul>
    *  <li> No Pose Estimates could be generated</li>
    * <li> The generated pose estimate was considered not accurate</li>
@@ -229,23 +249,49 @@ public class Vision
    *
    * @return an {@link EstimatedRobotPose} with an estimated pose, timestamp, and targets used to create the estimate
    */
-  public ArrayList<EstimatedRobotPose> getEstimatedGlobalPose()
+  public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Cameras camera)
   {
-    ArrayList<EstimatedRobotPose> poses = new ArrayList<>();
-
-    for (Cameras c : Cameras.values())
+    // Alternative method if you want to use both a pose filter and standard deviations based on distance + tags seen.
+    // Optional<EstimatedRobotPose> poseEst = filterPose(camera.poseEstimator.update());
+    Optional<EstimatedRobotPose> poseEst = camera.poseEstimator.update();
+    if (poseEst.isPresent())
     {
-      Optional<EstimatedRobotPose> poseEst = filterPose(c.poseEstimator.update());
-
-      if (poseEst.isPresent())
-      {
-        poses.add(poseEst.get());
-        field2d.getObject(c + " est pose").setPose(poseEst.get().estimatedPose.toPose2d());
-      }
+      field2d.getObject(camera + " est pose").setPose(poseEst.get().estimatedPose.toPose2d());
     }
-
-    return poses;
+    return poseEst;
   }
+
+  /**
+     * The standard deviations of the estimated pose from {@link #getEstimatedGlobalPose()}, for use
+     * with {@link edu.wpi.first.math.estimator.SwerveDrivePoseEstimator SwerveDrivePoseEstimator}.
+     * This should only be used when there are targets visible.
+     * @param camera    Desired camera to get the standard deviation of the estimated pose.
+     */
+    public Matrix<N3, N1> getEstimationStdDevs(Cameras camera) {
+        var poseEst = getEstimatedGlobalPose(camera);
+        var estStdDevs = camera.singleTagStdDevs;
+        var targets = getLatestResult(camera).getTargets();
+        int numTags = 0;
+        double avgDist = 0;
+        for (var tgt : targets) {
+            var tagPose = camera.poseEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
+            if (tagPose.isEmpty()) continue;
+            numTags++;
+            if (poseEst.isPresent()) {
+              avgDist += PhotonUtils.getDistanceToPose(poseEst.get().estimatedPose.toPose2d(), tagPose.get().toPose2d());
+            }
+        }
+        if (numTags == 0) return estStdDevs;
+        avgDist /= numTags;
+        // Decrease std devs if multiple targets are visible
+        if (numTags > 1) estStdDevs = camera.multiTagStdDevs;
+        // Increase std devs based on (average) distance
+        if (numTags == 1 && avgDist > 4)
+            estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+        else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
+
+        return estStdDevs;
+    }
 
   /**
    * Filter pose via the ambiguity and find best estimate between all of the camera's throwing out distances more than

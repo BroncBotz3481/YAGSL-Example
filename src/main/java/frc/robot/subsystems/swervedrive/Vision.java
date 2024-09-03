@@ -8,7 +8,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -226,14 +228,16 @@ public class Vision
    */
   public void updatePoseEstimation(SwerveDrive swerveDrive)
   {
-    for (Cameras camera : Cameras.values())
-    {
-      Optional<EstimatedRobotPose> poseEst = getEstimatedGlobalPose(camera);
-      if (poseEst.isPresent()) {
-        var pose = poseEst.get();
-        swerveDrive.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds, getEstimationStdDevs(camera));
+    if(Robot.isReal()) {
+      for (Cameras camera : Cameras.values())
+      {
+        Optional<EstimatedRobotPose> poseEst = getEstimatedGlobalPose(camera);
+        if (poseEst.isPresent()) {
+          var pose = poseEst.get();
+          swerveDrive.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds, getEstimationStdDevs(camera));
+        }
       }
-    }
+    } else visionSim.update(swerveDrive.getPose());
   }
 
   /**
@@ -439,5 +443,29 @@ public class Vision
     field2d.getObject("tracked targets").setPoses(poses);
   }
 
+    /**
+   * Calculates a target pose relative to an AprilTag on the field.
+   *
+   * @param aprilTag The ID of the AprilTag.
+   * @param xOffset The X offset in meters from the AprilTag's position, positive is away from the AprilTag.
+   * @param yOffset The Y offset in meters from the AprilTag's position, positive is to the right of the AprilTag
+   *                regardless of alliance.
+   * @param rotOffset The rotation offset in degrees from the AprilTag's orientation.
+   * @return The target pose of the AprilTag.
+   */
+  public static Pose2d getAprilTagPose(int aprilTag, Double xOffset, Double yOffset, Double rotOffset)
+  {  
+    Optional<Pose3d> aprilTagPose3d =
+      AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo).getTagPose(aprilTag);
+
+    Pose2d aprilTagPose2d = aprilTagPose3d.get().toPose2d();
+
+    Transform2d aprilTagGoalTrans2d = new Transform2d(new Translation2d(xOffset, yOffset),
+                                                      new Rotation2d(Math.toRadians(rotOffset)));
+
+    Pose2d aprilTagTargetPose2d = aprilTagPose2d.transformBy(aprilTagGoalTrans2d);
+
+    return aprilTagTargetPose2d;
+  }
 
 }

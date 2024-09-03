@@ -46,6 +46,10 @@ public class SwerveSubsystem extends SubsystemBase
 {
 
   /**
+   * PhotonVision class to keep an accurate odometry.
+   */
+  private       Vision              vision;
+  /**
    * Swerve drive object.
    */
   private final SwerveDrive         swerveDrive;
@@ -71,7 +75,7 @@ public class SwerveSubsystem extends SubsystemBase
     //  The encoder resolution per motor revolution is 1 per motor revolution.
     double driveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4), 6.75);
     System.out.println("\"conversionFactors\": {");
-    System.out.println("\t\"angle\": {\"factor\": " + angleConversionFactor + " },") ;
+    System.out.println("\t\"angle\": {\"factor\": " + angleConversionFactor + " },");
     System.out.println("\t\"drive\": {\"factor\": " + driveConversionFactor + " }");
     System.out.println("}");
 
@@ -100,6 +104,34 @@ public class SwerveSubsystem extends SubsystemBase
   public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg)
   {
     swerveDrive = new SwerveDrive(driveCfg, controllerCfg, Constants.MAX_SPEED);
+  }
+
+  /**
+   * Setup the photon vision class.
+   */
+  public void setupPhotonVision()
+  {
+    vision = new Vision(swerveDrive::getPose, swerveDrive.field);
+    vision.updatePoseEstimation(swerveDrive);
+  }
+
+  /**
+   * Update the pose estimation with vision data.
+   */
+  public void updatePoseWithVision()
+  {
+    vision.updatePoseEstimation(swerveDrive);
+  }
+
+  /**
+   * Get the pose while updating with vision readings.
+   *
+   * @return The robots pose with the vision estimates in place.
+   */
+  public Pose2d getVisionPose()
+  {
+    vision.updatePoseEstimation(swerveDrive);
+    return swerveDrive.getPose();
   }
 
   /**
@@ -253,7 +285,7 @@ public class SwerveSubsystem extends SubsystemBase
     return run(() -> {
 
       Translation2d scaledInputs = SwerveMath.scaleTranslation(new Translation2d(translationX.getAsDouble(),
-                                                                                translationY.getAsDouble()), 0.8);
+                                                                                 translationY.getAsDouble()), 0.8);
 
       // Make the robot move
       driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(scaledInputs.getX(), scaledInputs.getY(),

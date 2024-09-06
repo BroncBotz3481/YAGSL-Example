@@ -37,6 +37,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import swervelib.SwerveDrive;
 import swervelib.telemetry.Alert;
 import swervelib.telemetry.Alert.AlertType;
+import swervelib.telemetry.SwerveDriveTelemetry;
 
 
 /**
@@ -124,23 +125,23 @@ public class Vision
    */
   public void updatePoseEstimation(SwerveDrive swerveDrive)
   {
-    if (Robot.isReal())
-    {
-      for (Cameras camera : Cameras.values())
-      {
-        Optional<EstimatedRobotPose> poseEst = getEstimatedGlobalPose(camera);
-        if (poseEst.isPresent())
-        {
-          var pose = poseEst.get();
-          swerveDrive.addVisionMeasurement(pose.estimatedPose.toPose2d(),
-                                           pose.timestampSeconds,
-                                           getEstimationStdDevs(camera));
-        }
-      }
-    } else
+    if (SwerveDriveTelemetry.isSimulation)
     {
       visionSim.update(swerveDrive.getPose());
+
     }
+    for (Cameras camera : Cameras.values())
+    {
+      Optional<EstimatedRobotPose> poseEst = getEstimatedGlobalPose(camera);
+      if (poseEst.isPresent())
+      {
+        var pose = poseEst.get();
+        swerveDrive.addVisionMeasurement(pose.estimatedPose.toPose2d(),
+                                         pose.timestampSeconds,
+                                         getEstimationStdDevs(camera));
+      }
+    }
+
   }
 
   /**
@@ -439,6 +440,7 @@ public class Vision
 
       poseEstimator = new PhotonPoseEstimator(Vision.fieldLayout,
                                               PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+                                              camera,
                                               robotToCamTransform);
       poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 

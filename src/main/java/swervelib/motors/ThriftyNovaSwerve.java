@@ -4,15 +4,18 @@
 
 package swervelib.motors;
 
+import java.util.List;
+
 import com.thethriftybot.Conversion;
-import com.thethriftybot.ThriftyNova;
 import com.thethriftybot.Conversion.PositionUnit;
 import com.thethriftybot.Conversion.VelocityUnit;
+import com.thethriftybot.ThriftyNova;
 import com.thethriftybot.ThriftyNova.CurrentType;
 import com.thethriftybot.ThriftyNova.EncoderType;
 import com.thethriftybot.ThriftyNova.PIDSlot;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import swervelib.encoders.SwerveAbsoluteEncoder;
@@ -155,6 +158,7 @@ public class ThriftyNovaSwerve extends SwerveMotor {
             double fault, double sensor, double quadSensor, double control, double current) {
         motor.canFreq.setFault(fault).canFreq.setSensor(sensor).canFreq.setQuadSensor(quadSensor).canFreq
                 .setControl(control).canFreq.setCurrent(current);
+        checkErrors("Configuring CAN status frames failed: ");
     }
 
     /**
@@ -166,6 +170,7 @@ public class ThriftyNovaSwerve extends SwerveMotor {
     @Override
     public void configurePIDF(PIDFConfig config) {
         motor.pid0.setP(config.p).pid0.setI(config.i).pid0.setD(config.d);
+        checkErrors("Configuring PIDF failed: ");
     }
 
     /**
@@ -187,6 +192,7 @@ public class ThriftyNovaSwerve extends SwerveMotor {
     @Override
     public void setMotorBrake(boolean isBrakeMode) {
         motor.setBrakeMode(isBrakeMode);
+        checkErrors("Setting motor brake mode failed: ");
     }
 
     /**
@@ -197,6 +203,7 @@ public class ThriftyNovaSwerve extends SwerveMotor {
     @Override
     public void setInverted(boolean inverted) {
         motor.setInverted(inverted);
+        checkErrors("Setting motor inversion failed: ");
     }
 
     /**
@@ -322,6 +329,7 @@ public class ThriftyNovaSwerve extends SwerveMotor {
     @Override
     public void setCurrentLimit(int currentLimit) {
         motor.setMaxCurrent(CurrentType.STATOR, currentLimit);
+        checkErrors("Setting current limit failed: ");
     }
 
     /**
@@ -333,6 +341,7 @@ public class ThriftyNovaSwerve extends SwerveMotor {
     public void setLoopRampRate(double rampRate) {
         motor.setRampUp(rampRate);
         motor.setRampDown(rampRate);
+        checkErrors("Setting loop ramp rate failed: ");
     }
 
     /**
@@ -356,4 +365,19 @@ public class ThriftyNovaSwerve extends SwerveMotor {
         return EncoderType.ABS == encoderType;
     }
 
+    /**
+     * Checks for errors in the motor and logs them if any are found.
+     *
+     * @param  message  the message to prepend to the log and print statement
+     */
+    private void checkErrors(String message) {
+        List<ThriftyNova.Error> errors = motor.getErrors();
+        if (errors.size() > 0) {
+            for (ThriftyNova.Error error : errors) {
+                DataLogManager.log(this.getClass().getSimpleName() + ": " + message + error.toString());
+                System.out.println(this.getClass().getSimpleName() + ": " + message + error.toString());
+            }
+        }
+
+    }
 }

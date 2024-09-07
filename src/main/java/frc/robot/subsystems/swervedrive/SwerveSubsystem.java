@@ -48,7 +48,7 @@ public class SwerveSubsystem extends SubsystemBase
   /**
    * PhotonVision class to keep an accurate odometry.
    */
-  private Vision vision;
+  private       Vision  vision;
   /**
    * Swerve drive object.
    */
@@ -57,6 +57,10 @@ public class SwerveSubsystem extends SubsystemBase
    * AprilTag field layout.
    */
   private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+  /**
+   * Enable vision odometry updates while driving.
+   */
+  private final boolean visionDriveTest = true;
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -92,6 +96,10 @@ public class SwerveSubsystem extends SubsystemBase
     }
     swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
     swerveDrive.setCosineCompensator(false);//!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
+    if (visionDriveTest)
+    {
+      setupPhotonVision();
+    }
     setupPathPlanner();
   }
 
@@ -308,6 +316,10 @@ public class SwerveSubsystem extends SubsystemBase
   {
     // swerveDrive.setHeadingCorrection(true); // Normally you would want heading correction for this kind of control.
     return run(() -> {
+      if (visionDriveTest)
+      {
+        vision.updatePoseEstimation(swerveDrive);
+      }
       // Make the robot move
       driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(translationX.getAsDouble(),
                                                                       translationY.getAsDouble(),

@@ -4,14 +4,23 @@
 
 package frc.robot.subsystems.swervedrive;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.function.DoubleSupplier;
+
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -23,19 +32,18 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
 import frc.robot.Constants.AutonConstants;
-import java.io.File;
-import java.util.function.DoubleSupplier;
-import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonPipelineResult;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
 import swervelib.math.SwerveMath;
+import swervelib.parser.PIDFConfig;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
@@ -350,6 +358,67 @@ public class SwerveSubsystem extends SubsystemBase
             new Config(),
             this, swerveDrive),
         3.0, 5.0, 3.0);
+  }
+
+  /**
+   * Returns a Command that sets the P value of the angle motors to the value on the SmartDashboard and updates the PIDF
+   * configuration of each module. The command is run only once and is intended to be used for characterizing the angle
+   * motors' P value. The P value is read from the SmartDashboard and if it is not present, a default value of 0 is used.
+   *
+   * @return a Command that reads the P value of the angle motors from the SmartDashboard and updates the PIDF configuration of each module
+   */ 
+  public Command angleMotorPValueCommand() {
+    return Commands.runOnce(() -> {
+        SmartDashboard.putNumber("Angle Motor P", swerveDrive.getModuleMap().values().iterator().next().getAnglePIDF().p);
+        swerveDrive.getModuleMap().values().forEach(module -> {
+          module.getAngleMotor().configurePIDF(new PIDFConfig(SmartDashboard.getNumber("Angle Motor P", 0), 0));
+          module.getAngleMotor().burnFlash();
+        });
+      }, this);
+  }
+
+  /**
+   * Returns a Command that centers the modules of the SwerveDrive subsystem.
+   *
+   * @return a Command that centers the modules of the SwerveDrive subsystem
+   */
+  public Command centerModulesCommand() {
+    return run(() -> Arrays.asList(swerveDrive.getModules())
+      .forEach(it -> it.setAngle(0.0)));
+  }
+
+  /**
+   * Returns a Command that drives the swerve drive to a specific distance at a given speed.
+   *
+   * @param distanceInMeters the distance to drive in meters
+   * @param speedInMetersPerSecond the speed at which to drive in meters per second
+   * @return a Command that drives the swerve drive to a specific distance at a given speed
+   */  
+  public Command driveToDistanceCommand(double distanceInMeters, double speedInMetersPerSecond) {
+    return Commands.deferredProxy(
+        () -> Commands.run(() -> drive(new ChassisSpeeds(speedInMetersPerSecond, 0, 0)), this)
+        .until(() -> swerveDrive.getPose().getTranslation().getDistance(new Translation2d(0, 0)) > distanceInMeters)
+        );
+  }
+  
+  /**
+   * Sets the maximum speed of the swerve drive.
+   *
+   * @param maximumSpeed the maximum speed to set for the swerve drive in meters per second
+   */
+  public void setMaximumSpeed(double maximumSpeedInMetersPerSecond) {
+    swerveDrive.setMaximumSpeed(maximumSpeedInMetersPerSecond, false, swerveDrive.swerveDriveConfiguration.physicalCharacteristics.optimalVoltage);
+  }
+
+  /**
+   * Replaces the swerve module feedforward with a new SimpleMotorFeedforward object.
+   *
+   * @param  kS  the static gain of the feedforward
+   * @param  kV  the velocity gain of the feedforward
+   * @param  kA  the acceleration gain of the feedforward
+   */  
+  public void replaceSwerveModuleFeedforward(double kS, double kV, double kA) {
+    swerveDrive.replaceSwerveModuleFeedforward(new SimpleMotorFeedforward(kS, kV, kA));
   }
 
   /**

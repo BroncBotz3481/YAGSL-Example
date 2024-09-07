@@ -368,8 +368,8 @@ public class SwerveSubsystem extends SubsystemBase
    * @return a Command that reads the P value of the angle motors from the SmartDashboard and updates the PIDF configuration of each module
    */ 
   public Command angleMotorPValueCommand() {
+    SmartDashboard.putNumber("Angle Motor P", swerveDrive.getModuleMap().values().iterator().next().getAnglePIDF().p);
     return Commands.runOnce(() -> {
-        SmartDashboard.putNumber("Angle Motor P", swerveDrive.getModuleMap().values().iterator().next().getAnglePIDF().p);
         swerveDrive.getModuleMap().values().forEach(module -> {
           module.getAngleMotor().configurePIDF(new PIDFConfig(SmartDashboard.getNumber("Angle Motor P", 0), 0));
           module.getAngleMotor().burnFlash();

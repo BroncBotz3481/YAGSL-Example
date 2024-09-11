@@ -65,12 +65,14 @@ public class Vision
    */
   private             Supplier<Pose2d>    currentPose;
   /**
-   * Photon Vision camera properties simulation.
+   * Ambiguity defined as a value between (0,1). Used in {@link Vision#filterPose}.
    */
+  private final double maximumAmbiguity = 0.25;
   /**
    * Field from {@link swervelib.SwerveDrive#field}
    */
   private             Field2d             field2d;
+
 
   /**
    * Constructor for the Vision class.
@@ -155,11 +157,12 @@ public class Vision
    */
   public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Cameras camera)
   {
-    // Alternative method if you want to use both a pose filter and standard deviations based on distance + tags seen.
-    // Optional<EstimatedRobotPose> poseEst = filterPose(camera.poseEstimator.update());
-    Optional<EstimatedRobotPose> poseEst = camera.poseEstimator.update();
-    poseEst.ifPresent(estimatedRobotPose -> field2d.getObject(camera + " est pose")
-                                                   .setPose(estimatedRobotPose.estimatedPose.toPose2d()));
+    Optional<EstimatedRobotPose> poseEst = filterPose(camera.poseEstimator.update());
+    // Uncomment to enable outputting of vision targets in sim.
+    /*
+     poseEst.ifPresent(estimatedRobotPose -> field2d.getObject(camera + " est pose")
+                                                    .setPose(estimatedRobotPose.estimatedPose.toPose2d()));
+    */
     return poseEst;
   }
 
@@ -233,7 +236,7 @@ public class Vision
         }
       }
       //ambiguity to high dont use estimate
-      if (bestTargetAmbiguity > 0.3)
+      if (bestTargetAmbiguity > maximumAmbiguity)
       {
         return Optional.empty();
       }
@@ -322,15 +325,15 @@ public class Vision
   {
     if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE))
     {
-      try
-      {
-        Desktop.getDesktop().browse(new URI("http://localhost:1182/"));
-        Desktop.getDesktop().browse(new URI("http://localhost:1184/"));
-        Desktop.getDesktop().browse(new URI("http://localhost:1186/"));
-      } catch (IOException | URISyntaxException e)
-      {
-        e.printStackTrace();
-      }
+//      try
+//      {
+//        Desktop.getDesktop().browse(new URI("http://localhost:1182/"));
+//        Desktop.getDesktop().browse(new URI("http://localhost:1184/"));
+//        Desktop.getDesktop().browse(new URI("http://localhost:1186/"));
+//      } catch (IOException | URISyntaxException e)
+//      {
+//        e.printStackTrace();
+//      }
     }
   }
 
@@ -475,6 +478,7 @@ public class Vision
       if (Robot.isSimulation())
       {
         systemSim.addCamera(cameraSim, robotToCamTransform);
+//        cameraSim.enableDrawWireframe(true);
       }
     }
   }

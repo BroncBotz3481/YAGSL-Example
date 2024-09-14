@@ -68,7 +68,7 @@ public class SwerveSubsystem extends SubsystemBase
   /**
    * Enable vision odometry updates while driving.
    */
-  private final boolean visionDriveTest = true;
+  private final boolean visionDriveTest = false;
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -107,6 +107,8 @@ public class SwerveSubsystem extends SubsystemBase
     if (visionDriveTest)
     {
       setupPhotonVision();
+      // Stop the odometry thread if we are using vision that way we can synchronize updates better.
+      swerveDrive.stopOdometryThread();
     }
     setupPathPlanner();
   }
@@ -128,26 +130,22 @@ public class SwerveSubsystem extends SubsystemBase
   public void setupPhotonVision()
   {
     vision = new Vision(swerveDrive::getPose, swerveDrive.field);
-    vision.updatePoseEstimation(swerveDrive);
   }
 
-  /**
-   * Update the pose estimation with vision data.
-   */
-  public void updatePoseWithVision()
+  @Override
+  public void periodic()
   {
-    vision.updatePoseEstimation(swerveDrive);
+    // When vision is enabled we must manually update odometry in SwerveDrive
+    if (visionDriveTest)
+    {
+      swerveDrive.updateOdometry();
+      vision.updatePoseEstimation(swerveDrive);
+    }
   }
 
-  /**
-   * Get the pose while updating with vision readings.
-   *
-   * @return The robots pose with the vision estimates in place.
-   */
-  public Pose2d getVisionPose()
+  @Override
+  public void simulationPeriodic()
   {
-    vision.updatePoseEstimation(swerveDrive);
-    return swerveDrive.getPose();
   }
 
   /**
@@ -324,10 +322,6 @@ public class SwerveSubsystem extends SubsystemBase
   {
     // swerveDrive.setHeadingCorrection(true); // Normally you would want heading correction for this kind of control.
     return run(() -> {
-      if (visionDriveTest)
-      {
-        vision.updatePoseEstimation(swerveDrive);
-      }
       // Make the robot move
       driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(translationX.getAsDouble(),
                                                                       translationY.getAsDouble(),
@@ -472,15 +466,6 @@ public class SwerveSubsystem extends SubsystemBase
     swerveDrive.drive(velocity);
   }
 
-  @Override
-  public void periodic()
-  {
-  }
-
-  @Override
-  public void simulationPeriodic()
-  {
-  }
 
   /**
    * Get the swerve drive kinematics object.

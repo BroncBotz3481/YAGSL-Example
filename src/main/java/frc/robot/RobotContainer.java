@@ -99,7 +99,6 @@ public class RobotContainer
   private void configureBindings()
   {
     if (DriverStation.isTest()) {
-      driverXbox.a().onTrue(drivebase.angleMotorPValueCommand());
       driverXbox.b().whileTrue(drivebase.sysIdDriveMotorCommand());
       driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.y().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));

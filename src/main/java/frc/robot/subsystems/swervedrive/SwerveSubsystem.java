@@ -361,23 +361,6 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   /**
-   * Returns a Command that sets the P value of the angle motors to the value on the SmartDashboard and updates the PIDF
-   * configuration of each module. The command is run only once and is intended to be used for characterizing the angle
-   * motors' P value. The P value is read from the SmartDashboard and if it is not present, a default value of 0 is used.
-   *
-   * @return a Command that reads the P value of the angle motors from the SmartDashboard and updates the PIDF configuration of each module
-   */ 
-  public Command angleMotorPValueCommand() {
-    SmartDashboard.putNumber("Angle Motor P", swerveDrive.getModuleMap().values().iterator().next().getAnglePIDF().p);
-    return Commands.runOnce(() -> {
-        swerveDrive.getModuleMap().values().forEach(module -> {
-          module.getAngleMotor().configurePIDF(new PIDFConfig(SmartDashboard.getNumber("Angle Motor P", 0), 0));
-          module.getAngleMotor().burnFlash();
-        });
-      }, this);
-  }
-
-  /**
    * Returns a Command that centers the modules of the SwerveDrive subsystem.
    *
    * @return a Command that centers the modules of the SwerveDrive subsystem

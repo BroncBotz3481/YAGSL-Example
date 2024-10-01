@@ -1065,6 +1065,21 @@ public class SwerveDrive
   }
 
   /**
+   * Sets the pose estimator's trust of global measurements. This might be used to change trust in vision measurements
+   * after the autonomous period, or to change trust as distance to a vision target increases.
+   *
+   * @param visionMeasurementStdDevs Standard deviations of the vision measurements. Increase these numbers to trust
+   *                                 global measurements from vision less. This matrix is in the form [x, y, theta],
+   *                                 with units in meters and radians.
+   */
+  public void setVisionMeasurementStdDevs(Matrix<N3, N1> visionMeasurementStdDevs)
+  {
+    odometryLock.lock();
+    swerveDrivePoseEstimator.setVisionMeasurementStdDevs(visionMeasurementStdDevs);
+    odometryLock.unlock();
+  }
+
+  /**
    * Add a vision measurement to the {@link SwerveDrivePoseEstimator} and update the {@link SwerveIMU} gyro reading with
    * the given timestamp of the vision measurement.
    *
@@ -1156,6 +1171,21 @@ public class SwerveDrive
     for (SwerveModule module : swerveModules)
     {
       module.restoreInternalOffset();
+    }
+  }
+
+  /**
+   * Enable auto-centering module wheels. This has a side effect of causing some jitter to the robot when a PID is not
+   * tuned perfectly. This function is a wrapper for {@link SwerveModule#setAntiJitter(boolean)} to perform
+   * auto-centering.
+   *
+   * @param enabled Enable auto-centering (disable antiJitter)
+   */
+  public void setAutoCenteringModules(boolean enabled)
+  {
+    for (SwerveModule module : swerveModules)
+    {
+      module.setAntiJitter(!enabled);
     }
   }
 

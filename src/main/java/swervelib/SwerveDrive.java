@@ -189,6 +189,11 @@ public class SwerveDrive
       imuReadingCache = new Cache<>(imu::getRotation3d, 5L);
     }
 
+    if(angularVelocityCorrection)
+    {
+      setupIMUVelocity();
+    }
+
     this.swerveModules = config.modules;
 
     //    odometry = new SwerveDriveOdometry(kinematics, getYaw(), getModulePositions());
@@ -493,8 +498,6 @@ public class SwerveDrive
    */
   public void drive(ChassisSpeeds velocity, boolean isOpenLoop, Translation2d centerOfRotationMeters)
   {
-
-    // Explanation coming soon
     if(angularVelocityCorrection)
     {
       // TODO: I still haven't done the math on the 1 million multipler, I will do that asap but I am pushing it for now
@@ -658,7 +661,6 @@ public class SwerveDrive
    */
   public void setChassisSpeedsWithDriveOptimizations(ChassisSpeeds chassisSpeeds)
   {
-    // Explanation coming soon
     if(angularVelocityCorrection)
     {
       // TODO: I still haven't done the math on the 1 million multipler, I will do that asap but I am pushing it for now
@@ -1284,8 +1286,12 @@ public class SwerveDrive
    */
   public void setChassisDiscretization(boolean enable, double dtSeconds)
   {
-    chassisVelocityCorrection = enable;
-    discretizationdtSeconds = dtSeconds;
+    if(!SwerveDriveTelemetry.isSimulation)
+    {
+      chassisVelocityCorrection = enable;
+      discretizationdtSeconds = dtSeconds;
+    }
+
   }
 
   /**
@@ -1300,15 +1306,18 @@ public class SwerveDrive
    */
   public void setAngularVelocityCompensation(boolean enable, double angularVelocityCoeff)
   {
-    /** TODO: How should it behave in the case of simulation? Skew doesn't really exist in simulation, 
-     * discretize could also be removed in simulation as it creates skew in the simulation, 
-     * the skew it corrects is only present on a real bot.
-     * This makes the robot continously rotate due to a lack of friction.
-     * My vote is to disable both discretize and angular velocity correction.
-     */
-    imuVelocity = new IMUVelocity(imu);
-    angularVelocityCorrection = true;
-    angularVelocityCoefficient = angularVelocityCoeff;
+    if(!SwerveDriveTelemetry.isSimulation)
+    {
+      angularVelocityCorrection = true;
+      angularVelocityCoefficient = angularVelocityCoeff;
+    }
+  }
+  /**
+   * Setup the imuVelocity, this must be called after the IMU is created.
+   */
+  public void setupIMUVelocity()
+  {
+    imuVelocity = IMUVelocity.createIMUVelocity(imu);
   }
 
 }

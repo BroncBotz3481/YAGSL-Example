@@ -537,7 +537,7 @@ public class SwerveDrive
     // Calculate required module states via kinematics
     SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(velocity, centerOfRotationMeters);
 
-    setRawModuleStates(swerveModuleStates, isOpenLoop);
+    setRawModuleStates(swerveModuleStates, velocity, isOpenLoop);
   }
 
   /**
@@ -587,14 +587,15 @@ public class SwerveDrive
    * Set the module states (azimuth and velocity) directly.
    *
    * @param desiredStates A list of SwerveModuleStates to send to the modules.
+   * @param desiredChassisSpeed The desired chassis speeds to set the robot to achieve.
    * @param isOpenLoop    Whether to use closed-loop velocity control. Set to true to disable closed-loop.
    */
-  private void setRawModuleStates(SwerveModuleState[] desiredStates, boolean isOpenLoop)
+  private void setRawModuleStates(SwerveModuleState[] desiredStates, ChassisSpeeds desiredChassisSpeed, boolean isOpenLoop)
   {
     // Desaturates wheel speeds
     if (attainableMaxTranslationalSpeedMetersPerSecond != 0 || attainableMaxRotationalVelocityRadiansPerSecond != 0)
     {
-      SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, getRobotVelocity(),
+      SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, desiredChassisSpeed,
                                                   maxSpeedMPS,
                                                   attainableMaxTranslationalSpeedMetersPerSecond,
                                                   attainableMaxRotationalVelocityRadiansPerSecond);
@@ -612,14 +613,23 @@ public class SwerveDrive
 
   /**
    * Set the module states (azimuth and velocity) directly. Used primarily for auto paths.
+   * Does not allow for usage of desaturateWheelSpeeds(SwerveModuleState[] moduleStates, 
+   * ChassisSpeeds desiredChassisSpeed, double attainableMaxModuleSpeedMetersPerSecond, 
+   * double attainableMaxTranslationalSpeedMetersPerSecond, double attainableMaxRotationalVelocityRadiansPerSecond)
    *
    * @param desiredStates A list of SwerveModuleStates to send to the modules.
    * @param isOpenLoop    Whether to use closed-loop velocity control. Set to true to disable closed-loop.
    */
   public void setModuleStates(SwerveModuleState[] desiredStates, boolean isOpenLoop)
   {
-    setRawModuleStates(kinematics.toSwerveModuleStates(kinematics.toChassisSpeeds(desiredStates)),
-                       isOpenLoop);
+    desiredStates = kinematics.toSwerveModuleStates(kinematics.toChassisSpeeds(desiredStates));
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, maxSpeedMPS);
+
+    // Sets states
+    for (SwerveModule module : swerveModules)
+    {
+      module.setDesiredState(desiredStates[module.moduleNumber], isOpenLoop, false);
+    }
   }
 
   /**
@@ -636,7 +646,7 @@ public class SwerveDrive
     SwerveDriveTelemetry.desiredChassisSpeeds[0] = chassisSpeeds.vxMetersPerSecond;
     SwerveDriveTelemetry.desiredChassisSpeeds[2] = Math.toDegrees(chassisSpeeds.omegaRadiansPerSecond);
 
-    setRawModuleStates(kinematics.toSwerveModuleStates(chassisSpeeds), false);
+    setRawModuleStates(kinematics.toSwerveModuleStates(chassisSpeeds), chassisSpeeds, false);
   }
 
   /**

@@ -30,7 +30,6 @@ import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import swervelib.encoders.CANCoderSwerve;
-import swervelib.imu.IMUVelocity;
 import swervelib.imu.Pigeon2Swerve;
 import swervelib.imu.SwerveIMU;
 import swervelib.math.SwerveMath;
@@ -99,15 +98,6 @@ public class SwerveDrive
    */
   public        boolean                  chassisVelocityCorrection                       = true;
   /**
-   * Correct for skew that scales with angular velocity in {@link SwerveDrive#drive(Translation2d, double, boolean, boolean)}
-   * TODO: Still working on the explanation, I will have it ready soon (hopefully)
-   */
-  public        boolean                  angularVelocityCorrection                      = false;
-  /**
-   * Angular Velocity Correction Coefficent (expected values between -0.15 and 0.15).
-   */
-  public        double                   angularVelocityCoefficient                     = 0;
-  /**
    * Whether to correct heading when driving translationally. Set to true to enable.
    */
   public        boolean                  headingCorrection                               = false;
@@ -123,11 +113,6 @@ public class SwerveDrive
    * Swerve IMU device for sensing the heading of the robot.
    */
   private       SwerveIMU                imu;
-  /**
-   * Class that calculates robot's yaw velocity using IMU measurements. Used for angularVelocityCorrection in 
-   * {@link SwerveDrive#drive(Translation2d, double, boolean, boolean)}.
-   */
-  private       IMUVelocity             imuVelocity;
   /**
    * Simulation of the swerve drive.
    */
@@ -494,22 +479,6 @@ public class SwerveDrive
   public void drive(ChassisSpeeds velocity, boolean isOpenLoop, Translation2d centerOfRotationMeters)
   {
 
-    // Explanation coming soon
-    if(angularVelocityCorrection)
-    {
-      // TODO: I still haven't done the math on the 1 million multipler, I will do that asap but I am pushing it for now
-      // This multipler should be built into the imuVelocity.getVelocity() function and is almost certainly dependand on the timestep used
-      var angularVelocity = new Rotation2d(imuVelocity.getVelocity() * 1000000 * angularVelocityCoefficient);
-      if(angularVelocity.getRadians() != 0.0){
-        velocity = ChassisSpeeds.fromRobotRelativeSpeeds(
-                      velocity.vxMetersPerSecond,
-                      velocity.vyMetersPerSecond,
-                      velocity.omegaRadiansPerSecond,
-                      getOdometryHeading());
-        velocity = ChassisSpeeds.fromFieldRelativeSpeeds(velocity, getOdometryHeading().plus(angularVelocity));
-      }
-    }
-
     // Thank you to Jared Russell FRC254 for Open Loop Compensation Code
     // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
     if (chassisVelocityCorrection)
@@ -641,46 +610,6 @@ public class SwerveDrive
    */
   public void setChassisSpeeds(ChassisSpeeds chassisSpeeds)
   {
-    SwerveDriveTelemetry.desiredChassisSpeeds[1] = chassisSpeeds.vyMetersPerSecond;
-    SwerveDriveTelemetry.desiredChassisSpeeds[0] = chassisSpeeds.vxMetersPerSecond;
-    SwerveDriveTelemetry.desiredChassisSpeeds[2] = Math.toDegrees(chassisSpeeds.omegaRadiansPerSecond);
-
-    setRawModuleStates(kinematics.toSwerveModuleStates(chassisSpeeds), false);
-  }
-    /**
-   * Set chassis speeds with closed-loop velocity control, using the optimizations present 
-   * in {@link SwerveDrive#drive(Translation2d, double, boolean, boolean)}. This may improve
-   * performance during autonomous, if the optimizations make you drive straight in teleop then 
-   * they should help in autonomous, think of this as a feedforward that reduces the correction needed
-   * from PID due to skew.
-   *
-   * @param chassisSpeeds Chassis speeds to set.
-   */
-  public void setChassisSpeedsWithDriveOptimizations(ChassisSpeeds chassisSpeeds)
-  {
-    // Explanation coming soon
-    if(angularVelocityCorrection)
-    {
-      // TODO: I still haven't done the math on the 1 million multipler, I will do that asap but I am pushing it for now
-      // This multipler should be built into the imuVelocity.getVelocity() function and is almost certainly dependand on the timestep used
-      var angularVelocity = new Rotation2d(imuVelocity.getVelocity() * 1000000 * angularVelocityCoefficient);
-      if(angularVelocity.getRadians() != 0.0){
-        chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
-                      chassisSpeeds.vxMetersPerSecond,
-                      chassisSpeeds.vyMetersPerSecond,
-                      chassisSpeeds.omegaRadiansPerSecond,
-                      getOdometryHeading());
-        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getOdometryHeading().plus(angularVelocity));
-      }
-    }
-
-    // Thank you to Jared Russell FRC254 for Open Loop Compensation Code
-    // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
-    if (chassisVelocityCorrection)
-    {
-      chassisSpeeds = ChassisSpeeds.discretize(chassisSpeeds, discretizationdtSeconds);
-    }
-
     SwerveDriveTelemetry.desiredChassisSpeeds[1] = chassisSpeeds.vyMetersPerSecond;
     SwerveDriveTelemetry.desiredChassisSpeeds[0] = chassisSpeeds.vxMetersPerSecond;
     SwerveDriveTelemetry.desiredChassisSpeeds[2] = Math.toDegrees(chassisSpeeds.omegaRadiansPerSecond);
@@ -1286,29 +1215,6 @@ public class SwerveDrive
   {
     chassisVelocityCorrection = enable;
     discretizationdtSeconds = dtSeconds;
-  }
-
-  /**
-   * Enables angular velocity correction and sets the angular velocity coefficient
-   *
-   * @param enable               Enables angular velocity correction.
-   * @param angularVelocityCoeff The angular velocity coefficient. Expected values between -0.15 to 0.15, although higher values may be needed.
-   *                             Start with a value of 0.1.
-   *                             When enabling for the first time if the skew is significantly worse try inverting the value.
-   *                             Tune by moving in a straight line while rotating. Change the value until you are visually happy with the skew.
-   *                             Ensure your tune works with different translational and rotational magnitudes.
-   */
-  public void setAngularVelocityCompensation(boolean enable, double angularVelocityCoeff)
-  {
-    /** TODO: How should it behave in the case of simulation? Skew doesn't really exist in simulation, 
-     * discretize could also be removed in simulation as it creates skew in the simulation, 
-     * the skew it corrects is only present on a real bot.
-     * This makes the robot continously rotate due to a lack of friction.
-     * My vote is to disable both discretize and angular velocity correction.
-     */
-    imuVelocity = new IMUVelocity(imu);
-    angularVelocityCorrection = true;
-    angularVelocityCoefficient = angularVelocityCoeff;
   }
 
 }

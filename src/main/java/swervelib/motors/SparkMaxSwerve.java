@@ -11,6 +11,8 @@ import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkAnalogSensor;
 import com.revrobotics.SparkPIDController;
+
+import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.DriverStation;
 import java.util.function.Supplier;
 import swervelib.encoders.SwerveAbsoluteEncoder;
@@ -246,8 +248,16 @@ public class SparkMaxSwerve extends SwerveMotor
       // https://github.com/FRC3005/Charged-Up-2023-Public/blob/2b6a7c695e23edebafa27a76cf639a00f6e8a3a6/src/main/java/frc/robot/subsystems/drive/REVSwerveModule.java#L227-L244
       // Some of the frames can probably be adjusted to decrease CAN utilization, with 65535 being the max. 
       // From testing, 20ms on frame 5 sometimes returns the same value while constantly powering the azimuth but 8ms may be overkill,
-      // with limited testing 19ms did not return the same value while the module was constatntly rotating. 
-      configureCANStatusFrames(100, 20, 50, 200, 20, 8, 50);
+      // with limited testing 19ms did not return the same value while the module was constatntly rotating.
+      if (absoluteEncoder.getAbsoluteEncoder() instanceof AbsoluteEncoder)
+      {
+        configureCANStatusFrames(100, 20, 20, 200, 20, 8, 50);
+      }
+      // Needs to test on analog encoders but the same concept should apply for them, worst thing that could happen is slightly more can use
+      else if(absoluteEncoder.getAbsoluteEncoder() instanceof SparkAnalogSensor)
+      {
+        configureCANStatusFrames(100, 20, 20, 19, 200, 200, 200);
+      }
       configureSparkMax(() -> {
         if (absoluteEncoder.getAbsoluteEncoder() instanceof AbsoluteEncoder)
         {

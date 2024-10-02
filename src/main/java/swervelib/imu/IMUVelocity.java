@@ -1,9 +1,9 @@
 package swervelib.imu;
 
+import edu.wpi.first.hal.HALUtil;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.RobotController;
 
 public class IMUVelocity {
   /**
@@ -66,7 +66,7 @@ public class IMUVelocity {
     velocityFilter = LinearFilter.movingAverage(averagingTaps);
     notifier = new Notifier(this::update);
     notifier.startPeriodic(periodSeconds);
-    timestamp = RobotController.getFPGATime();
+    timestamp = HALUtil.getFPGATime();
   }
 
   /**
@@ -74,7 +74,7 @@ public class IMUVelocity {
    */
   private void update() 
   {
-    double newTimestamp = RobotController.getFPGATime();
+    double newTimestamp = HALUtil.getFPGATime();
     Rotation2d newPosition = Rotation2d.fromRadians(gyro.getRotation3d().getZ());
 
     synchronized (this) {

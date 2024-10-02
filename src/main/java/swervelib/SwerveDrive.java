@@ -498,7 +498,7 @@ public class SwerveDrive
     if(angularVelocityCorrection)
     {
       // TODO: I still haven't done the math on the 1 million multipler, I will do that asap but I am pushing it for now
-      // This multipler should be built into the imuVelocity.getVelocity() function and is almost certainly dependand on the timestep used
+      // This multipler should be built into the imuVelocity.getVelocity() method and is almost certainly dependant on the timestep used
       var angularVelocity = new Rotation2d(imuVelocity.getVelocity() * 1000000 * angularVelocityCoefficient);
       if(angularVelocity.getRadians() != 0.0){
         velocity = ChassisSpeeds.fromRobotRelativeSpeeds(
@@ -650,9 +650,9 @@ public class SwerveDrive
     /**
    * Set chassis speeds with closed-loop velocity control, using the optimizations present 
    * in {@link SwerveDrive#drive(Translation2d, double, boolean, boolean)}. This may improve
-   * performance during autonomous, if the optimizations make you drive straight in teleop then 
-   * they should help in autonomous, think of this as a feedforward that reduces the correction needed
-   * from PID due to skew.
+   * performance during autonomous, if the optimizations reduce your bot's skew in teleop then 
+   * they should help in autonomous, think of this as a feedforward that reduces the correction 
+   * needed from PID due to skew.
    *
    * @param chassisSpeeds Chassis speeds to set.
    */
@@ -662,7 +662,7 @@ public class SwerveDrive
     if(angularVelocityCorrection)
     {
       // TODO: I still haven't done the math on the 1 million multipler, I will do that asap but I am pushing it for now
-      // This multipler should be built into the imuVelocity.getVelocity() function and is almost certainly dependand on the timestep used
+      // This multipler should be built into the imuVelocity.getVelocity() function and is almost certainly dependant on the timestep used
       var angularVelocity = new Rotation2d(imuVelocity.getVelocity() * 1000000 * angularVelocityCoefficient);
       if(angularVelocity.getRadians() != 0.0){
         chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(

@@ -1310,7 +1310,7 @@ public class SwerveDrive
    * Enable desired drive corrections
    * 
    * @param velocity                         The chassis speeds to set the robot to achieve.
-   * @param useChassisDiscretize             Correct chassis velocity using 254's correction.
+   * @param uesChassisDiscretize             Correct chassis velocity using 254's correction.
    * @param useAngularVelocitySkewCorrection Use the robot's angular velocity to correct for skew.
    * @return                                 The chassis speeds after optimizations.
    */

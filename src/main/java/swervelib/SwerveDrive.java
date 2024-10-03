@@ -99,10 +99,20 @@ public class SwerveDrive
    */
   public        boolean                  chassisVelocityCorrection                       = true;
   /**
+   * Correct chassis velocity in {@link SwerveDrive#setChassisSpeeds(ChassisSpeeds chassisSpeeds)} (auto) using 254's
+   * correction during auto.
+   */
+  public        boolean                  autonomousChassisVelocityCorrection             = false;
+  /**
    * Correct for skew that scales with angular velocity in {@link SwerveDrive#drive(Translation2d, double, boolean, boolean)}
    * TODO: Still working on the explanation, I will have it ready soon (hopefully)
    */
   public        boolean                  angularVelocityCorrection                      = false;
+    /**
+   * Correct for skew that scales with angular velocity in {@link SwerveDrive#setChassisSpeeds(ChassisSpeeds chassisSpeeds)}
+   * during auto.
+   */
+  public        boolean                  autonomousAngularVelocityCorrection            = false;
   /**
    * Angular Velocity Correction Coefficent (expected values between -0.15 and 0.15).
    */
@@ -187,11 +197,6 @@ public class SwerveDrive
       imu = config.imu;
       imu.factoryDefault();
       imuReadingCache = new Cache<>(imu::getRotation3d, 5L);
-    }
-
-    if(angularVelocityCorrection)
-    {
-      setupIMUVelocity();
     }
 
     this.swerveModules = config.modules;
@@ -500,9 +505,7 @@ public class SwerveDrive
   {
     if(angularVelocityCorrection)
     {
-      // TODO: I still haven't done the math on the 1 million multipler, I will do that asap but I am pushing it for now
-      // This multipler should be built into the imuVelocity.getVelocity() method and is almost certainly dependant on the timestep used
-      var angularVelocity = new Rotation2d(imuVelocity.getVelocity() * 1000000 * angularVelocityCoefficient);
+      var angularVelocity = new Rotation2d(imuVelocity.getVelocity() * angularVelocityCoefficient);
       if(angularVelocity.getRadians() != 0.0){
         velocity = ChassisSpeeds.fromRobotRelativeSpeeds(
                       velocity.vxMetersPerSecond,
@@ -644,28 +647,9 @@ public class SwerveDrive
    */
   public void setChassisSpeeds(ChassisSpeeds chassisSpeeds)
   {
-    SwerveDriveTelemetry.desiredChassisSpeeds[1] = chassisSpeeds.vyMetersPerSecond;
-    SwerveDriveTelemetry.desiredChassisSpeeds[0] = chassisSpeeds.vxMetersPerSecond;
-    SwerveDriveTelemetry.desiredChassisSpeeds[2] = Math.toDegrees(chassisSpeeds.omegaRadiansPerSecond);
-
-    setRawModuleStates(kinematics.toSwerveModuleStates(chassisSpeeds), false);
-  }
-    /**
-   * Set chassis speeds with closed-loop velocity control, using the optimizations present 
-   * in {@link SwerveDrive#drive(Translation2d, double, boolean, boolean)}. This may improve
-   * performance during autonomous, if the optimizations reduce your bot's skew in teleop then 
-   * they should help in autonomous, think of this as a feedforward that reduces the correction 
-   * needed from PID due to skew.
-   *
-   * @param chassisSpeeds Chassis speeds to set.
-   */
-  public void setChassisSpeedsWithDriveOptimizations(ChassisSpeeds chassisSpeeds)
-  {
-    if(angularVelocityCorrection)
+    if(autonomousAngularVelocityCorrection)
     {
-      // TODO: I still haven't done the math on the 1 million multipler, I will do that asap but I am pushing it for now
-      // This multipler should be built into the imuVelocity.getVelocity() function and is almost certainly dependant on the timestep used
-      var angularVelocity = new Rotation2d(imuVelocity.getVelocity() * 1000000 * angularVelocityCoefficient);
+      var angularVelocity = new Rotation2d(imuVelocity.getVelocity() * angularVelocityCoefficient);
       if(angularVelocity.getRadians() != 0.0){
         chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
                       chassisSpeeds.vxMetersPerSecond,
@@ -678,7 +662,7 @@ public class SwerveDrive
 
     // Thank you to Jared Russell FRC254 for Open Loop Compensation Code
     // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
-    if (chassisVelocityCorrection)
+    if (autonomousChassisVelocityCorrection)
     {
       chassisSpeeds = ChassisSpeeds.discretize(chassisSpeeds, discretizationdtSeconds);
     }
@@ -1278,7 +1262,7 @@ public class SwerveDrive
   }
 
   /**
-   * Sets the Chassis discretization seconds as well as enableing/disabling the Chassis velocity correction
+   * Sets the Chassis discretization seconds as well as enableing/disabling the Chassis velocity correction in teleop
    *
    * @param enable    Enable chassis velocity correction, which will use
    *                  {@link ChassisSpeeds#discretize(ChassisSpeeds, double)} with the following.
@@ -1291,33 +1275,49 @@ public class SwerveDrive
       chassisVelocityCorrection = enable;
       discretizationdtSeconds = dtSeconds;
     }
-
   }
 
   /**
-   * Enables angular velocity correction and sets the angular velocity coefficient
+   * Sets the Chassis discretization seconds as well as enableing/disabling the Chassis velocity correction in teleop and/or auto
    *
-   * @param enable               Enables angular velocity correction.
-   * @param angularVelocityCoeff The angular velocity coefficient. Expected values between -0.15 to 0.15, although higher values may be needed.
-   *                             Start with a value of 0.1.
-   *                             When enabling for the first time if the skew is significantly worse try inverting the value.
-   *                             Tune by moving in a straight line while rotating. Change the value until you are visually happy with the skew.
-   *                             Ensure your tune works with different translational and rotational magnitudes.
+   * @param useInTeleop    Enable chassis velocity correction, which will use
+   *                       {@link ChassisSpeeds#discretize(ChassisSpeeds, double)} with the following in teleop.
+   * @param useInAuto      Enable chassis velocity correction, which will use
+   *                       {@link ChassisSpeeds#discretize(ChassisSpeeds, double)} with the following in auto.
+   * @param dtSeconds      The duration of the timestep the speeds should be applied for.
    */
-  public void setAngularVelocityCompensation(boolean enable, double angularVelocityCoeff)
+  public void setChassisDiscretization(boolean useInTeleop, boolean useInAuto, double dtSeconds)
   {
     if(!SwerveDriveTelemetry.isSimulation)
     {
-      angularVelocityCorrection = true;
-      angularVelocityCoefficient = angularVelocityCoeff;
+      chassisVelocityCorrection = useInTeleop;
+      autonomousChassisVelocityCorrection = useInAuto;
+      discretizationdtSeconds = dtSeconds;
     }
   }
+
   /**
-   * Setup the imuVelocity, this must be called after the IMU is created.
+   * Enables angular velocity correction in telop and/or autonomous and sets the angular velocity coefficient for both modes
+   *
+   * @param useInTeleop          Enables angular velocity correction in teleop.
+   * @param useInAuto            Enables angular velocity correction in autonomous.
+   * @param angularVelocityCoeff The angular velocity coefficient. Expected values between -0.15 to 0.15.
+   *                             Start with a value of 0.1, test in teleop.
+   *                             When enabling for the first time if the skew is significantly worse try inverting the value.
+   *                             Tune by moving in a straight line while rotating. Testing is best done with angular velocity controls on the right stick. 
+   *                             Change the value until you are visually happy with the skew.
+   *                             Ensure your tune works with different translational and rotational magnitudes.
+   *                             If this reduces skew in teleop, it may improve auto.
    */
-  public void setupIMUVelocity()
+  public void setAngularVelocityCompensation(boolean useInTeleop, boolean useInAuto, double angularVelocityCoeff)
   {
-    imuVelocity = IMUVelocity.createIMUVelocity(imu);
+    if(!SwerveDriveTelemetry.isSimulation)
+    {
+      imuVelocity = IMUVelocity.createIMUVelocity(imu);
+      angularVelocityCorrection = useInTeleop;
+      autonomousAngularVelocityCorrection = useInAuto;
+      angularVelocityCoefficient = angularVelocityCoeff;
+    }
   }
 
 }

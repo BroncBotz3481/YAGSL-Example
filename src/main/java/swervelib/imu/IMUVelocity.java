@@ -1,15 +1,8 @@
 package swervelib.imu;
 
-import com.ctre.phoenix.sensors.WPI_PigeonIMU;
-import com.ctre.phoenix6.hardware.Pigeon2;
-import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.hal.HALUtil;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.ADIS16448_IMU;
-import edu.wpi.first.wpilibj.ADIS16470_IMU;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Notifier;
 
 public class IMUVelocity {
@@ -72,44 +65,44 @@ public class IMUVelocity {
    */
   public static IMUVelocity createIMUVelocity(SwerveIMU gyro)
   {
+    double desiredNotifierPeriod = 1.0/50.0;
     // ADIS16448_IMU ~200HZ:
     // https://github.com/wpilibsuite/allwpilib/blob/f82e1c9d4807f4c0fa832fd5bd9f9e90848eb8eb/wpilibj/src/main/java/edu/wpi/first/wpilibj/ADIS16448_IMU.java#L277
-    if(gyro.getIMU() instanceof ADIS16448_IMU)
+    if(gyro instanceof ADIS16448Swerve)
     {
-      return new IMUVelocity(gyro, 1.0/100.0, 5);
+      desiredNotifierPeriod = 1.0/100.0;
     }
     // ADIS16470_IMU 200HZ
     // https://github.com/wpilibsuite/allwpilib/blob/f82e1c9d4807f4c0fa832fd5bd9f9e90848eb8eb/wpilibj/src/main/java/edu/wpi/first/wpilibj/ADIS16470_IMU.java#L345
-    else if(gyro.getIMU() instanceof ADIS16470_IMU)
+    else if(gyro instanceof ADIS16470Swerve)
     {
-      return new IMUVelocity(gyro, 1.0/100.0, 5);
+      desiredNotifierPeriod = 1.0/100.0;
     }
     // ADXRS450_Gyro 2000HZ?
     // https://github.com/wpilibsuite/allwpilib/blob/f82e1c9d4807f4c0fa832fd5bd9f9e90848eb8eb/wpilibj/src/main/java/edu/wpi/first/wpilibj/ADXRS450_Gyro.java#L31
-    else if(gyro.getIMU() instanceof ADXRS450_Gyro)
+    else if(gyro instanceof ADXRS450Swerve)
     {
-      return new IMUVelocity(gyro, 1.0/100.0, 5);
+      desiredNotifierPeriod = 1.0/100.0;
     }
     // NAX (AHRS): 60HZ
     // https://github.com/kauailabs/navxmxp/blob/5e010ba810bb7f7eaab597e0b708e34f159984db/roborio/java/navx_frc/src/com/kauailabs/navx/frc/AHRS.java#L119C25-L119C61
-    else if(gyro.getIMU() instanceof AHRS)
+    else if(gyro instanceof NavXSwerve)
     {
-      return new IMUVelocity(gyro, 1.0/60.0, 5);
+      desiredNotifierPeriod = 1.0/60.0;
     }
     // Pigeon2 100HZ
     // https://store.ctr-electronics.com/content/user-manual/Pigeon2%20User's%20Guide.pdf
-    else if(gyro.getIMU() instanceof Pigeon2)
+    else if(gyro instanceof Pigeon2Swerve)
     {
-      return new IMUVelocity(gyro, 1.0/100.0, 5);
+      desiredNotifierPeriod = 1.0/100.0;
     }
     // Pigeon 100HZ
     // https://store.ctr-electronics.com/content/user-manual/Pigeon%20IMU%20User's%20Guide.pdf
-    else if(gyro.getIMU() instanceof WPI_PigeonIMU)
+    else if(gyro instanceof PigeonSwerve)
     {
-      return new IMUVelocity(gyro, 1.0/100.0, 5);
+      desiredNotifierPeriod = 1.0/100.0;
     }
-    // defaults to 50hz and 5 taps
-    return new IMUVelocity(gyro, 1.0/50.0, 5);
+    return new IMUVelocity(gyro, desiredNotifierPeriod, 5);
   }
 
   /**
@@ -133,10 +126,11 @@ public class IMUVelocity {
 
   /**
    * Get the robot's angular velocity based on averaged meaasurements from the IMU.
+   * Velocity is multiplied by 1e+6 (1,000,000) because the timestamps are in microseconds.
    *
    * @return robot's angular velocity in rads/s as a double.
    */
   public synchronized double getVelocity() {
-    return velocity;
+    return velocity * 1e+6;
   }
 }

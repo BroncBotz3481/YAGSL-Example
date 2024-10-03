@@ -31,40 +31,30 @@ import swervelib.motors.SwerveMotor;
 import swervelib.motors.TalonFXSwerve;
 import swervelib.motors.TalonSRXSwerve;
 
-/**
- * Device JSON parsed class. Used to access the JSON data.
- */
-public class DeviceJson
-{
+/** Device JSON parsed class. Used to access the JSON data. */
+public class DeviceJson {
 
-  /**
-   * The device type, e.g. pigeon/pigeon2/sparkmax/talonfx/navx
-   */
+  /** The device type, e.g. pigeon/pigeon2/sparkmax/talonfx/navx */
   public String type;
-  /**
-   * The CAN ID or pin ID of the device.
-   */
-  public int    id;
-  /**
-   * The CAN bus name which the device resides on if using CAN.
-   */
+
+  /** The CAN ID or pin ID of the device. */
+  public int id;
+
+  /** The CAN bus name which the device resides on if using CAN. */
   public String canbus = "";
 
   /**
    * Create a {@link SwerveAbsoluteEncoder} from the current configuration.
    *
-   * @param motor {@link SwerveMotor} of which attached encoders will be created from, only used when the type is
-   *              "attached" or "canandencoder".
+   * @param motor {@link SwerveMotor} of which attached encoders will be created from, only used
+   *     when the type is "attached" or "canandencoder".
    * @return {@link SwerveAbsoluteEncoder} given.
    */
-  public SwerveAbsoluteEncoder createEncoder(SwerveMotor motor)
-  {
-    if (id > 40)
-    {
+  public SwerveAbsoluteEncoder createEncoder(SwerveMotor motor) {
+    if (id > 40) {
       canIdWarning.set(true);
     }
-    switch (type)
-    {
+    switch (type) {
       case "none":
         return null;
       case "integrated":
@@ -99,14 +89,11 @@ public class DeviceJson
    *
    * @return {@link SwerveIMU} given.
    */
-  public SwerveIMU createIMU()
-  {
-    if (id > 40)
-    {
+  public SwerveIMU createIMU() {
+    if (id > 40) {
       canIdWarning.set(true);
     }
-    switch (type)
-    {
+    switch (type) {
       case "adis16448":
         return new ADIS16448Swerve();
       case "adis16470":
@@ -120,15 +107,17 @@ public class DeviceJson
         return new NavXSwerve(SPI.Port.kMXP);
       case "navx_i2c":
         DriverStation.reportWarning(
-            "WARNING: There exists an I2C lockup issue on the roboRIO that could occur, more information here: " +
-            "\nhttps://docs.wpilib.org/en/stable/docs/yearly-overview/known-issues" +
-            ".html#onboard-i2c-causing-system-lockups",
+            "WARNING: There exists an I2C lockup issue on the roboRIO that could occur, more information here: "
+                + "\nhttps://docs.wpilib.org/en/stable/docs/yearly-overview/known-issues"
+                + ".html#onboard-i2c-causing-system-lockups",
             false);
         i2cLockupWarning.set(true);
         return new NavXSwerve(I2C.Port.kMXP);
       case "navx_usb":
-        DriverStation.reportWarning("WARNING: There is issues when using USB camera's and the NavX like this!\n" +
-                                    "https://pdocs.kauailabs.com/navx-mxp/guidance/selecting-an-interface/", false);
+        DriverStation.reportWarning(
+            "WARNING: There is issues when using USB camera's and the NavX like this!\n"
+                + "https://pdocs.kauailabs.com/navx-mxp/guidance/selecting-an-interface/",
+            false);
         serialCommsIssueWarning.set(true);
         return new NavXSwerve(Port.kUSB);
       case "navx_mxp_serial":
@@ -149,17 +138,13 @@ public class DeviceJson
    * @param isDriveMotor If the motor being generated is a drive motor.
    * @return {@link SwerveMotor} given.
    */
-  public SwerveMotor createMotor(boolean isDriveMotor)
-  {
-    if (id > 40)
-    {
+  public SwerveMotor createMotor(boolean isDriveMotor) {
+    if (id > 40) {
       canIdWarning.set(true);
     }
-    switch (type)
-    {
+    switch (type) {
       case "sparkmax_brushed":
-        switch (canbus)
-        {
+        switch (canbus) {
           case "greyhill_63r256":
             return new SparkMaxBrushedMotorSwerve(id, isDriveMotor, Type.kQuadrature, 1024, false);
           case "srx_mag_encoder":
@@ -173,11 +158,12 @@ public class DeviceJson
           case "srx_mag_encoder_dataport":
             return new SparkMaxBrushedMotorSwerve(id, isDriveMotor, Type.kQuadrature, 4096, true);
           default:
-            if (isDriveMotor)
-            {
-              throw new RuntimeException("Spark MAX " + id + " MUST have a encoder attached to the motor controller.");
+            if (isDriveMotor) {
+              throw new RuntimeException(
+                  "Spark MAX " + id + " MUST have a encoder attached to the motor controller.");
             }
-            // We are creating a motor for an angle motor which will use the absolute encoder attached to the data port.
+            // We are creating a motor for an angle motor which will use the absolute encoder
+            // attached to the data port.
             return new SparkMaxBrushedMotorSwerve(id, isDriveMotor, Type.kNoSensor, 0, false);
         }
       case "neo":

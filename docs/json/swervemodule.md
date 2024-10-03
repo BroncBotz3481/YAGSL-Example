@@ -23,5 +23,5 @@ This configuration file interacts directly with swerve kinematics.
 
 | Name  | Units | Required | Description        |
 |-------|-------|----------|--------------------|
-| drive | Value | Y        | Drive motor value. |  
-| angle | Value | Y        | Angle motor value. |  
+| drive | Value | Y        | Drive motor value. |
+| angle | Value | Y        | Angle motor value. |

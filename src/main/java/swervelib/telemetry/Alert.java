@@ -38,57 +38,45 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Class for managing persistent alerts to be sent over NetworkTables.
- */
-public class Alert
-{
+/** Class for managing persistent alerts to be sent over NetworkTables. */
+public class Alert {
+
+  /** Group of the alert. */
+  private static Map<String, SendableAlerts> groups = new HashMap<String, SendableAlerts>();
+
+  /** Type of the Alert to raise. */
+  private final AlertType type;
+
+  /** Activation state of alert. */
+  private boolean active = false;
+
+  /** When the alert was raised. */
+  private double activeStartTime = 0.0;
+
+  /** Text of the alert. */
+  private String text;
 
   /**
-   * Group of the alert.
-   */
-  private static Map<String, SendableAlerts> groups          = new HashMap<String, SendableAlerts>();
-  /**
-   * Type of the Alert to raise.
-   */
-  private final  AlertType                   type;
-  /**
-   * Activation state of alert.
-   */
-  private        boolean                     active          = false;
-  /**
-   * When the alert was raised.
-   */
-  private        double                      activeStartTime = 0.0;
-  /**
-   * Text of the alert.
-   */
-  private        String                      text;
-
-  /**
-   * Creates a new Alert in the default group - "Alerts". If this is the first to be instantiated, the appropriate
-   * entries will be added to NetworkTables.
+   * Creates a new Alert in the default group - "Alerts". If this is the first to be instantiated,
+   * the appropriate entries will be added to NetworkTables.
    *
    * @param text Text to be displayed when the alert is active.
    * @param type Alert level specifying urgency.
    */
-  public Alert(String text, AlertType type)
-  {
+  public Alert(String text, AlertType type) {
     this("Alerts", text, type);
   }
 
   /**
-   * Creates a new Alert. If this is the first to be instantiated in its group, the appropriate entries will be added to
-   * NetworkTables.
+   * Creates a new Alert. If this is the first to be instantiated in its group, the appropriate
+   * entries will be added to NetworkTables.
    *
    * @param group Group identifier, also used as NetworkTables title
-   * @param text  Text to be displayed when the alert is active.
-   * @param type  Alert level specifying urgency.
+   * @param text Text to be displayed when the alert is active.
+   * @param type Alert level specifying urgency.
    */
-  public Alert(String group, String text, AlertType type)
-  {
-    if (!groups.containsKey(group))
-    {
+  public Alert(String group, String text, AlertType type) {
+    if (!groups.containsKey(group)) {
       groups.put(group, new SendableAlerts());
       SmartDashboard.putData(group, groups.get(group));
     }
@@ -99,15 +87,13 @@ public class Alert
   }
 
   /**
-   * Sets whether the alert should currently be displayed. When activated, the alert text will also be sent to the
-   * console.
+   * Sets whether the alert should currently be displayed. When activated, the alert text will also
+   * be sent to the console.
    *
    * @param active Set the alert as active and report it to the driver station.
    */
-  public void set(boolean active)
-  {
-    if (active && !this.active)
-    {
+  public void set(boolean active) {
+    if (active && !this.active) {
       activeStartTime = Timer.getFPGATimestamp();
       printAlert(text);
     }
@@ -119,25 +105,20 @@ public class Alert
    *
    * @param text The text for the alert.
    */
-  public void setText(String text)
-  {
-    if (active && !text.equals(this.text))
-    {
+  public void setText(String text) {
+    if (active && !text.equals(this.text)) {
       printAlert(text);
     }
     this.text = text;
   }
-
 
   /**
    * Print the alert message.
    *
    * @param text Text to print.
    */
-  private void printAlert(String text)
-  {
-    switch (type)
-    {
+  private void printAlert(String text) {
+    switch (type) {
       case ERROR:
         DriverStation.reportError(text, false);
         break;
@@ -156,51 +137,45 @@ public class Alert
     }
   }
 
-  /**
-   * Represents an alert's level of urgency.
-   */
-  public static enum AlertType
-  {
+  /** Represents an alert's level of urgency. */
+  public static enum AlertType {
     /**
-     * High priority alert - displayed first on the dashboard with a red "X" symbol. Use this type for problems which
-     * will seriously affect the robot's functionality and thus require immediate attention.
+     * High priority alert - displayed first on the dashboard with a red "X" symbol. Use this type
+     * for problems which will seriously affect the robot's functionality and thus require immediate
+     * attention.
      */
     ERROR,
     /**
-     * High priority alert - displayed first on the dashboard with a red "X" symbol. Use this type for problems which
-     * will seriously affect the robot's functionality and thus require immediate attention. Trace printed to driver
-     * station console.
+     * High priority alert - displayed first on the dashboard with a red "X" symbol. Use this type
+     * for problems which will seriously affect the robot's functionality and thus require immediate
+     * attention. Trace printed to driver station console.
      */
     ERROR_TRACE,
 
     /**
-     * Medium priority alert - displayed second on the dashboard with a yellow "!" symbol. Use this type for problems
-     * which could affect the robot's functionality but do not necessarily require immediate attention.
+     * Medium priority alert - displayed second on the dashboard with a yellow "!" symbol. Use this
+     * type for problems which could affect the robot's functionality but do not necessarily require
+     * immediate attention.
      */
     WARNING,
     /**
-     * Medium priority alert - displayed second on the dashboard with a yellow "!" symbol. Use this type for problems
-     * which could affect the robot's functionality but do not necessarily require immediate attention. Trace printed to
-     * driver station console.
+     * Medium priority alert - displayed second on the dashboard with a yellow "!" symbol. Use this
+     * type for problems which could affect the robot's functionality but do not necessarily require
+     * immediate attention. Trace printed to driver station console.
      */
     WARNING_TRACE,
     /**
-     * Low priority alert - displayed last on the dashboard with a green "i" symbol. Use this type for problems which
-     * are unlikely to affect the robot's functionality, or any other alerts which do not fall under "ERROR" or
-     * "WARNING".
+     * Low priority alert - displayed last on the dashboard with a green "i" symbol. Use this type
+     * for problems which are unlikely to affect the robot's functionality, or any other alerts
+     * which do not fall under "ERROR" or "WARNING".
      */
     INFO
   }
 
-  /**
-   * Sendable alert for advantage scope.
-   */
-  private static class SendableAlerts implements Sendable
-  {
+  /** Sendable alert for advantage scope. */
+  private static class SendableAlerts implements Sendable {
 
-    /**
-     * Alert list for sendable.
-     */
+    /** Alert list for sendable. */
     public final List<Alert> alerts = new ArrayList<>();
 
     /**
@@ -209,13 +184,10 @@ public class Alert
      * @param type Type of alert to fetch.
      * @return Active alert strings.
      */
-    public String[] getStrings(AlertType type)
-    {
+    public String[] getStrings(AlertType type) {
       List<String> alertStrings = new ArrayList<>();
-      for (Alert alert : alerts)
-      {
-        if (alert.type == type && alert.active)
-        {
+      for (Alert alert : alerts) {
+        if (alert.type == type && alert.active) {
           alertStrings.add(alert.text);
         }
       }
@@ -224,8 +196,7 @@ public class Alert
     }
 
     @Override
-    public void initSendable(SendableBuilder builder)
-    {
+    public void initSendable(SendableBuilder builder) {
       builder.setSmartDashboardType("Alerts");
       builder.addStringArrayProperty("errors", () -> getStrings(AlertType.ERROR), null);
       builder.addStringArrayProperty("errors", () -> getStrings(AlertType.ERROR_TRACE), null);

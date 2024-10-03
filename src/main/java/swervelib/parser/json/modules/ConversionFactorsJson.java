@@ -1,18 +1,12 @@
 package swervelib.parser.json.modules;
 
-/**
- * Conversion Factors parsed JSON class
- */
-public class ConversionFactorsJson
-{
+/** Conversion Factors parsed JSON class */
+public class ConversionFactorsJson {
 
-  /**
-   * Drive motor conversion factors composition.
-   */
+  /** Drive motor conversion factors composition. */
   public DriveConversionFactorsJson drive = new DriveConversionFactorsJson();
-  /**
-   * Angle motor conversion factors composition.
-   */
+
+  /** Angle motor conversion factors composition. */
   public AngleConversionFactorsJson angle = new AngleConversionFactorsJson();
 
   /**
@@ -20,8 +14,7 @@ public class ConversionFactorsJson
    *
    * @return Empty
    */
-  public boolean isDriveEmpty()
-  {
+  public boolean isDriveEmpty() {
     return drive.factor == 0 && drive.diameter == 0 && drive.gearRatio == 0;
   }
 
@@ -30,8 +23,7 @@ public class ConversionFactorsJson
    *
    * @return Empty
    */
-  public boolean isAngleEmpty()
-  {
+  public boolean isAngleEmpty() {
     return angle.factor == 0 && angle.gearRatio == 0;
   }
 }

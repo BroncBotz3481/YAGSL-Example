@@ -3,37 +3,28 @@ package swervelib.parser;
 import edu.wpi.first.wpilibj.RobotController;
 import java.util.function.Supplier;
 
-/**
- * Cache for frequently requested data.
- */
-public class Cache<T>
-{
+/** Cache for frequently requested data. */
+public class Cache<T> {
 
-  /**
-   * Cached value.
-   */
-  private T           value;
-  /**
-   * Supplier for cached value.
-   */
+  /** Cached value. */
+  private T value;
+
+  /** Supplier for cached value. */
   private Supplier<T> supplier;
-  /**
-   * Timestamp in microseconds.
-   */
-  private long        timestamp;
-  /**
-   * Validity period in microseconds.
-   */
-  private long        validityPeriod;
+
+  /** Timestamp in microseconds. */
+  private long timestamp;
+
+  /** Validity period in microseconds. */
+  private long validityPeriod;
 
   /**
    * Cache for arbitrary values.
    *
-   * @param val            Value to cache.
+   * @param val Value to cache.
    * @param validityPeriod Validity period in milliseconds.
    */
-  public Cache(Supplier<T> val, long validityPeriod)
-  {
+  public Cache(Supplier<T> val, long validityPeriod) {
     supplier = val;
     value = supplier.get();
     timestamp = RobotController.getFPGATime();
@@ -45,8 +36,7 @@ public class Cache<T>
    *
    * @return The stale state of the cache.
    */
-  public boolean isStale()
-  {
+  public boolean isStale() {
     return (RobotController.getFPGATime() - timestamp) > validityPeriod;
   }
 
@@ -55,8 +45,7 @@ public class Cache<T>
    *
    * @return {@link Cache} used.
    */
-  public Cache<T> update()
-  {
+  public Cache<T> update() {
     this.value = supplier.get();
     this.timestamp = RobotController.getFPGATime();
     return this;
@@ -68,8 +57,7 @@ public class Cache<T>
    * @param supplier new supplier source.
    * @return {@link Cache} for chaining.
    */
-  public Cache<T> updateSupplier(Supplier<T> supplier)
-  {
+  public Cache<T> updateSupplier(Supplier<T> supplier) {
     this.supplier = supplier;
     update();
     return this;
@@ -81,8 +69,7 @@ public class Cache<T>
    * @param validityPeriod The new validity period in milliseconds.
    * @return {@link Cache} for chaining.
    */
-  public Cache<T> updateValidityPeriod(long validityPeriod)
-  {
+  public Cache<T> updateValidityPeriod(long validityPeriod) {
     this.validityPeriod = validityPeriod * 1000L;
     update();
     return this;
@@ -93,13 +80,10 @@ public class Cache<T>
    *
    * @return {@link T} updated to the latest cached version.
    */
-  public T getValue()
-  {
-    if (isStale())
-    {
+  public T getValue() {
+    if (isStale()) {
       update();
     }
     return value;
   }
-
 }

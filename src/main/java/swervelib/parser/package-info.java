@@ -1,4 +1,2 @@
-/**
- * JSON Parser for YAGSL configurations.
- */
+/** JSON Parser for YAGSL configurations. */
 package swervelib.parser;

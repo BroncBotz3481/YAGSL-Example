@@ -20,10 +20,10 @@ Vendor URL:
 https://broncbotz3481.github.io/YAGSL-Lib/yagsl/yagsl.json
 ```
 
-[Javadocs here](https://broncbotz3481.github.io/YAGSL/)  
-[Library here](https://github.com/BroncBotz3481/YAGSL/)  
-[Code here](https://github.com/BroncBotz3481/YAGSL/tree/main/swervelib)  
-[WIKI](https://github.com/BroncBotz3481/YAGSL/wiki)  
+[Javadocs here](https://broncbotz3481.github.io/YAGSL/)
+[Library here](https://github.com/BroncBotz3481/YAGSL/)
+[Code here](https://github.com/BroncBotz3481/YAGSL/tree/main/swervelib)
+[WIKI](https://github.com/BroncBotz3481/YAGSL/wiki)
 [Config Generation](https://broncbotz3481.github.io/YAGSL-Example/)
 
 # Create an issue if there is any errors you find!
@@ -109,7 +109,7 @@ SwerveDrive swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumS
 
 # Maintainers
 - @thenetworkgrinch
-- @Technologyman00 
+- @Technologyman00
 
 # Special Thanks to Team 7900! Trial N' Terror
-Without the debugging and aid of Team 7900 the project could never be as stable or active as it is. 
+Without the debugging and aid of Team 7900 the project could never be as stable or active as it is.

@@ -1,26 +1,16 @@
 package swervelib.parser.json;
 
-/**
- * Used to store doubles for motor configuration.
- */
-public class MotorConfigDouble
-{
+/** Used to store doubles for motor configuration. */
+public class MotorConfigDouble {
 
-  /**
-   * Drive motor.
-   */
+  /** Drive motor. */
   public double drive;
-  /**
-   * Angle motor.
-   */
+
+  /** Angle motor. */
   public double angle;
 
-  /**
-   * Default constructor.
-   */
-  public MotorConfigDouble()
-  {
-  }
+  /** Default constructor. */
+  public MotorConfigDouble() {}
 
   /**
    * Default constructor.
@@ -28,8 +18,7 @@ public class MotorConfigDouble
    * @param angle Angle data.
    * @param drive Drive data.
    */
-  public MotorConfigDouble(double angle, double drive)
-  {
+  public MotorConfigDouble(double angle, double drive) {
     this.angle = angle;
     this.drive = drive;
   }

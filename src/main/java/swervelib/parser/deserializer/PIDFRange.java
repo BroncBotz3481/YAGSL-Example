@@ -1,17 +1,11 @@
 package swervelib.parser.deserializer;
 
-/**
- * Class to hold the minimum and maximum input or output of the PIDF.
- */
-public class PIDFRange
-{
+/** Class to hold the minimum and maximum input or output of the PIDF. */
+public class PIDFRange {
 
-  /**
-   * Minimum value.
-   */
+  /** Minimum value. */
   public double min = -1;
-  /**
-   * Maximum value.
-   */
+
+  /** Maximum value. */
   public double max = 1;
 }

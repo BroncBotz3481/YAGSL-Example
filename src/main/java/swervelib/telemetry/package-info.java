@@ -1,4 +1,2 @@
-/**
- * Telemetry package for sending data to NT4 or SmartDashboard.
- */
+/** Telemetry package for sending data to NT4 or SmartDashboard. */
 package swervelib.telemetry;

@@ -1,9 +1,9 @@
 package swervelib.imu;
 
 import edu.wpi.first.hal.HALUtil;
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Notifier;
+import swervelib.math.IMULinearMovingAverageFilter;
 
 public class IMUVelocity {
   /**
@@ -11,9 +11,10 @@ public class IMUVelocity {
    */
   private final SwerveIMU gyro;
   /**
-   * Linear filter used to calculate velocity.
+   * Linear filter used to calculate velocity, we use a custom filter class
+   * to prevent unwanted operations.
    */
-  private final LinearFilter velocityFilter;
+  private final IMULinearMovingAverageFilter velocityFilter;
   /**
    * WPILib {@link Notifier} to keep IMU velocity up to date.
    */
@@ -50,7 +51,7 @@ public class IMUVelocity {
   public IMUVelocity(SwerveIMU gyro, double periodSeconds, int averagingTaps)
   {
     this.gyro = gyro;
-    velocityFilter = LinearFilter.movingAverage(averagingTaps);
+    velocityFilter = new IMULinearMovingAverageFilter(averagingTaps);
     notifier = new Notifier(this::update);
     notifier.startPeriodic(periodSeconds);
     timestamp = HALUtil.getFPGATime();
@@ -115,8 +116,7 @@ public class IMUVelocity {
 
     synchronized (this) {
       if (!firstCycle) {
-        velocity = velocityFilter.calculate(
-            (newPosition.minus(position).getRadians()) / (newTimestamp - timestamp));
+        velocityFilter.addValue((newPosition.minus(position).getRadians()) / (newTimestamp - timestamp));
         }
       firstCycle = false;
       timestamp = newTimestamp;
@@ -131,6 +131,7 @@ public class IMUVelocity {
    * @return robot's angular velocity in rads/s as a double.
    */
   public synchronized double getVelocity() {
+    velocity = velocityFilter.calculate();
     return velocity * 1e+6;
   }
 }

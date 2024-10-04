@@ -105,7 +105,6 @@ public class SwerveDrive
   public        boolean                  autonomousChassisVelocityCorrection             = false;
   /**
    * Correct for skew that scales with angular velocity in {@link SwerveDrive#drive(Translation2d, double, boolean, boolean)}
-   * TODO: Still working on the explanation, I will have it ready soon (hopefully)
    */
   public        boolean                  angularVelocityCorrection                      = false;
     /**
@@ -503,25 +502,8 @@ public class SwerveDrive
    */
   public void drive(ChassisSpeeds velocity, boolean isOpenLoop, Translation2d centerOfRotationMeters)
   {
-    if(angularVelocityCorrection)
-    {
-      var angularVelocity = new Rotation2d(imuVelocity.getVelocity() * angularVelocityCoefficient);
-      if(angularVelocity.getRadians() != 0.0){
-        velocity = ChassisSpeeds.fromRobotRelativeSpeeds(
-                      velocity.vxMetersPerSecond,
-                      velocity.vyMetersPerSecond,
-                      velocity.omegaRadiansPerSecond,
-                      getOdometryHeading());
-        velocity = ChassisSpeeds.fromFieldRelativeSpeeds(velocity, getOdometryHeading().plus(angularVelocity));
-      }
-    }
 
-    // Thank you to Jared Russell FRC254 for Open Loop Compensation Code
-    // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
-    if (chassisVelocityCorrection)
-    {
-      velocity = ChassisSpeeds.discretize(velocity, discretizationdtSeconds);
-    }
+    velocity = movementOptimizations(velocity, chassisVelocityCorrection, angularVelocityCorrection);
 
     // Heading Angular Velocity Deadband, might make a configuration option later.
     // Originally made by Team 1466 Webb Robotics.
@@ -647,25 +629,8 @@ public class SwerveDrive
    */
   public void setChassisSpeeds(ChassisSpeeds chassisSpeeds)
   {
-    if(autonomousAngularVelocityCorrection)
-    {
-      var angularVelocity = new Rotation2d(imuVelocity.getVelocity() * angularVelocityCoefficient);
-      if(angularVelocity.getRadians() != 0.0){
-        chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
-                      chassisSpeeds.vxMetersPerSecond,
-                      chassisSpeeds.vyMetersPerSecond,
-                      chassisSpeeds.omegaRadiansPerSecond,
-                      getOdometryHeading());
-        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getOdometryHeading().plus(angularVelocity));
-      }
-    }
 
-    // Thank you to Jared Russell FRC254 for Open Loop Compensation Code
-    // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
-    if (autonomousChassisVelocityCorrection)
-    {
-      chassisSpeeds = ChassisSpeeds.discretize(chassisSpeeds, discretizationdtSeconds);
-    }
+    chassisSpeeds = movementOptimizations(chassisSpeeds, autonomousChassisVelocityCorrection, autonomousAngularVelocityCorrection);
 
     SwerveDriveTelemetry.desiredChassisSpeeds[1] = chassisSpeeds.vyMetersPerSecond;
     SwerveDriveTelemetry.desiredChassisSpeeds[0] = chassisSpeeds.vxMetersPerSecond;
@@ -1297,7 +1262,8 @@ public class SwerveDrive
   }
 
   /**
-   * Enables angular velocity correction in telop and/or autonomous and sets the angular velocity coefficient for both modes
+   * Enables angular velocity skew correction in telop and/or autonomous
+   * and sets the angular velocity coefficient for both modes
    *
    * @param useInTeleop          Enables angular velocity correction in teleop.
    * @param useInAuto            Enables angular velocity correction in autonomous.
@@ -1318,6 +1284,52 @@ public class SwerveDrive
       autonomousAngularVelocityCorrection = useInAuto;
       angularVelocityCoefficient = angularVelocityCoeff;
     }
+  }
+
+  /**
+   * Correct for skew that worsens as angular velocity increases
+   * 
+   * @param velocity  The chassis speeds to set the robot to achieve.
+   * @return {@link ChassisSpeeds} of the robot after angular velocity skew correction.
+   */
+  public ChassisSpeeds angularVelocitySkewCorrection(ChassisSpeeds velocity)
+  {
+    var angularVelocity = new Rotation2d(imuVelocity.getVelocity() * angularVelocityCoefficient);
+      if(angularVelocity.getRadians() != 0.0){
+        velocity = ChassisSpeeds.fromRobotRelativeSpeeds(
+                      velocity.vxMetersPerSecond,
+                      velocity.vyMetersPerSecond,
+                      velocity.omegaRadiansPerSecond,
+                      getOdometryHeading());
+        velocity = ChassisSpeeds.fromFieldRelativeSpeeds(velocity, getOdometryHeading().plus(angularVelocity));
+      }
+    return velocity;
+  }
+
+  /**
+   * Enable desired drive corrections
+   * 
+   * @param velocity                         The chassis speeds to set the robot to achieve.
+   * @param useChassisDiscretize             Correct chassis velocity using 254's correction.
+   * @param useAngularVelocitySkewCorrection Use the robot's angular velocity to correct for skew.
+   * @return                                 The chassis speeds after optimizations.
+   */
+  public ChassisSpeeds movementOptimizations(ChassisSpeeds velocity, boolean uesChassisDiscretize, boolean useAngularVelocitySkewCorrection)
+  {
+    
+    if(useAngularVelocitySkewCorrection)
+    {
+      velocity = angularVelocitySkewCorrection(velocity);
+    }
+
+    // Thank you to Jared Russell FRC254 for Open Loop Compensation Code
+    // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
+    if (uesChassisDiscretize)
+    {
+      velocity = ChassisSpeeds.discretize(velocity, discretizationdtSeconds);
+    }
+    
+    return velocity;
   }
 
 }

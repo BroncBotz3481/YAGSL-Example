@@ -1314,7 +1314,7 @@ public class SwerveDrive
    * @param useAngularVelocitySkewCorrection Use the robot's angular velocity to correct for skew.
    * @return                                 The chassis speeds after optimizations.
    */
-  public ChassisSpeeds movementOptimizations(ChassisSpeeds velocity, boolean uesChassisDiscretize, boolean useAngularVelocitySkewCorrection)
+  private ChassisSpeeds movementOptimizations(ChassisSpeeds velocity, boolean uesChassisDiscretize, boolean useAngularVelocitySkewCorrection)
   {
     
     if(useAngularVelocitySkewCorrection)

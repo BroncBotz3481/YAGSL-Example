@@ -18,6 +18,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
+import frc.robot.subsystems.Pneumatics;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -30,6 +31,7 @@ public class RobotContainer
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController driverXbox = new CommandXboxController(0);
   // The robot's subsystems and commands are defined here...
+  private final Pneumatics pneumatics = new Pneumatics()
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve/bionic-beef-NERD-event"));
 
@@ -108,6 +110,7 @@ public class RobotContainer
                                    new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
                               ));
     driverXbox.y().whileTrue(drivebase.aimAtSpeaker(2));
+    driverXbox.getLeftBumper().onTrue(new InstantCommand(() -> pneumatics.forwardLiftSolenoid()))
     // driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
   }
 

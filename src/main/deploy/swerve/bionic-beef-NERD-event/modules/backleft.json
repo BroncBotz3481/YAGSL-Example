@@ -12,7 +12,7 @@
   "angle": {
     "type": "sparkmax",
     "id": 12,
-    "canbus": null
+    "canbus": "rio"
   },
   "encoder": {
     "type": "cancoder",

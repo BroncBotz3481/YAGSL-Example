@@ -104,6 +104,7 @@ public class SwerveSubsystem extends SubsystemBase
     }
     swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
     swerveDrive.setCosineCompensator(false);//!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
+    swerveDrive.setAngularVelocityCompensation(true, true, 0.1); //Correct for skew that gets worse as angular velocity increases. Start with a coefficient of 0.1.
     if (visionDriveTest)
     {
       setupPhotonVision();
@@ -375,14 +376,14 @@ public class SwerveSubsystem extends SubsystemBase
    * @param distanceInMeters the distance to drive in meters
    * @param speedInMetersPerSecond the speed at which to drive in meters per second
    * @return a Command that drives the swerve drive to a specific distance at a given speed
-   */  
+   */
   public Command driveToDistanceCommand(double distanceInMeters, double speedInMetersPerSecond) {
     return Commands.deferredProxy(
         () -> Commands.run(() -> drive(new ChassisSpeeds(speedInMetersPerSecond, 0, 0)), this)
         .until(() -> swerveDrive.getPose().getTranslation().getDistance(new Translation2d(0, 0)) > distanceInMeters)
         );
   }
-  
+
   /**
    * Sets the maximum speed of the swerve drive.
    *
@@ -398,7 +399,7 @@ public class SwerveSubsystem extends SubsystemBase
    * @param  kS  the static gain of the feedforward
    * @param  kV  the velocity gain of the feedforward
    * @param  kA  the acceleration gain of the feedforward
-   */  
+   */
   public void replaceSwerveModuleFeedforward(double kS, double kV, double kA) {
     swerveDrive.replaceSwerveModuleFeedforward(new SimpleMotorFeedforward(kS, kV, kA));
   }

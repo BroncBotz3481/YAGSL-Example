@@ -53,10 +53,10 @@ public final class Constants
 
   public static class PneumaticsConstants
   {
-    public static final int liftForwardChanel = 0;
-    public static final int liftReverseChanel = 1;
+    public static final int liftForwardChanel = 1;
+    public static final int liftReverseChanel = 0;
 
-    public static final int spatulaForwardChanel = 2;
-    public static final int spatulaReverseChanel = 3;
+    public static final int spatulaForwardChanel = 7;
+    public static final int spatulaReverseChanel = 6;
   }
 }

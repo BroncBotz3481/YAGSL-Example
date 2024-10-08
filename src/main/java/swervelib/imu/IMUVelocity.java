@@ -5,6 +5,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Notifier;
 import swervelib.math.IMULinearMovingAverageFilter;
 
+/**
+ * Generic IMU Velocity filter.
+ */
 public class IMUVelocity {
   /**
    * Swerve IMU.
@@ -63,6 +66,7 @@ public class IMUVelocity {
    * Other gyroscopes will default to 50hz and 5 taps. For custom rates please use the IMUVelocity constructor.
    *
    * @param gyro The SwerveIMU gyro.
+   * @return {@link IMUVelocity} for the given gyro with adjusted period readings for velocity.
    */
   public static IMUVelocity createIMUVelocity(SwerveIMU gyro)
   {

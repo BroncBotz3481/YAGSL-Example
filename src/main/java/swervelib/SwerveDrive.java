@@ -870,7 +870,7 @@ public class SwerveDrive
 
   /**
    * Set the maximum speed of the drive motors, modified {@link SwerveDrive#maxSpeedMPS} which is used for the
-   * {@link SwerveDrive#setRawModuleStates(SwerveModuleState[], boolean)} function and
+   * {@link SwerveDrive#setRawModuleStates(SwerveModuleState[], ChassisSpeeds, boolean)} function and
    * {@link SwerveController#getTargetSpeeds(double, double, double, double, double)} functions. This function overrides
    * what was placed in the JSON and could damage your motor/robot if set too high or unachievable rates.
    *
@@ -898,7 +898,7 @@ public class SwerveDrive
 
   /**
    * Set the maximum speed of the drive motors, modified {@link SwerveDrive#maxSpeedMPS} which is used for the
-   * {@link SwerveDrive#setRawModuleStates(SwerveModuleState[], boolean)} function and
+   * {@link SwerveDrive#setRawModuleStates(SwerveModuleState[], ChassisSpeeds, boolean)} function and
    * {@link SwerveController#getTargetSpeeds(double, double, double, double, double)} functions. This function overrides
    * what was placed in the JSON and could damage your motor/robot if set too high or unachievable rates. Overwrites the
    * {@link SwerveModule#setFeedforward(SimpleMotorFeedforward)}.

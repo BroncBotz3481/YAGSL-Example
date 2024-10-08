@@ -22,7 +22,7 @@ public class IMULinearMovingAverageFilter {
 
  /**
   * Add a value to the DoubleCircularBuffer
-  * @param input
+  * @param input Value to add
   */
   public void addValue(double input)
   {

@@ -388,7 +388,7 @@ public class SwerveSubsystem extends SubsystemBase
   /**
    * Sets the maximum speed of the swerve drive.
    *
-   * @param maximumSpeed the maximum speed to set for the swerve drive in meters per second
+   * @param maximumSpeedInMetersPerSecond the maximum speed to set for the swerve drive in meters per second
    */
   public void setMaximumSpeed(double maximumSpeedInMetersPerSecond) {
     swerveDrive.setMaximumSpeed(maximumSpeedInMetersPerSecond, false, swerveDrive.swerveDriveConfiguration.physicalCharacteristics.optimalVoltage);

@@ -542,7 +542,7 @@ public class SwerveSubsystem extends SubsystemBase
   public Rotation2d getHeading()
   {
     Rotation2d originalHeading = getPose().getRotation();
-    return originalHeading.rotateBy(Rotation2d.fromDegrees(RobotContainer.gyroOffset));
+    return originalHeading;
   }
 
   /**

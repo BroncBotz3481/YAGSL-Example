@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 // import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.PneumaticsConstants;
 
 public class Pneumatics extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
@@ -18,8 +19,8 @@ public class Pneumatics extends SubsystemBase {
 
   public Pneumatics() {
     m_compressor = new Compressor(PneumaticsModuleType.CTREPCM);
-    liftSolenoid= new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
-    spatulaSolenoid= new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3);
+    liftSolenoid= new DoubleSolenoid(PneumaticsModuleType.CTREPCM, PneumaticsConstants.liftForwardChanel, PneumaticsConstants.liftReverseChanel);
+    spatulaSolenoid= new DoubleSolenoid(PneumaticsModuleType.CTREPCM, PneumaticsConstants.spatulaForwardChanel, PneumaticsConstants.spatulaReverseChanel);
   }
   public void startCompressor() {
     m_compressor.enableDigital();

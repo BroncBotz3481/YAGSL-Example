@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
@@ -31,7 +32,7 @@ public class RobotContainer
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController driverXbox = new CommandXboxController(0);
   // The robot's subsystems and commands are defined here...
-  private final Pneumatics pneumatics = new Pneumatics()
+  private final Pneumatics pneumatics = new Pneumatics();
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve/bionic-beef-NERD-event"));
 
@@ -110,7 +111,10 @@ public class RobotContainer
                                    new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
                               ));
     driverXbox.y().whileTrue(drivebase.aimAtSpeaker(2));
-    driverXbox.getLeftBumper().onTrue(new InstantCommand(() -> pneumatics.forwardLiftSolenoid()))
+    driverXbox.leftBumper().onTrue(new InstantCommand(() -> pneumatics.forwardLiftSolenoid()));
+    driverXbox.leftBumper().onFalse(new InstantCommand(() -> pneumatics.reverseLiftSolenoid()));
+    driverXbox.rightBumper().onTrue(new InstantCommand(() -> pneumatics.forwardSpatulaSolenoid()));
+    driverXbox.rightBumper().onFalse(new InstantCommand(() -> pneumatics.reverseSpatulaSolenoid()));
     // driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
   }
 

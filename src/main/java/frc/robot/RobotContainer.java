@@ -31,6 +31,7 @@ public class RobotContainer
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController driverXbox = new CommandXboxController(0);
+
   // The robot's subsystems and commands are defined here...
   private final Pneumatics pneumatics = new Pneumatics();
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
@@ -79,10 +80,15 @@ public class RobotContainer
     // controls are front-left positive
     // left stick controls translation
     // right stick controls the angular velocity of the robot
+    // front shoulder buttons slowly rotate the robot
     Command driveFieldOrientedAnglularVelocity = drivebase.driveCommand(
         () -> MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
         () -> MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> driverXbox.getRightX() * 0.5);
+        () -> -driverXbox.getRightX() + 
+              (driverXbox.button(5).getAsBoolean() ? 0.4 : 0) + 
+              (driverXbox.button(6).getAsBoolean() ? -0.4 : 0));
+
+    
 
     Command driveFieldOrientedDirectAngleSim = drivebase.simDriveCommand(
         () -> MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
@@ -90,8 +96,11 @@ public class RobotContainer
         () -> driverXbox.getRawAxis(4));
 
     drivebase.setDefaultCommand(
-        !RobotBase.isSimulation() ? driveFieldOrientedDirectAngle : driveFieldOrientedDirectAngleSim);
+        !RobotBase.isSimulation() || false ? driveFieldOrientedDirectAngle : driveFieldOrientedDirectAngleSim);
+
+    drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);    
   }
+
 
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the

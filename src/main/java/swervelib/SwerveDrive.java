@@ -869,6 +869,20 @@ public class SwerveDrive
   }
 
   /**
+   * Enable auto synchronization for encoders during a match. This will only occur when the modules are not moving for a few seconds.
+   * @param enabled Enable state
+   * @param deadband Deadband in degrees, default is 3 degrees.
+   */
+  public void setModuleEncoderAutoSynchronize(boolean enabled, double deadband)
+  {
+    for(SwerveModule swerveModule : swerveModules)
+    {
+      swerveModule.setEncoderAutoSynchronize(enabled, deadband);
+    }
+  }
+
+
+  /**
    * Set the maximum speed of the drive motors, modified {@link SwerveDrive#maxSpeedMPS} which is used for the
    * {@link SwerveDrive#setRawModuleStates(SwerveModuleState[], ChassisSpeeds, boolean)} function and
    * {@link SwerveController#getTargetSpeeds(double, double, double, double, double)} functions. This function overrides

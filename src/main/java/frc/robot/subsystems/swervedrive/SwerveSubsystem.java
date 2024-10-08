@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.AutonConstants;
 import java.io.File;
 import java.util.function.DoubleSupplier;
@@ -287,7 +288,7 @@ public class SwerveSubsystem extends SubsystemBase
   public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier headingX,
                               DoubleSupplier headingY)
   {
-    // swerveDrive.setHeadingCorrection(true); // Normally you would want heading correction for this kind of control.
+    swerveDrive.setHeadingCorrection(true); // Normally you would want heading correction for this kind of control.
     return run(() -> {
 
       Translation2d scaledInputs = SwerveMath.scaleTranslation(new Translation2d(translationX.getAsDouble(),
@@ -312,7 +313,7 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public Command simDriveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier rotation)
   {
-    // swerveDrive.setHeadingCorrection(true); // Normally you would want heading correction for this kind of control.
+    swerveDrive.setHeadingCorrection(true); // Normally you would want heading correction for this kind of control.
     return run(() -> {
       // Make the robot move
       driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(translationX.getAsDouble(),
@@ -368,6 +369,24 @@ public class SwerveSubsystem extends SubsystemBase
                             translationY.getAsDouble() * swerveDrive.getMaximumVelocity()), 0.8),
                         Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumAngularVelocity(),
                         true,
+                        false);
+    });
+  }
+
+  public Command drivePOV(double robotForward, double robotLeft)
+  {
+    return drivePOV(robotForward, robotLeft, () -> 0);
+  }
+
+  public Command drivePOV(double robotForward, double robotLeft, DoubleSupplier rotationSupplier)
+  {
+    return run(() -> {
+      // Make the robot move
+      swerveDrive.drive(SwerveMath.scaleTranslation(new Translation2d(
+                            -robotLeft * swerveDrive.getMaximumVelocity(),
+                            robotForward * swerveDrive.getMaximumVelocity()), 0.8 * 0.15),
+                        rotationSupplier.getAsDouble() * swerveDrive.getMaximumAngularVelocity(),
+                        false,
                         false);
     });
   }
@@ -522,7 +541,8 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public Rotation2d getHeading()
   {
-    return getPose().getRotation();
+    Rotation2d originalHeading = getPose().getRotation();
+    return originalHeading.rotateBy(Rotation2d.fromDegrees(RobotContainer.gyroOffset));
   }
 
   /**

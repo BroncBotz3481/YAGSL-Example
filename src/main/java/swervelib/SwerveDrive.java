@@ -1286,7 +1286,7 @@ public class SwerveDrive
   }
 
   /**
-   * Enables angular velocity skew correction in telop and/or autonomous
+   * Enables angular velocity skew correction in teleop and/or autonomous
    * and sets the angular velocity coefficient for both modes
    *
    * @param useInTeleop          Enables angular velocity correction in teleop.

@@ -113,7 +113,7 @@ public class SwerveModule
    */
   private       boolean                synchronizeEncoderQueued = false;
   /**
-   * Encoder <- Absolute encoder synchronization enabled.
+   * Encoder, Absolute encoder synchronization enabled.
    */
   private boolean synchronizeEncoderEnabled = false;
   /**

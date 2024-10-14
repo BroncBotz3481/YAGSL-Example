@@ -7,7 +7,14 @@ import edu.wpi.first.util.DoubleCircularBuffer;
  * the DoubleCircularBuffer.
  */
 public class IMULinearMovingAverageFilter {
+
+  /**
+   * Circular buffer storing the current IMU readings
+   */
   private final DoubleCircularBuffer m_inputs;
+  /**
+   * Gain on each reading.
+   */
   private final double m_inputGain;
     
  /**

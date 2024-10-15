@@ -56,7 +56,7 @@ public class TalonSRXEncoderSwerve extends SwerveAbsoluteEncoder {
 
     @Override
     public double getAbsolutePosition() {
-        return talon.getSelectedSensorPosition() * degreesPerSensorUnit;
+        return (talon.getSelectedSensorPosition() * degreesPerSensorUnit) % 360;
     }
 
     @Override

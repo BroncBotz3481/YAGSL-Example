@@ -1,5 +1,7 @@
 package swervelib;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.MotorFeedbackSensor;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -38,6 +40,10 @@ public class SwerveModule
    * Drive motor velocity cache.
    */
   public final  Cache<Double>             driveVelocityCache;
+  /**
+   * Module number for kinematics, usually 0 to 3. front left -> front right -> back left -> back right.
+   */
+  public final int moduleNumber;
   /**
    * Swerve Motors.
    */
@@ -79,17 +85,13 @@ public class SwerveModule
    */
   private final String                 rawDriveVelName;
   /**
-   * Module number for kinematics, usually 0 to 3. front left -> front right -> back left -> back right.
+   * Maximum speed of the drive motors in meters per second.
    */
-  public        int                    moduleNumber;
+  public        double                 maxSpeed;
   /**
    * Feedforward for the drive motor during closed loop control.
    */
   private       SimpleMotorFeedforward driveMotorFeedforward;
-  /**
-   * Maximum speed of the drive motors in meters per second.
-   */
-  public        double                 maxSpeed;
   /**
    * Anti-Jitter AKA auto-centering disabled.
    */
@@ -110,6 +112,14 @@ public class SwerveModule
    * Encoder synchronization queued.
    */
   private       boolean                synchronizeEncoderQueued = false;
+  /**
+   * Encoder, Absolute encoder synchronization enabled.
+   */
+  private boolean synchronizeEncoderEnabled = false;
+  /**
+   * Encoder synchronization deadband in degrees.
+   */
+  private double synchronizeEncoderDeadband = 3;
 
 
   /**
@@ -206,12 +216,12 @@ public class SwerveModule
                                      moduleNumber,
                                      Alert.AlertType.WARNING);
 
-    rawAbsoluteAngleName = "Module[" + configuration.name + "] Raw Absolute Encoder";
-    adjAbsoluteAngleName = "Module[" + configuration.name + "] Adjusted Absolute Encoder";
-    absoluteEncoderIssueName = "Module[" + configuration.name + "] Absolute Encoder Read Issue";
-    rawAngleName = "Module[" + configuration.name + "] Raw Angle Encoder";
-    rawDriveName = "Module[" + configuration.name + "] Raw Drive Encoder";
-    rawDriveVelName = "Module[" + configuration.name + "] Raw Drive Velocity";
+    rawAbsoluteAngleName = "swerve/modules/" + configuration.name + "/Raw Absolute Encoder";
+    adjAbsoluteAngleName = "swerve/modules/" + configuration.name + "/Adjusted Absolute Encoder";
+    absoluteEncoderIssueName = "swerve/modules/" + configuration.name + "/Absolute Encoder Read Issue";
+    rawAngleName = "swerve/modules/" + configuration.name + "/Raw Angle Encoder";
+    rawDriveName = "swerve/modules/" + configuration.name + "/Raw Drive Encoder";
+    rawDriveVelName = "swerve/modules/" + configuration.name + "/Raw Drive Velocity";
   }
 
   /**
@@ -240,10 +250,30 @@ public class SwerveModule
    */
   public void queueSynchronizeEncoders()
   {
-    if (absoluteEncoder != null)
+    if (absoluteEncoder != null && synchronizeEncoderEnabled)
     {
       synchronizeEncoderQueued = true;
     }
+  }
+
+  /**
+   * Enable auto synchronization for encoders during a match. This will only occur when the modules are not moving for a few seconds.
+   * @param enabled Enable state
+   * @param deadband Deadband in degrees, default is 3 degrees.
+   */
+  public void setEncoderAutoSynchronize(boolean enabled, double deadband)
+  {
+    synchronizeEncoderEnabled = enabled;
+    synchronizeEncoderDeadband = deadband;
+  }
+
+  /**
+   * Enable auto synchronization for encoders during a match. This will only occur when the modules are not moving for a few seconds.
+   * @param enabled Enable state
+   */
+  public void setEncoderAutoSynchronize(boolean enabled)
+  {
+    synchronizeEncoderEnabled = enabled;
   }
 
   /**
@@ -275,6 +305,16 @@ public class SwerveModule
   }
 
   /**
+   * Get the current drive motor PIDF values.
+   *
+   * @return {@link PIDFConfig} of the drive motor.
+   */
+  public PIDFConfig getDrivePIDF()
+  {
+    return configuration.velocityPIDF;
+  }
+
+  /**
    * Set the drive PIDF values.
    *
    * @param config {@link PIDFConfig} of that should be set.
@@ -286,13 +326,13 @@ public class SwerveModule
   }
 
   /**
-   * Get the current drive motor PIDF values.
+   * Get the current angle/azimuth/steering motor PIDF values.
    *
-   * @return {@link PIDFConfig} of the drive motor.
+   * @return {@link PIDFConfig} of the angle motor.
    */
-  public PIDFConfig getDrivePIDF()
+  public PIDFConfig getAnglePIDF()
   {
-    return configuration.velocityPIDF;
+    return configuration.anglePIDF;
   }
 
   /**
@@ -304,16 +344,6 @@ public class SwerveModule
   {
     configuration.anglePIDF = config;
     angleMotor.configurePIDF(config);
-  }
-
-  /**
-   * Get the current angle/azimuth/steering motor PIDF values.
-   *
-   * @return {@link PIDFConfig} of the angle motor.
-   */
-  public PIDFConfig getAnglePIDF()
-  {
-    return configuration.anglePIDF;
   }
 
   /**
@@ -353,10 +383,12 @@ public class SwerveModule
 
     // Prevent module rotation if angle is the same as the previous angle.
     // Synchronize encoders if queued and send in the current position as the value from the absolute encoder.
-    if (absoluteEncoder != null && synchronizeEncoderQueued)
+    if (absoluteEncoder != null && synchronizeEncoderQueued && synchronizeEncoderEnabled)
     {
       double absoluteEncoderPosition = getAbsolutePosition();
-      angleMotor.setPosition(absoluteEncoderPosition);
+      if(Math.abs(angleMotor.getPosition() - absoluteEncoderPosition) >= synchronizeEncoderDeadband) {
+        angleMotor.setPosition(absoluteEncoderPosition);
+      }
       angleMotor.setReference(desiredState.angle.getDegrees(), 0, absoluteEncoderPosition);
       synchronizeEncoderQueued = false;
     } else
@@ -379,8 +411,10 @@ public class SwerveModule
 
     if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)
     {
-      SmartDashboard.putNumber("Module[" + configuration.name + "] Speed Setpoint", desiredState.speedMetersPerSecond);
-      SmartDashboard.putNumber("Module[" + configuration.name + "] Angle Setpoint", desiredState.angle.getDegrees());
+      SmartDashboard.putNumber("swerve/modules/" + configuration.name + "/Speed Setpoint",
+                               desiredState.speedMetersPerSecond);
+      SmartDashboard.putNumber("swerve/modules/" + configuration.name + "/Angle Setpoint",
+                               desiredState.angle.getDegrees());
     }
   }
 
@@ -589,13 +623,23 @@ public class SwerveModule
   {
     if (absoluteEncoder != null && angleOffset == configuration.angleOffset)
     {
-      if (absoluteEncoder.setAbsoluteEncoderOffset(angleOffset))
+      // If the absolute encoder is attached.
+      if (angleMotor.getMotor() instanceof CANSparkMax)
       {
-        angleOffset = 0;
-      } else
-      {
-        encoderOffsetWarning.set(true);
+        if (absoluteEncoder.getAbsoluteEncoder() instanceof MotorFeedbackSensor)
+        {
+          angleMotor.setAbsoluteEncoder(absoluteEncoder);
+          if (absoluteEncoder.setAbsoluteEncoderOffset(angleOffset))
+          {
+            angleOffset = 0;
+          } else
+          {
+            angleMotor.setAbsoluteEncoder(null);
+            encoderOffsetWarning.set(true);
+          }
+        }
       }
+
     } else
     {
       noEncoderWarning.set(true);
@@ -607,6 +651,7 @@ public class SwerveModule
    */
   public void restoreInternalOffset()
   {
+    angleMotor.setAbsoluteEncoder(null);
     absoluteEncoder.setAbsoluteEncoderOffset(0);
     angleOffset = configuration.angleOffset;
   }
@@ -638,7 +683,8 @@ public class SwerveModule
     }
     SmartDashboard.putNumber(rawAngleName, angleMotor.getPosition());
     SmartDashboard.putNumber(rawDriveName, driveMotor.getPosition());
-    SmartDashboard.putNumber(rawDriveVelName, driveMotor.getVelocity()); SmartDashboard.putNumber(adjAbsoluteAngleName, getAbsolutePosition());
+    SmartDashboard.putNumber(rawDriveVelName, driveMotor.getVelocity());
+    SmartDashboard.putNumber(adjAbsoluteAngleName, getAbsolutePosition());
     SmartDashboard.putNumber(absoluteEncoderIssueName, getAbsoluteEncoderReadIssue() ? 1 : 0);
   }
 }

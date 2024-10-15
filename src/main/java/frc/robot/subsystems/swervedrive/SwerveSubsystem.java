@@ -4,14 +4,23 @@
 
 package frc.robot.subsystems.swervedrive;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.function.DoubleSupplier;
+
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -23,19 +32,18 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
 import frc.robot.Constants.AutonConstants;
-import java.io.File;
-import java.util.function.DoubleSupplier;
-import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonPipelineResult;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
 import swervelib.math.SwerveMath;
+import swervelib.parser.PIDFConfig;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
@@ -46,9 +54,21 @@ public class SwerveSubsystem extends SubsystemBase
 {
 
   /**
+   * PhotonVision class to keep an accurate odometry.
+   */
+  private       Vision  vision;
+  /**
    * Swerve drive object.
    */
-  private final SwerveDrive swerveDrive;
+  private final SwerveDrive         swerveDrive;
+  /**
+   * AprilTag field layout.
+   */
+  private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+  /**
+   * Enable vision odometry updates while driving.
+   */
+  private final boolean visionDriveTest = false;
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -66,9 +86,9 @@ public class SwerveSubsystem extends SubsystemBase
     //  The gear ratio is 6.75 motor revolutions per wheel rotation.
     //  The encoder resolution per motor revolution is 1 per motor revolution.
     double driveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4), 6.75);
-    System.out.println("\"conversionFactor\": {");
-    System.out.println("\t\"angle\": " + angleConversionFactor + ",");
-    System.out.println("\t\"drive\": " + driveConversionFactor);
+    System.out.println("\"conversionFactors\": {");
+    System.out.println("\t\"angle\": {\"factor\": " + angleConversionFactor + " },");
+    System.out.println("\t\"drive\": {\"factor\": " + driveConversionFactor + " }");
     System.out.println("}");
 
     // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being created.
@@ -84,6 +104,15 @@ public class SwerveSubsystem extends SubsystemBase
     }
     swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
     swerveDrive.setCosineCompensator(false);//!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
+    swerveDrive.setAngularVelocityCompensation(true, true, 0.1); //Correct for skew that gets worse as angular velocity increases. Start with a coefficient of 0.1.
+    swerveDrive.setModuleEncoderAutoSynchronize(false, 1); // Enable if you want to resynchronize your absolute encoders and motor encoders periodically when they are not moving.
+    swerveDrive.pushOffsetsToEncoders(); // Set the absolute encoder to be used over the internal encoder and push the offsets onto it. Throws warning if not possible
+    if (visionDriveTest)
+    {
+      setupPhotonVision();
+      // Stop the odometry thread if we are using vision that way we can synchronize updates better.
+      swerveDrive.stopOdometryThread();
+    }
     setupPathPlanner();
   }
 
@@ -96,6 +125,30 @@ public class SwerveSubsystem extends SubsystemBase
   public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg)
   {
     swerveDrive = new SwerveDrive(driveCfg, controllerCfg, Constants.MAX_SPEED);
+  }
+
+  /**
+   * Setup the photon vision class.
+   */
+  public void setupPhotonVision()
+  {
+    vision = new Vision(swerveDrive::getPose, swerveDrive.field);
+  }
+
+  @Override
+  public void periodic()
+  {
+    // When vision is enabled we must manually update odometry in SwerveDrive
+    if (visionDriveTest)
+    {
+      swerveDrive.updateOdometry();
+      vision.updatePoseEstimation(swerveDrive);
+    }
+  }
+
+  @Override
+  public void simulationPeriodic()
+  {
   }
 
   /**
@@ -130,11 +183,6 @@ public class SwerveSubsystem extends SubsystemBase
         this // Reference to this subsystem to set requirements
                                   );
   }
-
-  /**
-   * AprilTag field layout.
-   */
-  private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
   /**
    * Get the distance to the speaker.
@@ -252,10 +300,12 @@ public class SwerveSubsystem extends SubsystemBase
   {
     // swerveDrive.setHeadingCorrection(true); // Normally you would want heading correction for this kind of control.
     return run(() -> {
-      double xInput = Math.pow(translationX.getAsDouble(), 3); // Smooth controll out
-      double yInput = Math.pow(translationY.getAsDouble(), 3); // Smooth controll out
+
+      Translation2d scaledInputs = SwerveMath.scaleTranslation(new Translation2d(translationX.getAsDouble(),
+                                                                                 translationY.getAsDouble()), 0.8);
+
       // Make the robot move
-      driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(xInput, yInput,
+      driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(scaledInputs.getX(), scaledInputs.getY(),
                                                                       headingX.getAsDouble(),
                                                                       headingY.getAsDouble(),
                                                                       swerveDrive.getOdometryHeading().getRadians(),
@@ -313,6 +363,50 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   /**
+   * Returns a Command that centers the modules of the SwerveDrive subsystem.
+   *
+   * @return a Command that centers the modules of the SwerveDrive subsystem
+   */
+  public Command centerModulesCommand() {
+    return run(() -> Arrays.asList(swerveDrive.getModules())
+      .forEach(it -> it.setAngle(0.0)));
+  }
+
+  /**
+   * Returns a Command that drives the swerve drive to a specific distance at a given speed.
+   *
+   * @param distanceInMeters the distance to drive in meters
+   * @param speedInMetersPerSecond the speed at which to drive in meters per second
+   * @return a Command that drives the swerve drive to a specific distance at a given speed
+   */
+  public Command driveToDistanceCommand(double distanceInMeters, double speedInMetersPerSecond) {
+    return Commands.deferredProxy(
+        () -> Commands.run(() -> drive(new ChassisSpeeds(speedInMetersPerSecond, 0, 0)), this)
+        .until(() -> swerveDrive.getPose().getTranslation().getDistance(new Translation2d(0, 0)) > distanceInMeters)
+        );
+  }
+
+  /**
+   * Sets the maximum speed of the swerve drive.
+   *
+   * @param maximumSpeedInMetersPerSecond the maximum speed to set for the swerve drive in meters per second
+   */
+  public void setMaximumSpeed(double maximumSpeedInMetersPerSecond) {
+    swerveDrive.setMaximumSpeed(maximumSpeedInMetersPerSecond, false, swerveDrive.swerveDriveConfiguration.physicalCharacteristics.optimalVoltage);
+  }
+
+  /**
+   * Replaces the swerve module feedforward with a new SimpleMotorFeedforward object.
+   *
+   * @param  kS  the static gain of the feedforward
+   * @param  kV  the velocity gain of the feedforward
+   * @param  kA  the acceleration gain of the feedforward
+   */
+  public void replaceSwerveModuleFeedforward(double kS, double kV, double kA) {
+    swerveDrive.replaceSwerveModuleFeedforward(new SimpleMotorFeedforward(kS, kV, kA));
+  }
+
+  /**
    * Command to drive the robot using translative values and heading as angular velocity.
    *
    * @param translationX     Translation in the X direction. Cubed for smoother controls.
@@ -324,8 +418,9 @@ public class SwerveSubsystem extends SubsystemBase
   {
     return run(() -> {
       // Make the robot move
-      swerveDrive.drive(new Translation2d(Math.pow(translationX.getAsDouble(), 3) * swerveDrive.getMaximumVelocity(),
-                                          Math.pow(translationY.getAsDouble(), 3) * swerveDrive.getMaximumVelocity()),
+      swerveDrive.drive(SwerveMath.scaleTranslation(new Translation2d(
+                            translationX.getAsDouble() * swerveDrive.getMaximumVelocity(),
+                            translationY.getAsDouble() * swerveDrive.getMaximumVelocity()), 0.8),
                         Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumAngularVelocity(),
                         true,
                         false);
@@ -374,15 +469,6 @@ public class SwerveSubsystem extends SubsystemBase
     swerveDrive.drive(velocity);
   }
 
-  @Override
-  public void periodic()
-  {
-  }
-
-  @Override
-  public void simulationPeriodic()
-  {
-  }
 
   /**
    * Get the swerve drive kinematics object.
@@ -506,10 +592,9 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, double headingX, double headingY)
   {
-    xInput = Math.pow(xInput, 3);
-    yInput = Math.pow(yInput, 3);
-    return swerveDrive.swerveController.getTargetSpeeds(xInput,
-                                                        yInput,
+    Translation2d scaledInputs = SwerveMath.cubeTranslation(new Translation2d(xInput, yInput));
+    return swerveDrive.swerveController.getTargetSpeeds(scaledInputs.getX(),
+                                                        scaledInputs.getY(),
                                                         headingX,
                                                         headingY,
                                                         getHeading().getRadians(),
@@ -527,10 +612,10 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, Rotation2d angle)
   {
-    xInput = Math.pow(xInput, 3);
-    yInput = Math.pow(yInput, 3);
-    return swerveDrive.swerveController.getTargetSpeeds(xInput,
-                                                        yInput,
+    Translation2d scaledInputs = SwerveMath.cubeTranslation(new Translation2d(xInput, yInput));
+
+    return swerveDrive.swerveController.getTargetSpeeds(scaledInputs.getX(),
+                                                        scaledInputs.getY(),
                                                         angle.getRadians(),
                                                         getHeading().getRadians(),
                                                         Constants.MAX_SPEED);

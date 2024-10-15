@@ -26,11 +26,15 @@ public class Pigeon2Swerve extends SwerveIMU
   /**
    * Offset for the Pigeon 2.
    */
-  private Rotation3d offset      = new Rotation3d();
+  private Rotation3d          offset      = new Rotation3d();
   /**
    * Inversion for the gyro
    */
-  private boolean    invertedIMU = false;
+  private boolean             invertedIMU = false;
+  /**
+   * Pigeon2 configurator.
+   */
+  private Pigeon2Configurator cfg;
 
   /**
    * Generate the SwerveIMU for pigeon.
@@ -41,6 +45,7 @@ public class Pigeon2Swerve extends SwerveIMU
   public Pigeon2Swerve(int canid, String canbus)
   {
     imu = new Pigeon2(canid, canbus);
+    this.cfg = imu.getConfigurator();
     SmartDashboard.putData(imu);
   }
 
@@ -60,7 +65,6 @@ public class Pigeon2Swerve extends SwerveIMU
   @Override
   public void factoryDefault()
   {
-    Pigeon2Configurator  cfg    = imu.getConfigurator();
     Pigeon2Configuration config = new Pigeon2Configuration();
 
     // Compass utilization causes readings to jump dramatically in some cases.
@@ -136,6 +140,16 @@ public class Pigeon2Swerve extends SwerveIMU
     return Optional.of(new Translation3d(xAcc.waitForUpdate(STATUS_TIMEOUT_SECONDS).getValue(),
                                          yAcc.waitForUpdate(STATUS_TIMEOUT_SECONDS).getValue(),
                                          zAcc.waitForUpdate(STATUS_TIMEOUT_SECONDS).getValue()).times(9.81 / 16384.0));
+  }
+
+  /**
+   * Fetch the rotation rate from the IMU in degrees per second. If rotation rate isn't supported returns empty.
+   *
+   * @return {@link Double} of the rotation rate as an {@link Optional}.
+   */
+  public double getRate()
+  {
+    return imu.getRate();
   }
 
   /**

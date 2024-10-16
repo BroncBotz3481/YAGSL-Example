@@ -1,8 +1,10 @@
 package swervelib.encoders;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVLibError;
 import com.revrobotics.SparkAnalogSensor;
 import com.revrobotics.SparkAnalogSensor.Mode;
+import java.util.function.Supplier;
 import swervelib.motors.SwerveMotor;
 import swervelib.telemetry.Alert;
 
@@ -16,6 +18,10 @@ public class SparkMaxAnalogEncoderSwerve extends SwerveAbsoluteEncoder
    * The {@link SparkAnalogSensor} representing the duty cycle encoder attached to the SparkMax analog port.
    */
   public  SparkAnalogSensor encoder;
+  /**
+   * An {@link Alert} for if there is a failure configuring the encoder.
+   */
+  private Alert             failureConfiguring;
   /**
    * An {@link Alert} for if the absolute encoder does not support integrated offsets.
    */
@@ -34,16 +40,37 @@ public class SparkMaxAnalogEncoderSwerve extends SwerveAbsoluteEncoder
     if (motor.getMotor() instanceof CANSparkMax)
     {
       encoder = ((CANSparkMax) motor.getMotor()).getAnalog(Mode.kAbsolute);
-      encoder.setPositionConversionFactor(360 / maxVoltage);
+      configureSparkMax(() -> encoder.setPositionConversionFactor(360 / maxVoltage));
     } else
     {
       throw new RuntimeException("Motor given to instantiate SparkMaxEncoder is not a CANSparkMax");
     }
+    failureConfiguring = new Alert(
+        "Encoders",
+        "Failure configuring SparkMax Analog Encoder",
+        Alert.AlertType.WARNING_TRACE);
     doesNotSupportIntegratedOffsets = new Alert(
         "Encoders",
         "SparkMax Analog Sensors do not support integrated offsets",
         Alert.AlertType.WARNING_TRACE);
 
+  }
+
+  /**
+   * Run the configuration until it succeeds or times out.
+   *
+   * @param config Lambda supplier returning the error state.
+   */
+  private void configureSparkMax(Supplier<REVLibError> config)
+  {
+    for (int i = 0; i < maximumRetries; i++)
+    {
+      if (config.get() == REVLibError.kOk)
+      {
+        return;
+      }
+    }
+    failureConfiguring.set(true);
   }
 
   /**

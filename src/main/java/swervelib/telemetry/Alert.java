@@ -31,7 +31,6 @@ package swervelib.telemetry;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,10 +55,6 @@ public class Alert
    * Activation state of alert.
    */
   private        boolean                     active          = false;
-  /**
-   * When the alert was raised.
-   */
-  private        double                      activeStartTime = 0.0;
   /**
    * Text of the alert.
    */
@@ -108,7 +103,6 @@ public class Alert
   {
     if (active && !this.active)
     {
-      activeStartTime = Timer.getFPGATimestamp();
       printAlert(text);
     }
     this.active = active;

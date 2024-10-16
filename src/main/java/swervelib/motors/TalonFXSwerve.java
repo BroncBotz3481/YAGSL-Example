@@ -42,10 +42,6 @@ public class TalonFXSwerve extends SwerveMotor
    */
   TalonFX motor;
   /**
-   * Conversion factor for the motor.
-   */
-  private double               conversionFactor;
-  /**
    * Current TalonFX configuration.
    */
   private TalonFXConfiguration configuration = new TalonFXConfiguration();
@@ -167,7 +163,6 @@ public class TalonFXSwerve extends SwerveMotor
     {
       positionConversionFactor *= 360;
     }
-    conversionFactor = positionConversionFactor;
 
     configuration.MotionMagic =
         configuration.MotionMagic.withMotionMagicCruiseVelocity(100.0 / positionConversionFactor)

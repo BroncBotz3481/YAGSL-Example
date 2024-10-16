@@ -1,6 +1,5 @@
 package swervelib.parser;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import java.io.File;
@@ -92,23 +91,6 @@ public class SwerveParser
       String name, SwerveDriveConfiguration driveConfiguration)
   {
     return driveConfiguration.modules[moduleConfigs.get(name + ".json")];
-  }
-
-  /**
-   * Open JSON file.
-   *
-   * @param file JSON File to open.
-   * @return JsonNode of file.
-   */
-  private JsonNode openJson(File file)
-  {
-    try
-    {
-      return new ObjectMapper().readTree(file);
-    } catch (IOException e)
-    {
-      throw new RuntimeException(e);
-    }
   }
 
   /**

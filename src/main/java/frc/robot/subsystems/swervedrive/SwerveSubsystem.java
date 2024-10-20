@@ -228,7 +228,7 @@ public class SwerveSubsystem extends SubsystemBase
                                                                                   getSpeakerYaw().getRadians()),
                                                       getHeading())
                );
-        }).until(() -> getSpeakerYaw().minus(getHeading()).getDegrees() < tolerance);
+        }).until(() -> Math.abs(getSpeakerYaw().minus(getHeading()).getDegrees()) < tolerance);
   }
 
   /**

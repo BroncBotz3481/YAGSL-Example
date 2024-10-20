@@ -231,7 +231,7 @@ public class SwerveSubsystem extends SubsystemBase
                                                                                   getSpeakerYaw().getRadians()),
                                                       getHeading())
                );
-        }).until(() -> getSpeakerYaw().minus(getHeading()).getDegrees() < tolerance);
+        }).until(() -> Math.abs(getSpeakerYaw().minus(getHeading()).getDegrees()) < tolerance);
   }
 
   /**
@@ -379,7 +379,7 @@ public class SwerveSubsystem extends SubsystemBase
   /**
    * Returns a Command that drives the swerve drive to a specific distance at a given speed.
    *
-   * @param distanceInMeters       the distance to drive in meters
+   * @param distanceInMeters the distance to drive in meters
    * @param speedInMetersPerSecond the speed at which to drive in meters per second
    * @return a Command that drives the swerve drive to a specific distance at a given speed
    */
@@ -407,9 +407,9 @@ public class SwerveSubsystem extends SubsystemBase
   /**
    * Replaces the swerve module feedforward with a new SimpleMotorFeedforward object.
    *
-   * @param kS the static gain of the feedforward
-   * @param kV the velocity gain of the feedforward
-   * @param kA the acceleration gain of the feedforward
+   * @param  kS  the static gain of the feedforward
+   * @param  kV  the velocity gain of the feedforward
+   * @param  kA  the acceleration gain of the feedforward
    */
   public void replaceSwerveModuleFeedforward(double kS, double kV, double kA)
   {

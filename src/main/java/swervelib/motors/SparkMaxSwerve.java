@@ -24,9 +24,9 @@ public class SparkMaxSwerve extends SwerveMotor
 {
 
   /**
-   * SparkMAX Instance.
+   * {@link CANSparkMax} Instance.
    */
-  public  CANSparkMax           motor;
+  private final CANSparkMax motor;
   /**
    * Integrated encoder.
    */

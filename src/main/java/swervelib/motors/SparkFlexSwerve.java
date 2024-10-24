@@ -25,9 +25,9 @@ public class SparkFlexSwerve extends SwerveMotor
 {
 
   /**
-   * SparkMAX Instance.
+   * {@link CANSparkFlex} Instance.
    */
-  public  CANSparkFlex          motor;
+  private final CANSparkFlex motor;
   /**
    * Integrated encoder.
    */

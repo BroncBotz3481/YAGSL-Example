@@ -25,7 +25,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   /**
    * SparkMAX Instance.
    */
-  public CANSparkMax motor;
+  private final CANSparkMax motor;
 
   /**
    * Absolute encoder attached to the SparkMax (if exists)

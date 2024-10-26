@@ -1,0 +1,26 @@
+{
+  "drive": {
+    "type": "thrifty_nova",
+    "id": 4,
+    "canbus": null
+  },
+  "angle": {
+    "type": "thrifty_nova",
+    "id": 3,
+    "canbus": null
+  },
+  "encoder": {
+    "type": "thrifty_encoder",
+    "id": 9,
+    "canbus": null
+  },
+  "inverted": {
+    "drive": false,
+    "angle": false
+  },
+  "absoluteEncoderOffset": -114.609,
+  "location": {
+    "front": 12,
+    "left": 12
+  }
+}

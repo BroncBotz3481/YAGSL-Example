@@ -696,4 +696,40 @@ public class SwerveSubsystem extends SubsystemBase
   {
     swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp());
   }
+
+  /**
+   * Generate a command to test the angle motor direction
+   * @param module  - the swerve module
+   * @return        - the command
+   */
+  public Command generateAngleMotorDirectionTest(String module) {
+    return SwerveDriveTest.generateAngleMotorDirectionTest(swerveDrive, module);
+  }
+
+  /**
+   * Generate a command to test the drive motor direction
+   * @param module  - the swerve module
+   * @return        - the command
+   */
+  public Command generateDriveMotorDirectionTest(String module) {
+    return SwerveDriveTest.generateDriveMotorDirectionTest(swerveDrive, module);
+  }
+
+  /**
+   * Generate a command to test the angle motor rotation
+   * @param module  - the swerve module
+   * @return        - the command
+   */
+  public Command generateAngleMotorRotateTest(String module) {
+    return SwerveDriveTest.generateAngleMotorRotateTest(swerveDrive, module);
+  } 
+
+  /**
+   * Generate a command to test the drive motor velocity
+   * @param module  - the swerve module
+   * @return        - the command
+   */
+  public Command generateDriveMotorVelocityTest(String module) {
+    return SwerveDriveTest.generateDriveMotorVelocityTest(swerveDrive, module);
+  }
 }

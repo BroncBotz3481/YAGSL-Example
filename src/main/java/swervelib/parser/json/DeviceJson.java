@@ -17,7 +17,6 @@ import swervelib.encoders.PWMDutyCycleEncoderSwerve;
 import swervelib.encoders.SparkMaxAnalogEncoderSwerve;
 import swervelib.encoders.SparkMaxEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
-import swervelib.encoders.ThriftyEncoderSwerve;
 import swervelib.imu.ADIS16448Swerve;
 import swervelib.imu.ADIS16470Swerve;
 import swervelib.imu.ADXRS450Swerve;
@@ -95,8 +94,6 @@ public class DeviceJson
         return new AnalogAbsoluteEncoderSwerve(id);
       case "cancoder":
         return new CANCoderSwerve(id, canbus != null ? canbus : "");
-      case "thrifty_encoder":
-        return new ThriftyEncoderSwerve(id);
       default:
         throw new RuntimeException(type + " is not a recognized absolute encoder type.");
     }

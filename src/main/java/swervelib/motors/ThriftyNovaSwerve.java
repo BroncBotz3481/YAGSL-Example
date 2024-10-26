@@ -70,7 +70,7 @@ public class ThriftyNovaSwerve extends SwerveMotor {
 
         motor.usePIDSlot(PIDSlot.SLOT0);
         pid = new PIDController(0, 0, 0);
-        motor.pid0.set(pid);
+        motor.pid0.setPID(pid);
 
         if (isDriveMotor) {
             positionConversion = new Conversion(PositionUnit.ROTATIONS, EncoderType.INTERNAL);
@@ -156,8 +156,11 @@ public class ThriftyNovaSwerve extends SwerveMotor {
      */
     public void configureCANStatusFrames(
             double fault, double sensor, double quadSensor, double control, double current) {
-        motor.canFreq.setFault(fault).canFreq.setSensor(sensor).canFreq.setQuadSensor(quadSensor).canFreq
-                .setControl(control).canFreq.setCurrent(current);
+        motor.canFreq.setFault(fault);
+        motor.canFreq.setSensor(sensor);
+        motor.canFreq.setQuadSensor(quadSensor);
+        motor.canFreq.setControl(control);
+        motor.canFreq.setCurrent(current);
         checkErrors("Configuring CAN status frames failed: ");
     }
 

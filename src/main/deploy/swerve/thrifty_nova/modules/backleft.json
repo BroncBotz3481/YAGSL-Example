@@ -5,12 +5,12 @@
     "canbus": null
   },
   "angle": {
-    "type": "thrifty_nova",
+    "type": "sparkmax",
     "id": 8,
     "canbus": null
   },
   "encoder": {
-    "type": "thrifty_encoder",
+    "type": "canandcoder",
     "id": 12,
     "canbus": null
   },

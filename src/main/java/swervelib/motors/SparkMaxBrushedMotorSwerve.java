@@ -17,7 +17,7 @@ import swervelib.parser.PIDFConfig;
 import swervelib.telemetry.Alert;
 
 /**
- * Brushed motor control with SparkMax.
+ * Brushed motor control with {@link CANSparkMax}.
  */
 public class SparkMaxBrushedMotorSwerve extends SwerveMotor
 {
@@ -25,7 +25,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   /**
    * SparkMAX Instance.
    */
-  public CANSparkMax motor;
+  private final CANSparkMax motor;
 
   /**
    * Absolute encoder attached to the SparkMax (if exists)

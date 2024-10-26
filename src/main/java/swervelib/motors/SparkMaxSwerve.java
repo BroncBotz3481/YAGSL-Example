@@ -24,9 +24,9 @@ public class SparkMaxSwerve extends SwerveMotor
 {
 
   /**
-   * SparkMAX Instance.
+   * {@link CANSparkMax} Instance.
    */
-  public  CANSparkMax           motor;
+  private final CANSparkMax motor;
   /**
    * Integrated encoder.
    */
@@ -252,7 +252,7 @@ public class SparkMaxSwerve extends SwerveMotor
         configureCANStatusFrames(100, 20, 20, 200, 20, 8, 50);
       }
       // Need to test on analog encoders but the same concept should apply for them, worst thing that could happen is slightly more can use
-      else if(absoluteEncoder.getAbsoluteEncoder() instanceof SparkAnalogSensor)
+      else if (absoluteEncoder.getAbsoluteEncoder() instanceof SparkAnalogSensor)
       {
         configureCANStatusFrames(100, 20, 20, 19, 200, 200, 200);
       }

@@ -17,9 +17,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import frc.robot.Robot;
 import java.awt.Desktop;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -53,6 +50,10 @@ public class Vision
   public static final AprilTagFieldLayout fieldLayout                     = AprilTagFieldLayout.loadField(
       AprilTagFields.k2024Crescendo);
   /**
+   * Ambiguity defined as a value between (0,1). Used in {@link Vision#filterPose}.
+   */
+  private final       double              maximumAmbiguity = 0.25;
+  /**
    * Photon Vision Simulation
    */
   public              VisionSystemSim     visionSim;
@@ -64,10 +65,6 @@ public class Vision
    * Current pose from the pose estimator using wheel odometry.
    */
   private             Supplier<Pose2d>    currentPose;
-  /**
-   * Ambiguity defined as a value between (0,1). Used in {@link Vision#filterPose}.
-   */
-  private final double maximumAmbiguity = 0.25;
   /**
    * Field from {@link swervelib.SwerveDrive#field}
    */

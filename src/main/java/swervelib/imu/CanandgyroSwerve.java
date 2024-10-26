@@ -1,54 +1,54 @@
 package swervelib.imu;
 
-import com.ctre.phoenix.sensors.WPI_PigeonIMU;
-import edu.wpi.first.math.geometry.Quaternion;
+import com.reduxrobotics.sensors.canandgyro.Canandgyro;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Optional;
 
 /**
- * SwerveIMU interface for the {@link WPI_PigeonIMU}.
+ * SwerveIMU interface for the Boron {@link Canandgyro} by Redux Robotics
  */
-public class PigeonSwerve extends SwerveIMU
+public class CanandgyroSwerve extends SwerveIMU
 {
 
   /**
-   * {@link WPI_PigeonIMU} IMU device.
+   * Wait time for status frames to show up.
    */
-  private final WPI_PigeonIMU imu;
+  public static double     STATUS_TIMEOUT_SECONDS = 0.04;
   /**
-   * Offset for the {@link WPI_PigeonIMU}.
+   * Boron {@link Canandgyro} by Redux Robotics.
    */
-  private       Rotation3d    offset      = new Rotation3d();
+  private final Canandgyro imu;
+  /**
+   * Offset for the Boron {@link Canandgyro}.
+   */
+  private       Rotation3d offset                 = new Rotation3d();
   /**
    * Inversion for the gyro
    */
-  private       boolean       invertedIMU = false;
+  private       boolean    invertedIMU            = false;
 
   /**
-   * Generate the SwerveIMU for {@link WPI_PigeonIMU}.
+   * Generate the SwerveIMU for {@link Canandgyro}.
    *
-   * @param canid CAN ID for the {@link WPI_PigeonIMU}, does not support CANBus.
+   * @param canid CAN ID for the Boron {@link Canandgyro}
    */
-  public PigeonSwerve(int canid)
+  public CanandgyroSwerve(int canid)
   {
-    imu = new WPI_PigeonIMU(canid);
-    offset = new Rotation3d();
-    SmartDashboard.putData(imu);
+    imu = new Canandgyro(canid);
   }
 
   /**
-   * Reset IMU to factory default.
+   * Reset {@link Canandgyro} to factory default.
    */
   @Override
   public void factoryDefault()
   {
-    imu.configFactoryDefault();
+    imu.resetFactoryDefaults(STATUS_TIMEOUT_SECONDS);
   }
 
   /**
-   * Clear sticky faults on IMU.
+   * Clear sticky faults on {@link Canandgyro}.
    */
   @Override
   public void clearStickyFaults()
@@ -84,9 +84,7 @@ public class PigeonSwerve extends SwerveIMU
   @Override
   public Rotation3d getRawRotation3d()
   {
-    double[] wxyz = new double[4];
-    imu.get6dQuaternion(wxyz);
-    Rotation3d reading = new Rotation3d(new Quaternion(wxyz[0], wxyz[1], wxyz[2], wxyz[3]));
+    Rotation3d reading = imu.getRotation3d();
     return invertedIMU ? reading.unaryMinus() : reading;
   }
 
@@ -110,9 +108,8 @@ public class PigeonSwerve extends SwerveIMU
   @Override
   public Optional<Translation3d> getAccel()
   {
-    short[] initial = new short[3];
-    imu.getBiasedAccelerometer(initial);
-    return Optional.of(new Translation3d(initial[0], initial[1], initial[2]).times(9.81 / 16384.0));
+
+    return Optional.of(new Translation3d(imu.getAccelerationFrame().getValue()).times(9.81 / 16384.0));
   }
 
   /**
@@ -122,11 +119,11 @@ public class PigeonSwerve extends SwerveIMU
    */
   public double getRate()
   {
-    return imu.getRate();
+    return imu.getAngularVelocityYaw();
   }
 
   /**
-   * Get the instantiated {@link WPI_PigeonIMU} IMU object.
+   * Get the instantiated {@link Canandgyro} IMU object.
    *
    * @return IMU object.
    */

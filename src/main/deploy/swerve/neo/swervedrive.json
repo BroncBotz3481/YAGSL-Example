@@ -1,10 +1,10 @@
 {
   "imu": {
-    "type": "pigeon2",
-    "id": 13,
-    "canbus": "canivore"
+    "type": "pigeon",
+    "id": 50,
+    "canbus": null
   },
-  "invertedIMU": true,
+  "invertedIMU": false,
   "modules": [
     "frontleft.json",
     "frontright.json",

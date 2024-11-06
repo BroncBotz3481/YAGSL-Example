@@ -269,6 +269,8 @@ public class SparkFlexSwerve extends SwerveMotor
     ;
     if (absoluteEncoder == null)
     {
+      cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+
       cfg.encoder
           .positionConversionFactor(positionConversionFactor)
           .velocityConversionFactor(positionConversionFactor / 60);
@@ -302,6 +304,8 @@ public class SparkFlexSwerve extends SwerveMotor
       // with limited testing 19ms did not return the same value while the module was constatntly rotating.
       if (absoluteEncoder.getAbsoluteEncoder() instanceof AbsoluteEncoder)
       {
+        cfg.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
+
         cfg.signals
             .absoluteEncoderPositionAlwaysOn(true)
             .absoluteEncoderPositionPeriodMs(20);

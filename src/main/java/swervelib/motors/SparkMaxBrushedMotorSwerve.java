@@ -11,6 +11,10 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkRelativeEncoder.Type;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.function.Supplier;
 import swervelib.encoders.SwerveAbsoluteEncoder;
@@ -18,7 +22,7 @@ import swervelib.parser.PIDFConfig;
 import swervelib.telemetry.Alert;
 
 /**
- * Brushed motor control with {@link CANSparkMax}.
+ * Brushed motor control with {@link SparkMax}.
  */
 public class SparkMaxBrushedMotorSwerve extends SwerveMotor
 {
@@ -26,7 +30,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   /**
    * SparkMAX Instance.
    */
-  private final CANSparkMax motor;
+  private final SparkMax motor;
 
   /**
    * Absolute encoder attached to the SparkMax (if exists)
@@ -35,15 +39,15 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   /**
    * Integrated encoder.
    */
-  public  RelativeEncoder    encoder;
+  public  RelativeEncoder           encoder;
   /**
    * Closed-loop PID controller.
    */
-  public  SparkPIDController pid;
+  public  SparkClosedLoopController pid;
   /**
    * Factory default already occurred.
    */
-  private boolean            factoryDefaultOccurred = false;
+  private boolean                   factoryDefaultOccurred = false;
   /**
    * An {@link Alert} for if the motor has no encoder.
    */
@@ -55,7 +59,16 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   /**
    * An {@link Alert} for if the motor has no encoder defined.
    */
-  private Alert              noEncoderDefinedAlert;
+  private Alert          noEncoderDefinedAlert;
+  /**
+   * Configuration object for {@link SparkMax} motor.
+   */
+  private SparkMaxConfig cfg        = new SparkMaxConfig();
+  /**
+   * Tracker for changes that need to be pushed.
+   */
+  private boolean        cfgUpdated = false;
+
 
   /**
    * Initialize the swerve motor.
@@ -66,10 +79,9 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
    * @param countsPerRevolution    The number of encoder pulses for the {@link Type} encoder per revolution.
    * @param useDataPortQuadEncoder Use the encoder attached to the data port of the spark max for a quadrature encoder.
    */
-  public SparkMaxBrushedMotorSwerve(CANSparkMax motor, boolean isDriveMotor, Type encoderType, int countsPerRevolution,
+  public SparkMaxBrushedMotorSwerve(SparkMax motor, boolean isDriveMotor, Type encoderType, int countsPerRevolution,
                                     boolean useDataPortQuadEncoder)
   {
-
     noEncoderAlert = new Alert("Motors",
                                "Cannot use motor without encoder.",
                                Alert.AlertType.ERROR_TRACE);

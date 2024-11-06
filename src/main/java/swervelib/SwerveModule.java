@@ -1,14 +1,18 @@
 package swervelib;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.MotorFeedbackSensor;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import swervelib.encoders.SparkMaxEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.math.SwerveMath;
+import swervelib.motors.SparkMaxBrushedMotorSwerve;
+import swervelib.motors.SparkMaxSwerve;
 import swervelib.motors.SwerveMotor;
 import swervelib.parser.Cache;
 import swervelib.parser.PIDFConfig;
@@ -371,9 +375,9 @@ public class SwerveModule
     }
 
     // Cosine compensation.
-    double velocity = configuration.useCosineCompensator
+    LinearVelocity velocity = configuration.useCosineCompensator
                       ? getCosineCompensatedVelocity(desiredState)
-                      : desiredState.speedMetersPerSecond;
+                      : MetersPerSecond.of(desiredState.speedMetersPerSecond);
 
     if (isOpenLoop)
     {
@@ -381,8 +385,8 @@ public class SwerveModule
       driveMotor.set(percentOutput);
     } else
     {
-      driveMotor.setReference(velocity, driveMotorFeedforward.calculate(velocity));
-      desiredState.speedMetersPerSecond = velocity;
+      driveMotor.setReference(velocity.magnitude(), driveMotorFeedforward.calculate(velocity).magnitude());
+      desiredState.speedMetersPerSecond = velocity.baseUnitMagnitude();
     }
 
     // Prevent module rotation if angle is the same as the previous angle.
@@ -408,10 +412,11 @@ public class SwerveModule
       simModule.updateStateAndPosition(desiredState);
     }
 
+    // TODO: Change and move to SwerveDriveTelemetry
     if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.INFO.ordinal())
     {
       SwerveDriveTelemetry.desiredStates[moduleNumber * 2] = desiredState.angle.getDegrees();
-      SwerveDriveTelemetry.desiredStates[(moduleNumber * 2) + 1] = velocity;
+      SwerveDriveTelemetry.desiredStates[(moduleNumber * 2) + 1] = velocity.magnitude();
     }
 
     if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)
@@ -429,7 +434,7 @@ public class SwerveModule
    * @param desiredState Desired {@link SwerveModuleState} to use.
    * @return Cosine compensated velocity in meters/second.
    */
-  private double getCosineCompensatedVelocity(SwerveModuleState desiredState)
+  private LinearVelocity getCosineCompensatedVelocity(SwerveModuleState desiredState)
   {
     double cosineScalar = 1.0;
     // Taken from the CTRE SwerveModule class.
@@ -447,7 +452,7 @@ public class SwerveModule
       cosineScalar = 1;
     }
 
-    return desiredState.speedMetersPerSecond * (cosineScalar);
+    return MetersPerSecond.of(desiredState.speedMetersPerSecond).times(cosineScalar);
   }
 
   /**
@@ -629,9 +634,9 @@ public class SwerveModule
     if (absoluteEncoder != null && angleOffset == configuration.angleOffset)
     {
       // If the absolute encoder is attached.
-      if (angleMotor.getMotor() instanceof CANSparkMax)
+      if (angleMotor instanceof SparkMaxSwerve || angleMotor instanceof SparkMaxBrushedMotorSwerve)
       {
-        if (absoluteEncoder.getAbsoluteEncoder() instanceof MotorFeedbackSensor)
+        if (absoluteEncoder instanceof SparkMaxEncoderSwerve)
         {
           angleMotor.setAbsoluteEncoder(absoluteEncoder);
           if (absoluteEncoder.setAbsoluteEncoderOffset(angleOffset))

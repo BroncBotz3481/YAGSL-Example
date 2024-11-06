@@ -1,9 +1,9 @@
 package swervelib.encoders;
 
 import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
-import com.revrobotics.SparkAbsoluteEncoder.Type;
+import com.revrobotics.spark.SparkAbsoluteEncoder;
+import com.revrobotics.spark.SparkMax;
 import java.util.function.Supplier;
 import swervelib.motors.SwerveMotor;
 import swervelib.telemetry.Alert;
@@ -17,18 +17,18 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
   /**
    * The {@link AbsoluteEncoder} representing the duty cycle encoder attached to the SparkMax.
    */
-  public  AbsoluteEncoder encoder;
+  public  SparkAbsoluteEncoder encoder;
   /**
    * An {@link Alert} for if there is a failure configuring the encoder.
    */
-  private Alert           failureConfiguring;
+  private Alert                failureConfiguring;
   /**
    * An {@link Alert} for if there is a failure configuring the encoder offset.
    */
   private Alert           offsetFailure;
 
   /**
-   * Create the {@link SparkMaxEncoderSwerve} object as a duty cycle from the {@link CANSparkMax} motor.
+   * Create the {@link SparkMaxEncoderSwerve} object as a duty cycle from the {@link com.revrobotics.spark.SparkMax} motor.
    *
    * @param motor            Motor to create the encoder from.
    * @param conversionFactor The conversion factor to set if the output is not from 0 to 360.
@@ -43,9 +43,9 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
         "Encoders",
         "Failure to set Absolute Encoder Offset",
         Alert.AlertType.WARNING_TRACE);
-    if (motor.getMotor() instanceof CANSparkMax)
+    if (motor.getMotor() instanceof SparkMax)
     {
-      encoder = ((CANSparkMax) motor.getMotor()).getAbsoluteEncoder(Type.kDutyCycle);
+      encoder = ((SparkMax) motor.getMotor()).getAbsoluteEncoder();
       configureSparkMax(() -> encoder.setVelocityConversionFactor(conversionFactor));
       configureSparkMax(() -> encoder.setPositionConversionFactor(conversionFactor));
     } else

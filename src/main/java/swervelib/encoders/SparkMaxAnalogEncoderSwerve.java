@@ -1,9 +1,9 @@
 package swervelib.encoders;
 
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
-import com.revrobotics.SparkAnalogSensor;
-import com.revrobotics.SparkAnalogSensor.Mode;
+import com.revrobotics.spark.SparkAnalogSensor;
+import com.revrobotics.spark.SparkAnalogSensor;
+import com.revrobotics.spark.SparkMax;
 import java.util.function.Supplier;
 import swervelib.motors.SwerveMotor;
 import swervelib.telemetry.Alert;
@@ -21,7 +21,7 @@ public class SparkMaxAnalogEncoderSwerve extends SwerveAbsoluteEncoder
   /**
    * An {@link Alert} for if there is a failure configuring the encoder.
    */
-  private Alert             failureConfiguring;
+  private Alert                                   failureConfiguring;
   /**
    * An {@link Alert} for if the absolute encoder does not support integrated offsets.
    */
@@ -37,9 +37,9 @@ public class SparkMaxAnalogEncoderSwerve extends SwerveAbsoluteEncoder
    */
   public SparkMaxAnalogEncoderSwerve(SwerveMotor motor, double maxVoltage)
   {
-    if (motor.getMotor() instanceof CANSparkMax)
+    if (motor.getMotor() instanceof SparkMax)
     {
-      encoder = ((CANSparkMax) motor.getMotor()).getAnalog(Mode.kAbsolute);
+      encoder = ((SparkMax) motor.getMotor()).getAnalog();
       encoder.setPositionConversionFactor(360 / maxVoltage);
     } else
     {

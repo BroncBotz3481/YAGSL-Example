@@ -1,6 +1,9 @@
 package swervelib.motors;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -186,63 +189,7 @@ public class TalonFXSwerve extends SwerveMotor
     cfg.apply(configuration);
     // Taken from democat's library.
     // https://github.com/democat3457/swerve-lib/blob/7c03126b8c22f23a501b2c2742f9d173a5bcbc40/src/main/java/com/swervedrivespecialties/swervelib/ctre/Falcon500DriveControllerFactoryBuilder.java#L16
-    configureCANStatusFrames(250);
-  }
-
-  /**
-   * Set the CAN status frames.
-   *
-   * @param CANStatus1 Applied Motor Output, Fault Information, Limit Switch Information
-   */
-  public void configureCANStatusFrames(int CANStatus1)
-  {
-    //    motor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, CANStatus1);
-  }
-
-  /**
-   * Set the CAN status frames.
-   *
-   * @param CANStatus1       Applied Motor Output, Fault Information, Limit Switch Information
-   * @param CANStatus2       Selected Sensor Position (PID 0), Selected Sensor Velocity (PID 0), Brushed Supply Current
-   *                         Measurement, Sticky Fault Information
-   * @param CANStatus3       Quadrature Information
-   * @param CANStatus4       Analog Input, Supply Battery Voltage, Controller Temperature
-   * @param CANStatus8       Pulse Width Information
-   * @param CANStatus10      Motion Profiling/Motion Magic Information
-   * @param CANStatus12      Selected Sensor Position (Aux PID 1), Selected Sensor Velocity (Aux PID 1)
-   * @param CANStatus13      PID0 (Primary PID) Information
-   * @param CANStatus14      PID1 (Auxiliary PID) Information
-   * @param CANStatus21      Integrated Sensor Position (Talon FX), Integrated Sensor Velocity (Talon FX)
-   * @param CANStatusCurrent Brushless Supply Current Measurement, Brushless Stator Current Measurement
-   */
-  public void configureCANStatusFrames(
-      int CANStatus1,
-      int CANStatus2,
-      int CANStatus3,
-      int CANStatus4,
-      int CANStatus8,
-      int CANStatus10,
-      int CANStatus12,
-      int CANStatus13,
-      int CANStatus14,
-      int CANStatus21,
-      int CANStatusCurrent)
-  {
-    //    motor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, CANStatus1);
-    //    motor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, CANStatus2);
-    //    motor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, CANStatus3);
-    //    motor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, CANStatus4);
-    //    motor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, CANStatus8);
-    //    motor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, CANStatus10);
-    //    motor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, CANStatus12);
-    //    motor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, CANStatus13);
-    //    motor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, CANStatus14);
-    //    motor.setStatusFramePeriod(StatusFrameEnhanced.Status_21_FeedbackIntegrated, CANStatus21);
-    //    motor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current,
-    // CANStatusCurrent);
-
-    // TODO: Configure Status Frame 2 thru 21 if necessary
-    // https://v5.docs.ctr-electronics.com/en/stable/ch18_CommonAPI.html#setting-status-frame-periods
+    // configureCANStatusFrames(250);
   }
 
   /**
@@ -421,8 +368,7 @@ public class TalonFXSwerve extends SwerveMotor
   {
     if (!absoluteEncoder && !SwerveDriveTelemetry.isSimulation)
     {
-      position = position < 0 ? (position % 360) + 360 : position;
-      cfg.setPosition(position / 360);
+      cfg.setPosition(Degrees.of(position).in(Rotations));
     }
   }
 
@@ -448,8 +394,8 @@ public class TalonFXSwerve extends SwerveMotor
   {
     cfg.refresh(configuration.CurrentLimits);
     cfg.apply(
-        configuration.CurrentLimits.withStatorCurrentLimit(currentLimit)
-                                   .withStatorCurrentLimitEnable(true));
+        configuration.CurrentLimits.withSupplyCurrentLimit(currentLimit)
+                                   .withSupplyCurrentLimitEnable(true));
   }
 
   /**

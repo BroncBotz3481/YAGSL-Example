@@ -462,6 +462,56 @@ public class Vision
     }
 
     /**
+     * Get the result with the least ambiguity from the best tracked target within the Cache. This may not be the most
+     * recent result!
+     *
+     * @return The result in the cache with the least ambiguous best tracked target. This is not the most recent result!
+     */
+    public Optional<PhotonPipelineResult> getBestResult()
+    {
+      if (resultsList.isEmpty())
+      {
+        return Optional.empty();
+      }
+
+      PhotonPipelineResult bestResult       = resultsList.get(0);
+      double               amiguity         = bestResult.getBestTarget().getPoseAmbiguity();
+      double               currentAmbiguity = 0;
+      for (PhotonPipelineResult result : resultsList)
+      {
+        currentAmbiguity = result.getBestTarget().getPoseAmbiguity();
+        if (currentAmbiguity < amiguity && currentAmbiguity > 0)
+        {
+          bestResult = result;
+          amiguity = currentAmbiguity;
+        }
+      }
+      return Optional.of(bestResult);
+    }
+
+    /**
+     * Get the latest result from the current cache.
+     *
+     * @return Empty optional if nothing is found. Latest result if something is there.
+     */
+    public Optional<PhotonPipelineResult> getLatestResult()
+    {
+      return resultsList.isEmpty() ? Optional.empty() : Optional.of(resultsList.get(0));
+    }
+
+    /**
+     * Get the estimated robot pose. Updates the current robot pose estimation, standard deviations, and flushes the
+     * cache of results.
+     *
+     * @return Estimated pose.
+     */
+    public Optional<EstimatedRobotPose> getEstimatedGlobalPose()
+    {
+      updateUnreadResults();
+      return estimatedRobotPose;
+    }
+
+    /**
      * Update the latest results, cached with a maximum refresh rate of 1req/15ms. Sorts the list by timestamp.
      */
     private void updateUnreadResults()
@@ -486,18 +536,6 @@ public class Vision
           updateEstimatedGlobalPose();
         }
       }
-    }
-
-    /**
-     * Get the estimated robot pose. Updates the current robot pose estimation, standard deviations, and flushes the
-     * cache of results.
-     *
-     * @return Estimated pose.
-     */
-    public Optional<EstimatedRobotPose> getEstimatedGlobalPose()
-    {
-      updateUnreadResults();
-      return estimatedRobotPose;
     }
 
     /**

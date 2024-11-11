@@ -123,7 +123,7 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg)
   {
-    swerveDrive = new SwerveDrive(driveCfg, controllerCfg, Constants.MAX_SPEED);
+    swerveDrive = new SwerveDrive(driveCfg, controllerCfg, Constants.MAX_SPEED, Pose2d.kZero);
   }
 
   /**

@@ -11,13 +11,11 @@ import swervelib.telemetry.Alert.AlertType;
 public class PhysicalPropertiesJson
 {
 
-
   /**
-   * Conversion factor applied to the motor controllers PID loops. Can be calculated with
-   * {@link swervelib.math.SwerveMath#calculateDegreesPerSteeringRotation(double, double)} for angle motors or
-   * {@link swervelib.math.SwerveMath#calculateMetersPerRotation(double, double, double)} for drive motors.
+   * DEPRECATED! Use {@link PhysicalPropertiesJson#conversionFactors} instead.
    */
-  public MotorConfigDouble     conversionFactor               = new MotorConfigDouble(0, 0);
+  @Deprecated(since = "2025", forRemoval = true)
+  public MotorConfigDouble     conversionFactor               = new MotorConfigDouble();
   /**
    * Conversion Factors composition. Auto-calculates the conversion factors.
    */
@@ -57,7 +55,6 @@ public class PhysicalPropertiesJson
                 conversionFactor.angle + "} }",
                 AlertType.ERROR_TRACE).set(true);
     }
-
 
     return new SwerveModulePhysicalCharacteristics(
         conversionFactors,

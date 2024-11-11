@@ -175,9 +175,10 @@ public class SwerveDrive
    *                         {@link SwerveController}.
    * @param maxSpeedMPS      Maximum speed in meters per second, remember to use {@link Units#feetToMeters(double)} if
    *                         you have feet per second!
+   * @param startingPose Starting {@link Pose2d} on the field.
    */
   public SwerveDrive(
-      SwerveDriveConfiguration config, SwerveControllerConfiguration controllerConfig, double maxSpeedMPS)
+      SwerveDriveConfiguration config, SwerveControllerConfiguration controllerConfig, double maxSpeedMPS, Pose2d startingPose)
   {
     this.maxSpeedMPS = maxSpeedMPS;
     swerveDriveConfiguration = config;
@@ -207,8 +208,7 @@ public class SwerveDrive
             kinematics,
             getYaw(),
             getModulePositions(),
-            new Pose2d(new Translation2d(0, 0),
-                       Rotation2d.fromDegrees(0))); // x,y,heading in radians; Vision measurement std dev, higher=less weight
+            startingPose); // x,y,heading in radians; Vision measurement std dev, higher=less weight
 
     zeroGyro();
     setMaximumSpeed(maxSpeedMPS);

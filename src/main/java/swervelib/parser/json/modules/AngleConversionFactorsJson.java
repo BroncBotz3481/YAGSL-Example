@@ -13,7 +13,7 @@ public class AngleConversionFactorsJson
   /**
    * Gear ratio for the angle/steering/azimuth motor on the Swerve Module. Motor rotations to 1 wheel rotation.
    */
-  public double gearRatio = 0;
+  public double gearRatio;
   /**
    * Calculated or given conversion factor.
    */

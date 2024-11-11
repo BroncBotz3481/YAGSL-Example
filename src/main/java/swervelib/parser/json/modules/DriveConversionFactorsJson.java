@@ -14,11 +14,11 @@ public class DriveConversionFactorsJson
   /**
    * Gear ratio for the drive motor rotations to turn the wheel 1 complete rotation.
    */
-  public double gearRatio = 0;
+  public double gearRatio;
   /**
    * Diameter of the wheel in inches.
    */
-  public double diameter  = 0;
+  public double diameter;
   /**
    * Calculated conversion factor.
    */

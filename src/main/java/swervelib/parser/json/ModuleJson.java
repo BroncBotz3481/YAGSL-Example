@@ -27,14 +27,6 @@ public class ModuleJson
    */
   public DeviceJson            angle;
   /**
-   * Conversion factor for the module, if different from the one in swervedrive.json
-   * <p>
-   * Conversion factor applied to the motor controllers PID loops. Can be calculated with
-   * {@link swervelib.math.SwerveMath#calculateDegreesPerSteeringRotation(double, double)} for angle motors or
-   * {@link swervelib.math.SwerveMath#calculateMetersPerRotation(double, double, double)} for drive motors.
-   */
-//  public MotorConfigDouble     conversionFactor        = new MotorConfigDouble(0, 0);
-  /**
    * Conversion Factors composition. Auto-calculates the conversion factors.
    */
   public ConversionFactorsJson conversionFactors       = new ConversionFactorsJson();

@@ -4,7 +4,7 @@ import static swervelib.telemetry.SwerveDriveTelemetry.canIdWarning;
 import static swervelib.telemetry.SwerveDriveTelemetry.i2cLockupWarning;
 import static swervelib.telemetry.SwerveDriveTelemetry.serialCommsIssueWarning;
 
-import com.revrobotics.SparkRelativeEncoder.Type;
+import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SPI;
@@ -27,6 +27,7 @@ import swervelib.imu.PigeonSwerve;
 import swervelib.imu.SwerveIMU;
 import swervelib.motors.SparkFlexSwerve;
 import swervelib.motors.SparkMaxBrushedMotorSwerve;
+import swervelib.motors.SparkMaxBrushedMotorSwerve.Type;
 import swervelib.motors.SparkMaxSwerve;
 import swervelib.motors.SwerveMotor;
 import swervelib.motors.TalonFXSwerve;
@@ -122,7 +123,7 @@ public class DeviceJson
         return new CanandgyroSwerve(id);
       case "navx":
       case "navx_spi":
-        return new NavXSwerve(SPI.Port.kMXP);
+        return new NavXSwerve(NavXComType.kMXP_SPI);
       case "navx_i2c":
         DriverStation.reportWarning(
             "WARNING: There exists an I2C lockup issue on the roboRIO that could occur, more information here: " +
@@ -130,15 +131,19 @@ public class DeviceJson
             ".html#onboard-i2c-causing-system-lockups",
             false);
         i2cLockupWarning.set(true);
-        return new NavXSwerve(I2C.Port.kMXP);
+        throw new RuntimeException("Studica NavX API does not support I2C communication currently.");
+//        return new NavXSwerve(I2C.Port.kMXP);
       case "navx_usb":
         DriverStation.reportWarning("WARNING: There is issues when using USB camera's and the NavX like this!\n" +
                                     "https://pdocs.kauailabs.com/navx-mxp/guidance/selecting-an-interface/", false);
         serialCommsIssueWarning.set(true);
-        return new NavXSwerve(Port.kUSB);
+        throw new RuntimeException("Studica NavX API does not support USB communication currently.");
+//        return new NavXSwerve(Port.kUSB);
       case "navx_mxp_serial":
         serialCommsIssueWarning.set(true);
-        return new NavXSwerve(Port.kMXP);
+        throw new RuntimeException("Studica NavX API does not support MXP Serial communication currently.");
+
+//        return new NavXSwerve(Port.kMXP);
       case "pigeon":
         return new PigeonSwerve(id);
       case "pigeon2":

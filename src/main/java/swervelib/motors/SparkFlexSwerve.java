@@ -496,7 +496,7 @@ public class SparkFlexSwerve extends SwerveMotor
   @Override
   public double getVelocity()
   {
-    return absoluteEncoder == null ? encoder.getVelocity() : absoluteEncoder.getVelocity();
+    return velocity.get();
   }
 
   /**
@@ -507,7 +507,7 @@ public class SparkFlexSwerve extends SwerveMotor
   @Override
   public double getPosition()
   {
-    return absoluteEncoder == null ? encoder.getPosition() : absoluteEncoder.getAbsolutePosition();
+    return position.get();
   }
 
   /**

@@ -255,8 +255,8 @@ public class SparkMaxSwerve extends SwerveMotor
         .primaryEncoderVelocityAlwaysOn(false)
         .iAccumulationAlwaysOn(false)
         .appliedOutputPeriodMs(10)
-        .faultsPeriodMs(20)
-    ;
+        .faultsPeriodMs(20);
+
     if (absoluteEncoder == null)
     {
       cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
@@ -288,7 +288,7 @@ public class SparkMaxSwerve extends SwerveMotor
       // This needs to be set to 20ms or under to properly update the swerve module position for odometry
       // Configuration taken from 3005, the team who helped develop the Max Swerve:
       // https://github.com/FRC3005/Charged-Up-2023-Public/blob/2b6a7c695e23edebafa27a76cf639a00f6e8a3a6/src/main/java/frc/robot/subsystems/drive/REVSwerveModule.java#L227-L244
-      // Some of the frames can probably be adjusted to decrease CAN utilization, with 65535 being the max. 
+      // Some of the frames can probably be adjusted to decrease CAN utilization, with 65535 being the max.
       // From testing, 20ms on frame 5 sometimes returns the same value while constantly powering the azimuth but 8ms may be overkill,
       // with limited testing 19ms did not return the same value while the module was constatntly rotating.
       if (absoluteEncoder.getAbsoluteEncoder() instanceof AbsoluteEncoder)

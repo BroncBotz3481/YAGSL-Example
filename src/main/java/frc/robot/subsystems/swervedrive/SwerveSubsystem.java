@@ -33,6 +33,8 @@ import frc.robot.Constants;
 import java.io.File;
 import java.util.Arrays;
 import java.util.function.DoubleSupplier;
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -58,10 +60,10 @@ public class SwerveSubsystem extends SubsystemBase
    * Enable vision odometry updates while driving.
    */
   private final boolean             visionDriveTest     = false;
-//  /**
-//   * PhotonVision class to keep an accurate odometry.
-//   */
-//  private       Vision              vision;
+  /**
+   * PhotonVision class to keep an accurate odometry.
+   */
+  private       Vision              vision;
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -128,7 +130,7 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public void setupPhotonVision()
   {
-//    vision = new Vision(swerveDrive::getPose, swerveDrive.field);
+    vision = new Vision(swerveDrive::getPose, swerveDrive.field);
   }
 
   @Override
@@ -138,7 +140,7 @@ public class SwerveSubsystem extends SubsystemBase
     if (visionDriveTest)
     {
       swerveDrive.updateOdometry();
-//      vision.updatePoseEstimation(swerveDrive);
+      vision.updatePoseEstimation(swerveDrive);
     }
   }
 
@@ -252,26 +254,26 @@ public class SwerveSubsystem extends SubsystemBase
         }).until(() -> Math.abs(getSpeakerYaw().minus(getHeading()).getDegrees()) < tolerance);
   }
 
-//  /**
-//   * Aim the robot at the target returned by PhotonVision.
-//   *
-//   * @param camera {@link PhotonCamera} to communicate with.
-//   * @return A {@link Command} which will run the alignment.
-//   */
-//  public Command aimAtTarget(PhotonCamera camera)
-//  {
-//
-//    return run(() -> {
-//      PhotonPipelineResult result = camera.getLatestResult();
-//      if (result.hasTargets())
-//      {
-//        drive(getTargetSpeeds(0,
-//                              0,
-//                              Rotation2d.fromDegrees(result.getBestTarget()
-//                                                           .getYaw()))); // Not sure if this will work, more math may be required.
-//      }
-//    });
-//  }
+  /**
+   * Aim the robot at the target returned by PhotonVision.
+   *
+   * @param camera {@link PhotonCamera} to communicate with.
+   * @return A {@link Command} which will run the alignment.
+   */
+  public Command aimAtTarget(PhotonCamera camera)
+  {
+
+    return run(() -> {
+      PhotonPipelineResult result = camera.getLatestResult();
+      if (result.hasTargets())
+      {
+        drive(getTargetSpeeds(0,
+                              0,
+                              Rotation2d.fromDegrees(result.getBestTarget()
+                                                           .getYaw()))); // Not sure if this will work, more math may be required.
+      }
+    });
+  }
 
   /**
    * Get the path follower with events.

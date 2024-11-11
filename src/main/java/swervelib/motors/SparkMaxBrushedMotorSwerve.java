@@ -1,5 +1,7 @@
 package swervelib.motors;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
@@ -12,6 +14,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.function.Supplier;
@@ -189,9 +192,31 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
       {
         return;
       }
-      Timer.delay(0.01);
+      Timer.delay(Units.Milliseconds.of(10).in(Seconds));
     }
     failureConfiguringAlert.set(true);
+  }
+
+  /**
+   * Get the current configuration of the {@link SparkMax}
+   *
+   * @return {@link SparkMaxConfig}
+   */
+  public SparkMaxConfig getConfig()
+  {
+    return cfg;
+  }
+
+  /**
+   * Update the config for the {@link SparkMax}
+   *
+   * @param cfgGiven Given {@link SparkMaxConfig} which should have minimal modifications.
+   */
+  public void updateConfig(SparkMaxConfig cfgGiven)
+  {
+    cfg.apply(cfgGiven);
+    configureSparkMax(() -> motor.configure(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters));
+    cfgUpdated = false;
   }
 
   /**

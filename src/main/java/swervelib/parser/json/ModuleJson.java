@@ -1,5 +1,6 @@
 package swervelib.parser.json;
 
+import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.util.Units;
 import swervelib.encoders.SparkMaxEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
@@ -139,7 +140,7 @@ public class ModuleJson
 
     // Backwards compatibility, auto-optimization.
     if (conversionFactor.angle == 360 && absEncoder != null &&
-        absEncoder instanceof SparkMaxEncoderSwerve && angleMotor.getMotor() instanceof CANSparkMax)
+        absEncoder instanceof SparkMaxEncoderSwerve && angleMotor.getMotor() instanceof SparkMax)
     {
       angleMotor.setAbsoluteEncoder(absEncoder);
     }

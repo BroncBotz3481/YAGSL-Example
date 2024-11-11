@@ -1,5 +1,7 @@
 package swervelib.motors;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -16,6 +18,7 @@ import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.function.Supplier;
 import swervelib.encoders.SparkMaxAnalogEncoderSwerve;
@@ -132,9 +135,31 @@ public class SparkFlexSwerve extends SwerveMotor
       {
         return;
       }
-      Timer.delay(0.01);
+      Timer.delay(Units.Milliseconds.of(10).in(Seconds));
     }
     failureConfiguring.set(true);
+  }
+
+  /**
+   * Get the current configuration of the {@link SparkFlex}
+   *
+   * @return {@link SparkMaxConfig}
+   */
+  public SparkFlexConfig getConfig()
+  {
+    return cfg;
+  }
+
+  /**
+   * Update the config for the {@link SparkFlex}
+   *
+   * @param cfgGiven Given {@link SparkFlexConfig} which should have minimal modifications.
+   */
+  public void updateConfig(SparkFlexConfig cfgGiven)
+  {
+    cfg.apply(cfgGiven);
+    configureSparkFlex(() -> motor.configure(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters));
+    cfgUpdated = false;
   }
 
   /**

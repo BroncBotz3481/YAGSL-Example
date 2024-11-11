@@ -4,7 +4,10 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.REVLibError;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import java.util.function.Supplier;
+import swervelib.motors.SparkMaxBrushedMotorSwerve;
+import swervelib.motors.SparkMaxSwerve;
 import swervelib.motors.SwerveMotor;
 import swervelib.telemetry.Alert;
 
@@ -26,6 +29,10 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
    * An {@link Alert} for if there is a failure configuring the encoder offset.
    */
   private Alert           offsetFailure;
+  /**
+   * {@link SparkMaxBrushedMotorSwerve} or {@link SparkMaxSwerve} instance.
+   */
+  private SwerveMotor sparkMax;
 
   /**
    * Create the {@link SparkMaxEncoderSwerve} object as a duty cycle from the {@link com.revrobotics.spark.SparkMax} motor.
@@ -45,9 +52,10 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
         Alert.AlertType.WARNING_TRACE);
     if (motor.getMotor() instanceof SparkMax)
     {
+      sparkMax = motor;
       encoder = ((SparkMax) motor.getMotor()).getAbsoluteEncoder();
-      configureSparkMax(() -> encoder.setVelocityConversionFactor(conversionFactor));
-      configureSparkMax(() -> encoder.setPositionConversionFactor(conversionFactor));
+      motor.setAbsoluteEncoder(this);
+      motor.configureIntegratedEncoder(conversionFactor);
     } else
     {
       throw new RuntimeException("Motor given to instantiate SparkMaxEncoder is not a CANSparkMax");
@@ -97,7 +105,17 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
   @Override
   public void configure(boolean inverted)
   {
-    encoder.setInverted(inverted);
+    if(sparkMax instanceof SparkMaxSwerve)
+    {
+      SparkMaxConfig cfg = ((SparkMaxSwerve) sparkMax).getConfig();
+      cfg.analogSensor.inverted(true);
+      ((SparkMaxSwerve) sparkMax).updateConfig(cfg);
+    } else if (sparkMax instanceof SparkMaxBrushedMotorSwerve)
+    {
+      SparkMaxConfig cfg = ((SparkMaxBrushedMotorSwerve) sparkMax).getConfig();
+      cfg.analogSensor.inverted(true);
+      ((SparkMaxBrushedMotorSwerve) sparkMax).updateConfig(cfg);
+    }
   }
 
   /**
@@ -131,17 +149,19 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
   @Override
   public boolean setAbsoluteEncoderOffset(double offset)
   {
-    REVLibError error = null;
-    for (int i = 0; i < maximumRetries; i++)
+    if(sparkMax instanceof SparkMaxSwerve)
     {
-      error = encoder.setZeroOffset(offset);
-      if (error == REVLibError.kOk)
-      {
-        return true;
-      }
+      SparkMaxConfig cfg = ((SparkMaxSwerve) sparkMax).getConfig();
+      cfg.absoluteEncoder.zeroOffset(offset);
+      ((SparkMaxSwerve) sparkMax).updateConfig(cfg);
+      return true;
+    } else if (sparkMax instanceof SparkMaxBrushedMotorSwerve)
+    {
+      SparkMaxConfig cfg = ((SparkMaxBrushedMotorSwerve) sparkMax).getConfig();
+      cfg.absoluteEncoder.zeroOffset(offset);
+      ((SparkMaxBrushedMotorSwerve) sparkMax).updateConfig(cfg);
+      return true;
     }
-    offsetFailure.setText("Failure to set Absolute Encoder Offset Error: " + error);
-    offsetFailure.set(true);
     return false;
   }
 

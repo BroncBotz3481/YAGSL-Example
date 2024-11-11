@@ -1,12 +1,17 @@
 package swervelib.motors;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.units.measure.Voltage;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.parser.PIDFConfig;
 import swervelib.telemetry.SwerveDriveTelemetry;
@@ -290,7 +295,9 @@ public class TalonFXSwerve extends SwerveMotor
   public void setInverted(boolean inverted)
   {
     //    Timer.delay(1);
-    motor.setInverted(inverted);
+    cfg.refresh(configuration.MotorOutput);
+    configuration.MotorOutput.withInverted(inverted ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive);
+    cfg.apply(configuration.MotorOutput);
   }
 
   /**
@@ -357,7 +364,7 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public double getVoltage()
   {
-    return motor.getMotorVoltage().waitForUpdate(STATUS_TIMEOUT_SECONDS).getValue();
+    return motor.getMotorVoltage().waitForUpdate(STATUS_TIMEOUT_SECONDS).getValue().in(Volts);
   }
 
   /**
@@ -390,7 +397,7 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public double getVelocity()
   {
-    return motor.getVelocity().getValue();
+    return motor.getVelocity().getValue().magnitude();
   }
 
   /**
@@ -401,7 +408,7 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public double getPosition()
   {
-    return motor.getPosition().getValue();
+    return motor.getPosition().getValue().magnitude();
   }
 
   /**

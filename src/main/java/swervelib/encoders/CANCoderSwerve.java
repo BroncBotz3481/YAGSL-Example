@@ -1,5 +1,8 @@
 package swervelib.encoders;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -9,6 +12,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.MagnetHealthValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import edu.wpi.first.units.measure.Angle;
 import swervelib.telemetry.Alert;
 
 /**
@@ -139,7 +143,7 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
       readingFaulty.set(false);
     }
 
-    StatusSignal<Double> angle = encoder.getAbsolutePosition();
+    StatusSignal<Angle> angle = encoder.getAbsolutePosition();
 
     // Taken from democat's library.
     // Source: https://github.com/democat3457/swerve-lib/blob/7c03126b8c22f23a501b2c2742f9d173a5bcbc40/src/main/java/com/swervedrivespecialties/swervelib/ctre/CanCoderFactoryBuilder.java#L51-L74
@@ -160,7 +164,7 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
       readingIgnored.set(false);
     }
 
-    return angle.getValue() * 360;
+    return angle.getValue().in(Degrees);
   }
 
   /**
@@ -213,6 +217,6 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
   @Override
   public double getVelocity()
   {
-    return encoder.getVelocity().getValue() * 360;
+    return encoder.getVelocity().getValue().in(DegreesPerSecond);
   }
 }

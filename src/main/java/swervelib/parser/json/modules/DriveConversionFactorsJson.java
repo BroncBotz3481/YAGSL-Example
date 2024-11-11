@@ -31,12 +31,6 @@ public class DriveConversionFactorsJson
    */
   public double calculate()
   {
-    if (factor != 0 && (diameter != 0 || gearRatio != 0))
-    {
-      new Alert("Configuration",
-                "The given drive conversion factor takes precedence over the composite conversion factor, please remove 'factor' if you want to use the composite factor instead.",
-                AlertType.WARNING).set(true);
-    }
     if (factor == 0)
     {
       factor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(this.diameter), this.gearRatio);

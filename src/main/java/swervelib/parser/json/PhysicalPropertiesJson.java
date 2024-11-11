@@ -2,6 +2,8 @@ package swervelib.parser.json;
 
 import swervelib.parser.SwerveModulePhysicalCharacteristics;
 import swervelib.parser.json.modules.ConversionFactorsJson;
+import swervelib.telemetry.Alert;
+import swervelib.telemetry.Alert.AlertType;
 
 /**
  * {@link swervelib.parser.SwerveModulePhysicalCharacteristics} parsed data. Used to configure the SwerveModule.
@@ -45,29 +47,20 @@ public class PhysicalPropertiesJson
   public SwerveModulePhysicalCharacteristics createPhysicalProperties()
   {
     // Setup deprecation notice.
-//    if (conversionFactor.drive != 0 && conversionFactor.angle != 0 && conversionFactors.isDriveEmpty() &&
-//        conversionFactors.isAngleEmpty())
-//    {
-//      new Alert("Configuration",
-//                "\n'conversionFactor': {'drive': " + conversionFactor.drive + ", 'angle': " + conversionFactor.angle +
-//                "} \nis deprecated, please use\n" +
-//                "'conversionFactors': {'drive': {'factor': " + conversionFactor.drive + "}, 'angle': {'factor': " +
-//                conversionFactor.angle + "} }",
-//                AlertType.ERROR_TRACE).set(true);
-//    }
-
-    if (!conversionFactors.isAngleEmpty())
+    if (conversionFactor.drive != 0 && conversionFactor.angle != 0 && conversionFactors.isDriveEmpty() &&
+        conversionFactors.isAngleEmpty())
     {
-      conversionFactor.angle = conversionFactors.angle.calculate();
+      new Alert("Configuration",
+                "\n'conversionFactor': {'drive': " + conversionFactor.drive + ", 'angle': " + conversionFactor.angle +
+                "} \nis deprecated, please use\n" +
+                "'conversionFactors': {'drive': {'factor': " + conversionFactor.drive + "}, 'angle': {'factor': " +
+                conversionFactor.angle + "} }",
+                AlertType.ERROR_TRACE).set(true);
     }
 
-    if (!conversionFactors.isDriveEmpty())
-    {
-      conversionFactor.drive = conversionFactors.drive.calculate();
-    }
 
     return new SwerveModulePhysicalCharacteristics(
-        conversionFactor,
+        conversionFactors,
         wheelGripCoefficientOfFriction,
         optimalVoltage,
         currentLimit.drive,

@@ -1,6 +1,7 @@
 package swervelib.parser;
 
 import swervelib.parser.json.MotorConfigDouble;
+import swervelib.parser.json.modules.ConversionFactorsJson;
 
 /**
  * Configuration class which stores physical characteristics shared between every swerve module.
@@ -23,13 +24,13 @@ public class SwerveModulePhysicalCharacteristics
   /**
    * The voltage to use for the smart motor voltage compensation.
    */
-  public       double            optimalVoltage;
+  public double                optimalVoltage;
   /**
    * The conversion factors for the drive and angle motors, created by
    * {@link swervelib.math.SwerveMath#calculateMetersPerRotation(double, double, double)} and
    * {@link swervelib.math.SwerveMath#calculateDegreesPerSteeringRotation(double, double)}.
    */
-  public       MotorConfigDouble conversionFactor;
+  public ConversionFactorsJson conversionFactor;
 
   /**
    * Construct the swerve module physical characteristics.
@@ -49,7 +50,7 @@ public class SwerveModulePhysicalCharacteristics
    *                                       overdrawing power and power loss).
    */
   public SwerveModulePhysicalCharacteristics(
-      MotorConfigDouble conversionFactors,
+      ConversionFactorsJson conversionFactors,
       double wheelGripCoefficientOfFriction,
       double optimalVoltage,
       int driveMotorCurrentLimit,
@@ -64,7 +65,7 @@ public class SwerveModulePhysicalCharacteristics
     // Set the conversion factors to null if they are both 0.
     if (conversionFactors != null)
     {
-      if (conversionFactors.angle == 0 && conversionFactors.drive == 0)
+      if (conversionFactors.isAngleEmpty() && conversionFactors.isDriveEmpty())
       {
         this.conversionFactor = null;
       }
@@ -90,7 +91,7 @@ public class SwerveModulePhysicalCharacteristics
    *                           power and power loss).
    */
   public SwerveModulePhysicalCharacteristics(
-      MotorConfigDouble conversionFactors,
+      ConversionFactorsJson conversionFactors,
       double driveMotorRampRate,
       double angleMotorRampRate)
   {

@@ -221,7 +221,7 @@ public class SwerveDriveTest
       Timer.delay(1);
       Rotation2d startingAbsoluteEncoderPosition = Rotation2d.fromDegrees(absoluteEncoder.getAbsolutePosition());
       double driveEncoderPositionRotations = module.getDriveMotor().getPosition() /
-                                             module.configuration.conversionFactors.drive;
+                                             module.configuration.conversionFactors.drive.factor;
       if (automatic)
       {
         module.getAngleMotor().setVoltage(volts);
@@ -237,7 +237,7 @@ public class SwerveDriveTest
             false);
         Timer.delay(60);
       }
-      double couplingRatio = (module.getDriveMotor().getPosition() / module.configuration.conversionFactors.drive) -
+      double couplingRatio = (module.getDriveMotor().getPosition() / module.configuration.conversionFactors.drive.factor) -
                              driveEncoderPositionRotations;
       DriverStation.reportWarning(module.configuration.name + " Coupling Ratio: " + couplingRatio, false);
       couplingRatioSum += couplingRatio;

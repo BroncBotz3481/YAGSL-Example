@@ -14,6 +14,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -266,6 +267,17 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   public Object getMotor()
   {
     return motor;
+  }
+
+  /**
+   * Get the {@link DCMotor} of the motor class.
+   *
+   * @return {@link DCMotor} of this type.
+   */
+  @Override
+  public DCMotor getSimMotor()
+  {
+    return DCMotor.getCIM(1);
   }
 
   /**

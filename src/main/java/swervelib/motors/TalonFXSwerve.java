@@ -14,6 +14,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Voltage;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.parser.PIDFConfig;
@@ -419,6 +420,17 @@ public class TalonFXSwerve extends SwerveMotor
   public Object getMotor()
   {
     return motor;
+  }
+
+  /**
+   * Get the {@link DCMotor} of the motor class.
+   *
+   * @return {@link DCMotor} of this type.
+   */
+  @Override
+  public DCMotor getSimMotor()
+  {
+    return DCMotor.getKrakenX60(1);
   }
 
   /**

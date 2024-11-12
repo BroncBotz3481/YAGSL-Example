@@ -18,6 +18,7 @@ import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.function.Supplier;
@@ -210,6 +211,17 @@ public class SparkFlexSwerve extends SwerveMotor
   public Object getMotor()
   {
     return motor;
+  }
+
+  /**
+   * Get the {@link DCMotor} of the motor class.
+   *
+   * @return {@link DCMotor} of this type.
+   */
+  @Override
+  public DCMotor getSimMotor()
+  {
+    return DCMotor.getNeoVortex(1);
   }
 
   /**

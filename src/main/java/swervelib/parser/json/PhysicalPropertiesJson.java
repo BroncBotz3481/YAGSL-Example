@@ -1,5 +1,6 @@
 package swervelib.parser.json;
 
+import edu.wpi.first.units.Units;
 import swervelib.parser.SwerveModulePhysicalCharacteristics;
 import swervelib.parser.json.modules.ConversionFactorsJson;
 import swervelib.telemetry.Alert;
@@ -16,6 +17,18 @@ public class PhysicalPropertiesJson
    */
   @Deprecated(since = "2025", forRemoval = true)
   public MotorConfigDouble     conversionFactor               = new MotorConfigDouble();
+  /**
+   * Minimum voltage to spin the module or wheel.
+   */
+  public MotorConfigDouble     friction                       = new MotorConfigDouble(0.3, 0.2);
+  /**
+   * Steer rotational inertia in KilogramMetersSquare.
+   */
+  public double                steerRotationalInertia         = 0.03;
+  /**
+   * Robot mass in lb (pounds)
+   */
+  public double                robotMass                      = 110.2311;
   /**
    * Conversion Factors composition. Auto-calculates the conversion factors.
    */
@@ -63,7 +76,11 @@ public class PhysicalPropertiesJson
         currentLimit.drive,
         currentLimit.angle,
         rampRate.drive,
-        rampRate.angle);
+        rampRate.angle,
+        friction.drive,
+        friction.angle,
+        steerRotationalInertia,
+        Units.Pounds.of(robotMass).in(Units.Kilogram));
   }
 }
 

@@ -29,6 +29,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
+import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import swervelib.encoders.CANCoderSwerve;
 import swervelib.imu.IMUVelocity;
 import swervelib.imu.Pigeon2Swerve;
@@ -88,11 +91,15 @@ public class SwerveDrive
   /**
    * Field object.
    */
-  public        Field2d                  field                                           = new Field2d();
+  public        Field2d               field                                           = new Field2d();
+  /**
+   * MapleSim SwerveDrive.
+   */
+  private       SwerveDriveSimulation mapleSimDrive;
   /**
    * Swerve controller for controlling heading of the robot.
    */
-  public        SwerveController         swerveController;
+  public        SwerveController      swerveController;
   /**
    * Correct chassis velocity in {@link SwerveDrive#drive(Translation2d, double, boolean, boolean)} using 254's
    * correction.
@@ -107,16 +114,16 @@ public class SwerveDrive
    * Correct for skew that scales with angular velocity in
    * {@link SwerveDrive#drive(Translation2d, double, boolean, boolean)}
    */
-  public  boolean     angularVelocityCorrection           = false;
+  public        boolean                  angularVelocityCorrection                       = false;
   /**
    * Correct for skew that scales with angular velocity in
    * {@link SwerveDrive#setChassisSpeeds(ChassisSpeeds chassisSpeeds)} during auto.
    */
-  public  boolean     autonomousAngularVelocityCorrection = false;
+  public        boolean                  autonomousAngularVelocityCorrection             = false;
   /**
    * Angular Velocity Correction Coefficent (expected values between -0.15 and 0.15).
    */
-  public  double      angularVelocityCoefficient          = 0;
+  public        double                   angularVelocityCoefficient                      = 0;
   /**
    * Whether to correct heading when driving translationally. Set to true to enable.
    */
@@ -137,7 +144,7 @@ public class SwerveDrive
    * Class that calculates robot's yaw velocity using IMU measurements. Used for angularVelocityCorrection in
    * {@link SwerveDrive#drive(Translation2d, double, boolean, boolean)}.
    */
-  private IMUVelocity imuVelocity;
+  private       IMUVelocity              imuVelocity;
   /**
    * Simulation of the swerve drive.
    */
@@ -175,10 +182,11 @@ public class SwerveDrive
    *                         {@link SwerveController}.
    * @param maxSpeedMPS      Maximum speed in meters per second, remember to use {@link Units#feetToMeters(double)} if
    *                         you have feet per second!
-   * @param startingPose Starting {@link Pose2d} on the field.
+   * @param startingPose     Starting {@link Pose2d} on the field.
    */
   public SwerveDrive(
-      SwerveDriveConfiguration config, SwerveControllerConfiguration controllerConfig, double maxSpeedMPS, Pose2d startingPose)
+      SwerveDriveConfiguration config, SwerveControllerConfiguration controllerConfig, double maxSpeedMPS,
+      Pose2d startingPose)
   {
     this.maxSpeedMPS = maxSpeedMPS;
     swerveDriveConfiguration = config;
@@ -193,6 +201,27 @@ public class SwerveDrive
     {
       simIMU = new SwerveIMUSimulation();
       imuReadingCache = new Cache<>(simIMU::getGyroRotation3d, 5L);
+      SwerveModuleSimulation simModule = new SwerveModuleSimulation(config.getDriveMotorSim(),
+                                                                    config.getAngleMotorSim(),
+                                                                    config.physicalCharacteristics.driveMotorCurrentLimit,
+                                                                    config.physicalCharacteristics.conversionFactor.drive.gearRatio,
+                                                                    config.physicalCharacteristics.conversionFactor.angle.gearRatio,
+                                                                    config.physicalCharacteristics.driveFrictionVoltage,
+                                                                    config.physicalCharacteristics.angleFrictionVoltage,
+                                                                    config.physicalCharacteristics.wheelGripCoefficientOfFriction,
+                                                                    config.physicalCharacteristics.conversionFactor.drive.diameter /
+                                                                    2,
+                                                                    config.physicalCharacteristics.steerRotationalInertia);
+      DriveTrainSimulationConfig simCfg = new DriveTrainSimulationConfig(config.physicalCharacteristics.robotMassKg,
+                                                                         Units.inchesToMeters(5),
+                                                                         Units.inchesToMeters(5),
+                                                                         config.getTracklength(),
+                                                                         config.getTrackwidth(),
+                                                                         () -> {
+                                                                           return simModule;
+                                                                         },
+                                                                         config.getGyroSim());
+      mapleSimDrive = new SwerveDriveSimulation(simCfg, startingPose);
     } else
     {
       imu = config.imu;

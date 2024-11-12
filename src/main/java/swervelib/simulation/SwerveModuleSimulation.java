@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 
 /**
  * Class to hold simulation data for {@link swervelib.SwerveModule}
@@ -50,6 +51,7 @@ public class SwerveModuleSimulation
     fakePos = 0;
     dt = 0;
   }
+
 
   /**
    * Update the position and state of the module. Called from {@link swervelib.SwerveModule#setDesiredState} function

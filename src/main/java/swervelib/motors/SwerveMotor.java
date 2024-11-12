@@ -1,5 +1,6 @@
 package swervelib.motors;
 
+import edu.wpi.first.math.system.plant.DCMotor;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.parser.PIDFConfig;
 
@@ -171,6 +172,12 @@ public abstract class SwerveMotor
    * @return Motor object.
    */
   public abstract Object getMotor();
+
+  /**
+   * Get the {@link DCMotor} of the motor class.
+   * @return {@link DCMotor} of this type.
+   */
+  public abstract DCMotor getSimMotor();
 
   /**
    * Queries whether the absolute encoder is directly attached to the motor controller.

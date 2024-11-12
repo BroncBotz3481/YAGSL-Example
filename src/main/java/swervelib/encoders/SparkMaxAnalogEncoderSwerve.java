@@ -17,25 +17,25 @@ public class SparkMaxAnalogEncoderSwerve extends SwerveAbsoluteEncoder
 {
 
   /**
+   * {@link swervelib.motors.SparkMaxSwerve} or {@link swervelib.motors.SparkMaxBrushedMotorSwerve} object.
+   */
+  private final SwerveMotor       sparkMax;
+  /**
    * The {@link SparkAnalogSensor} representing the duty cycle encoder attached to the SparkMax analog port.
    */
-  public  SparkAnalogSensor encoder;
+  public        SparkAnalogSensor encoder;
   /**
    * An {@link Alert} for if there is a failure configuring the encoder.
    */
-  private Alert                                   failureConfiguring;
+  private       Alert             failureConfiguring;
   /**
    * An {@link Alert} for if the absolute encoder does not support integrated offsets.
    */
-  private Alert             doesNotSupportIntegratedOffsets;
-  /**
-   * {@link swervelib.motors.SparkMaxSwerve} or {@link swervelib.motors.SparkMaxBrushedMotorSwerve} object.
-   */
-  private final SwerveMotor sparkMax;
+  private       Alert             doesNotSupportIntegratedOffsets;
 
   /**
-   * Create the {@link SparkMaxAnalogEncoderSwerve} object as a analog sensor from the {@link SparkMax} motor data
-   * port analog pin.
+   * Create the {@link SparkMaxAnalogEncoderSwerve} object as a analog sensor from the {@link SparkMax} motor data port
+   * analog pin.
    *
    * @param motor      Motor to create the encoder from.
    * @param maxVoltage Maximum voltage for analog input reading.
@@ -47,7 +47,7 @@ public class SparkMaxAnalogEncoderSwerve extends SwerveAbsoluteEncoder
       sparkMax = motor;
       encoder = ((SparkMax) motor.getMotor()).getAnalog();
       motor.setAbsoluteEncoder(this);
-      sparkMax.configureIntegratedEncoder(360/maxVoltage);
+      sparkMax.configureIntegratedEncoder(360 / maxVoltage);
     } else
     {
       throw new RuntimeException("Motor given to instantiate SparkMaxEncoder is not a CANSparkMax");
@@ -106,7 +106,7 @@ public class SparkMaxAnalogEncoderSwerve extends SwerveAbsoluteEncoder
   @Override
   public void configure(boolean inverted)
   {
-    if(sparkMax instanceof SparkMaxSwerve)
+    if (sparkMax instanceof SparkMaxSwerve)
     {
       SparkMaxConfig cfg = ((SparkMaxSwerve) sparkMax).getConfig();
       cfg.analogSensor.inverted(true);

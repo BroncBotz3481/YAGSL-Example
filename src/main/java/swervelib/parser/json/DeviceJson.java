@@ -6,9 +6,6 @@ import static swervelib.telemetry.SwerveDriveTelemetry.serialCommsIssueWarning;
 
 import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SerialPort.Port;
 import swervelib.encoders.AnalogAbsoluteEncoderSwerve;
 import swervelib.encoders.CANCoderSwerve;
 import swervelib.encoders.CanAndMagSwerve;

@@ -241,6 +241,8 @@ public class SwerveParser
 
     return new SwerveDrive(
         swerveDriveConfiguration,
-        controllerPropertiesJson.createControllerConfiguration(swerveDriveConfiguration, maxSpeed), maxSpeed, initialPose);
+        controllerPropertiesJson.createControllerConfiguration(swerveDriveConfiguration, maxSpeed),
+        maxSpeed,
+        initialPose);
   }
 }

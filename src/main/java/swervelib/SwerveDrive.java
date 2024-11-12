@@ -91,15 +91,11 @@ public class SwerveDrive
   /**
    * Field object.
    */
-  public        Field2d               field                                           = new Field2d();
-  /**
-   * MapleSim SwerveDrive.
-   */
-  private       SwerveDriveSimulation mapleSimDrive;
+  public        Field2d                  field                                           = new Field2d();
   /**
    * Swerve controller for controlling heading of the robot.
    */
-  public        SwerveController      swerveController;
+  public        SwerveController         swerveController;
   /**
    * Correct chassis velocity in {@link SwerveDrive#drive(Translation2d, double, boolean, boolean)} using 254's
    * correction.
@@ -128,6 +124,10 @@ public class SwerveDrive
    * Whether to correct heading when driving translationally. Set to true to enable.
    */
   public        boolean                  headingCorrection                               = false;
+  /**
+   * MapleSim SwerveDrive.
+   */
+  private       SwerveDriveSimulation    mapleSimDrive;
   /**
    * Amount of seconds the duration of the timestep the speeds should be applied for.
    */

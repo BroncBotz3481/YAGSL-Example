@@ -1,9 +1,7 @@
 package swervelib.motors;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -15,7 +13,6 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.measure.Voltage;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.parser.PIDFConfig;
 import swervelib.telemetry.SwerveDriveTelemetry;
@@ -29,39 +26,39 @@ public class TalonFXSwerve extends SwerveMotor
   /**
    * Wait time for status frames to show up.
    */
-  public static double             STATUS_TIMEOUT_SECONDS  = 0.02;
+  public static double               STATUS_TIMEOUT_SECONDS  = 0.02;
   /**
    * Factory default already occurred.
    */
-  private final boolean            factoryDefaultOccurred  = false;
+  private final boolean              factoryDefaultOccurred  = false;
   /**
    * Whether the absolute encoder is integrated.
    */
-  private final boolean            absoluteEncoder         = false;
+  private final boolean              absoluteEncoder         = false;
   /**
    * Motion magic angle voltage setter.
    */
-  private final MotionMagicVoltage m_angleVoltageSetter    = new MotionMagicVoltage(0);
+  private final MotionMagicVoltage   m_angleVoltageSetter    = new MotionMagicVoltage(0);
   /**
    * Velocity voltage setter for controlling drive motor.
    */
-  private final VelocityVoltage    m_velocityVoltageSetter = new VelocityVoltage(0);
+  private final VelocityVoltage      m_velocityVoltageSetter = new VelocityVoltage(0);
   /**
    * TalonFX motor controller.
    */
-  private final TalonFX motor;
+  private final TalonFX              motor;
   /**
    * Conversion factor for the motor.
    */
-  private double               conversionFactor;
+  private       double               conversionFactor;
   /**
    * Current TalonFX configuration.
    */
-  private TalonFXConfiguration configuration = new TalonFXConfiguration();
+  private       TalonFXConfiguration configuration           = new TalonFXConfiguration();
   /**
    * Current TalonFX Configurator.
    */
-  private TalonFXConfigurator cfg;
+  private       TalonFXConfigurator  cfg;
 
 
   /**
@@ -244,7 +241,8 @@ public class TalonFXSwerve extends SwerveMotor
   {
     //    Timer.delay(1);
     cfg.refresh(configuration.MotorOutput);
-    configuration.MotorOutput.withInverted(inverted ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive);
+    configuration.MotorOutput.withInverted(
+        inverted ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive);
     cfg.apply(configuration.MotorOutput);
   }
 

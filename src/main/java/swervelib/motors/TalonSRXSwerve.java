@@ -22,31 +22,31 @@ public class TalonSRXSwerve extends SwerveMotor
   /**
    * Factory default already occurred.
    */
-  private final boolean               factoryDefaultOccurred = false;
+  private final boolean               factoryDefaultOccurred   = false;
   /**
    * Current TalonFX configuration.
    */
-  private final TalonSRXConfiguration configuration          = new TalonSRXConfiguration();
+  private final TalonSRXConfiguration configuration            = new TalonSRXConfiguration();
   /**
    * Whether the absolute encoder is integrated.
    */
-  private final boolean               absoluteEncoder        = false;
+  private final boolean               absoluteEncoder          = false;
   /**
    * TalonSRX motor controller.
    */
-  private final WPI_TalonSRX motor;
+  private final WPI_TalonSRX          motor;
   /**
    * The position conversion factor to convert raw sensor units to Meters Per 100ms, or Ticks to Degrees.
    */
-  private double  positionConversionFactor = 1;
+  private       double                positionConversionFactor = 1;
   /**
    * If the TalonFX configuration has changed.
    */
-  private boolean configChanged            = true;
+  private       boolean               configChanged            = true;
   /**
    * Nominal voltage default to use with feedforward.
    */
-  private double  nominalVoltage           = 12.0;
+  private       double                nominalVoltage           = 12.0;
 
   /**
    * Constructor for TalonSRX swerve motor.

@@ -90,9 +90,9 @@ public class ModuleJson
     // If both are defined, override 0 with the physical characterstics input.
     {
       conversionFactors.angle = conversionFactors.isAngleEmpty() ? physicalCharacteristics.conversionFactor.angle
-                                                                     : conversionFactors.angle;
+                                                                 : conversionFactors.angle;
       conversionFactors.drive = conversionFactors.isDriveEmpty() ? physicalCharacteristics.conversionFactor.drive
-                                                                     : conversionFactors.drive;
+                                                                 : conversionFactors.drive;
     }
 
     if (conversionFactors.isDriveEmpty() || conversionFactors.isAngleEmpty())

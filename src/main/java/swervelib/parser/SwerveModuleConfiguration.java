@@ -3,7 +3,6 @@ package swervelib.parser;
 import edu.wpi.first.math.geometry.Translation2d;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.motors.SwerveMotor;
-import swervelib.parser.json.MotorConfigDouble;
 import swervelib.parser.json.modules.ConversionFactorsJson;
 
 /**
@@ -18,7 +17,7 @@ public class SwerveModuleConfiguration
    * {@link swervelib.math.SwerveMath#calculateDegreesPerSteeringRotation(double, double)} respectively to calculate the
    * conversion factors.
    */
-  public final ConversionFactorsJson                   conversionFactors;
+  public final ConversionFactorsJson               conversionFactors;
   /**
    * Angle offset in degrees for the Swerve Module.
    */

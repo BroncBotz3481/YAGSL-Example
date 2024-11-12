@@ -28,14 +28,15 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
   /**
    * An {@link Alert} for if there is a failure configuring the encoder offset.
    */
-  private Alert           offsetFailure;
+  private Alert                offsetFailure;
   /**
    * {@link SparkMaxBrushedMotorSwerve} or {@link SparkMaxSwerve} instance.
    */
-  private SwerveMotor sparkMax;
+  private SwerveMotor          sparkMax;
 
   /**
-   * Create the {@link SparkMaxEncoderSwerve} object as a duty cycle from the {@link com.revrobotics.spark.SparkMax} motor.
+   * Create the {@link SparkMaxEncoderSwerve} object as a duty cycle from the {@link com.revrobotics.spark.SparkMax}
+   * motor.
    *
    * @param motor            Motor to create the encoder from.
    * @param conversionFactor The conversion factor to set if the output is not from 0 to 360.
@@ -105,7 +106,7 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
   @Override
   public void configure(boolean inverted)
   {
-    if(sparkMax instanceof SparkMaxSwerve)
+    if (sparkMax instanceof SparkMaxSwerve)
     {
       SparkMaxConfig cfg = ((SparkMaxSwerve) sparkMax).getConfig();
       cfg.analogSensor.inverted(true);
@@ -149,7 +150,7 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
   @Override
   public boolean setAbsoluteEncoderOffset(double offset)
   {
-    if(sparkMax instanceof SparkMaxSwerve)
+    if (sparkMax instanceof SparkMaxSwerve)
     {
       SparkMaxConfig cfg = ((SparkMaxSwerve) sparkMax).getConfig();
       cfg.absoluteEncoder.zeroOffset(offset);

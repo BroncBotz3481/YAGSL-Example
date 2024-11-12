@@ -1,8 +1,6 @@
 package swervelib.parser.json.modules;
 
 import swervelib.math.SwerveMath;
-import swervelib.telemetry.Alert;
-import swervelib.telemetry.Alert.AlertType;
 
 /**
  * Angle motor conversion factors composite JSON parse class.
@@ -17,7 +15,7 @@ public class AngleConversionFactorsJson
   /**
    * Calculated or given conversion factor.
    */
-  public double factor    = 0;
+  public double factor = 0;
 
   /**
    * Calculate the drive conversion factor.

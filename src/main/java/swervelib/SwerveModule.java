@@ -47,7 +47,7 @@ public class SwerveModule
   /**
    * Module number for kinematics, usually 0 to 3. front left -> front right -> back left -> back right.
    */
-  public final int moduleNumber;
+  public final  int                       moduleNumber;
   /**
    * Swerve Motors.
    */
@@ -99,7 +99,7 @@ public class SwerveModule
   /**
    * Anti-Jitter AKA auto-centering disabled.
    */
-  private boolean antiJitterEnabled          = true;
+  private       boolean                antiJitterEnabled          = true;
   /**
    * Last swerve module state applied.
    */
@@ -115,15 +115,15 @@ public class SwerveModule
   /**
    * Encoder synchronization queued.
    */
-  private boolean synchronizeEncoderQueued   = false;
+  private       boolean                synchronizeEncoderQueued   = false;
   /**
    * Encoder, Absolute encoder synchronization enabled.
    */
-  private boolean synchronizeEncoderEnabled  = false;
+  private       boolean                synchronizeEncoderEnabled  = false;
   /**
    * Encoder synchronization deadband in degrees.
    */
-  private double  synchronizeEncoderDeadband = 3;
+  private       double                 synchronizeEncoderDeadband = 3;
 
 
   /**
@@ -376,8 +376,8 @@ public class SwerveModule
 
     // Cosine compensation.
     LinearVelocity velocity = configuration.useCosineCompensator
-                      ? getCosineCompensatedVelocity(desiredState)
-                      : MetersPerSecond.of(desiredState.speedMetersPerSecond);
+                              ? getCosineCompensatedVelocity(desiredState)
+                              : MetersPerSecond.of(desiredState.speedMetersPerSecond);
 
     if (isOpenLoop)
     {

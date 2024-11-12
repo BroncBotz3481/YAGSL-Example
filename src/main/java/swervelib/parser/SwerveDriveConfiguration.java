@@ -105,6 +105,7 @@ public class SwerveDriveConfiguration
 
   /**
    * Get the trackwidth of the swerve modules.
+   *
    * @return Effective trackwdtih in Meters
    */
   public double getTrackwidth()
@@ -116,6 +117,7 @@ public class SwerveDriveConfiguration
 
   /**
    * Get the tracklength of the swerve modules.
+   *
    * @return Effective tracklength in Meters
    */
   public double getTracklength()
@@ -127,6 +129,7 @@ public class SwerveDriveConfiguration
 
   /**
    * Get the {@link DCMotor} corresponding to the first module's configuration.
+   *
    * @return {@link DCMotor} of the drive motor.
    */
   public DCMotor getDriveMotorSim()
@@ -137,6 +140,7 @@ public class SwerveDriveConfiguration
 
   /**
    * Get the {@link DCMotor} corresponding to the first module configuration.
+   *
    * @return {@link DCMotor} of the angle motor.
    */
   public DCMotor getAngleMotorSim()
@@ -147,14 +151,18 @@ public class SwerveDriveConfiguration
 
   /**
    * Get the gyro simulation for the robot.
+   *
    * @return {@link GyroSimulation} gyro simulation.
    */
   public Supplier<GyroSimulation> getGyroSim()
   {
-    if(imu instanceof Pigeon2Swerve)
+    if (imu instanceof Pigeon2Swerve)
+    {
       return GyroSimulation.getPigeon2();
-    else if (imu instanceof NavXSwerve)
+    } else if (imu instanceof NavXSwerve)
+    {
       return GyroSimulation.getNav2X();
+    }
     return GyroSimulation.getGeneric();
   }
 

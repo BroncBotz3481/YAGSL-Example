@@ -8,7 +8,6 @@ import com.ctre.phoenix6.configs.Pigeon2Configurator;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Optional;
@@ -48,7 +47,7 @@ public class Pigeon2Swerve extends SwerveIMU
   /**
    * Y Accelleration supplier.
    */
-  private Supplier<StatusSignal<LinearAcceleration>>    yAcc;
+  private Supplier<StatusSignal<LinearAcceleration>> yAcc;
   /**
    * Z Acceleration supplier.
    */

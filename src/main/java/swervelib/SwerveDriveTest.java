@@ -9,18 +9,11 @@ import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.MutableMeasure;
-import edu.wpi.first.units.Units;
-import edu.wpi.first.units.VoltageUnit;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.units.measure.MutLinearVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
@@ -44,23 +37,23 @@ public class SwerveDriveTest
   /**
    * Tracks the voltage being applied to a motor
    */
-  private static final MutVoltage                         m_appliedVoltage = new MutVoltage(0, 0, Volts);
+  private static final MutVoltage         m_appliedVoltage = new MutVoltage(0, 0, Volts);
   /**
    * Tracks the distance travelled of a position motor
    */
-  private static final MutDistance           m_distance      = new MutDistance(0,0, Meter);
+  private static final MutDistance        m_distance       = new MutDistance(0, 0, Meter);
   /**
    * Tracks the velocity of a positional motor
    */
-  private static final MutLinearVelocity               m_velocity      = new MutLinearVelocity(0, 9, MetersPerSecond);
+  private static final MutLinearVelocity  m_velocity       = new MutLinearVelocity(0, 9, MetersPerSecond);
   /**
    * Tracks the rotations of an angular motor
    */
-  private static final MutAngle           m_anglePosition = new MutAngle(0,0, Degrees);
+  private static final MutAngle           m_anglePosition  = new MutAngle(0, 0, Degrees);
   /**
    * Tracks the velocity of an angular motor
    */
-  private static final MutAngularVelocity m_angVelocity   = new MutAngularVelocity(0,0, DegreesPerSecond);
+  private static final MutAngularVelocity m_angVelocity    = new MutAngularVelocity(0, 0, DegreesPerSecond);
 
   /**
    * Set the angle of the modules to a given {@link Rotation2d}
@@ -237,8 +230,9 @@ public class SwerveDriveTest
             false);
         Timer.delay(60);
       }
-      double couplingRatio = (module.getDriveMotor().getPosition() / module.configuration.conversionFactors.drive.factor) -
-                             driveEncoderPositionRotations;
+      double couplingRatio =
+          (module.getDriveMotor().getPosition() / module.configuration.conversionFactors.drive.factor) -
+          driveEncoderPositionRotations;
       DriverStation.reportWarning(module.configuration.name + " Coupling Ratio: " + couplingRatio, false);
       couplingRatioSum += couplingRatio;
     }

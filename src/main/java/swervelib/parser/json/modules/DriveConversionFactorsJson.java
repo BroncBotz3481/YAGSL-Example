@@ -2,8 +2,6 @@ package swervelib.parser.json.modules;
 
 import edu.wpi.first.math.util.Units;
 import swervelib.math.SwerveMath;
-import swervelib.telemetry.Alert;
-import swervelib.telemetry.Alert.AlertType;
 
 /**
  * Drive motor composite JSON parse class.
@@ -22,7 +20,7 @@ public class DriveConversionFactorsJson
   /**
    * Calculated conversion factor.
    */
-  public double factor    = 0;
+  public double factor = 0;
 
   /**
    * Calculate the drive conversion factor.

@@ -35,7 +35,19 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   /**
    * SparkMAX Instance.
    */
-  private final SparkMax motor;
+  private final SparkMax                  motor;
+  /**
+   * Absolute encoder attached to the SparkMax (if exists)
+   */
+  public        SwerveAbsoluteEncoder     absoluteEncoder;
+  /**
+   * Integrated encoder.
+   */
+  public        RelativeEncoder           encoder;
+  /**
+   * Closed-loop PID controller.
+   */
+  public        SparkClosedLoopController pid;
   /**
    * Supplier for the velocity of the motor controller.
    */
@@ -45,51 +57,29 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
    */
   private       Supplier<Double>          position;
   /**
-   * Absolute encoder attached to the SparkMax (if exists)
-   */
-  public  SwerveAbsoluteEncoder    absoluteEncoder;
-  /**
-   * Integrated encoder.
-   */
-  public  RelativeEncoder           encoder;
-  /**
-   * Closed-loop PID controller.
-   */
-  public  SparkClosedLoopController pid;
-  /**
    * Factory default already occurred.
    */
-  private boolean                   factoryDefaultOccurred = false;
+  private       boolean                   factoryDefaultOccurred = false;
   /**
    * An {@link Alert} for if the motor has no encoder.
    */
-  private Alert              noEncoderAlert;
+  private       Alert                     noEncoderAlert;
   /**
    * An {@link Alert} for if there is an error configuring the motor.
    */
-  private Alert              failureConfiguringAlert;
+  private       Alert                     failureConfiguringAlert;
   /**
    * An {@link Alert} for if the motor has no encoder defined.
    */
-  private Alert          noEncoderDefinedAlert;
+  private       Alert                     noEncoderDefinedAlert;
   /**
    * Configuration object for {@link SparkMax} motor.
    */
-  private SparkMaxConfig cfg        = new SparkMaxConfig();
+  private       SparkMaxConfig            cfg                    = new SparkMaxConfig();
   /**
    * Tracker for changes that need to be pushed.
    */
-  private boolean        cfgUpdated = false;
-
-  /**
-   * Type for encoder for {@link SparkMax}
-   */
-  public enum Type
-  {
-    kNoSensor, /** NO sensor */
-    kHallSensor, /** Hall sensor attached to dataport */
-    kQuadrature, /** Quad encoder attached to alt */
-  }
+  private       boolean                   cfgUpdated             = false;
 
   /**
    * Initialize the swerve motor.
@@ -139,15 +129,14 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
     if (isDriveMotor || (encoderType != Type.kNoSensor || useDataPortQuadEncoder))
     {
 
-      if(useDataPortQuadEncoder)
+      if (useDataPortQuadEncoder)
       {
         this.encoder = motor.getAlternateEncoder();
         cfg.alternateEncoder.countsPerRevolution(countsPerRevolution);
 
         // Configure feedback of the PID controller as the integrated encoder.
         cfg.closedLoop.feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder);
-      }
-      else
+      } else
       {
         this.encoder = motor.getEncoder();
         cfg.encoder.countsPerRevolution(countsPerRevolution);
@@ -526,7 +515,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   {
     int pidSlot = 0;
 
-    if(cfgUpdated)
+    if (cfgUpdated)
     {
       burnFlash();
       Timer.delay(0.1); // Give 100ms to apply changes
@@ -635,5 +624,21 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
     {
       configureSparkMax(() -> encoder.setPosition(position));
     }
+  }
+
+  /**
+   * Type for encoder for {@link SparkMax}
+   */
+  public enum Type
+  {
+    kNoSensor,
+    /**
+     * NO sensor
+     */
+    kHallSensor,
+    /**
+     * Hall sensor attached to dataport
+     */
+    kQuadrature, /** Quad encoder attached to alt */
   }
 }

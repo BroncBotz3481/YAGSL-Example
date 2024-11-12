@@ -3,17 +3,14 @@ package swervelib.motors;
 import static edu.wpi.first.units.Units.Seconds;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.REVLibError;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkLowLevel.PeriodicFrame;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.REVLibError;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
@@ -22,7 +19,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.function.Supplier;
-import swervelib.encoders.SparkMaxAnalogEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.parser.PIDFConfig;
 import swervelib.telemetry.Alert;
@@ -37,19 +33,19 @@ public class SparkFlexSwerve extends SwerveMotor
   /**
    * {@link SparkFlex} Instance.
    */
-  private final SparkFlex       motor;
+  private final SparkFlex                 motor;
   /**
    * Integrated encoder.
    */
-  public        RelativeEncoder encoder;
+  public        RelativeEncoder           encoder;
   /**
    * Absolute encoder attached to the SparkMax (if exists)
    */
-  public  SwerveAbsoluteEncoder     absoluteEncoder;
+  public        SwerveAbsoluteEncoder     absoluteEncoder;
   /**
    * Closed-loop PID controller.
    */
-  public  SparkClosedLoopController pid;
+  public        SparkClosedLoopController pid;
   /**
    * Supplier for the velocity of the motor controller.
    */
@@ -61,23 +57,23 @@ public class SparkFlexSwerve extends SwerveMotor
   /**
    * Factory default already occurred.
    */
-  private boolean                   factoryDefaultOccurred = false;
+  private       boolean                   factoryDefaultOccurred = false;
   /**
    * An {@link Alert} for if there is an error configuring the motor.
    */
-  private Alert                 failureConfiguring;
+  private       Alert                     failureConfiguring;
   /**
    * An {@link Alert} for if the absolute encoder's offset is set in the json instead of the hardware client.
    */
-  private Alert           absoluteEncoderOffsetWarning;
+  private       Alert                     absoluteEncoderOffsetWarning;
   /**
    * Configuration object for {@link SparkFlex} motor.
    */
-  private SparkFlexConfig cfg        = new SparkFlexConfig();
+  private       SparkFlexConfig           cfg                    = new SparkFlexConfig();
   /**
    * Tracker for changes that need to be pushed.
    */
-  private boolean         cfgUpdated = false;
+  private       boolean                   cfgUpdated             = false;
 
 
   /**
@@ -264,7 +260,8 @@ public class SparkFlexSwerve extends SwerveMotor
   {
     if (encoder == null)
     {
-      absoluteEncoder = null;cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+      absoluteEncoder = null;
+      cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
       cfgUpdated = true;
 
       velocity = this.encoder::getVelocity;
@@ -450,7 +447,7 @@ public class SparkFlexSwerve extends SwerveMotor
   {
     int pidSlot = 0;
 
-    if(cfgUpdated)
+    if (cfgUpdated)
     {
       burnFlash();
       Timer.delay(0.1); // Give 100ms to apply changes
@@ -459,19 +456,19 @@ public class SparkFlexSwerve extends SwerveMotor
     if (isDriveMotor)
     {
       configureSparkFlex(() ->
-                            pid.setReference(
-                                setpoint,
-                                ControlType.kVelocity,
-                                pidSlot,
-                                feedforward));
+                             pid.setReference(
+                                 setpoint,
+                                 ControlType.kVelocity,
+                                 pidSlot,
+                                 feedforward));
     } else
     {
       configureSparkFlex(() ->
-                            pid.setReference(
-                                setpoint,
-                                ControlType.kPosition,
-                                pidSlot,
-                                feedforward));
+                             pid.setReference(
+                                 setpoint,
+                                 ControlType.kPosition,
+                                 pidSlot,
+                                 feedforward));
       if (SwerveDriveTelemetry.isSimulation)
       {
         encoder.setPosition(setpoint);

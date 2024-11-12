@@ -175,6 +175,7 @@ public abstract class SwerveMotor
 
   /**
    * Get the {@link DCMotor} of the motor class.
+   *
    * @return {@link DCMotor} of this type.
    */
   public abstract DCMotor getSimMotor();

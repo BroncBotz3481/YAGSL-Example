@@ -378,6 +378,10 @@ public class Vision
      */
     private final Matrix<N3, N1>               multiTagStdDevs;
     /**
+     * Transform of the camera rotation and translation relative to the center of the robot
+     */
+    private final Transform3d                  robotToCamTransform;
+    /**
      * Current standard deviations used.
      */
     public        Matrix<N3, N1>               curStdDevs;
@@ -385,10 +389,6 @@ public class Vision
      * Estimated robot pose.
      */
     public        Optional<EstimatedRobotPose> estimatedRobotPose;
-    /**
-     * Transform of the camera rotation and translation relative to the center of the robot
-     */
-    private final Transform3d                  robotToCamTransform;
     /**
      * Simulated camera instance which only exists during simulations.
      */

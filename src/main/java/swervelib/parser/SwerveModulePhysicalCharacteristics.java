@@ -23,7 +23,7 @@ public class SwerveModulePhysicalCharacteristics
   /**
    * Wheel grip tape coefficient of friction on carpet, as described by the vendor.
    */
-  public final  double                wheelGripCoefficientOfFriction;
+  public final double                wheelGripCoefficientOfFriction;
   /**
    * Steer rotational inertia in (KilogramSquareMeters) kg/m_sq.
    */
@@ -31,17 +31,17 @@ public class SwerveModulePhysicalCharacteristics
   /**
    * Robot mass in Kilograms.
    */
-  public final double robotMassKg;
+  public final double                robotMassKg;
   /**
    * The voltage to use for the smart motor voltage compensation.
    */
-  public        double                optimalVoltage;
+  public       double                optimalVoltage;
   /**
    * The conversion factors for the drive and angle motors, created by
    * {@link swervelib.math.SwerveMath#calculateMetersPerRotation(double, double, double)} and
    * {@link swervelib.math.SwerveMath#calculateDegreesPerSteeringRotation(double, double)}.
    */
-  public        ConversionFactorsJson conversionFactor;
+  public       ConversionFactorsJson conversionFactor;
 
   /**
    * Construct the swerve module physical characteristics.
@@ -62,7 +62,7 @@ public class SwerveModulePhysicalCharacteristics
    * @param angleFrictionVoltage           Angle motor minimum voltage.
    * @param driveFrictionVoltage           Drive motor minimum voltage.
    * @param steerRotationalInertia         Steering rotational inertia in KilogramSquareMeters.
-   * @param robotMassKg Robot mass in kG.
+   * @param robotMassKg                    Robot mass in kG.
    */
   public SwerveModulePhysicalCharacteristics(
       ConversionFactorsJson conversionFactors,

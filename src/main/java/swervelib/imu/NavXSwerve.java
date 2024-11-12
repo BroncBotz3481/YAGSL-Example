@@ -4,10 +4,6 @@ import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Optional;
 import swervelib.telemetry.Alert;
 
@@ -45,10 +41,10 @@ public class NavXSwerve extends SwerveIMU
     try
     {
       AHRS
-      /* Communicate w/navX-MXP via the MXP SPI Bus.                                     */
-      /* Alternatively:  I2C.Port.kMXP, SerialPort.Port.kMXP or SerialPort.Port.kUSB     */
-      /* See http://navx-mxp.kauailabs.com/guidance/selecting-an-interface/ for details. */
-      imu = new AHRS(port);
+          /* Communicate w/navX-MXP via the MXP SPI Bus.                                     */
+          /* Alternatively:  I2C.Port.kMXP, SerialPort.Port.kMXP or SerialPort.Port.kUSB     */
+          /* See http://navx-mxp.kauailabs.com/guidance/selecting-an-interface/ for details. */
+          imu = new AHRS(port);
       factoryDefault();
     } catch (RuntimeException ex)
     {
@@ -56,7 +52,6 @@ public class NavXSwerve extends SwerveIMU
       navXError.set(true);
     }
   }
-
 
 
   /**

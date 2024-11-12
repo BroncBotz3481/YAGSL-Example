@@ -16,6 +16,8 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.function.Supplier;
@@ -23,7 +25,6 @@ import swervelib.encoders.SparkMaxAnalogEncoderSwerve;
 import swervelib.encoders.SparkMaxEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.parser.PIDFConfig;
-import swervelib.telemetry.Alert;
 import swervelib.telemetry.SwerveDriveTelemetry;
 
 /**
@@ -95,13 +96,13 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   {
     noEncoderAlert = new Alert("Motors",
                                "Cannot use motor without encoder.",
-                               Alert.AlertType.ERROR_TRACE);
+                               AlertType.kError);
     failureConfiguringAlert = new Alert("Motors",
                                         "Failure configuring motor " + motor.getDeviceId(),
-                                        Alert.AlertType.WARNING_TRACE);
+                                        AlertType.kWarning);
     noEncoderDefinedAlert = new Alert("Motors",
                                       "An encoder MUST be defined to work with a SparkMAX",
-                                      Alert.AlertType.ERROR_TRACE);
+                                      AlertType.kError);
 
     // Drive motors **MUST** have an encoder attached.
     if (isDriveMotor && encoderType == Type.kNoSensor)

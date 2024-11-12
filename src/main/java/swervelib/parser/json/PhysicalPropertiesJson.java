@@ -1,10 +1,10 @@
 package swervelib.parser.json;
 
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import swervelib.parser.SwerveModulePhysicalCharacteristics;
 import swervelib.parser.json.modules.ConversionFactorsJson;
-import swervelib.telemetry.Alert;
-import swervelib.telemetry.Alert.AlertType;
 
 /**
  * {@link swervelib.parser.SwerveModulePhysicalCharacteristics} parsed data. Used to configure the SwerveModule.
@@ -66,7 +66,7 @@ public class PhysicalPropertiesJson
                 "} \nis deprecated, please use\n" +
                 "'conversionFactors': {'drive': {'factor': " + conversionFactor.drive + "}, 'angle': {'factor': " +
                 conversionFactor.angle + "} }",
-                AlertType.ERROR_TRACE).set(true);
+                AlertType.kError).set(true);
     }
 
     return new SwerveModulePhysicalCharacteristics(

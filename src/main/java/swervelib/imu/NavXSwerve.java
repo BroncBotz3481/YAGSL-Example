@@ -4,8 +4,9 @@ import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import java.util.Optional;
-import swervelib.telemetry.Alert;
 
 /**
  * Communicates with the NavX({@link AHRS}) as the IMU.
@@ -37,7 +38,7 @@ public class NavXSwerve extends SwerveIMU
    */
   public NavXSwerve(NavXComType port)
   {
-    navXError = new Alert("IMU", "Error instantiating NavX.", Alert.AlertType.ERROR_TRACE);
+    navXError = new Alert("IMU", "Error instantiating NavX.", AlertType.kError);
     try
     {
       AHRS

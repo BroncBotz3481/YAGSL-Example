@@ -5,11 +5,12 @@ import com.revrobotics.REVLibError;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import java.util.function.Supplier;
 import swervelib.motors.SparkMaxBrushedMotorSwerve;
 import swervelib.motors.SparkMaxSwerve;
 import swervelib.motors.SwerveMotor;
-import swervelib.telemetry.Alert;
 
 /**
  * SparkMax absolute encoder, attached through the data port.
@@ -46,11 +47,11 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
     failureConfiguring = new Alert(
         "Encoders",
         "Failure configuring SparkMax Analog Encoder",
-        Alert.AlertType.WARNING_TRACE);
+        AlertType.kWarning);
     offsetFailure = new Alert(
         "Encoders",
         "Failure to set Absolute Encoder Offset",
-        Alert.AlertType.WARNING_TRACE);
+        AlertType.kWarning);
     if (motor.getMotor() instanceof SparkMax)
     {
       sparkMax = motor;

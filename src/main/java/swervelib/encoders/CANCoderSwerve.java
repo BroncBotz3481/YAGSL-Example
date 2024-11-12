@@ -13,7 +13,8 @@ import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.MagnetHealthValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.units.measure.Angle;
-import swervelib.telemetry.Alert;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 
 /**
  * Swerve Absolute Encoder for CTRE CANCoders.
@@ -69,21 +70,21 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
     magnetFieldLessThanIdeal = new Alert(
         "Encoders",
         "CANCoder " + encoder.getDeviceID() + " magnetic field is less than ideal.",
-        Alert.AlertType.WARNING);
+        AlertType.kWarning);
     readingFaulty = new Alert(
         "Encoders",
         "CANCoder " + encoder.getDeviceID() + " reading was faulty.",
-        Alert.AlertType.WARNING);
+        AlertType.kWarning);
     readingIgnored = new Alert(
         "Encoders",
         "CANCoder " + encoder.getDeviceID() + " reading was faulty, ignoring.",
-        Alert.AlertType.WARNING);
+        AlertType.kWarning);
     cannotSetOffset = new Alert(
         "Encoders",
         "Failure to set CANCoder "
         + encoder.getDeviceID()
         + " Absolute Encoder Offset",
-        Alert.AlertType.WARNING);
+        AlertType.kWarning);
   }
 
   /**

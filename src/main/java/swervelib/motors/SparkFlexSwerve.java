@@ -17,11 +17,12 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.function.Supplier;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.parser.PIDFConfig;
-import swervelib.telemetry.Alert;
 import swervelib.telemetry.SwerveDriveTelemetry;
 
 /**
@@ -99,11 +100,11 @@ public class SparkFlexSwerve extends SwerveMotor
     failureConfiguring = new Alert("Motors",
                                    "Failure configuring motor " +
                                    motor.getDeviceId(),
-                                   Alert.AlertType.WARNING_TRACE);
+                                   AlertType.kWarning);
     absoluteEncoderOffsetWarning = new Alert("Motors",
                                              "IF possible configure the duty cycle encoder offset in the REV Hardware Client instead of using the " +
                                              "absoluteEncoderOffset in the Swerve Module JSON!",
-                                             Alert.AlertType.WARNING);
+                                             AlertType.kWarning);
     velocity = encoder::getVelocity;
     position = encoder::getPosition;
   }

@@ -18,6 +18,8 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -29,6 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
@@ -42,8 +45,6 @@ import swervelib.parser.Cache;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.simulation.SwerveIMUSimulation;
-import swervelib.telemetry.Alert;
-import swervelib.telemetry.Alert.AlertType;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
@@ -87,7 +88,7 @@ public class SwerveDrive
   private final Alert                    tunerXRecommendation                            = new Alert("Swerve Drive",
                                                                                                      "Your Swerve Drive is compatible with Tuner X swerve generator, please consider using that instead of YAGSL. More information here!\n" +
                                                                                                      "https://pro.docs.ctr-electronics.com/en/latest/docs/tuner/tuner-swerve/index.html",
-                                                                                                     AlertType.WARNING);
+                                                                                                     AlertType.kWarning);
   /**
    * Field object.
    */
@@ -201,6 +202,8 @@ public class SwerveDrive
     {
       simIMU = new SwerveIMUSimulation();
       imuReadingCache = new Cache<>(simIMU::getGyroRotation3d, 5L);
+
+      // Setup MapleSim
       SwerveModuleSimulation simModule = new SwerveModuleSimulation(config.getDriveMotorSim(),
                                                                     config.getAngleMotorSim(),
                                                                     config.physicalCharacteristics.driveMotorCurrentLimit,
@@ -213,7 +216,9 @@ public class SwerveDrive
                                                                     2,
                                                                     config.physicalCharacteristics.steerRotationalInertia);
       DriveTrainSimulationConfig simCfg = new DriveTrainSimulationConfig(config.physicalCharacteristics.robotMassKg,
+                                                                         config.getTracklength() +
                                                                          Units.inchesToMeters(5),
+                                                                         config.getTrackwidth() +
                                                                          Units.inchesToMeters(5),
                                                                          config.getTracklength(),
                                                                          config.getTrackwidth(),
@@ -222,6 +227,8 @@ public class SwerveDrive
                                                                          },
                                                                          config.getGyroSim());
       mapleSimDrive = new SwerveDriveSimulation(simCfg, startingPose);
+      // register the drivetrain simulation
+      SimulatedArena.getInstance().addDriveTrainSimulation(mapleSimDrive);
     } else
     {
       imu = config.imu;
@@ -1036,6 +1043,7 @@ public class SwerveDrive
         Pose2d[] modulePoses = getSwerveModulePoses(swerveDrivePoseEstimator.getEstimatedPosition());
         if (SwerveDriveTelemetry.isSimulation)
         {
+          SimulatedArena.getInstance().simulationPeriodic();
           simIMU.updateOdometry(
               kinematics,
               getStates(),

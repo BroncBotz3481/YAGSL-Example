@@ -7,6 +7,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import swervelib.encoders.SparkMaxEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
@@ -18,7 +20,6 @@ import swervelib.parser.Cache;
 import swervelib.parser.PIDFConfig;
 import swervelib.parser.SwerveModuleConfiguration;
 import swervelib.simulation.SwerveModuleSimulation;
-import swervelib.telemetry.Alert;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
@@ -214,11 +215,11 @@ public class SwerveModule
     noEncoderWarning = new Alert("Motors",
                                  "There is no Absolute Encoder on module #" +
                                  moduleNumber,
-                                 Alert.AlertType.WARNING);
+                                 AlertType.kWarning);
     encoderOffsetWarning = new Alert("Motors",
                                      "Pushing the Absolute Encoder offset to the encoder failed on module #" +
                                      moduleNumber,
-                                     Alert.AlertType.WARNING);
+                                     AlertType.kWarning);
 
     rawAbsoluteAngleName = "swerve/modules/" + configuration.name + "/Raw Absolute Encoder";
     adjAbsoluteAngleName = "swerve/modules/" + configuration.name + "/Adjusted Absolute Encoder";

@@ -4,11 +4,12 @@ import com.revrobotics.REVLibError;
 import com.revrobotics.spark.SparkAnalogSensor;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import java.util.function.Supplier;
 import swervelib.motors.SparkMaxBrushedMotorSwerve;
 import swervelib.motors.SparkMaxSwerve;
 import swervelib.motors.SwerveMotor;
-import swervelib.telemetry.Alert;
 
 /**
  * SparkMax absolute encoder, attached through the data port analog pin.
@@ -55,11 +56,11 @@ public class SparkMaxAnalogEncoderSwerve extends SwerveAbsoluteEncoder
     failureConfiguring = new Alert(
         "Encoders",
         "Failure configuring SparkMax Analog Encoder",
-        Alert.AlertType.WARNING_TRACE);
+        AlertType.kWarning);
     doesNotSupportIntegratedOffsets = new Alert(
         "Encoders",
         "SparkMax Analog Sensors do not support integrated offsets",
-        Alert.AlertType.WARNING_TRACE);
+        AlertType.kWarning);
 
   }
 

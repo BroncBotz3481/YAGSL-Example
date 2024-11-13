@@ -48,6 +48,8 @@ import swervelib.simulation.SwerveIMUSimulation;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
+import static edu.wpi.first.units.Units.*;
+
 /**
  * Swerve Drive class representing and controlling the swerve drive.
  */
@@ -196,6 +198,8 @@ public class SwerveDrive
     kinematics = new SwerveDriveKinematics(config.moduleLocationsMeters);
     odometryThread = new Notifier(this::updateOdometry);
 
+    this.swerveModules = config.modules;
+
     // Create an integrator for angle if the robot is being simulated to emulate an IMU
     // If the robot is real, instantiate the IMU instead.
     if (SwerveDriveTelemetry.isSimulation)
@@ -203,40 +207,40 @@ public class SwerveDrive
       simIMU = new SwerveIMUSimulation();
       imuReadingCache = new Cache<>(simIMU::getGyroRotation3d, 5L);
 
-      // Setup MapleSim
-      SwerveModuleSimulation simModule = new SwerveModuleSimulation(config.getDriveMotorSim(),
-                                                                    config.getAngleMotorSim(),
-                                                                    config.physicalCharacteristics.driveMotorCurrentLimit,
-                                                                    config.physicalCharacteristics.conversionFactor.drive.gearRatio,
-                                                                    config.physicalCharacteristics.conversionFactor.angle.gearRatio,
-                                                                    config.physicalCharacteristics.driveFrictionVoltage,
-                                                                    config.physicalCharacteristics.angleFrictionVoltage,
-                                                                    config.physicalCharacteristics.wheelGripCoefficientOfFriction,
-                                                                    config.physicalCharacteristics.conversionFactor.drive.diameter /
-                                                                    2,
-                                                                    config.physicalCharacteristics.steerRotationalInertia);
-      DriveTrainSimulationConfig simCfg = new DriveTrainSimulationConfig(config.physicalCharacteristics.robotMassKg,
-                                                                         config.getTracklength() +
-                                                                         Units.inchesToMeters(5),
-                                                                         config.getTrackwidth() +
-                                                                         Units.inchesToMeters(5),
-                                                                         config.getTracklength(),
-                                                                         config.getTrackwidth(),
-                                                                         () -> {
-                                                                           return simModule;
-                                                                         },
-                                                                         config.getGyroSim());
-      mapleSimDrive = new SwerveDriveSimulation(simCfg, startingPose);
+      DriveTrainSimulationConfig simulationConfig = DriveTrainSimulationConfig.Default()
+              .withBumperSize(
+                      Meters.of(config.getTracklength()).plus(Inches.of(5)),
+                      Meters.of(config.getTrackwidth()).plus(Inches.of(5)))
+              .withRobotMass(Kilograms.of(config.physicalCharacteristics.robotMassKg))
+              .withCustomModuleTranslations(config.moduleLocationsMeters)
+              .withGyro(config.getGyroSim())
+              .withSwerveModule(() -> new SwerveModuleSimulation(
+                      config.getDriveMotorSim(),
+                      config.getAngleMotorSim(),
+                      config.physicalCharacteristics.driveMotorCurrentLimit,
+                      config.physicalCharacteristics.conversionFactor.drive.gearRatio,
+                      config.physicalCharacteristics.conversionFactor.angle.gearRatio,
+                      config.physicalCharacteristics.driveFrictionVoltage,
+                      config.physicalCharacteristics.angleFrictionVoltage,
+                      config.physicalCharacteristics.wheelGripCoefficientOfFriction,
+                      config.physicalCharacteristics.conversionFactor.drive.diameter / 2,
+                      config.physicalCharacteristics.steerRotationalInertia));
+
+      mapleSimDrive = new SwerveDriveSimulation(simulationConfig, startingPose);
+
+      // feed module simulation instances to modules
+      for (int i = 0; i < swerveModules.length; i++)
+      {
+        this.swerveModules[i].getSimModule().setMapleSimModule(mapleSimDrive.getModules()[i]);
+      }
+
       // register the drivetrain simulation
       SimulatedArena.getInstance().addDriveTrainSimulation(mapleSimDrive);
-    } else
-    {
+    } else {
       imu = config.imu;
       imu.factoryDefault();
       imuReadingCache = new Cache<>(imu::getRotation3d, 5L);
     }
-
-    this.swerveModules = config.modules;
 
     //    odometry = new SwerveDriveOdometry(kinematics, getYaw(), getModulePositions());
     swerveDrivePoseEstimator =
@@ -693,7 +697,7 @@ public class SwerveDrive
   }
 
   /**
-   * Gets the current pose (position and rotation) of the robot, as reported by odometry.
+   * Gets the measured pose (position and rotation) of the robot, as reported by odometry.
    *
    * @return The robot's pose
    */
@@ -707,7 +711,25 @@ public class SwerveDrive
   }
 
   /**
-   * Gets the current field-relative velocity (x, y and omega) of the robot
+   * Gets the actual pose of the drivetrain during simulation
+   *
+   * @return an optional Pose2d, representing the drivetrain pose during simulation, or an empty optional when running on real robot
+   * */
+  public Optional<Pose2d> getSimulationDriveTrainPose()
+  {
+    if (SwerveDriveTelemetry.isSimulation)
+    {
+      odometryLock.lock();
+      Pose2d simulationPose = mapleSimDrive.getSimulatedDriveTrainPose();
+      odometryLock.unlock();
+      return Optional.of(simulationPose);
+    }
+
+    return Optional.empty();
+  }
+
+  /**
+   * Gets the measured field-relative robot velocity (x, y and omega)
    *
    * @return A ChassisSpeeds object of the current field-relative velocity
    */
@@ -722,6 +744,24 @@ public class SwerveDrive
   }
 
   /**
+   * Gets the actual field-relative robot velocity (x, y and omega) during simulation
+   *
+   * @return An optional ChassisSpeeds representing the actual field-relative velocity of the robot, or an empty optional when running on real robot
+   */
+  public Optional<ChassisSpeeds> getSimulationFieldVelocity()
+  {
+    if (SwerveDriveTelemetry.isSimulation)
+    {
+      odometryLock.lock();
+      ChassisSpeeds simulationFieldRelativeVelocity = mapleSimDrive.getDriveTrainSimulatedChassisSpeedsFieldRelative();
+      odometryLock.unlock();
+      return Optional.of(simulationFieldRelativeVelocity);
+    }
+
+    return Optional.empty();
+  }
+
+  /**
    * Gets the current robot-relative velocity (x, y and omega) of the robot
    *
    * @return A ChassisSpeeds object of the current robot-relative velocity
@@ -729,6 +769,24 @@ public class SwerveDrive
   public ChassisSpeeds getRobotVelocity()
   {
     return kinematics.toChassisSpeeds(getStates());
+  }
+
+  /**
+   * Gets the actual robot-relative robot velocity (x, y and omega) during simulation
+   *
+   * @return An optional ChassisSpeeds representing the actual robot-relative velocity of the robot, or an empty optional when running on real robot
+   */
+  public Optional<ChassisSpeeds> getSimulationRobotVelocity()
+  {
+    if (SwerveDriveTelemetry.isSimulation)
+    {
+      odometryLock.lock();
+      ChassisSpeeds simulationFieldRelativeVelocity = mapleSimDrive.getDriveTrainSimulatedChassisSpeedsRobotRelative();
+      odometryLock.unlock();
+      return Optional.of(simulationFieldRelativeVelocity);
+    }
+
+    return Optional.empty();
   }
 
   /**
@@ -744,6 +802,14 @@ public class SwerveDrive
     swerveDrivePoseEstimator.resetPosition(getYaw(), getModulePositions(), pose);
     odometryLock.unlock();
     kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, getYaw()));
+
+    // teleport the robot to that pose if it's a simulation
+    if (SwerveDriveTelemetry.isSimulation)
+    {
+      odometryLock.lock();
+      mapleSimDrive.setSimulationWorldPose(pose);
+      odometryLock.unlock();
+    }
   }
 
   /**

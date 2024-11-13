@@ -131,7 +131,7 @@ public class Vision
   {
     if (SwerveDriveTelemetry.isSimulation)
     {
-      visionSim.update(swerveDrive.getPose());
+      visionSim.update(swerveDrive.getSimulationDriveTrainPose().orElse(swerveDrive.getPose()));
 
     }
     for (Cameras camera : Cameras.values())

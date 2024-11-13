@@ -699,4 +699,9 @@ public class SwerveModule
     SmartDashboard.putNumber(adjAbsoluteAngleName, getAbsolutePosition());
     SmartDashboard.putNumber(absoluteEncoderIssueName, getAbsoluteEncoderReadIssue() ? 1 : 0);
   }
+
+  public SwerveModuleSimulation getSimModule()
+  {
+    return simModule;
+  }
 }

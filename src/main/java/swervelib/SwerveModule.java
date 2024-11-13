@@ -418,6 +418,7 @@ public class SwerveModule
     {
       SwerveDriveTelemetry.desiredStates[moduleNumber * 2] = desiredState.angle.getDegrees();
       SwerveDriveTelemetry.desiredStates[(moduleNumber * 2) + 1] = velocity.magnitude();
+      SwerveDriveTelemetry.desiredStatesObj[moduleNumber] = desiredState;
     }
 
     if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)

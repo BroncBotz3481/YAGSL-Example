@@ -280,6 +280,8 @@ public class SwerveDrive
       }
       SwerveDriveTelemetry.measuredStates = new double[SwerveDriveTelemetry.moduleCount * 2];
       SwerveDriveTelemetry.desiredStates = new double[SwerveDriveTelemetry.moduleCount * 2];
+      SwerveDriveTelemetry.desiredStatesObj = new SwerveModuleState[SwerveDriveTelemetry.moduleCount];
+      SwerveDriveTelemetry.measuredStatesObj = new SwerveModuleState[SwerveDriveTelemetry.moduleCount];
     }
 
     odometryThread.startPeriodic(SwerveDriveTelemetry.isSimulation ? 0.01 : 0.02);
@@ -569,6 +571,7 @@ public class SwerveDrive
       SwerveDriveTelemetry.desiredChassisSpeeds[1] = velocity.vyMetersPerSecond;
       SwerveDriveTelemetry.desiredChassisSpeeds[0] = velocity.vxMetersPerSecond;
       SwerveDriveTelemetry.desiredChassisSpeeds[2] = Math.toDegrees(velocity.omegaRadiansPerSecond);
+      SwerveDriveTelemetry.desiredChassisSpeedsObj = velocity;
     }
 
     // Calculate required module states via kinematics
@@ -983,6 +986,7 @@ public class SwerveDrive
             desiredState.angle.getDegrees();
         SwerveDriveTelemetry.desiredStates[(swerveModule.moduleNumber * 2) + 1] =
             desiredState.speedMetersPerSecond;
+        SwerveDriveTelemetry.desiredStatesObj[swerveModule.moduleNumber] = desiredState;
       }
       swerveModule.setDesiredState(desiredState, false, true);
 
@@ -1055,7 +1059,9 @@ public class SwerveDrive
         SwerveDriveTelemetry.measuredChassisSpeeds[1] = measuredChassisSpeeds.vyMetersPerSecond;
         SwerveDriveTelemetry.measuredChassisSpeeds[0] = measuredChassisSpeeds.vxMetersPerSecond;
         SwerveDriveTelemetry.measuredChassisSpeeds[2] = Math.toDegrees(measuredChassisSpeeds.omegaRadiansPerSecond);
+        SwerveDriveTelemetry.measuredChassisSpeedsObj = measuredChassisSpeeds;
         SwerveDriveTelemetry.robotRotation = getOdometryHeading().getDegrees();
+        SwerveDriveTelemetry.robotRotationObj = getOdometryHeading();
       }
 
       if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.POSE.ordinal())
@@ -1078,6 +1084,7 @@ public class SwerveDrive
         {
           SwerveDriveTelemetry.measuredStates[module.moduleNumber * 2] = moduleState.angle.getDegrees();
           SwerveDriveTelemetry.measuredStates[(module.moduleNumber * 2) + 1] = moduleState.speedMetersPerSecond;
+          SwerveDriveTelemetry.measuredStatesObj[module.moduleNumber] = moduleState;
         }
       }
 

@@ -27,11 +27,9 @@ public class SwerveModuleSimulation
   public void setMapleSimModule(org.ironmaple.simulation.drivesims.SwerveModuleSimulation mapleSimModule)
   {
     this.mapleSimModule = Optional.of(mapleSimModule);
-    mapleSimModule
-            .getSteerMotorConfigs()
-            .withPositionVoltageController(
-                    Volts.per(Degrees).ofNative(8.0/(180.0 * 12)), Volts.per(RotationsPerSecond).ofNative(0)
-            );
+    mapleSimModule.getDriveMotorConfigs()
+            .withDefaultFeedForward(Volts.zero())
+            .withVelocityVoltageController(Volts.per(RPM).ofNative(12.0/1000.0));
   }
 
   /**
@@ -45,6 +43,9 @@ public class SwerveModuleSimulation
     if (mapleSimModule.isPresent())
     {
       mapleSimModule.get().requestSteerControl(new ControlRequest.PositionVoltage(desiredState.angle.getMeasure()));
+      mapleSimModule.get().requestDriveControl(new ControlRequest.VelocityVoltage(
+              RadiansPerSecond.of(desiredState.speedMetersPerSecond / mapleSimModule.get().WHEEL_RADIUS_METERS)
+      ));
     }
   }
 

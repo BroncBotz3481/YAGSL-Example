@@ -29,7 +29,7 @@ public class SwerveModuleSimulation
     this.mapleSimModule = Optional.of(mapleSimModule);
     mapleSimModule.getDriveMotorConfigs()
             .withDefaultFeedForward(Volts.zero())
-            .withVelocityVoltageController(Volts.per(RPM).ofNative(12.0/1000.0));
+            .withVelocityVoltageController(Volts.per(RPM).ofNative(7.0/3000.0), true);
   }
 
   /**

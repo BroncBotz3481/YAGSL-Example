@@ -30,7 +30,6 @@ import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import frc.robot.Robot;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
@@ -753,7 +752,9 @@ public class SwerveDrive
    * Gets the actual field-relative robot velocity (x, y and omega) during simulation
    *
    * @return An optional ChassisSpeeds representing the actual field-relative velocity of the robot, or an empty optional when running on real robot
+   * @deprecated for testing version of maple-sim only
    */
+  @Deprecated
   public Optional<ChassisSpeeds> getSimulationFieldVelocity()
   {
     if (SwerveDriveTelemetry.isSimulation)
@@ -781,7 +782,9 @@ public class SwerveDrive
    * Gets the actual robot-relative robot velocity (x, y and omega) during simulation
    *
    * @return An optional ChassisSpeeds representing the actual robot-relative velocity of the robot, or an empty optional when running on real robot
+   * @deprecated for testing version of maple-sim only
    */
+  @Deprecated
   public Optional<ChassisSpeeds> getSimulationRobotVelocity()
   {
     if (SwerveDriveTelemetry.isSimulation)
@@ -806,16 +809,13 @@ public class SwerveDrive
   {
     odometryLock.lock();
     swerveDrivePoseEstimator.resetPosition(getYaw(), getModulePositions(), pose);
+    if (SwerveDriveTelemetry.isSimulation)
+    {
+      mapleSimDrive.setSimulationWorldPose(pose);
+    }
     odometryLock.unlock();
     kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, getYaw()));
 
-    // teleport the robot to that pose if it's a simulation
-    if (SwerveDriveTelemetry.isSimulation)
-    {
-      odometryLock.lock();
-      mapleSimDrive.setSimulationWorldPose(pose);
-      odometryLock.unlock();
-    }
   }
 
   /**

@@ -171,6 +171,11 @@ public class SwerveModule
       absoluteEncoder.configure(moduleConfiguration.absoluteEncoderInverted);
     }
 
+    if (SwerveDriveTelemetry.isSimulation)
+    {
+      simModule = new SwerveModuleSimulation();
+    }
+
     // Setup the cache for the absolute encoder position.
     absolutePositionCache = new Cache<>(this::getRawAbsolutePosition, 15);
 
@@ -198,11 +203,6 @@ public class SwerveModule
 
     drivePositionCache = new Cache<>(driveMotor::getPosition, 15);
     driveVelocityCache = new Cache<>(driveMotor::getVelocity, 15);
-
-    if (SwerveDriveTelemetry.isSimulation)
-    {
-      simModule = new SwerveModuleSimulation();
-    }
 
     // Force a cache update on init.
     driveVelocityCache.update();
@@ -366,7 +366,7 @@ public class SwerveModule
    */
   public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop, boolean force)
   {
-    desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
+    desiredState = SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(getAbsolutePosition()));
 
     // If we are forcing the angle
     if (!force && antiJitterEnabled)
@@ -525,6 +525,14 @@ public class SwerveModule
    */
   public double getRawAbsolutePosition()
   {
+    /* During simulation, when no absolute encoders are available, we return the state from the simulation module instead. */
+    if (SwerveDriveTelemetry.isSimulation)
+    {
+      Rotation2d absolutePosition = simModule.getState().angle;
+      /* The Rotation2d.minus() function wraps the angle to the [0, 360) range. */
+      return absolutePosition.minus(new Rotation2d()).getDegrees();
+    }
+
     double angle;
     if (absoluteEncoder != null)
     {
@@ -700,6 +708,11 @@ public class SwerveModule
     SmartDashboard.putNumber(absoluteEncoderIssueName, getAbsoluteEncoderReadIssue() ? 1 : 0);
   }
 
+  /**
+   * Obtains the {@link SwerveModuleSimulation} used in simulation.
+   *
+   * @return the module simulation, <b>null</b> if this method is called on a real robot
+   * */
   public SwerveModuleSimulation getSimModule()
   {
     return simModule;

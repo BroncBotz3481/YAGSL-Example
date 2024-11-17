@@ -128,14 +128,12 @@ public class DeviceJson
             ".html#onboard-i2c-causing-system-lockups",
             false);
         i2cLockupWarning.set(true);
-        throw new RuntimeException("Studica NavX API does not support I2C communication currently.");
-//        return new NavXSwerve(I2C.Port.kMXP);
+        return new NavXSwerve(NavXComType.kI2C);
       case "navx_usb":
         DriverStation.reportWarning("WARNING: There is issues when using USB camera's and the NavX like this!\n" +
                                     "https://pdocs.kauailabs.com/navx-mxp/guidance/selecting-an-interface/", false);
         serialCommsIssueWarning.set(true);
-        throw new RuntimeException("Studica NavX API does not support USB communication currently.");
-//        return new NavXSwerve(Port.kUSB);
+        return new NavXSwerve(NavXComType.kUSB1);
       case "navx_mxp_serial":
         serialCommsIssueWarning.set(true);
         throw new RuntimeException("Studica NavX API does not support MXP Serial communication currently.");

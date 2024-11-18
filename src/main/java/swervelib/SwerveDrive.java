@@ -213,14 +213,15 @@ public class SwerveDrive
               .withSwerveModule(() -> new SwerveModuleSimulation(
                       config.getDriveMotorSim(),
                       config.getAngleMotorSim(),
-                      config.physicalCharacteristics.driveMotorCurrentLimit,
                       config.physicalCharacteristics.conversionFactor.drive.gearRatio,
                       config.physicalCharacteristics.conversionFactor.angle.gearRatio,
-                      config.physicalCharacteristics.driveFrictionVoltage,
-                      config.physicalCharacteristics.angleFrictionVoltage,
-                      config.physicalCharacteristics.wheelGripCoefficientOfFriction,
-                      Units.inchesToMeters(config.physicalCharacteristics.conversionFactor.drive.diameter/2),
-                      0.02));
+                      Amps.of(config.physicalCharacteristics.driveMotorCurrentLimit),
+                      Amps.of(20),
+                      Volts.of(config.physicalCharacteristics.driveFrictionVoltage),
+                      Volts.of(config.physicalCharacteristics.angleFrictionVoltage),
+                      Inches.of(config.physicalCharacteristics.conversionFactor.drive.diameter/2),
+                      KilogramSquareMeters.of(0.02),
+                      config.physicalCharacteristics.wheelGripCoefficientOfFriction));
 
       mapleSimDrive = new SwerveDriveSimulation(simulationConfig, startingPose);
 
@@ -341,7 +342,7 @@ public class SwerveDrive
   public void setOdometryPeriod(double period)
   {
     odometryThread.stop();
-    SimulatedArena.overrideSimulationTimings(period, 2);
+    SimulatedArena.overrideSimulationTimings(Seconds.of(period), 2);
     odometryThread.startPeriodic(period);
   }
 

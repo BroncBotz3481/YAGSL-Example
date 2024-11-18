@@ -44,7 +44,7 @@ public class SwerveModuleSimulation
   {
     mapleSimModule.requestSteerControl(new ControlRequest.PositionVoltage(desiredState.angle.getMeasure()));
     mapleSimModule.requestDriveControl(new ControlRequest.VelocityVoltage(
-            RadiansPerSecond.of(desiredState.speedMetersPerSecond / mapleSimModule.WHEEL_RADIUS_METERS)
+            RadiansPerSecond.of(desiredState.speedMetersPerSecond / mapleSimModule.WHEEL_RADIUS.in(Meters))
     ));
   }
 
@@ -56,7 +56,7 @@ public class SwerveModuleSimulation
   public SwerveModulePosition getPosition()
   {
     return new SwerveModulePosition(
-            mapleSimModule.getDriveWheelFinalPositionRad() * mapleSimModule.WHEEL_RADIUS_METERS,
+            mapleSimModule.getDriveWheelFinalPosition().in(Radian) * mapleSimModule.WHEEL_RADIUS.in(Meters),
             mapleSimModule.getSteerAbsoluteFacing()
     );
   }

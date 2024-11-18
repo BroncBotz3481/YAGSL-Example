@@ -529,8 +529,7 @@ public class SwerveModule
     if (SwerveDriveTelemetry.isSimulation)
     {
       Rotation2d absolutePosition = simModule.getState().angle;
-      /* The Rotation2d.minus() function wraps the angle to the [0, 360) range. */
-      return absolutePosition.minus(new Rotation2d()).getDegrees();
+      return absolutePosition.getDegrees();
     }
 
     double angle;
@@ -716,5 +715,10 @@ public class SwerveModule
   public SwerveModuleSimulation getSimModule()
   {
     return simModule;
+  }
+
+  public void configureModuleSimulation(org.ironmaple.simulation.drivesims.SwerveModuleSimulation swerveModuleSimulation)
+  {
+    this.simModule.configureSimModule(swerveModuleSimulation);
   }
 }

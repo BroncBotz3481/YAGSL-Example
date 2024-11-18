@@ -227,7 +227,7 @@ public class SwerveDrive
       // feed module simulation instances to modules
       for (int i = 0; i < swerveModules.length; i++)
       {
-        this.swerveModules[i].getSimModule().setMapleSimModule(mapleSimDrive.getModules()[i]);
+        this.swerveModules[i].configureModuleSimulation(mapleSimDrive.getModules()[i]);
       }
 
       // register the drivetrain simulation
@@ -287,11 +287,7 @@ public class SwerveDrive
       SwerveDriveTelemetry.measuredStatesObj = new SwerveModuleState[SwerveDriveTelemetry.moduleCount];
     }
 
-    odometryThread.startPeriodic(SwerveDriveTelemetry.isSimulation ? 0.01 : 0.02);
-    if (SwerveDriveTelemetry.isSimulation)
-    {
-      SimulatedArena.overrideSimulationTimings(0.01, 2);
-    }
+    setOdometryPeriod(SwerveDriveTelemetry.isSimulation ? 0.01 : 0.02);
 
     checkIfTunerXCompatible();
   }

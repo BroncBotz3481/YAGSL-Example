@@ -352,7 +352,7 @@ public class SwerveDrive
   public void stopOdometryThread()
   {
     odometryThread.stop();
-    SimulatedArena.overrideSimulationTimings(TimedRobot.kDefaultPeriod, 5);
+    SimulatedArena.overrideSimulationTimings(Seconds.of(TimedRobot.kDefaultPeriod), 5);
   }
 
   /**

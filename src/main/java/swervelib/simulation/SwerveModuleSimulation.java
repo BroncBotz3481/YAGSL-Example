@@ -5,8 +5,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import org.ironmaple.simulation.motorsims.ControlRequest;
 
-import java.util.Optional;
-
 import static edu.wpi.first.units.Units.*;
 
 /**
@@ -15,13 +13,6 @@ import static edu.wpi.first.units.Units.*;
 public class SwerveModuleSimulation
 {
   private org.ironmaple.simulation.drivesims.SwerveModuleSimulation mapleSimModule = null;
-
-  /**
-   * Create simulation class
-   */
-  public SwerveModuleSimulation() {
-
-  }
 
   /**
    * Configure the maple sim module
@@ -68,6 +59,10 @@ public class SwerveModuleSimulation
    */
   public SwerveModuleState getState()
   {
+    if (mapleSimModule == null)
+    {
+      return new SwerveModuleState();
+    }
     final SwerveModuleState state = mapleSimModule.getCurrentState();
     state.angle = state.angle.minus(new Rotation2d());
     return state;

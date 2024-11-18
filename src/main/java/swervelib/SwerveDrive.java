@@ -1036,6 +1036,7 @@ public class SwerveDrive
   public void updateOdometry()
   {
     odometryLock.lock();
+    invalidateCache();
     try
     {
       // Update odometry
@@ -1107,6 +1108,18 @@ public class SwerveDrive
       throw e;
     }
     odometryLock.unlock();
+  }
+
+  /**
+   * Invalidate all {@link Cache} object used by the {@link SwerveDrive}
+   */
+  public void invalidateCache()
+  {
+    imuReadingCache.update();
+    for (SwerveModule module : swerveModules)
+    {
+      module.invalidateCache();
+    }
   }
 
   /**

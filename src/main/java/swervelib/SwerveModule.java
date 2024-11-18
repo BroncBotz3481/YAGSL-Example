@@ -694,9 +694,19 @@ public class SwerveModule
       SmartDashboard.putNumber(rawAbsoluteAngleName, absoluteEncoder.getAbsolutePosition());
     }
     SmartDashboard.putNumber(rawAngleName, angleMotor.getPosition());
-    SmartDashboard.putNumber(rawDriveName, driveMotor.getPosition());
-    SmartDashboard.putNumber(rawDriveVelName, driveMotor.getVelocity());
+    SmartDashboard.putNumber(rawDriveName, drivePositionCache.getValue());
+    SmartDashboard.putNumber(rawDriveVelName, driveVelocityCache.getValue());
     SmartDashboard.putNumber(adjAbsoluteAngleName, getAbsolutePosition());
     SmartDashboard.putNumber(absoluteEncoderIssueName, getAbsoluteEncoderReadIssue() ? 1 : 0);
+  }
+
+  /**
+   * Invalidate the {@link Cache} objects used by {@link SwerveModule}.
+   */
+  public void invalidateCache()
+  {
+    absolutePositionCache.update();
+    drivePositionCache.update();
+    driveVelocityCache.update();
   }
 }

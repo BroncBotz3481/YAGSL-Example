@@ -1,5 +1,8 @@
 package swervelib;
 
+import static edu.wpi.first.hal.FRCNetComm.tResourceType.kResourceType_RobotDrive;
+
+import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -287,6 +290,9 @@ public class SwerveDrive
     odometryThread.startPeriodic(SwerveDriveTelemetry.isSimulation ? 0.01 : 0.02);
 
     checkIfTunerXCompatible();
+
+    // Report creation to the FMS, uncomment in the next release.
+    // HAL.report(kResourceType_RobotDrive, kRobotDriveSwerve_YAGSL);
   }
 
   /**

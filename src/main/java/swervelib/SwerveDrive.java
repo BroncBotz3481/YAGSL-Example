@@ -288,16 +288,7 @@ public class SwerveDrive
       SwerveDriveTelemetry.measuredStatesObj = new SwerveModuleState[SwerveDriveTelemetry.moduleCount];
     }
 
-
-    // during simulation, call update odometry in main thread since maple-sim is not thread-safe
-    if (SwerveDriveTelemetry.isSimulation)
-    {
-      stopOdometryThread();
-    }
-    // otherwise, start the odometry thread
-    else {
-      setOdometryPeriod(0.02);
-    }
+    setOdometryPeriod(SwerveDriveTelemetry.isSimulation ? 0.01 : 0.02);
 
     checkIfTunerXCompatible();
   }

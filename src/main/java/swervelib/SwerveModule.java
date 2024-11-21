@@ -177,7 +177,7 @@ public class SwerveModule
     }
 
     // Setup the cache for the absolute encoder position.
-    absolutePositionCache = new Cache<>(this::getRawAbsolutePosition, 15);
+    absolutePositionCache = new Cache<>(this::getRawAbsolutePosition, 20);
 
     // Config angle motor/controller
     angleMotor.configureIntegratedEncoder(moduleConfiguration.conversionFactors.angle.factor);
@@ -201,8 +201,13 @@ public class SwerveModule
     driveMotor.burnFlash();
     angleMotor.burnFlash();
 
-    drivePositionCache = new Cache<>(driveMotor::getPosition, 15);
-    driveVelocityCache = new Cache<>(driveMotor::getVelocity, 15);
+    drivePositionCache = new Cache<>(driveMotor::getPosition, 20);
+    driveVelocityCache = new Cache<>(driveMotor::getVelocity, 20);
+
+    if (SwerveDriveTelemetry.isSimulation)
+    {
+      simModule = new SwerveModuleSimulation();
+    }
 
     // Force a cache update on init.
     driveVelocityCache.update();
@@ -701,10 +706,20 @@ public class SwerveModule
       SmartDashboard.putNumber(rawAbsoluteAngleName, absoluteEncoder.getAbsolutePosition());
     }
     SmartDashboard.putNumber(rawAngleName, angleMotor.getPosition());
-    SmartDashboard.putNumber(rawDriveName, driveMotor.getPosition());
-    SmartDashboard.putNumber(rawDriveVelName, driveMotor.getVelocity());
+    SmartDashboard.putNumber(rawDriveName, drivePositionCache.getValue());
+    SmartDashboard.putNumber(rawDriveVelName, driveVelocityCache.getValue());
     SmartDashboard.putNumber(adjAbsoluteAngleName, getAbsolutePosition());
     SmartDashboard.putNumber(absoluteEncoderIssueName, getAbsoluteEncoderReadIssue() ? 1 : 0);
+  }
+
+  /**
+   * Invalidate the {@link Cache} objects used by {@link SwerveModule}.
+   */
+  public void invalidateCache()
+  {
+    absolutePositionCache.update();
+    drivePositionCache.update();
+    driveVelocityCache.update();
   }
 
   /**

@@ -1,5 +1,8 @@
 package swervelib;
 
+import static edu.wpi.first.hal.FRCNetComm.tResourceType.kResourceType_RobotDrive;
+
+import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -291,6 +294,9 @@ public class SwerveDrive
     setOdometryPeriod(SwerveDriveTelemetry.isSimulation ? 0.004 : 0.02);
 
     checkIfTunerXCompatible();
+
+    // Report creation to the FMS, uncomment in the next release.
+    // HAL.report(kResourceType_RobotDrive, kRobotDriveSwerve_YAGSL);
   }
 
   /**
@@ -1105,6 +1111,7 @@ public class SwerveDrive
   public void updateOdometry()
   {
     odometryLock.lock();
+    invalidateCache();
     try
     {
       // Update odometry
@@ -1187,6 +1194,18 @@ public class SwerveDrive
       throw e;
     }
     odometryLock.unlock();
+  }
+
+  /**
+   * Invalidate all {@link Cache} object used by the {@link SwerveDrive}
+   */
+  public void invalidateCache()
+  {
+    imuReadingCache.update();
+    for (SwerveModule module : swerveModules)
+    {
+      module.invalidateCache();
+    }
   }
 
   /**

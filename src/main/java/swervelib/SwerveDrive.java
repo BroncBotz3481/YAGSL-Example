@@ -288,7 +288,7 @@ public class SwerveDrive
       SwerveDriveTelemetry.measuredStatesObj = new SwerveModuleState[SwerveDriveTelemetry.moduleCount];
     }
 
-    setOdometryPeriod(SwerveDriveTelemetry.isSimulation ? 0.01 : 0.02);
+    setOdometryPeriod(SwerveDriveTelemetry.isSimulation ? 0.004 : 0.02);
 
     checkIfTunerXCompatible();
   }
@@ -342,7 +342,7 @@ public class SwerveDrive
   public void setOdometryPeriod(double period)
   {
     odometryThread.stop();
-    SimulatedArena.overrideSimulationTimings(Seconds.of(period), 2);
+    SimulatedArena.overrideSimulationTimings(Seconds.of(period), 1);
     odometryThread.startPeriodic(period);
   }
 

@@ -63,7 +63,7 @@ public class SwerveModuleSimulation
     {
       return new SwerveModuleState();
     }
-    final SwerveModuleState state = mapleSimModule.getCurrentState();
+    SwerveModuleState state = mapleSimModule.getCurrentState();
     state.angle = state.angle.minus(new Rotation2d());
     return state;
   }

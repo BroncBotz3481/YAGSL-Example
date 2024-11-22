@@ -358,11 +358,6 @@ public class TalonSRXSwerve extends SwerveMotor
     } else
     {
       var pos = motor.getSelectedSensorPosition() * positionConversionFactor;
-      pos %= 360;
-      if (pos < 360)
-      {
-        pos += 360;
-      }
       return pos;
     }
   }
@@ -418,6 +413,17 @@ public class TalonSRXSwerve extends SwerveMotor
   {
     configuration.closedloopRamp = rampRate;
     configuration.openloopRamp = rampRate;
+    configChanged = true;
+  }
+
+  /**
+   * Set the selected feedback device for the TalonSRX.
+   * 
+   * @param feedbackDevice Feedback device to select.
+   */
+  public void setSelectedFeedbackDevice(FeedbackDevice feedbackDevice) 
+  {
+    configuration.primaryPID.selectedFeedbackSensor = feedbackDevice;
     configChanged = true;
   }
 

@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import swervelib.motors.SwerveMotor;
+import swervelib.motors.TalonSRXSwerve;
 
 /**
  * Talon SRX attached absolute encoder.
@@ -25,9 +26,9 @@ public class TalonSRXEncoderSwerve extends SwerveAbsoluteEncoder {
      * @param feedbackDevice the feedback device the sensor uses e.g. PWM or Analog.
      */
     public TalonSRXEncoderSwerve(SwerveMotor motor, FeedbackDevice feedbackDevice) {
-        if (motor.getMotor() instanceof WPI_TalonSRX talon) {
-            this.talon = talon;
-            talon.configSelectedFeedbackSensor(feedbackDevice);
+        if (motor instanceof TalonSRXSwerve talonSRXSwerve) {
+            talonSRXSwerve.setSelectedFeedbackDevice(feedbackDevice);
+            this.talon = (WPI_TalonSRX) talonSRXSwerve.getMotor();
             // https://v5.docs.ctr-electronics.com/en/stable/ch14_MCSensor.html#sensor-resolution
             degreesPerSensorUnit = switch (feedbackDevice) {
                 case Analog -> 360.0 / 1024.0;

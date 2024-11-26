@@ -182,7 +182,7 @@ public class SwerveModule
     // Config angle motor/controller
     angleMotor.configureIntegratedEncoder(moduleConfiguration.conversionFactors.angle.factor);
     angleMotor.configurePIDF(moduleConfiguration.anglePIDF);
-    angleMotor.configurePIDWrapping(0, 180);
+    angleMotor.configurePIDWrapping(-180, 180);
     angleMotor.setInverted(moduleConfiguration.angleMotorInverted);
     angleMotor.setMotorBrake(false);
 

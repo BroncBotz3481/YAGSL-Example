@@ -171,6 +171,11 @@ public class SwerveModule
       absoluteEncoder.configure(moduleConfiguration.absoluteEncoderInverted);
     }
 
+    if (SwerveDriveTelemetry.isSimulation)
+    {
+      simModule = new SwerveModuleSimulation();
+    }
+
     // Setup the cache for the absolute encoder position.
     absolutePositionCache = new Cache<>(this::getRawAbsolutePosition, 20);
 
@@ -525,6 +530,13 @@ public class SwerveModule
    */
   public double getRawAbsolutePosition()
   {
+    /* During simulation, when no absolute encoders are available, we return the state from the simulation module instead. */
+    if (SwerveDriveTelemetry.isSimulation)
+    {
+      Rotation2d absolutePosition = simModule.getState().angle;
+      return absolutePosition.getDegrees();
+    }
+
     double angle;
     if (absoluteEncoder != null)
     {
@@ -708,5 +720,20 @@ public class SwerveModule
     absolutePositionCache.update();
     drivePositionCache.update();
     driveVelocityCache.update();
+  }
+
+  /**
+   * Obtains the {@link SwerveModuleSimulation} used in simulation.
+   *
+   * @return the module simulation, <b>null</b> if this method is called on a real robot
+   * */
+  public SwerveModuleSimulation getSimModule()
+  {
+    return simModule;
+  }
+
+  public void configureModuleSimulation(org.ironmaple.simulation.drivesims.SwerveModuleSimulation swerveModuleSimulation)
+  {
+    this.simModule.configureSimModule(swerveModuleSimulation);
   }
 }

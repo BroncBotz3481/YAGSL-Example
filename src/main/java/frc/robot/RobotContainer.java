@@ -96,6 +96,10 @@ public class RobotContainer
    */
   private void configureBindings()
   {
+    if (Robot.isSimulation())
+    {
+      driverXbox.start().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
+    }
     if (DriverStation.isTest())
     {
       driverXbox.b().whileTrue(drivebase.sysIdDriveMotorCommand());

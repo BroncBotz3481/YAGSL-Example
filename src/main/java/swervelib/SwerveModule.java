@@ -392,7 +392,7 @@ public class SwerveModule
     } else
     {
       driveMotor.setReference(velocity.magnitude(), driveMotorFeedforward.calculate(velocity).magnitude());
-      desiredState.speedMetersPerSecond = velocity.baseUnitMagnitude();
+      desiredState.speedMetersPerSecond = velocity.magnitude();
     }
 
     // Prevent module rotation if angle is the same as the previous angle.
@@ -421,8 +421,6 @@ public class SwerveModule
     // TODO: Change and move to SwerveDriveTelemetry
     if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.INFO.ordinal())
     {
-      SwerveDriveTelemetry.desiredStates[moduleNumber * 2] = desiredState.angle.getDegrees();
-      SwerveDriveTelemetry.desiredStates[(moduleNumber * 2) + 1] = velocity.magnitude();
       SwerveDriveTelemetry.desiredStatesObj[moduleNumber] = desiredState;
     }
 

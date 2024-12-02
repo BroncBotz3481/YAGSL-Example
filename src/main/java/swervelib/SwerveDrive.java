@@ -590,9 +590,6 @@ public class SwerveDrive
     }
     if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.LOW.ordinal())
     {
-      SwerveDriveTelemetry.desiredChassisSpeeds[1] = velocity.vyMetersPerSecond;
-      SwerveDriveTelemetry.desiredChassisSpeeds[0] = velocity.vxMetersPerSecond;
-      SwerveDriveTelemetry.desiredChassisSpeeds[2] = Math.toDegrees(velocity.omegaRadiansPerSecond);
       SwerveDriveTelemetry.desiredChassisSpeedsObj = velocity;
     }
 
@@ -707,9 +704,7 @@ public class SwerveDrive
                                           autonomousChassisVelocityCorrection,
                                           autonomousAngularVelocityCorrection);
 
-    SwerveDriveTelemetry.desiredChassisSpeeds[1] = chassisSpeeds.vyMetersPerSecond;
-    SwerveDriveTelemetry.desiredChassisSpeeds[0] = chassisSpeeds.vxMetersPerSecond;
-    SwerveDriveTelemetry.desiredChassisSpeeds[2] = Math.toDegrees(chassisSpeeds.omegaRadiansPerSecond);
+    SwerveDriveTelemetry.desiredChassisSpeedsObj = chassisSpeeds;
 
     setRawModuleStates(kinematics.toSwerveModuleStates(chassisSpeeds), chassisSpeeds, false);
   }
@@ -1073,10 +1068,6 @@ public class SwerveDrive
           new SwerveModuleState(0, swerveModule.configuration.moduleLocation.getAngle());
       if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.INFO.ordinal())
       {
-        SwerveDriveTelemetry.desiredStates[swerveModule.moduleNumber * 2] =
-            desiredState.angle.getDegrees();
-        SwerveDriveTelemetry.desiredStates[(swerveModule.moduleNumber * 2) + 1] =
-            desiredState.speedMetersPerSecond;
         SwerveDriveTelemetry.desiredStatesObj[swerveModule.moduleNumber] = desiredState;
       }
       swerveModule.setDesiredState(desiredState, false, true);
@@ -1141,22 +1132,12 @@ public class SwerveDrive
       // Update angle accumulator if the robot is simulated
       if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.INFO.ordinal())
       {
-        Pose2d[] modulePoses = getSwerveModulePoses(swerveDrivePoseEstimator.getEstimatedPosition());
         if (SwerveDriveTelemetry.isSimulation)
         {
-          simIMU.updateOdometry(
-              kinematics,
-              getStates(),
-              modulePoses,
-              field);
+          field.getObject("XModules").setPoses(getSwerveModulePoses(swerveDrivePoseEstimator.getEstimatedPosition()));
         }
 
-        ChassisSpeeds measuredChassisSpeeds = getRobotVelocity();
-        SwerveDriveTelemetry.measuredChassisSpeeds[1] = measuredChassisSpeeds.vyMetersPerSecond;
-        SwerveDriveTelemetry.measuredChassisSpeeds[0] = measuredChassisSpeeds.vxMetersPerSecond;
-        SwerveDriveTelemetry.measuredChassisSpeeds[2] = Math.toDegrees(measuredChassisSpeeds.omegaRadiansPerSecond);
-        SwerveDriveTelemetry.measuredChassisSpeedsObj = measuredChassisSpeeds;
-        SwerveDriveTelemetry.robotRotation = getOdometryHeading().getDegrees();
+        SwerveDriveTelemetry.measuredChassisSpeedsObj = getRobotVelocity();
         SwerveDriveTelemetry.robotRotationObj = getOdometryHeading();
       }
 
@@ -1185,8 +1166,6 @@ public class SwerveDrive
         }
         if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.INFO.ordinal())
         {
-          SwerveDriveTelemetry.measuredStates[module.moduleNumber * 2] = moduleState.angle.getDegrees();
-          SwerveDriveTelemetry.measuredStates[(module.moduleNumber * 2) + 1] = moduleState.speedMetersPerSecond;
           SwerveDriveTelemetry.measuredStatesObj[module.moduleNumber] = moduleState;
         }
       }

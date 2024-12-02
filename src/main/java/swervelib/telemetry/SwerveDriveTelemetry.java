@@ -170,6 +170,30 @@ public class SwerveDriveTelemetry
    */
   public static void updateData()
   {
+    measuredChassisSpeeds[0] = measuredChassisSpeedsObj.vxMetersPerSecond;
+    measuredChassisSpeeds[1] = measuredChassisSpeedsObj.vxMetersPerSecond;
+    measuredChassisSpeeds[2] = Math.toDegrees(measuredChassisSpeedsObj.omegaRadiansPerSecond);
+
+    desiredChassisSpeeds[0] = desiredChassisSpeedsObj.vxMetersPerSecond;
+    desiredChassisSpeeds[1] = desiredChassisSpeedsObj.vyMetersPerSecond;
+    desiredChassisSpeeds[2] = Math.toDegrees(desiredChassisSpeedsObj.omegaRadiansPerSecond);
+
+    robotRotation = robotRotationObj.getDegrees();
+
+    for (int i = 0; i < measuredStatesObj.length; i++)
+    {
+      SwerveModuleState state = measuredStatesObj[i];
+      measuredStates[i * 2] = state.angle.getDegrees();
+      measuredStates[i * 2 + 1] = state.speedMetersPerSecond;
+    }
+
+    for (int i = 0; i < desiredStatesObj.length; i++)
+    {
+      SwerveModuleState state = desiredStatesObj[i];
+      desiredStates[i * 2] = state.angle.getDegrees();
+      desiredStates[i * 2 + 1] = state.speedMetersPerSecond;
+    }
+
     SmartDashboard.putNumber("swerve/moduleCount", moduleCount);
     SmartDashboard.putNumberArray("swerve/wheelLocations", wheelLocations);
     SmartDashboard.putNumberArray("swerve/measuredStates", measuredStates);

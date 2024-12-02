@@ -91,6 +91,7 @@ public class NavXSwerve extends SwerveIMU
   public void setInverted(boolean invertIMU)
   {
     invertedIMU = invertIMU;
+    setOffset(getRawRotation3d());
   }
 
   /**

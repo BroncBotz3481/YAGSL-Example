@@ -404,10 +404,8 @@ public class SparkFlexSwerve extends SwerveMotor
   @Override
   public void setInverted(boolean inverted)
   {
-    configureSparkFlex(() -> {
-      motor.setInverted(inverted);
-      return motor.getLastError();
-    });
+    cfg.inverted(inverted);
+    cfgUpdated = true;
   }
 
   /**

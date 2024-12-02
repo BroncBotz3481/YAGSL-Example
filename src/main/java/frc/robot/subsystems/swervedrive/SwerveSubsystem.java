@@ -246,12 +246,11 @@ public class SwerveSubsystem extends SubsystemBase
     SwerveController controller = swerveDrive.getSwerveController();
     return run(
         () -> {
-          drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,
-                                                      0,
-                                                      controller.headingCalculate(getHeading().getRadians(),
-                                                                                  getSpeakerYaw().getRadians()),
-                                                      getHeading())
-               );
+          ChassisSpeeds speeds = new ChassisSpeeds(0, 0,
+                                                   controller.headingCalculate(getHeading().getRadians(),
+                                                                               getSpeakerYaw().getRadians()));
+          speeds.toRobotRelativeSpeeds(getHeading());
+          drive(speeds);
         }).until(() -> Math.abs(getSpeakerYaw().minus(getHeading()).getDegrees()) < tolerance);
   }
 

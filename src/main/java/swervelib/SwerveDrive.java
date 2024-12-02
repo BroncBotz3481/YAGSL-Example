@@ -1,5 +1,7 @@
 package swervelib;
 
+import static edu.wpi.first.hal.FRCNetComm.tInstances.kRobotDriveSwerve_YAGSL;
+import static edu.wpi.first.hal.FRCNetComm.tResourceType.kResourceType_RobotDrive;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
@@ -8,6 +10,7 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -305,8 +308,7 @@ public class SwerveDrive
 
     checkIfTunerXCompatible();
 
-    // Report creation to the FMS, uncomment in the next release.
-    // HAL.report(kResourceType_RobotDrive, kRobotDriveSwerve_YAGSL);
+    HAL.report(kResourceType_RobotDrive, kRobotDriveSwerve_YAGSL);
   }
 
   /**
@@ -543,8 +545,10 @@ public class SwerveDrive
     // necessary.
     ChassisSpeeds velocity = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 
-    if(fieldRelative)
+    if (fieldRelative)
+    {
       velocity.toRobotRelativeSpeeds(getOdometryHeading());
+    }
     drive(velocity, isOpenLoop, new Translation2d());
   }
 
@@ -1414,8 +1418,8 @@ public class SwerveDrive
   /**
    * Sets the Chassis discretization seconds as well as enableing/disabling the Chassis velocity correction in teleop
    *
-   * @param enable    Enable chassis velocity correction, which will use
-   *                  {@link ChassisSpeeds#discretize(double)} with the following.
+   * @param enable    Enable chassis velocity correction, which will use {@link ChassisSpeeds#discretize(double)} with
+   *                  the following.
    * @param dtSeconds The duration of the timestep the speeds should be applied for.
    */
   public void setChassisDiscretization(boolean enable, double dtSeconds)
@@ -1431,10 +1435,10 @@ public class SwerveDrive
    * Sets the Chassis discretization seconds as well as enableing/disabling the Chassis velocity correction in teleop
    * and/or auto
    *
-   * @param useInTeleop Enable chassis velocity correction, which will use
-   *                    {@link ChassisSpeeds#discretize(double)} with the following in teleop.
-   * @param useInAuto   Enable chassis velocity correction, which will use
-   *                    {@link ChassisSpeeds#discretize(double)} with the following in auto.
+   * @param useInTeleop Enable chassis velocity correction, which will use {@link ChassisSpeeds#discretize(double)} with
+   *                    the following in teleop.
+   * @param useInAuto   Enable chassis velocity correction, which will use {@link ChassisSpeeds#discretize(double)} with
+   *                    the following in auto.
    * @param dtSeconds   The duration of the timestep the speeds should be applied for.
    */
   public void setChassisDiscretization(boolean useInTeleop, boolean useInAuto, double dtSeconds)

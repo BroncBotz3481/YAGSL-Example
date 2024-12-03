@@ -372,7 +372,7 @@ public class SwerveModule
   public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop, boolean force)
   {
 
-    desiredState = SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(getAbsolutePosition()));
+    desiredState.optimize(Rotation2d.fromDegrees(getAbsolutePosition()));
 
     // If we are forcing the angle
     if (!force && antiJitterEnabled)
@@ -382,12 +382,13 @@ public class SwerveModule
     }
 
     // Cosine compensation.
-    LinearVelocity velocity = configuration.useCosineCompensator
+    LinearVelocity nextVelocity = configuration.useCosineCompensator
                               ? getCosineCompensatedVelocity(desiredState)
                               : MetersPerSecond.of(desiredState.speedMetersPerSecond);
-    desiredState.speedMetersPerSecond = velocity.magnitude();
+    LinearVelocity curVelocity = MetersPerSecond.of(lastState.speedMetersPerSecond);
+    desiredState.speedMetersPerSecond = nextVelocity.magnitude();
 
-    setDesiredState(desiredState, isOpenLoop, driveMotorFeedforward.calculate(velocity).magnitude());
+    setDesiredState(desiredState, isOpenLoop, driveMotorFeedforward.calculate(curVelocity, nextVelocity).magnitude());
   }
 
   /**

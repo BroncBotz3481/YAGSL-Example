@@ -730,6 +730,10 @@ public class SwerveModule
     return simModule;
   }
 
+  /**
+   * Configure the {@link SwerveModule#simModule} with the MapleSim {@link org.ironmaple.simulation.drivesims.SwerveModuleSimulation}
+   * @param swerveModuleSimulation
+   */
   public void configureModuleSimulation(org.ironmaple.simulation.drivesims.SwerveModuleSimulation swerveModuleSimulation)
   {
     this.simModule.configureSimModule(swerveModuleSimulation);

@@ -364,10 +364,10 @@ public class SwerveModule
    * Set the desired state of the swerve module. <br /><b>WARNING: If you are not using one of the functions from
    * {@link SwerveDrive} you may screw up {@link SwerveDrive#kinematics}</b>
    *
-   * @param desiredState            Desired swerve module state.
-   * @param isOpenLoop              Whether to use open loop (direct percent) or direct velocity control.
-   * @param force                   Disables optimizations that prevent movement in the angle motor and forces the
-   *                                desired state onto the swerve module.
+   * @param desiredState Desired swerve module state.
+   * @param isOpenLoop   Whether to use open loop (direct percent) or direct velocity control.
+   * @param force        Disables optimizations that prevent movement in the angle motor and forces the desired state
+   *                     onto the swerve module.
    */
   public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop, boolean force)
   {
@@ -386,7 +386,6 @@ public class SwerveModule
                               ? getCosineCompensatedVelocity(desiredState)
                               : MetersPerSecond.of(desiredState.speedMetersPerSecond);
     desiredState.speedMetersPerSecond = velocity.magnitude();
-
 
     setDesiredState(desiredState, isOpenLoop, driveMotorFeedforward.calculate(velocity).magnitude());
   }
@@ -751,7 +750,8 @@ public class SwerveModule
    * Configure the {@link SwerveModule#simModule} with the MapleSim
    * {@link org.ironmaple.simulation.drivesims.SwerveModuleSimulation}
    *
-   * @param swerveModuleSimulation MapleSim {@link org.ironmaple.simulation.drivesims.SwerveModuleSimulation} to configure with.
+   * @param swerveModuleSimulation MapleSim {@link org.ironmaple.simulation.drivesims.SwerveModuleSimulation} to
+   *                               configure with.
    */
   public void configureModuleSimulation(
       org.ironmaple.simulation.drivesims.SwerveModuleSimulation swerveModuleSimulation)

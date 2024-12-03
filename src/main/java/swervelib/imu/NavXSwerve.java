@@ -41,10 +41,10 @@ public class NavXSwerve extends SwerveIMU
     navXError = new Alert("IMU", "Error instantiating NavX.", AlertType.kError);
     try
     {
-          /* Communicate w/navX-MXP via the MXP SPI Bus.                                     */
-          /* Alternatively:  I2C.Port.kMXP, SerialPort.Port.kMXP or SerialPort.Port.kUSB     */
-          /* See http://navx-mxp.kauailabs.com/guidance/selecting-an-interface/ for details. */
-          imu = new AHRS(port);
+      /* Communicate w/navX-MXP via the MXP SPI Bus.                                     */
+      /* Alternatively:  I2C.Port.kMXP, SerialPort.Port.kMXP or SerialPort.Port.kUSB     */
+      /* See http://navx-mxp.kauailabs.com/guidance/selecting-an-interface/ for details. */
+      imu = new AHRS(port);
       factoryDefault();
     } catch (RuntimeException ex)
     {

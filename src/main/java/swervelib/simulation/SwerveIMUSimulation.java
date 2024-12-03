@@ -6,11 +6,9 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import org.ironmaple.simulation.drivesims.GyroSimulation;
-
 import java.util.Optional;
+import org.ironmaple.simulation.drivesims.GyroSimulation;
 
 /**
  * Simulation for {@link swervelib.SwerveDrive} IMU.
@@ -23,8 +21,9 @@ public class SwerveIMUSimulation
   /**
    * Create the swerve drive IMU simulation.
    */
-  public SwerveIMUSimulation(GyroSimulation gyroSimulation) {
-      this.gyroSimulation = gyroSimulation;
+  public SwerveIMUSimulation(GyroSimulation gyroSimulation)
+  {
+    this.gyroSimulation = gyroSimulation;
   }
 
   /**

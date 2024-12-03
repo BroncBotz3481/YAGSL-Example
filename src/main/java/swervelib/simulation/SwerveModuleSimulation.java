@@ -1,28 +1,35 @@
 package swervelib.simulation;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Radian;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import org.ironmaple.simulation.motorsims.ControlRequest;
-
-import static edu.wpi.first.units.Units.*;
 
 /**
  * Class that wraps around {@link org.ironmaple.simulation.drivesims.SwerveModuleSimulation}
  */
 public class SwerveModuleSimulation
 {
+
   private org.ironmaple.simulation.drivesims.SwerveModuleSimulation mapleSimModule = null;
 
   /**
    * Configure the maple sim module
+   *
    * @param mapleSimModule the {@link org.ironmaple.simulation.drivesims.SwerveModuleSimulation} object for simulation
    */
-  public void configureSimModule(org.ironmaple.simulation.drivesims.SwerveModuleSimulation mapleSimModule) {
+  public void configureSimModule(org.ironmaple.simulation.drivesims.SwerveModuleSimulation mapleSimModule)
+  {
     this.mapleSimModule = mapleSimModule;
     mapleSimModule.getDriveMotorConfigs()
-            .withDefaultFeedForward(Volts.zero())
-            .withVelocityVoltageController(Volts.per(RPM).ofNative(7.0/3000.0), true);
+                  .withDefaultFeedForward(Volts.zero())
+                  .withVelocityVoltageController(Volts.per(RPM).ofNative(7.0 / 3000.0), true);
   }
 
   /**
@@ -35,7 +42,7 @@ public class SwerveModuleSimulation
   {
     mapleSimModule.requestSteerControl(new ControlRequest.PositionVoltage(desiredState.angle.getMeasure()));
     mapleSimModule.requestDriveControl(new ControlRequest.VelocityVoltage(
-            RadiansPerSecond.of(desiredState.speedMetersPerSecond / mapleSimModule.WHEEL_RADIUS.in(Meters))
+        RadiansPerSecond.of(desiredState.speedMetersPerSecond / mapleSimModule.WHEEL_RADIUS.in(Meters))
     ));
   }
 
@@ -47,8 +54,8 @@ public class SwerveModuleSimulation
   public SwerveModulePosition getPosition()
   {
     return new SwerveModulePosition(
-            mapleSimModule.getDriveWheelFinalPosition().in(Radian) * mapleSimModule.WHEEL_RADIUS.in(Meters),
-            mapleSimModule.getSteerAbsoluteFacing()
+        mapleSimModule.getDriveWheelFinalPosition().in(Radian) * mapleSimModule.WHEEL_RADIUS.in(Meters),
+        mapleSimModule.getSteerAbsoluteFacing()
     );
   }
 

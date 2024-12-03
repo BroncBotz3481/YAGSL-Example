@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.swervedrive;
 
+import static edu.wpi.first.units.Units.Meter;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.commands.PathfindingCommand;
@@ -91,7 +93,10 @@ public class SwerveSubsystem extends SubsystemBase
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     try
     {
-      swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.MAX_SPEED, Pose2d.kZero);
+      swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.MAX_SPEED,
+                                                                  new Pose2d(new Translation2d(Meter.of(1),
+                                                                                               Meter.of(4)),
+                                                                             Rotation2d.fromDegrees(0)));
       // Alternative method if you don't want to supply the conversion factor via JSON files.
       // swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed, angleConversionFactor, driveConversionFactor);
     } catch (Exception e)
@@ -123,7 +128,11 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg)
   {
-    swerveDrive = new SwerveDrive(driveCfg, controllerCfg, Constants.MAX_SPEED, Pose2d.kZero);
+    swerveDrive = new SwerveDrive(driveCfg,
+                                  controllerCfg,
+                                  Constants.MAX_SPEED,
+                                  new Pose2d(new Translation2d(Meter.of(2), Meter.of(0)),
+                                             Rotation2d.fromDegrees(0)));
   }
 
   /**

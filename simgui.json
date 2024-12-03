@@ -80,6 +80,20 @@
         }
       },
       "/SmartDashboard/Field": {
+        "OdometryPose": {
+          "arrowColor": [
+            255.0,
+            255.0,
+            0.0,
+            255.0
+          ],
+          "color": [
+            224.99996948242188,
+            0.0,
+            255.0,
+            255.0
+          ]
+        },
         "XModules": {
           "arrowColor": [
             0.09611687064170837,

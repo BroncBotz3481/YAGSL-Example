@@ -1132,11 +1132,6 @@ public class SwerveDrive
       // Update angle accumulator if the robot is simulated
       if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.INFO.ordinal())
       {
-        if (SwerveDriveTelemetry.isSimulation)
-        {
-          field.getObject("XModules").setPoses(getSwerveModulePoses(swerveDrivePoseEstimator.getEstimatedPosition()));
-        }
-
         SwerveDriveTelemetry.measuredChassisSpeedsObj = getRobotVelocity();
         SwerveDriveTelemetry.robotRotationObj = getOdometryHeading();
       }
@@ -1147,6 +1142,8 @@ public class SwerveDrive
         {
           field.setRobotPose(mapleSimDrive.getSimulatedDriveTrainPose());
           field.getObject("OdometryPose").setPose(swerveDrivePoseEstimator.getEstimatedPosition());
+          field.getObject("XModules").setPoses(getSwerveModulePoses(mapleSimDrive.getSimulatedDriveTrainPose()));
+
         } else
         {
           field.setRobotPose(swerveDrivePoseEstimator.getEstimatedPosition());

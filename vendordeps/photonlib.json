@@ -1,20 +1,34 @@
 {
     "fileName": "photonlib.json",
     "name": "photonlib",
-    "version": "v2024.3.1",
+    "version": "v2025.0.0-beta-5",
     "uuid": "515fe07e-bfc6-11fa-b3de-0242ac130004",
-    "frcYear": "2024",
+    "frcYear": "2025",
     "mavenUrls": [
         "https://maven.photonvision.org/repository/internal",
         "https://maven.photonvision.org/repository/snapshots"
     ],
     "jsonUrl": "https://maven.photonvision.org/repository/internal/org/photonvision/photonlib-json/1.0/photonlib-json-1.0.json",
-    "jniDependencies": [],
+    "jniDependencies": [
+        {
+            "groupId": "org.photonvision",
+            "artifactId": "photontargeting-cpp",
+            "version": "v2025.0.0-beta-5",
+            "skipInvalidPlatforms": true,
+            "isJar": false,
+            "validPlatforms": [
+                "windowsx86-64",
+                "linuxathena",
+                "linuxx86-64",
+                "osxuniversal"
+            ]
+        }
+    ],
     "cppDependencies": [
         {
             "groupId": "org.photonvision",
             "artifactId": "photonlib-cpp",
-            "version": "v2024.3.1",
+            "version": "v2025.0.0-beta-5",
             "libName": "photonlib",
             "headerClassifier": "headers",
             "sharedLibrary": true,
@@ -29,7 +43,7 @@
         {
             "groupId": "org.photonvision",
             "artifactId": "photontargeting-cpp",
-            "version": "v2024.3.1",
+            "version": "v2025.0.0-beta-5",
             "libName": "photontargeting",
             "headerClassifier": "headers",
             "sharedLibrary": true,
@@ -46,12 +60,12 @@
         {
             "groupId": "org.photonvision",
             "artifactId": "photonlib-java",
-            "version": "v2024.3.1"
+            "version": "v2025.0.0-beta-5"
         },
         {
             "groupId": "org.photonvision",
             "artifactId": "photontargeting-java",
-            "version": "v2024.3.1"
+            "version": "v2025.0.0-beta-5"
         }
     ]
 }

@@ -2,6 +2,7 @@ package swervelib.encoders;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
@@ -9,7 +10,6 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.MagnetHealthValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.units.measure.Angle;
@@ -117,7 +117,7 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
     MagnetSensorConfigs  magnetSensorConfiguration = new MagnetSensorConfigs();
     cfg.refresh(magnetSensorConfiguration);
     cfg.apply(magnetSensorConfiguration
-                  .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
+                  .withAbsoluteSensorDiscontinuityPoint(Rotations.of(1))
                   .withSensorDirection(inverted ? SensorDirectionValue.Clockwise_Positive
                                                 : SensorDirectionValue.CounterClockwise_Positive));
   }

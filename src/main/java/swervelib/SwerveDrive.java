@@ -31,6 +31,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -584,10 +585,6 @@ public class SwerveDrive
     }
 
     // Display commanded speed for testing
-    if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.INFO)
-    {
-      SmartDashboard.putString("RobotVelocity", velocity.toString());
-    }
     if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.LOW.ordinal())
     {
       SwerveDriveTelemetry.desiredChassisSpeedsObj = velocity;
@@ -689,6 +686,27 @@ public class SwerveDrive
     for (SwerveModule module : swerveModules)
     {
       module.setDesiredState(desiredStates[module.moduleNumber], isOpenLoop, false);
+    }
+  }
+
+  /**
+   * Drive the robot using the {@link SwerveModuleState[]}, it is recommended to have
+   * {@link SwerveDrive#setCosineCompensator(boolean)} set to false for this.
+   *
+   * @param robotRelativeVelocity Robot relative {@link ChassisSpeeds}
+   * @param states                Corresponding {@link SwerveModuleState[]} to use (not checked against the
+   *                              {@param robotRelativeVelocity}).
+   * @param feedforwardAmp        Feedforward in amperage. (Ignored for now)
+   */
+  public void drive(ChassisSpeeds robotRelativeVelocity, SwerveModuleState[] states, double[] feedforwardAmp)
+  {
+    if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.LOW.ordinal())
+    {
+      SwerveDriveTelemetry.desiredChassisSpeedsObj = robotRelativeVelocity;
+    }
+    for (SwerveModule module : swerveModules)
+    {
+      module.setDesiredState(states[module.moduleNumber], false, 0); //feedforwardAmp[module.moduleNumber]);
     }
   }
 
@@ -1126,7 +1144,13 @@ public class SwerveDrive
 
       if (SwerveDriveTelemetry.isSimulation)
       {
-        SimulatedArena.getInstance().simulationPeriodic();
+        try
+        {
+          SimulatedArena.getInstance().simulationPeriodic();
+        } catch (Exception e)
+        {
+          DriverStation.reportError("MapleSim error", false);
+        }
       }
 
       // Update angle accumulator if the robot is simulated
@@ -1496,4 +1520,19 @@ public class SwerveDrive
     return velocity;
   }
 
+  /**
+   * Convert a {@link ChassisSpeeds} to {@link SwerveModuleState[]} for use elsewhere.
+   *
+   * @param velocity {@link ChassisSpeeds} velocity to use.
+   * @param optimize Perform chassis velocity correction or angular velocity correction.
+   * @return {@link SwerveModuleState[]} for use elsewhere.
+   */
+  public SwerveModuleState[] toServeModuleStates(ChassisSpeeds velocity, boolean optimize)
+  {
+    if (optimize)
+    {
+      velocity = movementOptimizations(velocity, chassisVelocityCorrection, angularVelocityCorrection);
+    }
+    return kinematics.toSwerveModuleStates(velocity);
+  }
 }

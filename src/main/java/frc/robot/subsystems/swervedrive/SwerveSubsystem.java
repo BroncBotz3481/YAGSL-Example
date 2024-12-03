@@ -14,6 +14,9 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.DriveFeedforwards;
+import com.pathplanner.lib.util.swerve.SwerveSetpoint;
+import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -29,14 +32,19 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
 import frc.robot.subsystems.swervedrive.Vision.Cameras;
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+import org.json.simple.parser.ParseException;
 import org.photonvision.targeting.PhotonPipelineResult;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
@@ -321,6 +329,60 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   // TODO: Make a drive command with PathPlanner setpoint generator, derived off of 254's setpoint generator
+
+  /**
+   * Drive with {@link SwerveSetpointGenerator} from 254, implemented by PathPlanner.
+   *
+   * @param robotRelativeChassisSpeed Robot relative {@link ChassisSpeeds} to achieve.
+   * @return {@link Command} to run.
+   * @throws IOException    If the PathPlanner GUI settings is invalid
+   * @throws ParseException If PathPlanner GUI settings is nonexistent.
+   */
+  private Command driveWithSetpointGenerator(Supplier<ChassisSpeeds> robotRelativeChassisSpeed)
+  throws IOException, ParseException
+  {
+    SwerveSetpointGenerator setpointGenerator = new SwerveSetpointGenerator(RobotConfig.fromGUISettings(),
+                                                                            swerveDrive.getMaximumAngularVelocity());
+    AtomicReference<SwerveSetpoint> prevSetpoint
+        = new AtomicReference<>(new SwerveSetpoint(swerveDrive.getRobotVelocity(),
+                                                   swerveDrive.getStates(),
+                                                   DriveFeedforwards.zeros(swerveDrive.getModules().length)));
+    double start = Timer.getFPGATimestamp();
+    return run(() -> {
+      SwerveSetpoint newSetpoint = setpointGenerator.generateSetpoint(prevSetpoint.get(),
+                                                                      robotRelativeChassisSpeed.get(),
+                                                                      start - Timer.getFPGATimestamp());
+      swerveDrive.drive(newSetpoint.robotRelativeSpeeds(),
+                        newSetpoint.moduleStates(),
+                        newSetpoint.feedforwards().torqueCurrentsAmps());
+      prevSetpoint.set(newSetpoint);
+
+
+    });
+  }
+
+  public Command driveWithSetpointGenerator(DoubleSupplier translationX, DoubleSupplier translationY,
+                                            DoubleSupplier rotationX)
+  {
+    SwerveController swerveController = swerveDrive.getSwerveController();
+    try
+    {
+      return driveWithSetpointGenerator(() -> {
+        Translation2d scaledInputs = SwerveMath.scaleTranslation(new Translation2d(translationX.getAsDouble(),
+                                                                                   translationY.getAsDouble()), 0.8);
+
+        return new ChassisSpeeds(scaledInputs.getX(),
+                                 scaledInputs.getY(),
+                                 rotationX.getAsDouble() * swerveDrive.getMaximumAngularVelocity());
+      });
+    } catch (Exception e)
+    {
+      DriverStation.reportError(e.toString(), true);
+    }
+    return Commands.none();
+
+  }
+
 
   /**
    * Command to drive the robot using translative values and heading as a setpoint.

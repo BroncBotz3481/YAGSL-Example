@@ -364,13 +364,14 @@ public class SwerveModule
    * Set the desired state of the swerve module. <br /><b>WARNING: If you are not using one of the functions from
    * {@link SwerveDrive} you may screw up {@link SwerveDrive#kinematics}</b>
    *
-   * @param desiredState Desired swerve module state.
-   * @param isOpenLoop   Whether to use open loop (direct percent) or direct velocity control.
-   * @param force        Disables optimizations that prevent movement in the angle motor and forces the desired state
-   *                     onto the swerve module.
+   * @param desiredState            Desired swerve module state.
+   * @param isOpenLoop              Whether to use open loop (direct percent) or direct velocity control.
+   * @param force                   Disables optimizations that prevent movement in the angle motor and forces the
+   *                                desired state onto the swerve module.
    */
   public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop, boolean force)
   {
+
     desiredState = SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(getAbsolutePosition()));
 
     // If we are forcing the angle
@@ -384,6 +385,23 @@ public class SwerveModule
     LinearVelocity velocity = configuration.useCosineCompensator
                               ? getCosineCompensatedVelocity(desiredState)
                               : MetersPerSecond.of(desiredState.speedMetersPerSecond);
+    desiredState.speedMetersPerSecond = velocity.magnitude();
+
+
+    setDesiredState(desiredState, isOpenLoop, driveMotorFeedforward.calculate(velocity).magnitude());
+  }
+
+  /**
+   * Set the desired state of the swerve module. <br /><b>WARNING: If you are not using one of the functions from
+   * {@link SwerveDrive} you may screw up {@link SwerveDrive#kinematics}</b>
+   *
+   * @param desiredState            Desired swerve module state.
+   * @param isOpenLoop              Whether to use open loop (direct percent) or direct velocity control.
+   * @param driveFeedforwardVoltage Drive motor controller feedforward as a voltage.
+   */
+  public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop,
+                              double driveFeedforwardVoltage)
+  {
 
     if (isOpenLoop)
     {
@@ -391,8 +409,7 @@ public class SwerveModule
       driveMotor.set(percentOutput);
     } else
     {
-      driveMotor.setReference(velocity.magnitude(), driveMotorFeedforward.calculate(velocity).magnitude());
-      desiredState.speedMetersPerSecond = velocity.magnitude();
+      driveMotor.setReference(desiredState.speedMetersPerSecond, driveFeedforwardVoltage);
     }
 
     // Prevent module rotation if angle is the same as the previous angle.
@@ -724,17 +741,20 @@ public class SwerveModule
    * Obtains the {@link SwerveModuleSimulation} used in simulation.
    *
    * @return the module simulation, <b>null</b> if this method is called on a real robot
-   * */
+   */
   public SwerveModuleSimulation getSimModule()
   {
     return simModule;
   }
 
   /**
-   * Configure the {@link SwerveModule#simModule} with the MapleSim {@link org.ironmaple.simulation.drivesims.SwerveModuleSimulation}
-   * @param swerveModuleSimulation
+   * Configure the {@link SwerveModule#simModule} with the MapleSim
+   * {@link org.ironmaple.simulation.drivesims.SwerveModuleSimulation}
+   *
+   * @param swerveModuleSimulation MapleSim {@link org.ironmaple.simulation.drivesims.SwerveModuleSimulation} to configure with.
    */
-  public void configureModuleSimulation(org.ironmaple.simulation.drivesims.SwerveModuleSimulation swerveModuleSimulation)
+  public void configureModuleSimulation(
+      org.ironmaple.simulation.drivesims.SwerveModuleSimulation swerveModuleSimulation)
   {
     this.simModule.configureSimModule(swerveModuleSimulation);
   }

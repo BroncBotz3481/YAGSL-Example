@@ -183,15 +183,21 @@ public class SwerveDriveTelemetry
     for (int i = 0; i < measuredStatesObj.length; i++)
     {
       SwerveModuleState state = measuredStatesObj[i];
-      measuredStates[i * 2] = state.angle.getDegrees();
-      measuredStates[i * 2 + 1] = state.speedMetersPerSecond;
+      if (state != null)
+      {
+        measuredStates[i * 2] = state.angle.getDegrees();
+        measuredStates[i * 2 + 1] = state.speedMetersPerSecond;
+      }
     }
 
     for (int i = 0; i < desiredStatesObj.length; i++)
     {
       SwerveModuleState state = desiredStatesObj[i];
-      desiredStates[i * 2] = state.angle.getDegrees();
-      desiredStates[i * 2 + 1] = state.speedMetersPerSecond;
+      if (state != null)
+      {
+        desiredStates[i * 2] = state.angle.getDegrees();
+        desiredStates[i * 2 + 1] = state.speedMetersPerSecond;
+      }
     }
 
     SmartDashboard.putNumber("swerve/moduleCount", moduleCount);

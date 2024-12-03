@@ -328,8 +328,6 @@ public class SwerveSubsystem extends SubsystemBase
                                      );
   }
 
-  // TODO: Make a drive command with PathPlanner setpoint generator, derived off of 254's setpoint generator
-
   /**
    * Drive with {@link SwerveSetpointGenerator} from 254, implemented by PathPlanner.
    *
@@ -355,6 +353,7 @@ public class SwerveSubsystem extends SubsystemBase
       swerveDrive.drive(newSetpoint.robotRelativeSpeeds(),
                         newSetpoint.moduleStates(),
                         newSetpoint.feedforwards().torqueCurrentsAmps());
+      // TODO: Convert the amp feedforward to usable generic feedforward. Currently it is ignored.
       prevSetpoint.set(newSetpoint);
 
 

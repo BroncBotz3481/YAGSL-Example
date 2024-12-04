@@ -179,6 +179,7 @@ public class SwerveSubsystem extends SubsystemBase
     {
       config = RobotConfig.fromGUISettings();
 
+      final boolean USE_FEEDFORWARD_FORCES = true;
       // Configure AutoBuilder last
       AutoBuilder.configure(
           this::getPose,
@@ -187,7 +188,19 @@ public class SwerveSubsystem extends SubsystemBase
           // Method to reset odometry (will be called if your auto has a starting pose)
           this::getRobotVelocity,
           // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-          this::setChassisSpeeds,
+          (speedsRobotRelative, moduleFeedForwards) -> {
+            if (USE_FEEDFORWARD_FORCES)
+            {
+              swerveDrive.drive(
+                      speedsRobotRelative,
+                      swerveDrive.kinematics.toSwerveModuleStates(speedsRobotRelative),
+                      moduleFeedForwards.linearForces()
+              );
+            } else
+            {
+              swerveDrive.setChassisSpeeds(speedsRobotRelative);
+            }
+          },
           // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
           new PPHolonomicDriveController(
               // PPHolonomicController is the built in path following controller for holonomic drive trains
@@ -352,8 +365,7 @@ public class SwerveSubsystem extends SubsystemBase
                                                                       start - Timer.getFPGATimestamp());
       swerveDrive.drive(newSetpoint.robotRelativeSpeeds(),
                         newSetpoint.moduleStates(),
-                        newSetpoint.feedforwards().torqueCurrentsAmps());
-      // TODO: Convert the amp feedforward to usable generic feedforward. Currently it is ignored.
+                        newSetpoint.feedforwards().linearForces());
       prevSetpoint.set(newSetpoint);
 
 

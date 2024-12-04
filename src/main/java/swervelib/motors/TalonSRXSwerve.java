@@ -447,7 +447,11 @@ public class TalonSRXSwerve extends SwerveMotor
   @Override
   public DCMotor getSimMotor()
   {
-    return DCMotor.getCIM(1);
+    if (simMotor == null)
+    {
+      simMotor = DCMotor.getCIM(1);
+    }
+    return simMotor;
   }
 
   /**

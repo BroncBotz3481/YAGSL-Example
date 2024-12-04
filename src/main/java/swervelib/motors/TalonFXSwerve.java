@@ -428,7 +428,11 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public DCMotor getSimMotor()
   {
-    return DCMotor.getKrakenX60(1);
+    if (simMotor == null)
+    {
+      simMotor = DCMotor.getKrakenX60(1);
+    }
+    return simMotor;
   }
 
   /**

@@ -2,7 +2,14 @@ package swervelib;
 
 import static edu.wpi.first.hal.FRCNetComm.tInstances.kRobotDriveSwerve_YAGSL;
 import static edu.wpi.first.hal.FRCNetComm.tResourceType.kResourceType_RobotDrive;
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
+import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Newtons;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
@@ -40,7 +47,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
@@ -555,25 +561,27 @@ public class SwerveDrive
    * states accordingly. Can use either open-loop or closed-loop velocity control for the wheel velocities. Applies
    * heading correction if enabled and necessary.
    *
-   * @param velocity               The chassis speeds to set the robot to achieve.
+   * @param robotRelativeVelocity  The chassis speeds to set the robot to achieve.
    * @param isOpenLoop             Whether to use closed-loop velocity control. Set to true to disable closed-loop.
    * @param centerOfRotationMeters The center of rotation in meters, 0 is the center of the robot.
    */
-  public void drive(ChassisSpeeds velocity, boolean isOpenLoop, Translation2d centerOfRotationMeters)
+  public void drive(ChassisSpeeds robotRelativeVelocity, boolean isOpenLoop, Translation2d centerOfRotationMeters)
   {
 
-    velocity = movementOptimizations(velocity, chassisVelocityCorrection, angularVelocityCorrection);
+    robotRelativeVelocity = movementOptimizations(robotRelativeVelocity,
+                                                  chassisVelocityCorrection,
+                                                  angularVelocityCorrection);
 
     // Heading Angular Velocity Deadband, might make a configuration option later.
     // Originally made by Team 1466 Webb Robotics.
     // Modified by Team 7525 Pioneers and BoiledBurntBagel of 6036
     if (headingCorrection)
     {
-      if (Math.abs(velocity.omegaRadiansPerSecond) < HEADING_CORRECTION_DEADBAND
-          && (Math.abs(velocity.vxMetersPerSecond) > HEADING_CORRECTION_DEADBAND
-              || Math.abs(velocity.vyMetersPerSecond) > HEADING_CORRECTION_DEADBAND))
+      if (Math.abs(robotRelativeVelocity.omegaRadiansPerSecond) < HEADING_CORRECTION_DEADBAND
+          && (Math.abs(robotRelativeVelocity.vxMetersPerSecond) > HEADING_CORRECTION_DEADBAND
+              || Math.abs(robotRelativeVelocity.vyMetersPerSecond) > HEADING_CORRECTION_DEADBAND))
       {
-        velocity.omegaRadiansPerSecond =
+        robotRelativeVelocity.omegaRadiansPerSecond =
             swerveController.headingCalculate(getOdometryHeading().getRadians(), lastHeadingRadians);
       } else
       {
@@ -584,13 +592,14 @@ public class SwerveDrive
     // Display commanded speed for testing
     if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.LOW.ordinal())
     {
-      SwerveDriveTelemetry.desiredChassisSpeedsObj = velocity;
+      SwerveDriveTelemetry.desiredChassisSpeedsObj = robotRelativeVelocity;
     }
 
     // Calculate required module states via kinematics
-    SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(velocity, centerOfRotationMeters);
+    SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(robotRelativeVelocity,
+                                                                             centerOfRotationMeters);
 
-    setRawModuleStates(swerveModuleStates, velocity, isOpenLoop);
+    setRawModuleStates(swerveModuleStates, robotRelativeVelocity, isOpenLoop);
   }
 
   /**
@@ -687,11 +696,27 @@ public class SwerveDrive
   }
 
   /**
-   * Drive the robot using the {@link SwerveModuleState[]}, it is recommended to have
-   * {@link SwerveDrive#setCosineCompensator(boolean)} set to false for this.
+   * Set the correct sim motor type to allow for optimal Feedforward generation from PathPlanner.
+   *
+   * @param simMotor {@link DCMotor} to use as the drive motor model we are going to use..
+   */
+  public void setDriveMotorModel(DCMotor simMotor)
+  {
+    for (SwerveModule module : swerveModules)
+    {
+      module.configuration.driveMotor.simMotor = simMotor;
+    }
+  }
+
+  /**
+   * Drive the robot using the {@link SwerveModuleState}, it is recommended to have
+   * {@link SwerveDrive#setCosineCompensator(boolean)} set to false for this.<br/>
+   * <p>
+   * <b>Warning:</b> Will not work well if motor is not what we are expecting. Should replace
+   * call {@link SwerveDrive#setDriveMotorModel(DCMotor)} with expected motor first.
    *
    * @param robotRelativeVelocity Robot relative {@link ChassisSpeeds}
-   * @param states                Corresponding {@link SwerveModuleState[]} to use (not checked against the
+   * @param states                Corresponding {@link SwerveModuleState} to use (not checked against the
    *                              {@param robotRelativeVelocity}).
    * @param feedforwardForces     Feedforward forces generated by set-point generator
    */
@@ -704,43 +729,45 @@ public class SwerveDrive
     for (SwerveModule module : swerveModules)
     {
       // from the module configuration, obtain necessary information to calculate feed-forward
-      DCMotor driveMotorModel = module.configuration.driveMotor.getSimMotor();
-      double driveGearRatio = module.configuration.conversionFactors.drive.gearRatio;
-      double wheelRadiusMeters = Units.inchesToMeters(module.configuration.conversionFactors.drive.diameter) / 2;
+      // Warning: Will not work well if motor is not what we are expecting.
+      // Warning: Should replace module.getDriveMotor().simMotor with expected motor type first.
+      DCMotor driveMotorModel   = module.configuration.driveMotor.getSimMotor();
+      double  driveGearRatio    = module.configuration.conversionFactors.drive.gearRatio;
+      double  wheelRadiusMeters = Units.inchesToMeters(module.configuration.conversionFactors.drive.diameter) / 2;
 
       // calculation:
       double desiredGroundSpeedMPS = states[module.moduleNumber].speedMetersPerSecond;
       double feedforwardVoltage = driveMotorModel.getVoltage(
-              // Since: (1) torque = force * momentOfForce; (2) torque (on wheel) = torque (on motor) * gearRatio
-              // torque (on motor) = force * wheelRadius / gearRatio
-              feedforwardForces[module.moduleNumber].in(Newtons) * wheelRadiusMeters / driveGearRatio,
-              // Since: (1) linear velocity = angularVelocity * wheelRadius; (2) wheelVelocity = motorVelocity / gearRatio
-              // motorAngularVelocity = linearVelocity / wheelRadius * gearRatio
-              desiredGroundSpeedMPS / wheelRadiusMeters * driveGearRatio
-      );
+          // Since: (1) torque = force * momentOfForce; (2) torque (on wheel) = torque (on motor) * gearRatio
+          // torque (on motor) = force * wheelRadius / gearRatio
+          feedforwardForces[module.moduleNumber].in(Newtons) * wheelRadiusMeters / driveGearRatio,
+          // Since: (1) linear velocity = angularVelocity * wheelRadius; (2) wheelVelocity = motorVelocity / gearRatio
+          // motorAngularVelocity = linearVelocity / wheelRadius * gearRatio
+          desiredGroundSpeedMPS / wheelRadiusMeters * driveGearRatio
+                                                            );
       module.setDesiredState(
-              states[module.moduleNumber],
-              false,
-              feedforwardVoltage
-      );
+          states[module.moduleNumber],
+          false,
+          feedforwardVoltage
+                            );
     }
   }
 
   /**
    * Set chassis speeds with closed-loop velocity control.
    *
-   * @param chassisSpeeds Chassis speeds to set.
+   * @param robotRelativeSpeeds Chassis speeds to set.
    */
-  public void setChassisSpeeds(ChassisSpeeds chassisSpeeds)
+  public void setChassisSpeeds(ChassisSpeeds robotRelativeSpeeds)
   {
 
-    chassisSpeeds = movementOptimizations(chassisSpeeds,
-                                          autonomousChassisVelocityCorrection,
-                                          autonomousAngularVelocityCorrection);
+    robotRelativeSpeeds = movementOptimizations(robotRelativeSpeeds,
+                                                autonomousChassisVelocityCorrection,
+                                                autonomousAngularVelocityCorrection);
 
-    SwerveDriveTelemetry.desiredChassisSpeedsObj = chassisSpeeds;
+    SwerveDriveTelemetry.desiredChassisSpeedsObj = robotRelativeSpeeds;
 
-    setRawModuleStates(kinematics.toSwerveModuleStates(chassisSpeeds), chassisSpeeds, false);
+    setRawModuleStates(kinematics.toSwerveModuleStates(robotRelativeSpeeds), robotRelativeSpeeds, false);
   }
 
   /**
@@ -785,10 +812,9 @@ public class SwerveDrive
   {
     // ChassisSpeeds has a method to convert from field-relative to robot-relative speeds,
     // but not the reverse.  However, because this transform is a simple rotation, negating the
-    // angle
-    // given as the robot angle reverses the direction of rotation, and the conversion is reversed.
+    // angle given as the robot angle reverses the direction of rotation, and the conversion is reversed.
     ChassisSpeeds robotRelativeSpeeds = kinematics.toChassisSpeeds(getStates());
-    robotRelativeSpeeds.toFieldRelativeSpeeds(getOdometryHeading().unaryMinus());
+    robotRelativeSpeeds.toFieldRelativeSpeeds(getOdometryHeading());//.unaryMinus());
     return robotRelativeSpeeds;
   }
 
@@ -826,8 +852,8 @@ public class SwerveDrive
   /**
    * Gets the actual robot-relative robot velocity (x, y and omega) during simulation
    *
-   * @return An optional ChassisSpeeds representing the actual robot-relative velocity of the robot, or an empty
-   * optional when running on real robot
+   * @return An {@link Optional} {@link ChassisSpeeds} representing the actual robot-relative velocity of the robot, or
+   * an empty optional when running on real robot
    * @deprecated for testing version of maple-sim only
    */
   @Deprecated
@@ -1495,60 +1521,62 @@ public class SwerveDrive
   /**
    * Correct for skew that worsens as angular velocity increases
    *
-   * @param velocity The chassis speeds to set the robot to achieve.
+   * @param robotRelativeVelocity The chassis speeds to set the robot to achieve.
    * @return {@link ChassisSpeeds} of the robot after angular velocity skew correction.
    */
-  public ChassisSpeeds angularVelocitySkewCorrection(ChassisSpeeds velocity)
+  public ChassisSpeeds angularVelocitySkewCorrection(ChassisSpeeds robotRelativeVelocity)
   {
     var angularVelocity = new Rotation2d(imuVelocity.getVelocity() * angularVelocityCoefficient);
     if (angularVelocity.getRadians() != 0.0)
     {
-      velocity.toFieldRelativeSpeeds(getOdometryHeading());
-      velocity.toRobotRelativeSpeeds(getOdometryHeading().plus(angularVelocity));
+      robotRelativeVelocity.toFieldRelativeSpeeds(getOdometryHeading());
+      robotRelativeVelocity.toRobotRelativeSpeeds(getOdometryHeading().plus(angularVelocity));
     }
-    return velocity;
+    return robotRelativeVelocity;
   }
 
   /**
    * Enable desired drive corrections
    *
-   * @param velocity                         The chassis speeds to set the robot to achieve.
+   * @param robotRelativeVelocity            The chassis speeds to set the robot to achieve.
    * @param uesChassisDiscretize             Correct chassis velocity using 254's correction.
    * @param useAngularVelocitySkewCorrection Use the robot's angular velocity to correct for skew.
    * @return The chassis speeds after optimizations.
    */
-  private ChassisSpeeds movementOptimizations(ChassisSpeeds velocity, boolean uesChassisDiscretize,
+  private ChassisSpeeds movementOptimizations(ChassisSpeeds robotRelativeVelocity, boolean uesChassisDiscretize,
                                               boolean useAngularVelocitySkewCorrection)
   {
 
     if (useAngularVelocitySkewCorrection)
     {
-      velocity = angularVelocitySkewCorrection(velocity);
+      robotRelativeVelocity = angularVelocitySkewCorrection(robotRelativeVelocity);
     }
 
     // Thank you to Jared Russell FRC254 for Open Loop Compensation Code
     // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
     if (uesChassisDiscretize)
     {
-      velocity.discretize(discretizationdtSeconds);
+      robotRelativeVelocity.discretize(discretizationdtSeconds);
     }
 
-    return velocity;
+    return robotRelativeVelocity;
   }
 
   /**
    * Convert a {@link ChassisSpeeds} to {@link SwerveModuleState[]} for use elsewhere.
    *
-   * @param velocity {@link ChassisSpeeds} velocity to use.
-   * @param optimize Perform chassis velocity correction or angular velocity correction.
+   * @param robotRelativeVelocity {@link ChassisSpeeds} velocity to use.
+   * @param optimize              Perform chassis velocity correction or angular velocity correction.
    * @return {@link SwerveModuleState[]} for use elsewhere.
    */
-  public SwerveModuleState[] toServeModuleStates(ChassisSpeeds velocity, boolean optimize)
+  public SwerveModuleState[] toServeModuleStates(ChassisSpeeds robotRelativeVelocity, boolean optimize)
   {
     if (optimize)
     {
-      velocity = movementOptimizations(velocity, chassisVelocityCorrection, angularVelocityCorrection);
+      robotRelativeVelocity = movementOptimizations(robotRelativeVelocity,
+                                                    chassisVelocityCorrection,
+                                                    angularVelocityCorrection);
     }
-    return kinematics.toSwerveModuleStates(velocity);
+    return kinematics.toSwerveModuleStates(robotRelativeVelocity);
   }
 }

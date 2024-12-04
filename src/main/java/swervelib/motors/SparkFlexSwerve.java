@@ -218,7 +218,11 @@ public class SparkFlexSwerve extends SwerveMotor
   @Override
   public DCMotor getSimMotor()
   {
-    return DCMotor.getNeoVortex(1);
+    if (simMotor == null)
+    {
+      simMotor = DCMotor.getNeoVortex(1);
+    }
+    return simMotor;
   }
 
   /**

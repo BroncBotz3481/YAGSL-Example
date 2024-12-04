@@ -26,6 +26,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -179,7 +180,7 @@ public class SwerveSubsystem extends SubsystemBase
     {
       config = RobotConfig.fromGUISettings();
 
-      final boolean USE_FEEDFORWARD_FORCES = true;
+      final boolean enableFeedforward = true;
       // Configure AutoBuilder last
       AutoBuilder.configure(
           this::getPose,
@@ -189,13 +190,13 @@ public class SwerveSubsystem extends SubsystemBase
           this::getRobotVelocity,
           // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
           (speedsRobotRelative, moduleFeedForwards) -> {
-            if (USE_FEEDFORWARD_FORCES)
+            if (enableFeedforward)
             {
               swerveDrive.drive(
-                      speedsRobotRelative,
-                      swerveDrive.kinematics.toSwerveModuleStates(speedsRobotRelative),
-                      moduleFeedForwards.linearForces()
-              );
+                  speedsRobotRelative,
+                  swerveDrive.kinematics.toSwerveModuleStates(speedsRobotRelative),
+                  moduleFeedForwards.linearForces()
+                               );
             } else
             {
               swerveDrive.setChassisSpeeds(speedsRobotRelative);
@@ -372,15 +373,25 @@ public class SwerveSubsystem extends SubsystemBase
     });
   }
 
+  /**
+   * Drive with 254's Setpoint generator; port written by PathPlanner.
+   *
+   * @param translationX Translation in the X direction of the WPILib Coordinate System. In the range of (-1, 1).
+   * @param translationY Translation in the Y direction of the WPILIb Coordinate System. In the range of (-1, 1).
+   * @param rotationX    Angular velocity in the range of (-1, 1).
+   * @return Command to drive the robot using the setpoint generator.
+   */
   public Command driveWithSetpointGenerator(DoubleSupplier translationX, DoubleSupplier translationY,
                                             DoubleSupplier rotationX)
   {
     SwerveController swerveController = swerveDrive.getSwerveController();
+    swerveDrive.setDriveMotorModel(DCMotor.getNEO(1));
     try
     {
       return driveWithSetpointGenerator(() -> {
-        Translation2d scaledInputs = SwerveMath.scaleTranslation(new Translation2d(translationX.getAsDouble(),
-                                                                                   translationY.getAsDouble()), 0.8);
+        Translation2d scaledInputs = SwerveMath.scaleTranslation(new Translation2d(
+            translationX.getAsDouble() * swerveDrive.getMaximumVelocity(),
+            translationY.getAsDouble() * swerveDrive.getMaximumVelocity()), 0.8);
 
         return new ChassisSpeeds(scaledInputs.getX(),
                                  scaledInputs.getY(),

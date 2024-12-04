@@ -418,12 +418,6 @@ public class SparkFlexSwerve extends SwerveMotor
   @Override
   public void burnFlash()
   {
-    try
-    {
-      Thread.sleep(200);
-    } catch (Exception e)
-    {
-    }
     motor.configure(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
     cfgUpdated = false;
   }

@@ -187,7 +187,19 @@ public class SwerveSubsystem extends SubsystemBase
           // Method to reset odometry (will be called if your auto has a starting pose)
           this::getRobotVelocity,
           // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-          this::setChassisSpeeds,
+          (speedsRobotRelative, moduleFeedForwards) -> {
+            if (Constants.DrivebaseConstants.USE_PATH_PLANNER_FEEDFORWARD_FORCES_DURING_AUTO)
+            {
+              swerveDrive.drive(
+                      speedsRobotRelative,
+                      swerveDrive.kinematics.toSwerveModuleStates(speedsRobotRelative),
+                      moduleFeedForwards.linearForces()
+              );
+            } else
+            {
+              swerveDrive.setChassisSpeeds(speedsRobotRelative);
+            }
+          },
           // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
           new PPHolonomicDriveController(
               // PPHolonomicController is the built in path following controller for holonomic drive trains
@@ -352,8 +364,7 @@ public class SwerveSubsystem extends SubsystemBase
                                                                       start - Timer.getFPGATimestamp());
       swerveDrive.drive(newSetpoint.robotRelativeSpeeds(),
                         newSetpoint.moduleStates(),
-                        newSetpoint.feedforwards().torqueCurrentsAmps());
-      // TODO: Convert the amp feedforward to usable generic feedforward. Currently it is ignored.
+                        newSetpoint.feedforwards().linearForces());
       prevSetpoint.set(newSetpoint);
 
 

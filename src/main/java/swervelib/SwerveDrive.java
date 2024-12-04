@@ -1144,13 +1144,7 @@ public class SwerveDrive
 
       if (SwerveDriveTelemetry.isSimulation)
       {
-        try
-        {
-          SimulatedArena.getInstance().simulationPeriodic();
-        } catch (Exception e)
-        {
-          DriverStation.reportError("MapleSim error", false);
-        }
+        SimulatedArena.getInstance().simulationPeriodic();
       }
 
       // Update angle accumulator if the robot is simulated

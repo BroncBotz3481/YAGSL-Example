@@ -179,6 +179,7 @@ public class SwerveSubsystem extends SubsystemBase
     {
       config = RobotConfig.fromGUISettings();
 
+      final boolean USE_FEEDFORWARD_FORCES = true;
       // Configure AutoBuilder last
       AutoBuilder.configure(
           this::getPose,
@@ -188,7 +189,7 @@ public class SwerveSubsystem extends SubsystemBase
           this::getRobotVelocity,
           // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
           (speedsRobotRelative, moduleFeedForwards) -> {
-            if (Constants.DrivebaseConstants.USE_PATH_PLANNER_FEEDFORWARD_FORCES_DURING_AUTO)
+            if (USE_FEEDFORWARD_FORCES)
             {
               swerveDrive.drive(
                       speedsRobotRelative,

@@ -15,16 +15,15 @@ public abstract class SwerveMotor
    */
   public final int     maximumRetries = 5;
   /**
-   * Whether the swerve motor is a drive motor.
-   */
-  protected    boolean isDriveMotor;
-
-  /**
    * Sim motor to use, defaulted in {@link SwerveMotor#getSimMotor()}, but can be overridden here. <b/> NOTE: This will
    * not change the simulation motor type! It is intended for use only if you are utilizing Feedforwards from
    * PathPlanner.
    */
   public DCMotor simMotor;
+  /**
+   * Whether the swerve motor is a drive motor.
+   */
+  protected    boolean isDriveMotor;
 
   /**
    * Configure the factory defaults.

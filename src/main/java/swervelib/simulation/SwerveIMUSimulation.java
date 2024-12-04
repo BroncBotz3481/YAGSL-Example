@@ -20,6 +20,8 @@ public class SwerveIMUSimulation
 
   /**
    * Create the swerve drive IMU simulation.
+   *
+   * @param gyroSimulation Gyro simulation from MapleSim.
    */
   public SwerveIMUSimulation(GyroSimulation gyroSimulation)
   {

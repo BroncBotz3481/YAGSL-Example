@@ -383,8 +383,8 @@ public class SwerveModule
 
     // Cosine compensation.
     LinearVelocity nextVelocity = configuration.useCosineCompensator
-                              ? getCosineCompensatedVelocity(desiredState)
-                              : MetersPerSecond.of(desiredState.speedMetersPerSecond);
+                                  ? getCosineCompensatedVelocity(desiredState)
+                                  : MetersPerSecond.of(desiredState.speedMetersPerSecond);
     LinearVelocity curVelocity = MetersPerSecond.of(lastState.speedMetersPerSecond);
     desiredState.speedMetersPerSecond = nextVelocity.magnitude();
 

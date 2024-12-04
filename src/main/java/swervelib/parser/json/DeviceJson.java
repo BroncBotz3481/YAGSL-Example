@@ -6,7 +6,6 @@ import static swervelib.telemetry.SwerveDriveTelemetry.serialCommsIssueWarning;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.studica.frc.AHRS.NavXComType;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import swervelib.encoders.AnalogAbsoluteEncoderSwerve;
 import swervelib.encoders.CANCoderSwerve;
@@ -95,7 +94,7 @@ public class DeviceJson
         return new CANCoderSwerve(id, canbus != null ? canbus : "");
       case "talonsrx_pwm":
         return new TalonSRXEncoderSwerve(motor, FeedbackDevice.PulseWidthEncodedPosition);
-      case "talonsrx_analog": 
+      case "talonsrx_analog":
         return new TalonSRXEncoderSwerve(motor, FeedbackDevice.Analog);
       default:
         throw new RuntimeException(type + " is not a recognized absolute encoder type.");

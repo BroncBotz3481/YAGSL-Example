@@ -630,14 +630,17 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
    */
   public enum Type
   {
-    kNoSensor,
     /**
      * NO sensor
      */
-    kHallSensor,
+    kNoSensor,
     /**
      * Hall sensor attached to dataport
      */
-    kQuadrature, /** Quad encoder attached to alt */
+    kHallSensor,
+    /**
+     * Quad encoder attached to alt
+     */
+    kQuadrature,
   }
 }

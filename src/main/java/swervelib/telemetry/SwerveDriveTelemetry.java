@@ -152,7 +152,7 @@ public class SwerveDriveTelemetry
   private static      StructPublisher<ChassisSpeeds>          desiredChassisSpeedsStruct
                                                                                        = NetworkTableInstance.getDefault()
                                                                                                              .getStructTopic(
-                                                                                                                 "swerve/advantagescope/measuredChassisSpeeds",
+                                                                                                                 "swerve/advantagescope/desiredChassisSpeeds",
                                                                                                                  ChassisSpeeds.struct)
                                                                                                              .publish();
   /**

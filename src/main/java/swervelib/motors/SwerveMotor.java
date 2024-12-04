@@ -15,7 +15,7 @@ public abstract class SwerveMotor
    */
   public final int     maximumRetries = 5;
   /**
-   * Sim motor to use, defaulted in {@link SwerveMotor#getSimMotor()}, but can be overridden here. <b/> NOTE: This will
+   * Sim motor to use, defaulted in {@link SwerveMotor#getSimMotor()}, but can be overridden here. <br/> NOTE: This will
    * not change the simulation motor type! It is intended for use only if you are utilizing Feedforwards from
    * PathPlanner.
    */

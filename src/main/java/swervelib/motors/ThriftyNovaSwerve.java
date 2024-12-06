@@ -15,6 +15,7 @@ import com.thethriftybot.ThriftyNova.EncoderType;
 import com.thethriftybot.ThriftyNova.PIDSlot;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
@@ -97,7 +98,22 @@ public class ThriftyNovaSwerve extends SwerveMotor {
      */
     @Override
     public void factoryDefaults() {
+        // Factory defaults from https://docs.thethriftybot.com/thrifty-nova/gqCPUYXcVoOZ4KW3DqIr/software-resources/configure-controller-settings/factory-default
         if (!factoryDefaultOccurred) {
+            motor.setInverted(false);
+            motor.setBrakeMode(false);
+            setCurrentLimit(40);
+            motor.setEncoderPosition(0);
+            motor.setMaxOutput(1.0);
+            motor.setRampDown(100);
+            motor.setRampUp(100);
+            configureCANStatusFrames(0.25, 0.1, 0.25, 0.5, 0.50);
+            motor.setSoftLimits(0, 0);
+            configurePIDF(new PIDFConfig());
+            motor.pid1.setP(0)
+                .pid1.setI(0)
+                .pid1.setD(0)
+                .pid1.setFF(0.0);
             DriverStation.reportWarning("Factory defaults not implemented for ThriftyNovaSwerve", true);
             factoryDefaultOccurred = true;
         }
@@ -263,7 +279,7 @@ public class ThriftyNovaSwerve extends SwerveMotor {
      */
     @Override
     public double getVoltage() {
-        throw new UnsupportedOperationException("Unimplemented method 'setReference'");
+        throw new UnsupportedOperationException("Unimplemented method 'getVoltage'");
     }
 
     /**
@@ -382,5 +398,14 @@ public class ThriftyNovaSwerve extends SwerveMotor {
             }
         }
 
+    }
+
+    @Override
+    public DCMotor getSimMotor() {
+        if (simMotor == null)
+        {
+          simMotor = DCMotor.getNEO(1);
+        }
+        return simMotor;
     }
 }

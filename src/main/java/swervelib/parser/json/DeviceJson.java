@@ -6,7 +6,7 @@ import static swervelib.telemetry.SwerveDriveTelemetry.serialCommsIssueWarning;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.studica.frc.AHRS.NavXComType;
-import com.revrobotics.SparkRelativeEncoder.Type;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import swervelib.encoders.AnalogAbsoluteEncoderSwerve;
 import swervelib.encoders.CANCoderSwerve;
@@ -16,6 +16,7 @@ import swervelib.encoders.SparkMaxAnalogEncoderSwerve;
 import swervelib.encoders.SparkMaxEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.encoders.TalonSRXEncoderSwerve;
+import swervelib.encoders.ThriftyNovaEncoderSwerve;
 import swervelib.imu.ADIS16448Swerve;
 import swervelib.imu.ADIS16470Swerve;
 import swervelib.imu.ADXRS450Swerve;
@@ -98,6 +99,8 @@ public class DeviceJson
         return new TalonSRXEncoderSwerve(motor, FeedbackDevice.PulseWidthEncodedPosition);
       case "talonsrx_analog":
         return new TalonSRXEncoderSwerve(motor, FeedbackDevice.Analog);
+      case "thrifty_nova":
+        return new ThriftyNovaEncoderSwerve(motor);
       default:
         throw new RuntimeException(type + " is not a recognized absolute encoder type.");
     }

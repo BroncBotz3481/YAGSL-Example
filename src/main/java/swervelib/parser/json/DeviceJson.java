@@ -4,12 +4,10 @@ import static swervelib.telemetry.SwerveDriveTelemetry.canIdWarning;
 import static swervelib.telemetry.SwerveDriveTelemetry.i2cLockupWarning;
 import static swervelib.telemetry.SwerveDriveTelemetry.serialCommsIssueWarning;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.studica.frc.AHRS.NavXComType;
 import com.revrobotics.SparkRelativeEncoder.Type;
-
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SerialPort.Port;
 import swervelib.encoders.AnalogAbsoluteEncoderSwerve;
 import swervelib.encoders.CANCoderSwerve;
 import swervelib.encoders.CanAndMagSwerve;
@@ -17,6 +15,7 @@ import swervelib.encoders.PWMDutyCycleEncoderSwerve;
 import swervelib.encoders.SparkMaxAnalogEncoderSwerve;
 import swervelib.encoders.SparkMaxEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
+import swervelib.encoders.TalonSRXEncoderSwerve;
 import swervelib.imu.ADIS16448Swerve;
 import swervelib.imu.ADIS16470Swerve;
 import swervelib.imu.ADXRS450Swerve;
@@ -28,6 +27,7 @@ import swervelib.imu.PigeonSwerve;
 import swervelib.imu.SwerveIMU;
 import swervelib.motors.SparkFlexSwerve;
 import swervelib.motors.SparkMaxBrushedMotorSwerve;
+import swervelib.motors.SparkMaxBrushedMotorSwerve.Type;
 import swervelib.motors.SparkMaxSwerve;
 import swervelib.motors.SwerveMotor;
 import swervelib.motors.TalonFXSwerve;
@@ -94,6 +94,10 @@ public class DeviceJson
         return new AnalogAbsoluteEncoderSwerve(id);
       case "cancoder":
         return new CANCoderSwerve(id, canbus != null ? canbus : "");
+      case "talonsrx_pwm":
+        return new TalonSRXEncoderSwerve(motor, FeedbackDevice.PulseWidthEncodedPosition);
+      case "talonsrx_analog":
+        return new TalonSRXEncoderSwerve(motor, FeedbackDevice.Analog);
       default:
         throw new RuntimeException(type + " is not a recognized absolute encoder type.");
     }
@@ -124,7 +128,7 @@ public class DeviceJson
         return new CanandgyroSwerve(id);
       case "navx":
       case "navx_spi":
-        return new NavXSwerve(SPI.Port.kMXP);
+        return new NavXSwerve(NavXComType.kMXP_SPI);
       case "navx_i2c":
         DriverStation.reportWarning(
             "WARNING: There exists an I2C lockup issue on the roboRIO that could occur, more information here: " +
@@ -132,15 +136,17 @@ public class DeviceJson
             ".html#onboard-i2c-causing-system-lockups",
             false);
         i2cLockupWarning.set(true);
-        return new NavXSwerve(I2C.Port.kMXP);
+        return new NavXSwerve(NavXComType.kI2C);
       case "navx_usb":
         DriverStation.reportWarning("WARNING: There is issues when using USB camera's and the NavX like this!\n" +
                                     "https://pdocs.kauailabs.com/navx-mxp/guidance/selecting-an-interface/", false);
         serialCommsIssueWarning.set(true);
-        return new NavXSwerve(Port.kUSB);
+        return new NavXSwerve(NavXComType.kUSB1);
       case "navx_mxp_serial":
         serialCommsIssueWarning.set(true);
-        return new NavXSwerve(Port.kMXP);
+        throw new RuntimeException("Studica NavX API does not support MXP Serial communication currently.");
+
+//        return new NavXSwerve(Port.kMXP);
       case "pigeon":
         return new PigeonSwerve(id);
       case "pigeon2":

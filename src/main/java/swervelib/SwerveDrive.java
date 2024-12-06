@@ -1,5 +1,17 @@
 package swervelib;
 
+import static edu.wpi.first.hal.FRCNetComm.tInstances.kRobotDriveSwerve_YAGSL;
+import static edu.wpi.first.hal.FRCNetComm.tResourceType.kResourceType_RobotDrive;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
+import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Newtons;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
+import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -16,9 +28,15 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Force;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -29,6 +47,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
+import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import swervelib.encoders.CANCoderSwerve;
 import swervelib.imu.IMUVelocity;
 import swervelib.imu.Pigeon2Swerve;
@@ -39,8 +61,6 @@ import swervelib.parser.Cache;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.simulation.SwerveIMUSimulation;
-import swervelib.telemetry.Alert;
-import swervelib.telemetry.Alert.AlertType;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
@@ -84,7 +104,7 @@ public class SwerveDrive
   private final Alert                    tunerXRecommendation                            = new Alert("Swerve Drive",
                                                                                                      "Your Swerve Drive is compatible with Tuner X swerve generator, please consider using that instead of YAGSL. More information here!\n" +
                                                                                                      "https://pro.docs.ctr-electronics.com/en/latest/docs/tuner/tuner-swerve/index.html",
-                                                                                                     AlertType.WARNING);
+                                                                                                     AlertType.kWarning);
   /**
    * Field object.
    */
@@ -107,20 +127,24 @@ public class SwerveDrive
    * Correct for skew that scales with angular velocity in
    * {@link SwerveDrive#drive(Translation2d, double, boolean, boolean)}
    */
-  public  boolean     angularVelocityCorrection           = false;
+  public        boolean                  angularVelocityCorrection                       = false;
   /**
    * Correct for skew that scales with angular velocity in
    * {@link SwerveDrive#setChassisSpeeds(ChassisSpeeds chassisSpeeds)} during auto.
    */
-  public  boolean     autonomousAngularVelocityCorrection = false;
+  public        boolean                  autonomousAngularVelocityCorrection             = false;
   /**
    * Angular Velocity Correction Coefficent (expected values between -0.15 and 0.15).
    */
-  public  double      angularVelocityCoefficient          = 0;
+  public        double                   angularVelocityCoefficient                      = 0;
   /**
    * Whether to correct heading when driving translationally. Set to true to enable.
    */
   public        boolean                  headingCorrection                               = false;
+  /**
+   * MapleSim SwerveDrive.
+   */
+  private       SwerveDriveSimulation    mapleSimDrive;
   /**
    * Amount of seconds the duration of the timestep the speeds should be applied for.
    */
@@ -137,7 +161,7 @@ public class SwerveDrive
    * Class that calculates robot's yaw velocity using IMU measurements. Used for angularVelocityCorrection in
    * {@link SwerveDrive#drive(Translation2d, double, boolean, boolean)}.
    */
-  private IMUVelocity imuVelocity;
+  private       IMUVelocity              imuVelocity;
   /**
    * Simulation of the swerve drive.
    */
@@ -175,9 +199,11 @@ public class SwerveDrive
    *                         {@link SwerveController}.
    * @param maxSpeedMPS      Maximum speed in meters per second, remember to use {@link Units#feetToMeters(double)} if
    *                         you have feet per second!
+   * @param startingPose     Starting {@link Pose2d} on the field.
    */
   public SwerveDrive(
-      SwerveDriveConfiguration config, SwerveControllerConfiguration controllerConfig, double maxSpeedMPS)
+      SwerveDriveConfiguration config, SwerveControllerConfiguration controllerConfig, double maxSpeedMPS,
+      Pose2d startingPose)
   {
     this.maxSpeedMPS = maxSpeedMPS;
     swerveDriveConfiguration = config;
@@ -186,11 +212,48 @@ public class SwerveDrive
     kinematics = new SwerveDriveKinematics(config.moduleLocationsMeters);
     odometryThread = new Notifier(this::updateOdometry);
 
+    this.swerveModules = config.modules;
+
     // Create an integrator for angle if the robot is being simulated to emulate an IMU
     // If the robot is real, instantiate the IMU instead.
     if (SwerveDriveTelemetry.isSimulation)
     {
-      simIMU = new SwerveIMUSimulation();
+      DriveTrainSimulationConfig simulationConfig = DriveTrainSimulationConfig.Default()
+                                                                              .withBumperSize(
+                                                                                  Meters.of(config.getTracklength())
+                                                                                        .plus(Inches.of(5)),
+                                                                                  Meters.of(config.getTrackwidth())
+                                                                                        .plus(Inches.of(5)))
+                                                                              .withRobotMass(Kilograms.of(config.physicalCharacteristics.robotMassKg))
+                                                                              .withCustomModuleTranslations(config.moduleLocationsMeters)
+                                                                              .withGyro(config.getGyroSim())
+                                                                              .withSwerveModule(() -> new SwerveModuleSimulation(
+                                                                                  config.getDriveMotorSim(),
+                                                                                  config.getAngleMotorSim(),
+                                                                                  config.physicalCharacteristics.conversionFactor.drive.gearRatio,
+                                                                                  config.physicalCharacteristics.conversionFactor.angle.gearRatio,
+                                                                                  Amps.of(config.physicalCharacteristics.driveMotorCurrentLimit),
+                                                                                  Amps.of(20),
+                                                                                  Volts.of(config.physicalCharacteristics.driveFrictionVoltage),
+                                                                                  Volts.of(config.physicalCharacteristics.angleFrictionVoltage),
+                                                                                  Inches.of(
+                                                                                      config.physicalCharacteristics.conversionFactor.drive.diameter /
+                                                                                      2),
+                                                                                  KilogramSquareMeters.of(0.02),
+                                                                                  config.physicalCharacteristics.wheelGripCoefficientOfFriction));
+
+      mapleSimDrive = new SwerveDriveSimulation(simulationConfig, startingPose);
+
+      // feed module simulation instances to modules
+      for (int i = 0; i < swerveModules.length; i++)
+      {
+        this.swerveModules[i].configureModuleSimulation(mapleSimDrive.getModules()[i]);
+      }
+
+      // register the drivetrain simulation
+      SimulatedArena.getInstance().addDriveTrainSimulation(mapleSimDrive);
+
+      simIMU = new SwerveIMUSimulation(mapleSimDrive.getGyroSimulation());
       imuReadingCache = new Cache<>(simIMU::getGyroRotation3d, 5L);
     } else
     {
@@ -199,16 +262,13 @@ public class SwerveDrive
       imuReadingCache = new Cache<>(imu::getRotation3d, 5L);
     }
 
-    this.swerveModules = config.modules;
-
     //    odometry = new SwerveDriveOdometry(kinematics, getYaw(), getModulePositions());
     swerveDrivePoseEstimator =
         new SwerveDrivePoseEstimator(
             kinematics,
             getYaw(),
             getModulePositions(),
-            new Pose2d(new Translation2d(0, 0),
-                       Rotation2d.fromDegrees(0))); // x,y,heading in radians; Vision measurement std dev, higher=less weight
+            startingPose); // x,y,heading in radians; Vision measurement std dev, higher=less weight
 
     zeroGyro();
     setMaximumSpeed(maxSpeedMPS);
@@ -244,11 +304,15 @@ public class SwerveDrive
       }
       SwerveDriveTelemetry.measuredStates = new double[SwerveDriveTelemetry.moduleCount * 2];
       SwerveDriveTelemetry.desiredStates = new double[SwerveDriveTelemetry.moduleCount * 2];
+      SwerveDriveTelemetry.desiredStatesObj = new SwerveModuleState[SwerveDriveTelemetry.moduleCount];
+      SwerveDriveTelemetry.measuredStatesObj = new SwerveModuleState[SwerveDriveTelemetry.moduleCount];
     }
 
-    odometryThread.startPeriodic(SwerveDriveTelemetry.isSimulation ? 0.01 : 0.02);
+    setOdometryPeriod(SwerveDriveTelemetry.isSimulation ? 0.004 : 0.02);
 
     checkIfTunerXCompatible();
+
+    HAL.report(kResourceType_RobotDrive, kRobotDriveSwerve_YAGSL);
   }
 
   /**
@@ -300,6 +364,7 @@ public class SwerveDrive
   public void setOdometryPeriod(double period)
   {
     odometryThread.stop();
+    SimulatedArena.overrideSimulationTimings(Seconds.of(period), 1);
     odometryThread.startPeriodic(period);
   }
 
@@ -309,6 +374,7 @@ public class SwerveDrive
   public void stopOdometryThread()
   {
     odometryThread.stop();
+    SimulatedArena.overrideSimulationTimings(Seconds.of(TimedRobot.kDefaultPeriod), 5);
   }
 
   /**
@@ -381,9 +447,8 @@ public class SwerveDrive
   public void driveFieldOrientedandRobotOriented(ChassisSpeeds fieldOrientedVelocity,
                                                  ChassisSpeeds robotOrientedVelocity)
   {
-    ChassisSpeeds TotalVelocties = ChassisSpeeds.fromFieldRelativeSpeeds(fieldOrientedVelocity, getOdometryHeading())
-                                                .plus(robotOrientedVelocity);
-    drive(TotalVelocties);
+    fieldOrientedVelocity.toRobotRelativeSpeeds(getOdometryHeading());
+    drive(fieldOrientedVelocity.plus(robotOrientedVelocity));
   }
 
   /**
@@ -393,8 +458,8 @@ public class SwerveDrive
    */
   public void driveFieldOriented(ChassisSpeeds velocity)
   {
-    ChassisSpeeds fieldOrientedVelocity = ChassisSpeeds.fromFieldRelativeSpeeds(velocity, getOdometryHeading());
-    drive(fieldOrientedVelocity);
+    velocity.toRobotRelativeSpeeds(getOdometryHeading());
+    drive(velocity);
   }
 
   /**
@@ -405,8 +470,8 @@ public class SwerveDrive
    */
   public void driveFieldOriented(ChassisSpeeds velocity, Translation2d centerOfRotationMeters)
   {
-    ChassisSpeeds fieldOrientedVelocity = ChassisSpeeds.fromFieldRelativeSpeeds(velocity, getOdometryHeading());
-    drive(fieldOrientedVelocity, centerOfRotationMeters);
+    velocity.toRobotRelativeSpeeds(getOdometryHeading());
+    drive(velocity, centerOfRotationMeters);
   }
 
   /**
@@ -454,12 +519,11 @@ public class SwerveDrive
   {
     // Creates a robot-relative ChassisSpeeds object, converting from field-relative speeds if
     // necessary.
-    ChassisSpeeds velocity =
-        fieldRelative
-        ? ChassisSpeeds.fromFieldRelativeSpeeds(
-            translation.getX(), translation.getY(), rotation, getOdometryHeading())
-        : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
-
+    ChassisSpeeds velocity = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
+    if (fieldRelative)
+    {
+      velocity.toRobotRelativeSpeeds(getOdometryHeading());
+    }
     drive(velocity, isOpenLoop, centerOfRotationMeters);
   }
 
@@ -483,12 +547,12 @@ public class SwerveDrive
   {
     // Creates a robot-relative ChassisSpeeds object, converting from field-relative speeds if
     // necessary.
-    ChassisSpeeds velocity =
-        fieldRelative
-        ? ChassisSpeeds.fromFieldRelativeSpeeds(
-            translation.getX(), translation.getY(), rotation, getOdometryHeading())
-        : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
+    ChassisSpeeds velocity = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 
+    if (fieldRelative)
+    {
+      velocity.toRobotRelativeSpeeds(getOdometryHeading());
+    }
     drive(velocity, isOpenLoop, new Translation2d());
   }
 
@@ -497,25 +561,27 @@ public class SwerveDrive
    * states accordingly. Can use either open-loop or closed-loop velocity control for the wheel velocities. Applies
    * heading correction if enabled and necessary.
    *
-   * @param velocity               The chassis speeds to set the robot to achieve.
+   * @param robotRelativeVelocity  The chassis speeds to set the robot to achieve.
    * @param isOpenLoop             Whether to use closed-loop velocity control. Set to true to disable closed-loop.
    * @param centerOfRotationMeters The center of rotation in meters, 0 is the center of the robot.
    */
-  public void drive(ChassisSpeeds velocity, boolean isOpenLoop, Translation2d centerOfRotationMeters)
+  public void drive(ChassisSpeeds robotRelativeVelocity, boolean isOpenLoop, Translation2d centerOfRotationMeters)
   {
 
-    velocity = movementOptimizations(velocity, chassisVelocityCorrection, angularVelocityCorrection);
+    robotRelativeVelocity = movementOptimizations(robotRelativeVelocity,
+                                                  chassisVelocityCorrection,
+                                                  angularVelocityCorrection);
 
     // Heading Angular Velocity Deadband, might make a configuration option later.
     // Originally made by Team 1466 Webb Robotics.
     // Modified by Team 7525 Pioneers and BoiledBurntBagel of 6036
     if (headingCorrection)
     {
-      if (Math.abs(velocity.omegaRadiansPerSecond) < HEADING_CORRECTION_DEADBAND
-          && (Math.abs(velocity.vxMetersPerSecond) > HEADING_CORRECTION_DEADBAND
-              || Math.abs(velocity.vyMetersPerSecond) > HEADING_CORRECTION_DEADBAND))
+      if (Math.abs(robotRelativeVelocity.omegaRadiansPerSecond) < HEADING_CORRECTION_DEADBAND
+          && (Math.abs(robotRelativeVelocity.vxMetersPerSecond) > HEADING_CORRECTION_DEADBAND
+              || Math.abs(robotRelativeVelocity.vyMetersPerSecond) > HEADING_CORRECTION_DEADBAND))
       {
-        velocity.omegaRadiansPerSecond =
+        robotRelativeVelocity.omegaRadiansPerSecond =
             swerveController.headingCalculate(getOdometryHeading().getRadians(), lastHeadingRadians);
       } else
       {
@@ -524,21 +590,16 @@ public class SwerveDrive
     }
 
     // Display commanded speed for testing
-    if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.INFO)
-    {
-      SmartDashboard.putString("RobotVelocity", velocity.toString());
-    }
     if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.LOW.ordinal())
     {
-      SwerveDriveTelemetry.desiredChassisSpeeds[1] = velocity.vyMetersPerSecond;
-      SwerveDriveTelemetry.desiredChassisSpeeds[0] = velocity.vxMetersPerSecond;
-      SwerveDriveTelemetry.desiredChassisSpeeds[2] = Math.toDegrees(velocity.omegaRadiansPerSecond);
+      SwerveDriveTelemetry.desiredChassisSpeedsObj = robotRelativeVelocity;
     }
 
     // Calculate required module states via kinematics
-    SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(velocity, centerOfRotationMeters);
+    SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(robotRelativeVelocity,
+                                                                             centerOfRotationMeters);
 
-    setRawModuleStates(swerveModuleStates, velocity, isOpenLoop);
+    setRawModuleStates(swerveModuleStates, robotRelativeVelocity, isOpenLoop);
   }
 
   /**
@@ -635,26 +696,82 @@ public class SwerveDrive
   }
 
   /**
-   * Set chassis speeds with closed-loop velocity control.
+   * Set the correct sim motor type to allow for optimal Feedforward generation from PathPlanner.
    *
-   * @param chassisSpeeds Chassis speeds to set.
+   * @param simMotor {@link DCMotor} to use as the drive motor model we are going to use..
    */
-  public void setChassisSpeeds(ChassisSpeeds chassisSpeeds)
+  public void setDriveMotorModel(DCMotor simMotor)
   {
-
-    chassisSpeeds = movementOptimizations(chassisSpeeds,
-                                          autonomousChassisVelocityCorrection,
-                                          autonomousAngularVelocityCorrection);
-
-    SwerveDriveTelemetry.desiredChassisSpeeds[1] = chassisSpeeds.vyMetersPerSecond;
-    SwerveDriveTelemetry.desiredChassisSpeeds[0] = chassisSpeeds.vxMetersPerSecond;
-    SwerveDriveTelemetry.desiredChassisSpeeds[2] = Math.toDegrees(chassisSpeeds.omegaRadiansPerSecond);
-
-    setRawModuleStates(kinematics.toSwerveModuleStates(chassisSpeeds), chassisSpeeds, false);
+    for (SwerveModule module : swerveModules)
+    {
+      module.configuration.driveMotor.simMotor = simMotor;
+    }
   }
 
   /**
-   * Gets the current pose (position and rotation) of the robot, as reported by odometry.
+   * Drive the robot using the {@link SwerveModuleState}, it is recommended to have
+   * {@link SwerveDrive#setCosineCompensator(boolean)} set to false for this.<br/>
+   * <p>
+   * <b>Warning:</b> Will not work well if motor is not what we are expecting. Should replace
+   * call {@link SwerveDrive#setDriveMotorModel(DCMotor)} with expected motor first.
+   *
+   * @param robotRelativeVelocity Robot relative {@link ChassisSpeeds}
+   * @param states                Corresponding {@link SwerveModuleState} to use (not checked against the
+   *                              {@param robotRelativeVelocity}).
+   * @param feedforwardForces     Feedforward forces generated by set-point generator
+   */
+  public void drive(ChassisSpeeds robotRelativeVelocity, SwerveModuleState[] states, Force[] feedforwardForces)
+  {
+    if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.LOW.ordinal())
+    {
+      SwerveDriveTelemetry.desiredChassisSpeedsObj = robotRelativeVelocity;
+    }
+    for (SwerveModule module : swerveModules)
+    {
+      // from the module configuration, obtain necessary information to calculate feed-forward
+      // Warning: Will not work well if motor is not what we are expecting.
+      // Warning: Should replace module.getDriveMotor().simMotor with expected motor type first.
+      DCMotor driveMotorModel   = module.configuration.driveMotor.getSimMotor();
+      double  driveGearRatio    = module.configuration.conversionFactors.drive.gearRatio;
+      double  wheelRadiusMeters = Units.inchesToMeters(module.configuration.conversionFactors.drive.diameter) / 2;
+
+      // calculation:
+      double desiredGroundSpeedMPS = states[module.moduleNumber].speedMetersPerSecond;
+      double feedforwardVoltage = driveMotorModel.getVoltage(
+          // Since: (1) torque = force * momentOfForce; (2) torque (on wheel) = torque (on motor) * gearRatio
+          // torque (on motor) = force * wheelRadius / gearRatio
+          feedforwardForces[module.moduleNumber].in(Newtons) * wheelRadiusMeters / driveGearRatio,
+          // Since: (1) linear velocity = angularVelocity * wheelRadius; (2) wheelVelocity = motorVelocity / gearRatio
+          // motorAngularVelocity = linearVelocity / wheelRadius * gearRatio
+          desiredGroundSpeedMPS / wheelRadiusMeters * driveGearRatio
+                                                            );
+      module.setDesiredState(
+          states[module.moduleNumber],
+          false,
+          feedforwardVoltage
+                            );
+    }
+  }
+
+  /**
+   * Set chassis speeds with closed-loop velocity control.
+   *
+   * @param robotRelativeSpeeds Chassis speeds to set.
+   */
+  public void setChassisSpeeds(ChassisSpeeds robotRelativeSpeeds)
+  {
+
+    robotRelativeSpeeds = movementOptimizations(robotRelativeSpeeds,
+                                                autonomousChassisVelocityCorrection,
+                                                autonomousAngularVelocityCorrection);
+
+    SwerveDriveTelemetry.desiredChassisSpeedsObj = robotRelativeSpeeds;
+
+    setRawModuleStates(kinematics.toSwerveModuleStates(robotRelativeSpeeds), robotRelativeSpeeds, false);
+  }
+
+  /**
+   * Gets the measured pose (position and rotation) of the robot, as reported by odometry.
    *
    * @return The robot's pose
    */
@@ -668,7 +785,26 @@ public class SwerveDrive
   }
 
   /**
-   * Gets the current field-relative velocity (x, y and omega) of the robot
+   * Gets the actual pose of the drivetrain during simulation
+   *
+   * @return an optional Pose2d, representing the drivetrain pose during simulation, or an empty optional when running
+   * on real robot
+   */
+  public Optional<Pose2d> getSimulationDriveTrainPose()
+  {
+    if (SwerveDriveTelemetry.isSimulation)
+    {
+      odometryLock.lock();
+      Pose2d simulationPose = mapleSimDrive.getSimulatedDriveTrainPose();
+      odometryLock.unlock();
+      return Optional.of(simulationPose);
+    }
+
+    return Optional.empty();
+  }
+
+  /**
+   * Gets the measured field-relative robot velocity (x, y and omega)
    *
    * @return A ChassisSpeeds object of the current field-relative velocity
    */
@@ -676,10 +812,31 @@ public class SwerveDrive
   {
     // ChassisSpeeds has a method to convert from field-relative to robot-relative speeds,
     // but not the reverse.  However, because this transform is a simple rotation, negating the
-    // angle
-    // given as the robot angle reverses the direction of rotation, and the conversion is reversed.
-    return ChassisSpeeds.fromFieldRelativeSpeeds(
-        kinematics.toChassisSpeeds(getStates()), getOdometryHeading().unaryMinus());
+    // angle given as the robot angle reverses the direction of rotation, and the conversion is reversed.
+    ChassisSpeeds robotRelativeSpeeds = kinematics.toChassisSpeeds(getStates());
+    robotRelativeSpeeds.toFieldRelativeSpeeds(getOdometryHeading());//.unaryMinus());
+    return robotRelativeSpeeds;
+  }
+
+  /**
+   * Gets the actual field-relative robot velocity (x, y and omega) during simulation
+   *
+   * @return An optional ChassisSpeeds representing the actual field-relative velocity of the robot, or an empty
+   * optional when running on real robot
+   * @deprecated for testing version of maple-sim only
+   */
+  @Deprecated
+  public Optional<ChassisSpeeds> getSimulationFieldVelocity()
+  {
+    if (SwerveDriveTelemetry.isSimulation)
+    {
+      odometryLock.lock();
+      ChassisSpeeds simulationFieldRelativeVelocity = mapleSimDrive.getDriveTrainSimulatedChassisSpeedsFieldRelative();
+      odometryLock.unlock();
+      return Optional.of(simulationFieldRelativeVelocity);
+    }
+
+    return Optional.empty();
   }
 
   /**
@@ -693,6 +850,27 @@ public class SwerveDrive
   }
 
   /**
+   * Gets the actual robot-relative robot velocity (x, y and omega) during simulation
+   *
+   * @return An {@link Optional} {@link ChassisSpeeds} representing the actual robot-relative velocity of the robot, or
+   * an empty optional when running on real robot
+   * @deprecated for testing version of maple-sim only
+   */
+  @Deprecated
+  public Optional<ChassisSpeeds> getSimulationRobotVelocity()
+  {
+    if (SwerveDriveTelemetry.isSimulation)
+    {
+      odometryLock.lock();
+      ChassisSpeeds simulationFieldRelativeVelocity = mapleSimDrive.getDriveTrainSimulatedChassisSpeedsRobotRelative();
+      odometryLock.unlock();
+      return Optional.of(simulationFieldRelativeVelocity);
+    }
+
+    return Optional.empty();
+  }
+
+  /**
    * Resets odometry to the given pose. Gyro angle and module positions do not need to be reset when calling this
    * method. However, if either gyro angle or module position is reset, this must be called in order for odometry to
    * keep working.
@@ -703,8 +881,15 @@ public class SwerveDrive
   {
     odometryLock.lock();
     swerveDrivePoseEstimator.resetPosition(getYaw(), getModulePositions(), pose);
+    if (SwerveDriveTelemetry.isSimulation)
+    {
+      mapleSimDrive.setSimulationWorldPose(pose);
+    }
     odometryLock.unlock();
-    kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, getYaw()));
+    ChassisSpeeds robotRelativeSpeeds = new ChassisSpeeds();
+    robotRelativeSpeeds.toFieldRelativeSpeeds(getYaw());
+    kinematics.toSwerveModuleStates(robotRelativeSpeeds);
+
   }
 
   /**
@@ -943,10 +1128,7 @@ public class SwerveDrive
           new SwerveModuleState(0, swerveModule.configuration.moduleLocation.getAngle());
       if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.INFO.ordinal())
       {
-        SwerveDriveTelemetry.desiredStates[swerveModule.moduleNumber * 2] =
-            desiredState.angle.getDegrees();
-        SwerveDriveTelemetry.desiredStates[(swerveModule.moduleNumber * 2) + 1] =
-            desiredState.speedMetersPerSecond;
+        SwerveDriveTelemetry.desiredStatesObj[swerveModule.moduleNumber] = desiredState;
       }
       swerveModule.setDesiredState(desiredState, false, true);
 
@@ -996,34 +1178,42 @@ public class SwerveDrive
   public void updateOdometry()
   {
     odometryLock.lock();
+    invalidateCache();
     try
     {
       // Update odometry
       swerveDrivePoseEstimator.update(getYaw(), getModulePositions());
 
+      if (SwerveDriveTelemetry.isSimulation)
+      {
+        try
+        {
+          SimulatedArena.getInstance().simulationPeriodic();
+        } catch (Exception e)
+        {
+          DriverStation.reportError("MapleSim error", false);
+        }
+      }
+
       // Update angle accumulator if the robot is simulated
       if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.INFO.ordinal())
       {
-        Pose2d[] modulePoses = getSwerveModulePoses(swerveDrivePoseEstimator.getEstimatedPosition());
-        if (SwerveDriveTelemetry.isSimulation)
-        {
-          simIMU.updateOdometry(
-              kinematics,
-              getStates(),
-              modulePoses,
-              field);
-        }
-
-        ChassisSpeeds measuredChassisSpeeds = getRobotVelocity();
-        SwerveDriveTelemetry.measuredChassisSpeeds[1] = measuredChassisSpeeds.vyMetersPerSecond;
-        SwerveDriveTelemetry.measuredChassisSpeeds[0] = measuredChassisSpeeds.vxMetersPerSecond;
-        SwerveDriveTelemetry.measuredChassisSpeeds[2] = Math.toDegrees(measuredChassisSpeeds.omegaRadiansPerSecond);
-        SwerveDriveTelemetry.robotRotation = getOdometryHeading().getDegrees();
+        SwerveDriveTelemetry.measuredChassisSpeedsObj = getRobotVelocity();
+        SwerveDriveTelemetry.robotRotationObj = getOdometryHeading();
       }
 
       if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.POSE.ordinal())
       {
-        field.setRobotPose(swerveDrivePoseEstimator.getEstimatedPosition());
+        if (SwerveDriveTelemetry.isSimulation)
+        {
+          field.setRobotPose(mapleSimDrive.getSimulatedDriveTrainPose());
+          field.getObject("OdometryPose").setPose(swerveDrivePoseEstimator.getEstimatedPosition());
+          field.getObject("XModules").setPoses(getSwerveModulePoses(mapleSimDrive.getSimulatedDriveTrainPose()));
+
+        } else
+        {
+          field.setRobotPose(swerveDrivePoseEstimator.getEstimatedPosition());
+        }
       }
 
       double sumVelocity = 0;
@@ -1039,8 +1229,7 @@ public class SwerveDrive
         }
         if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.INFO.ordinal())
         {
-          SwerveDriveTelemetry.measuredStates[module.moduleNumber * 2] = moduleState.angle.getDegrees();
-          SwerveDriveTelemetry.measuredStates[(module.moduleNumber * 2) + 1] = moduleState.speedMetersPerSecond;
+          SwerveDriveTelemetry.measuredStatesObj[module.moduleNumber] = moduleState;
         }
       }
 
@@ -1063,6 +1252,18 @@ public class SwerveDrive
       throw e;
     }
     odometryLock.unlock();
+  }
+
+  /**
+   * Invalidate all {@link Cache} object used by the {@link SwerveDrive}
+   */
+  public void invalidateCache()
+  {
+    imuReadingCache.update();
+    for (SwerveModule module : swerveModules)
+    {
+      module.invalidateCache();
+    }
   }
 
   /**
@@ -1259,8 +1460,8 @@ public class SwerveDrive
   /**
    * Sets the Chassis discretization seconds as well as enableing/disabling the Chassis velocity correction in teleop
    *
-   * @param enable    Enable chassis velocity correction, which will use
-   *                  {@link ChassisSpeeds#discretize(ChassisSpeeds, double)} with the following.
+   * @param enable    Enable chassis velocity correction, which will use {@link ChassisSpeeds#discretize(double)} with
+   *                  the following.
    * @param dtSeconds The duration of the timestep the speeds should be applied for.
    */
   public void setChassisDiscretization(boolean enable, double dtSeconds)
@@ -1276,10 +1477,10 @@ public class SwerveDrive
    * Sets the Chassis discretization seconds as well as enableing/disabling the Chassis velocity correction in teleop
    * and/or auto
    *
-   * @param useInTeleop Enable chassis velocity correction, which will use
-   *                    {@link ChassisSpeeds#discretize(ChassisSpeeds, double)} with the following in teleop.
-   * @param useInAuto   Enable chassis velocity correction, which will use
-   *                    {@link ChassisSpeeds#discretize(ChassisSpeeds, double)} with the following in auto.
+   * @param useInTeleop Enable chassis velocity correction, which will use {@link ChassisSpeeds#discretize(double)} with
+   *                    the following in teleop.
+   * @param useInAuto   Enable chassis velocity correction, which will use {@link ChassisSpeeds#discretize(double)} with
+   *                    the following in auto.
    * @param dtSeconds   The duration of the timestep the speeds should be applied for.
    */
   public void setChassisDiscretization(boolean useInTeleop, boolean useInAuto, double dtSeconds)
@@ -1320,49 +1521,62 @@ public class SwerveDrive
   /**
    * Correct for skew that worsens as angular velocity increases
    *
-   * @param velocity The chassis speeds to set the robot to achieve.
+   * @param robotRelativeVelocity The chassis speeds to set the robot to achieve.
    * @return {@link ChassisSpeeds} of the robot after angular velocity skew correction.
    */
-  public ChassisSpeeds angularVelocitySkewCorrection(ChassisSpeeds velocity)
+  public ChassisSpeeds angularVelocitySkewCorrection(ChassisSpeeds robotRelativeVelocity)
   {
     var angularVelocity = new Rotation2d(imuVelocity.getVelocity() * angularVelocityCoefficient);
     if (angularVelocity.getRadians() != 0.0)
     {
-      velocity = ChassisSpeeds.fromRobotRelativeSpeeds(
-          velocity.vxMetersPerSecond,
-          velocity.vyMetersPerSecond,
-          velocity.omegaRadiansPerSecond,
-          getOdometryHeading());
-      velocity = ChassisSpeeds.fromFieldRelativeSpeeds(velocity, getOdometryHeading().plus(angularVelocity));
+      robotRelativeVelocity.toFieldRelativeSpeeds(getOdometryHeading());
+      robotRelativeVelocity.toRobotRelativeSpeeds(getOdometryHeading().plus(angularVelocity));
     }
-    return velocity;
+    return robotRelativeVelocity;
   }
 
   /**
    * Enable desired drive corrections
    *
-   * @param velocity                         The chassis speeds to set the robot to achieve.
+   * @param robotRelativeVelocity            The chassis speeds to set the robot to achieve.
    * @param uesChassisDiscretize             Correct chassis velocity using 254's correction.
    * @param useAngularVelocitySkewCorrection Use the robot's angular velocity to correct for skew.
    * @return The chassis speeds after optimizations.
    */
-  private ChassisSpeeds movementOptimizations(ChassisSpeeds velocity, boolean uesChassisDiscretize,
+  private ChassisSpeeds movementOptimizations(ChassisSpeeds robotRelativeVelocity, boolean uesChassisDiscretize,
                                               boolean useAngularVelocitySkewCorrection)
   {
 
     if (useAngularVelocitySkewCorrection)
     {
-      velocity = angularVelocitySkewCorrection(velocity);
+      robotRelativeVelocity = angularVelocitySkewCorrection(robotRelativeVelocity);
     }
 
     // Thank you to Jared Russell FRC254 for Open Loop Compensation Code
     // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
     if (uesChassisDiscretize)
     {
-      velocity = ChassisSpeeds.discretize(velocity, discretizationdtSeconds);
+      robotRelativeVelocity.discretize(discretizationdtSeconds);
     }
 
-    return velocity;
+    return robotRelativeVelocity;
   }
 
+  /**
+   * Convert a {@link ChassisSpeeds} to {@link SwerveModuleState[]} for use elsewhere.
+   *
+   * @param robotRelativeVelocity {@link ChassisSpeeds} velocity to use.
+   * @param optimize              Perform chassis velocity correction or angular velocity correction.
+   * @return {@link SwerveModuleState[]} for use elsewhere.
+   */
+  public SwerveModuleState[] toServeModuleStates(ChassisSpeeds robotRelativeVelocity, boolean optimize)
+  {
+    if (optimize)
+    {
+      robotRelativeVelocity = movementOptimizations(robotRelativeVelocity,
+                                                    chassisVelocityCorrection,
+                                                    angularVelocityCorrection);
+    }
+    return kinematics.toSwerveModuleStates(robotRelativeVelocity);
+  }
 }

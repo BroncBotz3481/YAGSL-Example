@@ -3,6 +3,7 @@ package swervelib.parser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -138,7 +139,24 @@ public class SwerveParser
     return createSwerveDrive(SwerveMath.createDriveFeedforward(physicalPropertiesJson.optimalVoltage,
                                                                maxSpeed,
                                                                physicalPropertiesJson.wheelGripCoefficientOfFriction),
-                             maxSpeed);
+                             maxSpeed, Pose2d.kZero);
+  }
+
+  /**
+   * Create {@link SwerveDrive} from JSON configuration directory.
+   *
+   * @param maxSpeed    Maximum speed of the robot in meters per second, used for both angular acceleration used in
+   *                    {@link swervelib.SwerveController} and drive feedforward in
+   *                    {@link SwerveMath#createDriveFeedforward(double, double, double)}.
+   * @param initialPose {@link Pose2d} starting point on the field
+   * @return {@link SwerveDrive} instance.
+   */
+  public SwerveDrive createSwerveDrive(double maxSpeed, Pose2d initialPose)
+  {
+    return createSwerveDrive(SwerveMath.createDriveFeedforward(physicalPropertiesJson.optimalVoltage,
+                                                               maxSpeed,
+                                                               physicalPropertiesJson.wheelGripCoefficientOfFriction),
+                             maxSpeed, initialPose);
   }
 
   /**
@@ -157,12 +175,12 @@ public class SwerveParser
    */
   public SwerveDrive createSwerveDrive(double maxSpeed, double angleMotorConversionFactor, double driveMotorConversion)
   {
-    physicalPropertiesJson.conversionFactor.angle = angleMotorConversionFactor;
-    physicalPropertiesJson.conversionFactor.drive = driveMotorConversion;
+    physicalPropertiesJson.conversionFactors.angle.factor = angleMotorConversionFactor;
+    physicalPropertiesJson.conversionFactors.drive.factor = driveMotorConversion;
     return createSwerveDrive(SwerveMath.createDriveFeedforward(physicalPropertiesJson.optimalVoltage,
                                                                maxSpeed,
                                                                physicalPropertiesJson.wheelGripCoefficientOfFriction),
-                             maxSpeed);
+                             maxSpeed, Pose2d.kZero);
   }
 
   /**
@@ -184,9 +202,9 @@ public class SwerveParser
   public SwerveDrive createSwerveDrive(SimpleMotorFeedforward driveFeedforward, double maxSpeed,
                                        double angleMotorConversionFactor, double driveMotorConversion)
   {
-    physicalPropertiesJson.conversionFactor.angle = angleMotorConversionFactor;
-    physicalPropertiesJson.conversionFactor.drive = driveMotorConversion;
-    return createSwerveDrive(driveFeedforward, maxSpeed);
+    physicalPropertiesJson.conversionFactors.angle.factor = angleMotorConversionFactor;
+    physicalPropertiesJson.conversionFactors.drive.factor = driveMotorConversion;
+    return createSwerveDrive(driveFeedforward, maxSpeed, Pose2d.kZero);
   }
 
   /**
@@ -196,9 +214,10 @@ public class SwerveParser
    *                         {@link swervelib.math.SwerveMath#createDriveFeedforward(double, double, double)}.
    * @param maxSpeed         Maximum speed of the robot in meters per second for normal+angular acceleration in
    *                         {@link swervelib.SwerveController} of the robot
+   * @param initialPose      {@link Pose2d} initial pose.
    * @return {@link SwerveDrive} instance.
    */
-  public SwerveDrive createSwerveDrive(SimpleMotorFeedforward driveFeedforward, double maxSpeed)
+  public SwerveDrive createSwerveDrive(SimpleMotorFeedforward driveFeedforward, double maxSpeed, Pose2d initialPose)
   {
     SwerveModuleConfiguration[] moduleConfigurations =
         new SwerveModuleConfiguration[moduleJsons.length];
@@ -222,6 +241,8 @@ public class SwerveParser
 
     return new SwerveDrive(
         swerveDriveConfiguration,
-        controllerPropertiesJson.createControllerConfiguration(swerveDriveConfiguration, maxSpeed), maxSpeed);
+        controllerPropertiesJson.createControllerConfiguration(swerveDriveConfiguration, maxSpeed),
+        maxSpeed,
+        initialPose);
   }
 }

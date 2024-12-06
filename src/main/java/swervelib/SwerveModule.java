@@ -1,20 +1,25 @@
 package swervelib;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.MotorFeedbackSensor;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import swervelib.encoders.SparkMaxEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.math.SwerveMath;
+import swervelib.motors.SparkMaxBrushedMotorSwerve;
+import swervelib.motors.SparkMaxSwerve;
 import swervelib.motors.SwerveMotor;
 import swervelib.parser.Cache;
 import swervelib.parser.PIDFConfig;
 import swervelib.parser.SwerveModuleConfiguration;
 import swervelib.simulation.SwerveModuleSimulation;
-import swervelib.telemetry.Alert;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
@@ -43,7 +48,7 @@ public class SwerveModule
   /**
    * Module number for kinematics, usually 0 to 3. front left -> front right -> back left -> back right.
    */
-  public final int moduleNumber;
+  public final  int                       moduleNumber;
   /**
    * Swerve Motors.
    */
@@ -95,7 +100,7 @@ public class SwerveModule
   /**
    * Anti-Jitter AKA auto-centering disabled.
    */
-  private boolean antiJitterEnabled          = true;
+  private       boolean                antiJitterEnabled          = true;
   /**
    * Last swerve module state applied.
    */
@@ -111,15 +116,15 @@ public class SwerveModule
   /**
    * Encoder synchronization queued.
    */
-  private boolean synchronizeEncoderQueued   = false;
+  private       boolean                synchronizeEncoderQueued   = false;
   /**
    * Encoder, Absolute encoder synchronization enabled.
    */
-  private boolean synchronizeEncoderEnabled  = false;
+  private       boolean                synchronizeEncoderEnabled  = false;
   /**
    * Encoder synchronization deadband in degrees.
    */
-  private double  synchronizeEncoderDeadband = 3;
+  private       double                 synchronizeEncoderDeadband = 3;
 
 
   /**
@@ -166,13 +171,18 @@ public class SwerveModule
       absoluteEncoder.configure(moduleConfiguration.absoluteEncoderInverted);
     }
 
+    if (SwerveDriveTelemetry.isSimulation)
+    {
+      simModule = new SwerveModuleSimulation();
+    }
+
     // Setup the cache for the absolute encoder position.
-    absolutePositionCache = new Cache<>(this::getRawAbsolutePosition, 15);
+    absolutePositionCache = new Cache<>(this::getRawAbsolutePosition, 20);
 
     // Config angle motor/controller
-    angleMotor.configureIntegratedEncoder(moduleConfiguration.conversionFactors.angle);
+    angleMotor.configureIntegratedEncoder(moduleConfiguration.conversionFactors.angle.factor);
     angleMotor.configurePIDF(moduleConfiguration.anglePIDF);
-    angleMotor.configurePIDWrapping(0, 180);
+    angleMotor.configurePIDWrapping(0, 360);
     angleMotor.setInverted(moduleConfiguration.angleMotorInverted);
     angleMotor.setMotorBrake(false);
 
@@ -183,7 +193,7 @@ public class SwerveModule
     }
 
     // Config drive motor/controller
-    driveMotor.configureIntegratedEncoder(moduleConfiguration.conversionFactors.drive);
+    driveMotor.configureIntegratedEncoder(moduleConfiguration.conversionFactors.drive.factor);
     driveMotor.configurePIDF(moduleConfiguration.velocityPIDF);
     driveMotor.setInverted(moduleConfiguration.driveMotorInverted);
     driveMotor.setMotorBrake(true);
@@ -191,8 +201,8 @@ public class SwerveModule
     driveMotor.burnFlash();
     angleMotor.burnFlash();
 
-    drivePositionCache = new Cache<>(driveMotor::getPosition, 15);
-    driveVelocityCache = new Cache<>(driveMotor::getVelocity, 15);
+    drivePositionCache = new Cache<>(driveMotor::getPosition, 20);
+    driveVelocityCache = new Cache<>(driveMotor::getVelocity, 20);
 
     if (SwerveDriveTelemetry.isSimulation)
     {
@@ -210,11 +220,11 @@ public class SwerveModule
     noEncoderWarning = new Alert("Motors",
                                  "There is no Absolute Encoder on module #" +
                                  moduleNumber,
-                                 Alert.AlertType.WARNING);
+                                 AlertType.kWarning);
     encoderOffsetWarning = new Alert("Motors",
                                      "Pushing the Absolute Encoder offset to the encoder failed on module #" +
                                      moduleNumber,
-                                     Alert.AlertType.WARNING);
+                                     AlertType.kWarning);
 
     rawAbsoluteAngleName = "swerve/modules/" + configuration.name + "/Raw Absolute Encoder";
     adjAbsoluteAngleName = "swerve/modules/" + configuration.name + "/Adjusted Absolute Encoder";
@@ -361,7 +371,8 @@ public class SwerveModule
    */
   public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop, boolean force)
   {
-    desiredState = SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(getAbsolutePosition()));
+
+    desiredState.optimize(Rotation2d.fromDegrees(getAbsolutePosition()));
 
     // If we are forcing the angle
     if (!force && antiJitterEnabled)
@@ -371,9 +382,26 @@ public class SwerveModule
     }
 
     // Cosine compensation.
-    double velocity = configuration.useCosineCompensator
-                      ? getCosineCompensatedVelocity(desiredState)
-                      : desiredState.speedMetersPerSecond;
+    LinearVelocity nextVelocity = configuration.useCosineCompensator
+                                  ? getCosineCompensatedVelocity(desiredState)
+                                  : MetersPerSecond.of(desiredState.speedMetersPerSecond);
+    LinearVelocity curVelocity = MetersPerSecond.of(lastState.speedMetersPerSecond);
+    desiredState.speedMetersPerSecond = nextVelocity.magnitude();
+
+    setDesiredState(desiredState, isOpenLoop, driveMotorFeedforward.calculate(curVelocity, nextVelocity).magnitude());
+  }
+
+  /**
+   * Set the desired state of the swerve module. <br /><b>WARNING: If you are not using one of the functions from
+   * {@link SwerveDrive} you may screw up {@link SwerveDrive#kinematics}</b>
+   *
+   * @param desiredState            Desired swerve module state.
+   * @param isOpenLoop              Whether to use open loop (direct percent) or direct velocity control.
+   * @param driveFeedforwardVoltage Drive motor controller feedforward as a voltage.
+   */
+  public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop,
+                              double driveFeedforwardVoltage)
+  {
 
     if (isOpenLoop)
     {
@@ -381,8 +409,7 @@ public class SwerveModule
       driveMotor.set(percentOutput);
     } else
     {
-      driveMotor.setReference(velocity, driveMotorFeedforward.calculate(velocity));
-      desiredState.speedMetersPerSecond = velocity;
+      driveMotor.setReference(desiredState.speedMetersPerSecond, driveFeedforwardVoltage);
     }
 
     // Prevent module rotation if angle is the same as the previous angle.
@@ -408,10 +435,10 @@ public class SwerveModule
       simModule.updateStateAndPosition(desiredState);
     }
 
+    // TODO: Change and move to SwerveDriveTelemetry
     if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.INFO.ordinal())
     {
-      SwerveDriveTelemetry.desiredStates[moduleNumber * 2] = desiredState.angle.getDegrees();
-      SwerveDriveTelemetry.desiredStates[(moduleNumber * 2) + 1] = velocity;
+      SwerveDriveTelemetry.desiredStatesObj[moduleNumber] = desiredState;
     }
 
     if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)
@@ -429,7 +456,7 @@ public class SwerveModule
    * @param desiredState Desired {@link SwerveModuleState} to use.
    * @return Cosine compensated velocity in meters/second.
    */
-  private double getCosineCompensatedVelocity(SwerveModuleState desiredState)
+  private LinearVelocity getCosineCompensatedVelocity(SwerveModuleState desiredState)
   {
     double cosineScalar = 1.0;
     // Taken from the CTRE SwerveModule class.
@@ -447,7 +474,7 @@ public class SwerveModule
       cosineScalar = 1;
     }
 
-    return desiredState.speedMetersPerSecond * (cosineScalar);
+    return MetersPerSecond.of(desiredState.speedMetersPerSecond).times(cosineScalar);
   }
 
   /**
@@ -518,6 +545,13 @@ public class SwerveModule
    */
   public double getRawAbsolutePosition()
   {
+    /* During simulation, when no absolute encoders are available, we return the state from the simulation module instead. */
+    if (SwerveDriveTelemetry.isSimulation)
+    {
+      Rotation2d absolutePosition = simModule.getState().angle;
+      return absolutePosition.getDegrees();
+    }
+
     double angle;
     if (absoluteEncoder != null)
     {
@@ -629,9 +663,9 @@ public class SwerveModule
     if (absoluteEncoder != null && angleOffset == configuration.angleOffset)
     {
       // If the absolute encoder is attached.
-      if (angleMotor.getMotor() instanceof CANSparkMax)
+      if (angleMotor instanceof SparkMaxSwerve || angleMotor instanceof SparkMaxBrushedMotorSwerve)
       {
-        if (absoluteEncoder.getAbsoluteEncoder() instanceof MotorFeedbackSensor)
+        if (absoluteEncoder instanceof SparkMaxEncoderSwerve)
         {
           angleMotor.setAbsoluteEncoder(absoluteEncoder);
           if (absoluteEncoder.setAbsoluteEncoderOffset(angleOffset))
@@ -687,9 +721,42 @@ public class SwerveModule
       SmartDashboard.putNumber(rawAbsoluteAngleName, absoluteEncoder.getAbsolutePosition());
     }
     SmartDashboard.putNumber(rawAngleName, angleMotor.getPosition());
-    SmartDashboard.putNumber(rawDriveName, driveMotor.getPosition());
-    SmartDashboard.putNumber(rawDriveVelName, driveMotor.getVelocity());
+    SmartDashboard.putNumber(rawDriveName, drivePositionCache.getValue());
+    SmartDashboard.putNumber(rawDriveVelName, driveVelocityCache.getValue());
     SmartDashboard.putNumber(adjAbsoluteAngleName, getAbsolutePosition());
     SmartDashboard.putNumber(absoluteEncoderIssueName, getAbsoluteEncoderReadIssue() ? 1 : 0);
+  }
+
+  /**
+   * Invalidate the {@link Cache} objects used by {@link SwerveModule}.
+   */
+  public void invalidateCache()
+  {
+    absolutePositionCache.update();
+    drivePositionCache.update();
+    driveVelocityCache.update();
+  }
+
+  /**
+   * Obtains the {@link SwerveModuleSimulation} used in simulation.
+   *
+   * @return the module simulation, <b>null</b> if this method is called on a real robot
+   */
+  public SwerveModuleSimulation getSimModule()
+  {
+    return simModule;
+  }
+
+  /**
+   * Configure the {@link SwerveModule#simModule} with the MapleSim
+   * {@link org.ironmaple.simulation.drivesims.SwerveModuleSimulation}
+   *
+   * @param swerveModuleSimulation MapleSim {@link org.ironmaple.simulation.drivesims.SwerveModuleSimulation} to
+   *                               configure with.
+   */
+  public void configureModuleSimulation(
+      org.ironmaple.simulation.drivesims.SwerveModuleSimulation swerveModuleSimulation)
+  {
+    this.simModule.configureSimModule(swerveModuleSimulation);
   }
 }

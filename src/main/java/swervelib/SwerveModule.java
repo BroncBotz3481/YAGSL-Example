@@ -19,6 +19,7 @@ import swervelib.motors.SwerveMotor;
 import swervelib.parser.Cache;
 import swervelib.parser.PIDFConfig;
 import swervelib.parser.SwerveModuleConfiguration;
+import swervelib.parser.SwerveModulePhysicalCharacteristics;
 import swervelib.simulation.SwerveModuleSimulation;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
@@ -755,8 +756,8 @@ public class SwerveModule
    *                               configure with.
    */
   public void configureModuleSimulation(
-      org.ironmaple.simulation.drivesims.SwerveModuleSimulation swerveModuleSimulation)
+          org.ironmaple.simulation.drivesims.SwerveModuleSimulation swerveModuleSimulation, SwerveModulePhysicalCharacteristics physicalCharacteristics)
   {
-    this.simModule.configureSimModule(swerveModuleSimulation);
+    this.simModule.configureSimModule(swerveModuleSimulation, physicalCharacteristics);
   }
 }

@@ -40,11 +40,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.ironmaple.simulation.SimulatedArena;
@@ -232,8 +229,6 @@ public class SwerveDrive
                                                                                   config.getAngleMotorSim(),
                                                                                   config.physicalCharacteristics.conversionFactor.drive.gearRatio,
                                                                                   config.physicalCharacteristics.conversionFactor.angle.gearRatio,
-                                                                                  Amps.of(config.physicalCharacteristics.driveMotorCurrentLimit),
-                                                                                  Amps.of(20),
                                                                                   Volts.of(config.physicalCharacteristics.driveFrictionVoltage),
                                                                                   Volts.of(config.physicalCharacteristics.angleFrictionVoltage),
                                                                                   Inches.of(
@@ -247,7 +242,7 @@ public class SwerveDrive
       // feed module simulation instances to modules
       for (int i = 0; i < swerveModules.length; i++)
       {
-        this.swerveModules[i].configureModuleSimulation(mapleSimDrive.getModules()[i]);
+        this.swerveModules[i].configureModuleSimulation(mapleSimDrive.getModules()[i], config.physicalCharacteristics);
       }
 
       // register the drivetrain simulation

@@ -1,6 +1,11 @@
 {
   "HALProvider": {
     "Other Devices": {
+      "Pigeon 2 (v6)[13]": {
+        "header": {
+          "open": true
+        }
+      },
       "SPARK MAX [2]": {
         "header": {
           "open": true

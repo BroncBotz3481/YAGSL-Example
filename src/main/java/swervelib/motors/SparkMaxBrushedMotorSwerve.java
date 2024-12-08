@@ -147,8 +147,14 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
       }
       cfgUpdated = true;
     }
-    velocity = encoder::getVelocity;
-    position = encoder::getPosition;
+    if (encoder != null)
+    {
+      velocity = encoder::getVelocity;
+      position = encoder::getPosition;
+    } else
+    {
+      noEncoderDefinedAlert.set(true);
+    }
     // Spin off configurations in a different thread.
     // configureSparkMax(() -> motor.setCANTimeout(0)); // Commented it out because it prevents feedback.
 
@@ -339,6 +345,9 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
     {
       noEncoderDefinedAlert.set(true);
       throw new RuntimeException("An encoder MUST be defined to work with a SparkMAX");
+    } else
+    {
+      noEncoderDefinedAlert.set(false);
     }
     return this;
   }

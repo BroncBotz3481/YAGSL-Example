@@ -205,10 +205,7 @@ public class SwerveModule
     drivePositionCache = new Cache<>(driveMotor::getPosition, 20);
     driveVelocityCache = new Cache<>(driveMotor::getVelocity, 20);
 
-    if (SwerveDriveTelemetry.isSimulation)
-    {
-      simModule = new SwerveModuleSimulation();
-    }
+   
 
     // Force a cache update on init.
     driveVelocityCache.update();

@@ -1,5 +1,6 @@
 package swervelib.simulation;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import org.ironmaple.simulation.drivesims.SelfControlledSwerveDriveSimulation;
@@ -60,6 +61,8 @@ public class SwerveModuleSimulation
     {
       return new SwerveModuleState();
     }
-    return mapleSimModule.getMeasuredState();
+    SwerveModuleState state = mapleSimModule.getMeasuredState();
+    state.angle = state.angle.minus(Rotation2d.kZero);
+    return state;
   }
 }

@@ -436,8 +436,8 @@ public class SwerveSubsystem extends SubsystemBase
   /**
    * Command to drive the robot using translative values and heading as a setpoint.
    *
-   * @param translationX Translation in the X direction.
-   * @param translationY Translation in the Y direction.
+   * @param translationX Translation in the X direction. [-1, 1]
+   * @param translationY Translation in the Y direction. [-1, 1]
    * @param rotation     Rotation as a value between [-1, 1] converted to radians.
    * @return Drive command.
    */

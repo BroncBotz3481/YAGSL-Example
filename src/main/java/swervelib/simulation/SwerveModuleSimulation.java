@@ -1,12 +1,12 @@
 package swervelib.simulation;
 
+import static edu.wpi.first.units.Units.Amps;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import org.ironmaple.simulation.drivesims.SelfControlledSwerveDriveSimulation;
 import swervelib.parser.SwerveModulePhysicalCharacteristics;
-
-import static edu.wpi.first.units.Units.*;
 
 /**
  * Class that wraps around {@link org.ironmaple.simulation.drivesims.SwerveModuleSimulation}
@@ -21,12 +21,13 @@ public class SwerveModuleSimulation
    *
    * @param simModule the {@link org.ironmaple.simulation.drivesims.SwerveModuleSimulation} object for simulation
    */
-  public void configureSimModule(org.ironmaple.simulation.drivesims.SwerveModuleSimulation simModule, SwerveModulePhysicalCharacteristics physicalCharacteristics)
+  public void configureSimModule(org.ironmaple.simulation.drivesims.SwerveModuleSimulation simModule,
+                                 SwerveModulePhysicalCharacteristics physicalCharacteristics)
   {
     this.mapleSimModule = new SelfControlledSwerveDriveSimulation.SelfControlledModuleSimulation(simModule);
     this.mapleSimModule.withCurrentLimits(
-            Amps.of(physicalCharacteristics.driveMotorCurrentLimit),
-            Amps.of(physicalCharacteristics.angleMotorCurrentLimit));
+        Amps.of(physicalCharacteristics.driveMotorCurrentLimit),
+        Amps.of(physicalCharacteristics.angleMotorCurrentLimit));
   }
 
   /**

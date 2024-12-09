@@ -2,7 +2,6 @@ package swervelib.parser;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import java.io.File;
 import java.io.IOException;
@@ -163,9 +162,9 @@ public class SwerveParser
   /**
    * Create {@link SwerveDrive} from JSON configuration directory.
    *
-   * @param maxSpeed         Maximum speed of the robot in meters per second for normal+angular acceleration in
-   *                         {@link swervelib.SwerveController} of the robot
-   * @param initialPose      {@link Pose2d} initial pose.
+   * @param maxSpeed    Maximum speed of the robot in meters per second for normal+angular acceleration in
+   *                    {@link swervelib.SwerveController} of the robot
+   * @param initialPose {@link Pose2d} initial pose.
    * @return {@link SwerveDrive} instance.
    */
   public SwerveDrive createSwerveDrive(double maxSpeed, Pose2d initialPose)

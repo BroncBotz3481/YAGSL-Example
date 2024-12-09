@@ -1,6 +1,5 @@
 package swervelib.parser;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import java.util.function.Supplier;
@@ -67,7 +66,7 @@ public class SwerveDriveConfiguration
   /**
    * Create modules based off of the SwerveModuleConfiguration.
    *
-   * @param swerves          Swerve constants.
+   * @param swerves Swerve constants.
    * @return Swerve Modules.
    */
   public SwerveModule[] createModules(SwerveModuleConfiguration[] swerves)

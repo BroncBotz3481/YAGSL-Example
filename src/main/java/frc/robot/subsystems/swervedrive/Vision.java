@@ -402,7 +402,7 @@ public class Vision
     /**
      * Results list to be updated periodically and cached to avoid unnecessary queries.
      */
-    public        List<PhotonPipelineResult>   resultsList = new ArrayList<>();
+    public        List<PhotonPipelineResult>   resultsList       = new ArrayList<>();
     /**
      * Last read from the camera timestamp to prevent lag due to slow data fetches.
      */

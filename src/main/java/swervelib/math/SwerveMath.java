@@ -411,6 +411,8 @@ public class SwerveMath
    */
   public static Translation2d scaleTranslation(Translation2d translation, double scalar)
   {
+    if(translation.equals(Translation2d.kZero))
+      return translation;
     return new Translation2d(translation.getNorm() * scalar, translation.getAngle());
   }
 }

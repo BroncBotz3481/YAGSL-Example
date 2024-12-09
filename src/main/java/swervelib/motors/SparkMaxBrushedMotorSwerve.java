@@ -91,9 +91,10 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
    * @param encoderType            {@link Type} of encoder to use for the {@link SparkMax} device.
    * @param countsPerRevolution    The number of encoder pulses for the {@link Type} encoder per revolution.
    * @param useDataPortQuadEncoder Use the encoder attached to the data port of the spark max for a quadrature encoder.
+   * @param motorType              {@link DCMotor} which the {@link SparkMax} is attached to.
    */
   public SparkMaxBrushedMotorSwerve(SparkMax motor, boolean isDriveMotor, Type encoderType, int countsPerRevolution,
-                                    boolean useDataPortQuadEncoder)
+                                    boolean useDataPortQuadEncoder, DCMotor motorType)
   {
     noEncoderAlert = new Alert("Motors",
                                "Cannot use motor without encoder.",
@@ -120,6 +121,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
 
     this.motor = motor;
     this.isDriveMotor = isDriveMotor;
+    this.simMotor = motorType;
 
     factoryDefaults();
     clearStickyFaults();
@@ -167,12 +169,13 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
    * @param encoderType            {@link Type} of encoder to use for the {@link SparkMax} device.
    * @param countsPerRevolution    The number of encoder pulses for the {@link Type} encoder per revolution.
    * @param useDataPortQuadEncoder Use the encoder attached to the data port of the spark max for a quadrature encoder.
+   * @param motorType              Motor type controlled by the {@link SparkMax} motor controller.
    */
   public SparkMaxBrushedMotorSwerve(int id, boolean isDriveMotor, Type encoderType, int countsPerRevolution,
-                                    boolean useDataPortQuadEncoder)
+                                    boolean useDataPortQuadEncoder, DCMotor motorType)
   {
     this(new SparkMax(id, MotorType.kBrushed), isDriveMotor, encoderType, countsPerRevolution,
-         useDataPortQuadEncoder);
+         useDataPortQuadEncoder, motorType);
   }
 
   /**
@@ -631,7 +634,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   {
     if (absoluteEncoder == null)
     {
-      encoder.ifPresent((RelativeEncoder enc) ->{
+      encoder.ifPresent((RelativeEncoder enc) -> {
         configureSparkMax(() -> enc.setPosition(position));
       });
     }

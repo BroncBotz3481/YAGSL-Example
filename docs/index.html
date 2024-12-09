@@ -102,6 +102,11 @@
               <label class="form-label" for="optimalVoltage-input">Optimal Voltage</label>
             </div>
             <div class="form-floating mb-3">
+              <input class="form-control" id="robotMass-input" name="robotMass"
+                     placeholder="110.2311" type="number" value="110.2311">
+              <label class="form-label" for="robotMass-input">Robot Weight (in lbs)</label>
+            </div>
+            <div class="form-floating mb-3">
               <input class="form-control" id="wheelGripCoefficientOfFriction-input"
                      name="wheelGripCoefficientOfFriction" placeholder="1.19" type="number"
                      value="1.19">
@@ -236,11 +241,17 @@
             </div>
             <div class="form-floating mb-3">
               <select class="form-select" id="frontleftdrive_type-input" name="drive_type">
-                <option selected value="sparkmax">SparkMax</option>
-                <option selected value="sparkflex">SparkFlex</option>
-                <option value="falcon">Falcon</option>
-                <option value="talonfx">Kraken</option>
-                <option value="sparkmax_brushed">SparkMAX Brushed Mode</option>
+                <option selected value="sparkmax">NEO (via SparkMAX)</option>
+                <option value="sparkflex_neo">NEO (via SparkFLEX)</option>
+                <option value="sparkmax_neo550">NEO550 (via SparkMAX)</option>
+                <option value="sparkflex_neo550">NEO550 (via SparkFLEX)</option>
+                <option value="sparkflex">Vortex (via SparkFLEX)</option>
+                <option value="falcon">Falcon500</option>
+                <option value="falcon500foc">Falcon500 (CTRE PRO)</option>
+                <option value="krakenx60">Kraken x60</option>
+                <option value="krakenx60foc">Kraken x60 (CTRE PRO)</option>
+                <option value="sparkmax_brushed">CIM (via SparkMAX)</option>
+                <option value="talonsrx">CIM (via TalonSRX)</option>
               </select>
               <label class="form-label" for="frontleftdrive_type-input">Drive Motor Type</label>
             </div>
@@ -269,12 +280,17 @@
             <hr/>
             <div class="form-floating mb-3">
               <select class="form-select" id="frontleftangle_type-input" name="angle_type">
-                <option selected value="sparkmax">SparkMax</option>
-                <option selected value="sparkflex">SparkFlex</option>
-                <option value="falcon">Falcon</option>
-                <option value="talonfx">Kraken</option>
-                <option value="sparkmax_brushed">SparkMAX Brushed Mode</option>
-
+                <option selected value="sparkmax">NEO (via SparkMAX)</option>
+                <option value="sparkflex_neo">NEO (via SparkFLEX)</option>
+                <option value="sparkmax_neo550">NEO550 (via SparkMAX)</option>
+                <option value="sparkflex_neo550">NEO550 (via SparkFLEX)</option>
+                <option value="sparkflex">Vortex (via SparkFLEX)</option>
+                <option value="falcon">Falcon500</option>
+                <option value="falcon500foc">Falcon500 (CTRE PRO)</option>
+                <option value="krakenx60">Kraken x60</option>
+                <option value="krakenx60foc">Kraken x60 (CTRE PRO)</option>
+                <option value="sparkmax_brushed">CIM (via SparkMAX)</option>
+                <option value="talonsrx">CIM (via TalonSRX)</option>
               </select>
               <label class="form-label" for="frontleftangle_type-input">Angle Motor Type</label>
             </div>
@@ -337,8 +353,11 @@
                 <option value="none">None</option>
                 <option value="attached">Attached (to SparkMAX)</option>
                 <option value="sparkmax_analog">Attached (to SparkMAX Analog Pin)</option>
-                <option value="sparkmax_analog5v">Attached (to SparkMAX Analog Pin with 5V Power)</option>
+                <option value="sparkmax_analog5v">Attached (to SparkMAX Analog Pin with 5V Power)
+                </option>
                 <option value="cancoder">CANCoder</option>
+                <option value="talonsrx_pwm">TalonSRX (PWM)</option>
+                <option value="talonsrx_analog">TalonSRX (Analog)</option>
                 <option value="canandmag">CANandMag (attached to SparkMAX)</option>
                 <option value="canandmag_can">CANandMag (CAN)</option>
                 <option value="ma3">MA3 (Analog)</option>
@@ -368,7 +387,8 @@
                 Bus</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" id="frontleft_absoluteencoderinverted-input" name="absoluteEncoderInverted"
+              <input class="form-check-input" id="frontleft_absoluteencoderinverted-input"
+                     name="absoluteEncoderInverted"
                      type="checkbox">
               <label class="form-check-label" for="frontleft_absoluteencoderinverted-input">
                 Absolute Encoder Inverted
@@ -444,12 +464,17 @@
             <div class="form-floating mb-3">
               <select class="form-select" id="frontrightdrive_type-input"
                       name="drive_type">
-                <option selected value="sparkmax">SparkMax</option>
-                <option selected value="sparkflex">SparkFlex</option>
-                <option value="falcon">Falcon</option>
-                <option value="talonfx">Kraken</option>
-                <option value="sparkmax_brushed">SparkMAX Brushed Mode</option>
-
+                <option selected value="sparkmax">NEO (via SparkMAX)</option>
+                <option value="sparkflex_neo">NEO (via SparkFLEX)</option>
+                <option value="sparkmax_neo550">NEO550 (via SparkMAX)</option>
+                <option value="sparkflex_neo550">NEO550 (via SparkFLEX)</option>
+                <option value="sparkflex">Vortex (via SparkFLEX)</option>
+                <option value="falcon">Falcon500</option>
+                <option value="falcon500foc">Falcon500 (CTRE PRO)</option>
+                <option value="krakenx60">Kraken x60</option>
+                <option value="krakenx60foc">Kraken x60 (CTRE PRO)</option>
+                <option value="sparkmax_brushed">CIM (via SparkMAX)</option>
+                <option value="talonsrx">CIM (via TalonSRX)</option>
               </select>
               <label class="form-label" for="frontrightdrive_type-input">Drive Motor Type</label>
             </div>
@@ -479,12 +504,17 @@
             <div class="form-floating mb-3">
               <select class="form-select" id="frontrightangle_type-input"
                       name="angle_type">
-                <option selected value="sparkmax">SparkMax</option>
-                <option selected value="sparkflex">SparkFlex</option>
-                <option value="falcon">Falcon</option>
-                <option value="talonfx">Kraken</option>
-                <option value="sparkmax_brushed">SparkMAX Brushed Mode</option>
-
+                <option selected value="sparkmax">NEO (via SparkMAX)</option>
+                <option value="sparkflex_neo">NEO (via SparkFLEX)</option>
+                <option value="sparkmax_neo550">NEO550 (via SparkMAX)</option>
+                <option value="sparkflex_neo550">NEO550 (via SparkFLEX)</option>
+                <option value="sparkflex">Vortex (via SparkFLEX)</option>
+                <option value="falcon">Falcon500</option>
+                <option value="falcon500foc">Falcon500 (CTRE PRO)</option>
+                <option value="krakenx60">Kraken x60</option>
+                <option value="krakenx60foc">Kraken x60 (CTRE PRO)</option>
+                <option value="sparkmax_brushed">CIM (via SparkMAX)</option>
+                <option value="talonsrx">CIM (via TalonSRX)</option>
               </select>
               <label class="form-label" for="frontrightangle_type-input">Angle Motor Type</label>
             </div>
@@ -550,8 +580,11 @@
                 <option value="none">None</option>
                 <option value="attached">Attached (to SparkMAX)</option>
                 <option value="sparkmax_analog">Attached (to SparkMAX Analog Pin)</option>
-                <option value="sparkmax_analog5v">Attached (to SparkMAX Analog Pin with 5V Power)</option>
+                <option value="sparkmax_analog5v">Attached (to SparkMAX Analog Pin with 5V Power)
+                </option>
                 <option value="cancoder">CANCoder</option>
+                <option value="talonsrx_pwm">TalonSRX (PWM)</option>
+                <option value="talonsrx_analog">TalonSRX (Analog)</option>
                 <option value="canandmag">CANandMag (attached to SparkMAX)</option>
                 <option value="canandmag_can">CANandMag (CAN)</option>
                 <option value="ma3">MA3 (Analog)</option>
@@ -581,7 +614,8 @@
                 Bus</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" id="frontright_absoluteencoderinverted-input" name="absoluteEncoderInverted"
+              <input class="form-check-input" id="frontright_absoluteencoderinverted-input"
+                     name="absoluteEncoderInverted"
                      type="checkbox">
               <label class="form-check-label" for="frontright_absoluteencoderinverted-input">
                 Absolute Encoder Inverted
@@ -659,12 +693,17 @@
             </div>
             <div class="form-floating mb-3">
               <select class="form-select" id="backleftdrive_type-input" name="drive_type">
-                <option selected value="sparkmax">SparkMax</option>
-                <option selected value="sparkflex">SparkFlex</option>
-                <option value="falcon">Falcon</option>
-                <option value="falcon">Kraken</option>
-                <option value="sparkmax_brushed">SparkMAX Brushed Mode</option>
-
+                <option selected value="sparkmax">NEO (via SparkMAX)</option>
+                <option value="sparkflex_neo">NEO (via SparkFLEX)</option>
+                <option value="sparkmax_neo550">NEO550 (via SparkMAX)</option>
+                <option value="sparkflex_neo550">NEO550 (via SparkFLEX)</option>
+                <option value="sparkflex">Vortex (via SparkFLEX)</option>
+                <option value="falcon">Falcon500</option>
+                <option value="falcon500foc">Falcon500 (CTRE PRO)</option>
+                <option value="krakenx60">Kraken x60</option>
+                <option value="krakenx60foc">Kraken x60 (CTRE PRO)</option>
+                <option value="sparkmax_brushed">CIM (via SparkMAX)</option>
+                <option value="talonsrx">CIM (via TalonSRX)</option>
               </select>
               <label class="form-label" for="backleftdrive_type-input">Drive Motor Type</label>
             </div>
@@ -692,12 +731,17 @@
             <hr/>
             <div class="form-floating mb-3">
               <select class="form-select" id="backleftangle_type-input" name="angle_type">
-                <option selected value="sparkmax">SparkMax</option>
-                <option selected value="sparkflex">SparkFlex</option>
-                <option value="falcon">Falcon</option>
-                <option value="talonfx">Kraken</option>
-                <option value="sparkmax_brushed">SparkMAX Brushed Mode</option>
-
+                <option selected value="sparkmax">NEO (via SparkMAX)</option>
+                <option value="sparkflex_neo">NEO (via SparkFLEX)</option>
+                <option value="sparkmax_neo550">NEO550 (via SparkMAX)</option>
+                <option value="sparkflex_neo550">NEO550 (via SparkFLEX)</option>
+                <option value="sparkflex">Vortex (via SparkFLEX)</option>
+                <option value="falcon">Falcon500</option>
+                <option value="falcon500foc">Falcon500 (CTRE PRO)</option>
+                <option value="krakenx60">Kraken x60</option>
+                <option value="krakenx60foc">Kraken x60 (CTRE PRO)</option>
+                <option value="sparkmax_brushed">CIM (via SparkMAX)</option>
+                <option value="talonsrx">CIM (via TalonSRX)</option>
               </select>
               <label class="form-label" for="backleftangle_type-input">Angle Motor Type</label>
             </div>
@@ -761,8 +805,11 @@
                 <option value="none">None</option>
                 <option value="attached">Attached (to SparkMAX)</option>
                 <option value="sparkmax_analog">Attached (to SparkMAX Analog Pin)</option>
-                <option value="sparkmax_analog5v">Attached (to SparkMAX Analog Pin with 5V Power)</option>
+                <option value="sparkmax_analog5v">Attached (to SparkMAX Analog Pin with 5V Power)
+                </option>
                 <option value="cancoder">CANCoder</option>
+                <option value="talonsrx_pwm">TalonSRX (PWM)</option>
+                <option value="talonsrx_analog">TalonSRX (Analog)</option>
                 <option value="canandmag">CANandMag (attached to SparkMAX)</option>
                 <option value="canandmag_can">CANandMag (CAN)</option>
                 <option value="ma3">MA3 (Analog)</option>
@@ -793,7 +840,8 @@
             </div>
 
             <div class="form-check">
-              <input class="form-check-input" id="backleft_absoluteencoderinverted-input" name="absoluteEncoderInverted"
+              <input class="form-check-input" id="backleft_absoluteencoderinverted-input"
+                     name="absoluteEncoderInverted"
                      type="checkbox">
               <label class="form-check-label" for="backleft_absoluteencoderinverted-input">
                 Absolute Encoder Inverted
@@ -871,12 +919,17 @@
             </div>
             <div class="form-floating mb-3">
               <select class="form-select" id="backrightdrive_type-input" name="drive_type">
-                <option selected value="sparkmax">SparkMax</option>
-                <option selected value="sparkflex">SparkFlex</option>
-                <option value="falcon">Falcon</option>
-                <option value="talonfx">Kraken</option>
-                <option value="sparkmax_brushed">SparkMAX Brushed Mode</option>
-
+                <option selected value="sparkmax">NEO (via SparkMAX)</option>
+                <option value="sparkflex_neo">NEO (via SparkFLEX)</option>
+                <option value="sparkmax_neo550">NEO550 (via SparkMAX)</option>
+                <option value="sparkflex_neo550">NEO550 (via SparkFLEX)</option>
+                <option value="sparkflex">Vortex (via SparkFLEX)</option>
+                <option value="falcon">Falcon500</option>
+                <option value="falcon500foc">Falcon500 (CTRE PRO)</option>
+                <option value="krakenx60">Kraken x60</option>
+                <option value="krakenx60foc">Kraken x60 (CTRE PRO)</option>
+                <option value="sparkmax_brushed">CIM (via SparkMAX)</option>
+                <option value="talonsrx">CIM (via TalonSRX)</option>
               </select>
               <label class="form-label" for="backrightdrive_type-input">Drive Motor Type</label>
             </div>
@@ -905,12 +958,17 @@
             <hr/>
             <div class="form-floating mb-3">
               <select class="form-select" id="backrightangle_type-input" name="angle_type">
-                <option selected value="sparkmax">SparkMax</option>
-                <option selected value="sparkflex">SparkFlex</option>
-                <option value="falcon">Falcon</option>
-                <option value="talonfx">Kraken</option>
-                <option value="sparkmax_brushed">SparkMAX Brushed Mode</option>
-
+                <option selected value="sparkmax">NEO (via SparkMAX)</option>
+                <option value="sparkflex_neo">NEO (via SparkFLEX)</option>
+                <option value="sparkmax_neo550">NEO550 (via SparkMAX)</option>
+                <option value="sparkflex_neo550">NEO550 (via SparkFLEX)</option>
+                <option value="sparkflex">Vortex (via SparkFLEX)</option>
+                <option value="falcon">Falcon500</option>
+                <option value="falcon500foc">Falcon500 (CTRE PRO)</option>
+                <option value="krakenx60">Kraken x60</option>
+                <option value="krakenx60foc">Kraken x60 (CTRE PRO)</option>
+                <option value="sparkmax_brushed">CIM (via SparkMAX)</option>
+                <option value="talonsrx">CIM (via TalonSRX)</option>
               </select>
               <label class="form-label" for="backrightangle_type-input">Angle Motor Type</label>
             </div>
@@ -976,8 +1034,11 @@
                 <option value="none">None</option>
                 <option value="attached">Attached (to SparkMAX)</option>
                 <option value="sparkmax_analog">Attached (to SparkMAX Analog Pin)</option>
-                <option value="sparkmax_analog5v">Attached (to SparkMAX Analog Pin with 5V Power)</option>
+                <option value="sparkmax_analog5v">Attached (to SparkMAX Analog Pin with 5V Power)
+                </option>
                 <option value="cancoder">CANCoder</option>
+                <option value="talonsrx_pwm">TalonSRX (PWM)</option>
+                <option value="talonsrx_analog">TalonSRX (Analog)</option>
                 <option value="canandmag">CANandMag (attached to SparkMAX)</option>
                 <option value="canandmag_can">CANandMag (CAN)</option>
                 <option value="ma3">MA3 (Analog)</option>
@@ -1007,7 +1068,8 @@
                 Bus</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" id="backright_absoluteencoderinverted-input" name="absoluteEncoderInverted"
+              <input class="form-check-input" id="backright_absoluteencoderinverted-input"
+                     name="absoluteEncoderInverted"
                      type="checkbox">
               <label class="form-check-label" for="backright_absoluteencoderinverted-input">
                 Absolute Encoder Inverted

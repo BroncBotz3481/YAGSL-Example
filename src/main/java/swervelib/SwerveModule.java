@@ -1,11 +1,14 @@
 package swervelib;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -91,9 +94,13 @@ public class SwerveModule
    */
   private final String                 rawDriveVelName;
   /**
-   * Maximum speed of the drive motors in meters per second.
+   * Maximum {@link LinearVelocity} for the drive motor of the swerve module.
    */
-  public        double                 maxSpeed;
+  private       LinearVelocity         maxDriveVelocity;
+  /**
+   * Maximum {@link AngularVelocity} for the azimuth/angle motor of the swerve module.
+   */
+  private       AngularVelocity        maxAngularVelocity;
   /**
    * Feedforward for the drive motor during closed loop control.
    */
@@ -133,11 +140,8 @@ public class SwerveModule
    *
    * @param moduleNumber        Module number for kinematics.
    * @param moduleConfiguration Module constants containing CAN ID's and offsets.
-   * @param driveFeedforward    Drive motor feedforward created by
-   *                            {@link SwerveMath#createDriveFeedforward(double, double, double)}.
    */
-  public SwerveModule(int moduleNumber, SwerveModuleConfiguration moduleConfiguration,
-                      SimpleMotorFeedforward driveFeedforward)
+  public SwerveModule(int moduleNumber, SwerveModuleConfiguration moduleConfiguration)
   {
     //    angle = 0;
     //    speed = 0;
@@ -147,14 +151,14 @@ public class SwerveModule
     configuration = moduleConfiguration;
     angleOffset = moduleConfiguration.angleOffset;
 
-    // Initialize Feedforwards.
-    driveMotorFeedforward = driveFeedforward;
-
     // Create motors from configuration and reset them to defaults.
     angleMotor = moduleConfiguration.angleMotor;
     driveMotor = moduleConfiguration.driveMotor;
     angleMotor.factoryDefaults();
     driveMotor.factoryDefaults();
+
+    // Initialize Feedforwards.
+    driveMotorFeedforward = getDefaultFeedforward();
 
     // Configure voltage comp, current limit, and ramp rate.
     angleMotor.setVoltageCompensation(configuration.physicalCharacteristics.optimalVoltage);
@@ -205,8 +209,6 @@ public class SwerveModule
     drivePositionCache = new Cache<>(driveMotor::getPosition, 20);
     driveVelocityCache = new Cache<>(driveMotor::getVelocity, 20);
 
-   
-
     // Force a cache update on init.
     driveVelocityCache.update();
     drivePositionCache.update();
@@ -230,6 +232,20 @@ public class SwerveModule
     rawAngleName = "swerve/modules/" + configuration.name + "/Raw Angle Encoder";
     rawDriveName = "swerve/modules/" + configuration.name + "/Raw Drive Encoder";
     rawDriveVelName = "swerve/modules/" + configuration.name + "/Raw Drive Velocity";
+  }
+
+  /**
+   * Get the default {@link SimpleMotorFeedforward} for the swerve module drive motor.
+   *
+   * @return {@link SimpleMotorFeedforward} using motor details.
+   */
+  public SimpleMotorFeedforward getDefaultFeedforward()
+  {
+    double nominalVoltage   = driveMotor.getSimMotor().nominalVoltageVolts;
+    double maxDriveSpeedMPS = getMaxVelocity().in(MetersPerSecond);
+    return SwerveMath.createDriveFeedforward(nominalVoltage,
+                                             maxDriveSpeedMPS,
+                                             configuration.physicalCharacteristics.wheelGripCoefficientOfFriction);
   }
 
   /**
@@ -376,7 +392,7 @@ public class SwerveModule
     if (!force && antiJitterEnabled)
     {
       // Prevents module rotation if speed is less than 1%
-      SwerveMath.antiJitter(desiredState, lastState, Math.min(maxSpeed, 4));
+      SwerveMath.antiJitter(desiredState, lastState, Math.min(maxDriveVelocity.in(MetersPerSecond), 4));
     }
 
     // Cosine compensation.
@@ -403,7 +419,7 @@ public class SwerveModule
 
     if (isOpenLoop)
     {
-      double percentOutput = desiredState.speedMetersPerSecond / maxSpeed;
+      double percentOutput = desiredState.speedMetersPerSecond / maxDriveVelocity.in(MetersPerSecond);
       driveMotor.set(percentOutput);
     } else
     {
@@ -709,6 +725,40 @@ public class SwerveModule
     }
   }
 
+
+  /**
+   * Get the maximum module velocity as a {@link LinearVelocity} based on the RPM and gear ratio.
+   *
+   * @return {@link LinearVelocity} max velocity of the drive wheel.
+   */
+  public LinearVelocity getMaxVelocity()
+  {
+    if (maxDriveVelocity == null)
+    {
+      maxDriveVelocity = MetersPerSecond.of(
+          (RadiansPerSecond.of(driveMotor.getSimMotor().freeSpeedRadPerSec).in(RotationsPerSecond) /
+           configuration.conversionFactors.drive.gearRatio) *
+          configuration.conversionFactors.drive.diameter);
+    }
+    return maxDriveVelocity;
+  }
+
+  /**
+   * Get the maximum module angular velocity as a {@link AngularVelocity} based on the RPM and gear ratio.
+   *
+   * @return {@link AngularVelocity} max velocity of the angle/azimuth.
+   */
+  public AngularVelocity getMaxAngularVelocity()
+  {
+    if (maxAngularVelocity == null)
+    {
+      maxAngularVelocity = RotationsPerSecond.of(
+          RadiansPerSecond.of(angleMotor.getSimMotor().freeSpeedRadPerSec).in(RotationsPerSecond) *
+          configuration.conversionFactors.angle.gearRatio);
+    }
+    return maxAngularVelocity;
+  }
+
   /**
    * Update data sent to {@link SmartDashboard}.
    */
@@ -753,7 +803,8 @@ public class SwerveModule
    *                               configure with.
    */
   public void configureModuleSimulation(
-          org.ironmaple.simulation.drivesims.SwerveModuleSimulation swerveModuleSimulation, SwerveModulePhysicalCharacteristics physicalCharacteristics)
+      org.ironmaple.simulation.drivesims.SwerveModuleSimulation swerveModuleSimulation,
+      SwerveModulePhysicalCharacteristics physicalCharacteristics)
   {
     this.simModule.configureSimModule(swerveModuleSimulation, physicalCharacteristics);
   }

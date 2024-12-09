@@ -6,6 +6,7 @@ import static swervelib.telemetry.SwerveDriveTelemetry.serialCommsIssueWarning;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.studica.frc.AHRS.NavXComType;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DriverStation;
 import swervelib.encoders.AnalogAbsoluteEncoderSwerve;
 import swervelib.encoders.CANCoderSwerve;
@@ -142,9 +143,7 @@ public class DeviceJson
         return new NavXSwerve(NavXComType.kUSB1);
       case "navx_mxp_serial":
         serialCommsIssueWarning.set(true);
-        throw new RuntimeException("Studica NavX API does not support MXP Serial communication currently.");
-
-//        return new NavXSwerve(Port.kMXP);
+        return new NavXSwerve(NavXComType.kMXP_UART);
       case "pigeon":
         return new PigeonSwerve(id);
       case "pigeon2":
@@ -168,39 +167,56 @@ public class DeviceJson
     }
     switch (type)
     {
+      case "sparkmax_neo":
+      case "neo":
+      case "sparkmax":
+        return new SparkMaxSwerve(id, isDriveMotor, DCMotor.getNEO(1));
+      case "sparkmax_neo550":
+      case "neo550":
+        return new SparkMaxSwerve(id, isDriveMotor, DCMotor.getNeo550(1));
+      case "sparkflex_vortex":
+      case "vortex":
+      case "sparkflex":
+        return new SparkFlexSwerve(id, isDriveMotor, DCMotor.getNeoVortex(1));
+      case "sparkflex_neo":
+        return new SparkFlexSwerve(id, isDriveMotor, DCMotor.getNEO(1));
+      case "sparkflex_neo550":
+        return new SparkFlexSwerve(id, isDriveMotor, DCMotor.getNeo550(1));
+      case "falcon500":
+      case "falcon":
+        return new TalonFXSwerve(id, canbus != null ? canbus : "", isDriveMotor, DCMotor.getFalcon500(1));
+      case "falcon500foc":
+        return new TalonFXSwerve(id, canbus != null ? canbus : "", isDriveMotor, DCMotor.getFalcon500Foc(1));
+      case "krakenx60":
+      case "talonfx":
+        return new TalonFXSwerve(id, canbus != null ? canbus : "", isDriveMotor, DCMotor.getKrakenX60(1));
+      case "krakenx60foc":
+        return new TalonFXSwerve(id, canbus != null ? canbus : "", isDriveMotor, DCMotor.getKrakenX60Foc(1));
+      case "talonsrx":
+        return new TalonSRXSwerve(id, isDriveMotor, DCMotor.getCIM(1));
       case "sparkmax_brushed":
         switch (canbus)
         {
           case "greyhill_63r256":
-            return new SparkMaxBrushedMotorSwerve(id, isDriveMotor, Type.kQuadrature, 1024, false);
+            return new SparkMaxBrushedMotorSwerve(id, isDriveMotor, Type.kQuadrature, 1024, false, DCMotor.getCIM(1));
           case "srx_mag_encoder":
-            return new SparkMaxBrushedMotorSwerve(id, isDriveMotor, Type.kQuadrature, 4096, false);
+            return new SparkMaxBrushedMotorSwerve(id, isDriveMotor, Type.kQuadrature, 4096, false, DCMotor.getCIM(1));
           case "throughbore":
-            return new SparkMaxBrushedMotorSwerve(id, isDriveMotor, Type.kQuadrature, 8192, false);
+            return new SparkMaxBrushedMotorSwerve(id, isDriveMotor, Type.kQuadrature, 8192, false, DCMotor.getCIM(1));
           case "throughbore_dataport":
-            return new SparkMaxBrushedMotorSwerve(id, isDriveMotor, Type.kNoSensor, 8192, true);
+            return new SparkMaxBrushedMotorSwerve(id, isDriveMotor, Type.kNoSensor, 8192, true, DCMotor.getCIM(1));
           case "greyhill_63r256_dataport":
-            return new SparkMaxBrushedMotorSwerve(id, isDriveMotor, Type.kQuadrature, 1024, true);
+            return new SparkMaxBrushedMotorSwerve(id, isDriveMotor, Type.kQuadrature, 1024, true, DCMotor.getCIM(1));
           case "srx_mag_encoder_dataport":
-            return new SparkMaxBrushedMotorSwerve(id, isDriveMotor, Type.kQuadrature, 4096, true);
+            return new SparkMaxBrushedMotorSwerve(id, isDriveMotor, Type.kQuadrature, 4096, true, DCMotor.getCIM(1));
           default:
             if (isDriveMotor)
             {
               throw new RuntimeException("Spark MAX " + id + " MUST have a encoder attached to the motor controller.");
             }
             // We are creating a motor for an angle motor which will use the absolute encoder attached to the data port.
-            return new SparkMaxBrushedMotorSwerve(id, isDriveMotor, Type.kNoSensor, 0, false);
+            return new SparkMaxBrushedMotorSwerve(id, isDriveMotor, Type.kNoSensor, 0, false, DCMotor.getCIM(1));
         }
-      case "neo":
-      case "sparkmax":
-        return new SparkMaxSwerve(id, isDriveMotor);
-      case "sparkflex":
-        return new SparkFlexSwerve(id, isDriveMotor);
-      case "falcon":
-      case "talonfx":
-        return new TalonFXSwerve(id, canbus != null ? canbus : "", isDriveMotor);
-      case "talonsrx":
-        return new TalonSRXSwerve(id, isDriveMotor);
       default:
         throw new RuntimeException(type + " is not a recognized motor type.");
     }

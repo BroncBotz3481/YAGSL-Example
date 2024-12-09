@@ -797,7 +797,7 @@ public class SwerveDrive
   /**
    * Gets the actual pose of the drivetrain during simulation
    *
-   * @return an optional Pose2d, representing the drivetrain pose during simulation, or an empty optional when running
+   * @return an {@link Optional} {@link Pose2d}, representing the drivetrain pose during simulation, or an empty optional when running
    * on real robot
    */
   public Optional<Pose2d> getSimulationDriveTrainPose()

@@ -40,14 +40,12 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
@@ -232,8 +230,6 @@ public class SwerveDrive
                                                                                   config.getAngleMotorSim(),
                                                                                   config.physicalCharacteristics.conversionFactor.drive.gearRatio,
                                                                                   config.physicalCharacteristics.conversionFactor.angle.gearRatio,
-                                                                                  Amps.of(config.physicalCharacteristics.driveMotorCurrentLimit),
-                                                                                  Amps.of(20),
                                                                                   Volts.of(config.physicalCharacteristics.driveFrictionVoltage),
                                                                                   Volts.of(config.physicalCharacteristics.angleFrictionVoltage),
                                                                                   Inches.of(
@@ -247,7 +243,7 @@ public class SwerveDrive
       // feed module simulation instances to modules
       for (int i = 0; i < swerveModules.length; i++)
       {
-        this.swerveModules[i].configureModuleSimulation(mapleSimDrive.getModules()[i]);
+        this.swerveModules[i].configureModuleSimulation(mapleSimDrive.getModules()[i], config.physicalCharacteristics);
       }
 
       // register the drivetrain simulation
@@ -785,6 +781,20 @@ public class SwerveDrive
   }
 
   /**
+   * Gets the maple-sim drivetrain simulation instance
+   * This is used to add intake simulation / launch game pieces from the robot
+   *
+   * @return an optional maple-sim {@link SwerveDriveSimulation} object, or {@link Optional#empty()} when calling from a real robot
+   */
+  public Optional<SwerveDriveSimulation> getMapleSimDrive() {
+    if (SwerveDriveTelemetry.isSimulation) {
+      return Optional.of(mapleSimDrive);
+    }
+
+    return Optional.empty();
+  }
+
+  /**
    * Gets the actual pose of the drivetrain during simulation
    *
    * @return an optional Pose2d, representing the drivetrain pose during simulation, or an empty optional when running
@@ -792,15 +802,10 @@ public class SwerveDrive
    */
   public Optional<Pose2d> getSimulationDriveTrainPose()
   {
-    if (SwerveDriveTelemetry.isSimulation)
-    {
-      odometryLock.lock();
-      Pose2d simulationPose = mapleSimDrive.getSimulatedDriveTrainPose();
-      odometryLock.unlock();
-      return Optional.of(simulationPose);
-    }
-
-    return Optional.empty();
+    odometryLock.lock();
+    Optional<Pose2d> simulationPose = getMapleSimDrive().map(AbstractDriveTrainSimulation::getSimulatedDriveTrainPose);
+    odometryLock.unlock();
+    return simulationPose;
   }
 
   /**
@@ -819,27 +824,6 @@ public class SwerveDrive
   }
 
   /**
-   * Gets the actual field-relative robot velocity (x, y and omega) during simulation
-   *
-   * @return An optional ChassisSpeeds representing the actual field-relative velocity of the robot, or an empty
-   * optional when running on real robot
-   * @deprecated for testing version of maple-sim only
-   */
-  @Deprecated
-  public Optional<ChassisSpeeds> getSimulationFieldVelocity()
-  {
-    if (SwerveDriveTelemetry.isSimulation)
-    {
-      odometryLock.lock();
-      ChassisSpeeds simulationFieldRelativeVelocity = mapleSimDrive.getDriveTrainSimulatedChassisSpeedsFieldRelative();
-      odometryLock.unlock();
-      return Optional.of(simulationFieldRelativeVelocity);
-    }
-
-    return Optional.empty();
-  }
-
-  /**
    * Gets the current robot-relative velocity (x, y and omega) of the robot
    *
    * @return A ChassisSpeeds object of the current robot-relative velocity
@@ -847,27 +831,6 @@ public class SwerveDrive
   public ChassisSpeeds getRobotVelocity()
   {
     return kinematics.toChassisSpeeds(getStates());
-  }
-
-  /**
-   * Gets the actual robot-relative robot velocity (x, y and omega) during simulation
-   *
-   * @return An {@link Optional} {@link ChassisSpeeds} representing the actual robot-relative velocity of the robot, or
-   * an empty optional when running on real robot
-   * @deprecated for testing version of maple-sim only
-   */
-  @Deprecated
-  public Optional<ChassisSpeeds> getSimulationRobotVelocity()
-  {
-    if (SwerveDriveTelemetry.isSimulation)
-    {
-      odometryLock.lock();
-      ChassisSpeeds simulationFieldRelativeVelocity = mapleSimDrive.getDriveTrainSimulatedChassisSpeedsRobotRelative();
-      odometryLock.unlock();
-      return Optional.of(simulationFieldRelativeVelocity);
-    }
-
-    return Optional.empty();
   }
 
   /**

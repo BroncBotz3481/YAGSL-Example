@@ -557,7 +557,7 @@ public class Vision
     private void updateEstimatedGlobalPose()
     {
       Optional<EstimatedRobotPose> visionEst = Optional.empty();
-      for (var change : camera.getAllUnreadResults())
+      for (var change : resultsList)
       {
         visionEst = poseEstimator.update(change);
         updateEstimationStdDevs(visionEst, change.getTargets());

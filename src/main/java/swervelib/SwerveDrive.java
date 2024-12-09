@@ -714,24 +714,9 @@ public class SwerveDrive
   }
 
   /**
-   * Set the correct sim motor type to allow for optimal Feedforward generation from PathPlanner.
-   *
-   * @param simMotor {@link DCMotor} to use as the drive motor model we are going to use..
-   */
-  public void setDriveMotorModel(DCMotor simMotor)
-  {
-    for (SwerveModule module : swerveModules)
-    {
-      module.configuration.driveMotor.simMotor = simMotor;
-    }
-  }
-
-  /**
    * Drive the robot using the {@link SwerveModuleState}, it is recommended to have
    * {@link SwerveDrive#setCosineCompensator(boolean)} set to false for this.<br/>
    * <p>
-   * <b>Warning:</b> Will not work well if motor is not what we are expecting. Should replace
-   * call {@link SwerveDrive#setDriveMotorModel(DCMotor)} with expected motor first.
    *
    * @param robotRelativeVelocity Robot relative {@link ChassisSpeeds}
    * @param states                Corresponding {@link SwerveModuleState} to use (not checked against the

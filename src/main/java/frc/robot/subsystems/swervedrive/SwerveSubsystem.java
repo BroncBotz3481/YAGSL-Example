@@ -385,7 +385,6 @@ public class SwerveSubsystem extends SubsystemBase
                                             DoubleSupplier rotationX)
   {
     SwerveController swerveController = swerveDrive.getSwerveController();
-    swerveDrive.setDriveMotorModel(DCMotor.getNEO(1));
     try
     {
       return driveWithSetpointGenerator(() -> {

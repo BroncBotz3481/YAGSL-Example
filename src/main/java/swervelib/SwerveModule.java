@@ -402,7 +402,7 @@ public class SwerveModule
     LinearVelocity curVelocity = MetersPerSecond.of(lastState.speedMetersPerSecond);
     desiredState.speedMetersPerSecond = nextVelocity.magnitude();
 
-    setDesiredState(desiredState, isOpenLoop, driveMotorFeedforward.calculate(curVelocity, nextVelocity).magnitude());
+    setDesiredState(desiredState, isOpenLoop, driveMotorFeedforward.calculate(nextVelocity).magnitude());
   }
 
   /**

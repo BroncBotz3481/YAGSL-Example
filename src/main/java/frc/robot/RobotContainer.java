@@ -10,7 +10,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -68,7 +69,7 @@ public class RobotContainer
   // controls are front-left positive
   // left stick controls translation
   // right stick controls the angular velocity of the robot
-  Command driveFieldOrientedAnglularVelocity = drivebase.driveCommand(
+  Command driveFieldOrientedAngularVelocity = drivebase.driveCommand(
       () -> MathUtil.applyDeadband(driverXbox.getLeftY() * -1, OperatorConstants.LEFT_Y_DEADBAND),
       () -> MathUtil.applyDeadband(driverXbox.getLeftX() * -1, OperatorConstants.LEFT_X_DEADBAND),
       () -> driverXbox.getRightX() * -1);
@@ -78,10 +79,20 @@ public class RobotContainer
       () -> MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
       () -> driverXbox.getRawAxis(2));
 
-  Command driveSetpointGenSim = drivebase.driveWithSetpointGenerator(
+  Command driveSetpointGen = drivebase.driveWithSetpointGenerator(
       () -> MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
       () -> MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
       () -> driverXbox.getRawAxis(2));
+
+  // Create a chooser to allow selecting the drive mode from a dashboard
+  enum DriveMode {
+    ABSOLUTE_ADVANCED,
+    DIRECT_ANGLE,
+    ANGULAR_VELOCITY,
+    SET_POINT_GEN
+  }
+
+  SendableChooser<DriveMode> driveChooser = new SendableChooser<>();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -90,6 +101,15 @@ public class RobotContainer
   {
     // Configure the trigger bindings
     configureBindings();
+
+    // Setup chooser for selecting drive mode and set the default mode
+    driveChooser.setDefaultOption("Drive Mode - Direct Angle", DriveMode.DIRECT_ANGLE);
+    driveChooser.addOption("Drive Mode - Angular Velocity", DriveMode.ANGULAR_VELOCITY);
+    driveChooser.addOption("Drive Mode - Absolute Advanced", DriveMode.ABSOLUTE_ADVANCED);
+    driveChooser.addOption("Drive Mode - Set Point Gen", DriveMode.SET_POINT_GEN);
+    SmartDashboard.putData(driveChooser);
+
+    setDriveMode();
   }
 
   /**
@@ -114,8 +134,6 @@ public class RobotContainer
       driverXbox.back().whileTrue(drivebase.centerModulesCommand());
       driverXbox.leftBumper().onTrue(Commands.none());
       driverXbox.rightBumper().onTrue(Commands.none());
-      drivebase.setDefaultCommand(
-          !RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity : driveFieldOrientedDirectAngleSim);
     } else
     {
       driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
@@ -129,8 +147,6 @@ public class RobotContainer
       driverXbox.back().whileTrue(Commands.none());
       driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.rightBumper().onTrue(Commands.none());
-      drivebase.setDefaultCommand(
-          !RobotBase.isSimulation() ? driveFieldOrientedDirectAngle : driveFieldOrientedDirectAngleSim);
     }
   }
 
@@ -145,9 +161,30 @@ public class RobotContainer
     return drivebase.getAutonomousCommand("New Auto");
   }
 
+  /**
+   * Use this to set the drive mode. This should be called in testInit and teleopInit in the {@link Robot} class.
+   * The mode change will then take effect when the robot is enabled.
+   */
   public void setDriveMode()
   {
-    configureBindings();
+    switch (driveChooser.getSelected()) {
+
+      case DIRECT_ANGLE:
+        drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
+        return;
+
+      case ABSOLUTE_ADVANCED:
+        drivebase.setDefaultCommand(closedAbsoluteDriveAdv);
+        return;
+
+      case SET_POINT_GEN:
+        drivebase.setDefaultCommand(driveSetpointGen);
+        return;
+
+      case ANGULAR_VELOCITY:
+      default:
+        drivebase.setDefaultCommand(driveFieldOrientedAngularVelocity);
+    }
   }
 
   public void setMotorBrake(boolean brake)

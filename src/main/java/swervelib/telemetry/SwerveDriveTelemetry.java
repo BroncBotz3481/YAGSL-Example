@@ -164,12 +164,37 @@ public class SwerveDriveTelemetry
                                                                                                                  "swerve/advantagescope/robotRotation",
                                                                                                                  Rotation2d.struct)
                                                                                                              .publish();
+  /**
+   * Update the telemetry settings that infrequently change.
+   */
+  public static       boolean                                 updateSettings           = true;
+
+  /**
+   * Update only the settings that infrequently or never change.
+   */
+  public static void updateSwerveTelemetrySettings()
+  {
+    if (updateSettings)
+    {
+      updateSettings = false;
+      SmartDashboard.putNumberArray("swerve/wheelLocations", wheelLocations);
+      SmartDashboard.putNumber("swerve/maxSpeed", maxSpeed);
+      SmartDashboard.putString("swerve/rotationUnit", rotationUnit);
+      SmartDashboard.putNumber("swerve/sizeLeftRight", sizeLeftRight);
+      SmartDashboard.putNumber("swerve/sizeFrontBack", sizeFrontBack);
+      SmartDashboard.putString("swerve/forwardDirection", forwardDirection);
+    }
+  }
 
   /**
    * Upload data to smartdashboard
    */
   public static void updateData()
   {
+    if (updateSettings)
+    {
+      updateSwerveTelemetrySettings();
+    }
     measuredChassisSpeeds[0] = measuredChassisSpeedsObj.vxMetersPerSecond;
     measuredChassisSpeeds[1] = measuredChassisSpeedsObj.vxMetersPerSecond;
     measuredChassisSpeeds[2] = Math.toDegrees(measuredChassisSpeedsObj.omegaRadiansPerSecond);
@@ -201,15 +226,9 @@ public class SwerveDriveTelemetry
     }
 
     SmartDashboard.putNumber("swerve/moduleCount", moduleCount);
-    SmartDashboard.putNumberArray("swerve/wheelLocations", wheelLocations);
     SmartDashboard.putNumberArray("swerve/measuredStates", measuredStates);
     SmartDashboard.putNumberArray("swerve/desiredStates", desiredStates);
     SmartDashboard.putNumber("swerve/robotRotation", robotRotation);
-    SmartDashboard.putNumber("swerve/maxSpeed", maxSpeed);
-    SmartDashboard.putString("swerve/rotationUnit", rotationUnit);
-    SmartDashboard.putNumber("swerve/sizeLeftRight", sizeLeftRight);
-    SmartDashboard.putNumber("swerve/sizeFrontBack", sizeFrontBack);
-    SmartDashboard.putString("swerve/forwardDirection", forwardDirection);
     SmartDashboard.putNumber("swerve/maxAngularVelocity", maxAngularVelocity);
     SmartDashboard.putNumberArray("swerve/measuredChassisSpeeds", measuredChassisSpeeds);
     SmartDashboard.putNumberArray("swerve/desiredChassisSpeeds", desiredChassisSpeeds);

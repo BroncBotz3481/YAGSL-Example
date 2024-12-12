@@ -351,23 +351,26 @@ public class SwerveSubsystem extends SubsystemBase
    */
   private Command driveWithSetpointGenerator(Supplier<ChassisSpeeds> robotRelativeChassisSpeed)
   throws IOException, ParseException
-  {
+  { 
     SwerveSetpointGenerator setpointGenerator = new SwerveSetpointGenerator(RobotConfig.fromGUISettings(),
                                                                             swerveDrive.getMaximumChassisAngularVelocity());
     AtomicReference<SwerveSetpoint> prevSetpoint
         = new AtomicReference<>(new SwerveSetpoint(swerveDrive.getRobotVelocity(),
                                                    swerveDrive.getStates(),
                                                    DriveFeedforwards.zeros(swerveDrive.getModules().length)));
-    double start = Timer.getFPGATimestamp();
-    return run(() -> {
-      SwerveSetpoint newSetpoint = setpointGenerator.generateSetpoint(prevSetpoint.get(),
-                                                                      robotRelativeChassisSpeed.get(),
-                                                                      start - Timer.getFPGATimestamp());
-      swerveDrive.drive(newSetpoint.robotRelativeSpeeds(),
-                        newSetpoint.moduleStates(),
-                        newSetpoint.feedforwards().linearForces());
-      prevSetpoint.set(newSetpoint);
+    AtomicReference<Double> previousTime = new AtomicReference<>();
 
+    return startRun(() -> previousTime.set(Timer.getFPGATimestamp()), 
+                    () -> {
+                      double newTime = Timer.getFPGATimestamp();
+                      SwerveSetpoint newSetpoint = setpointGenerator.generateSetpoint(prevSetpoint.get(),
+                                                                                      robotRelativeChassisSpeed.get(),
+                                                                                      newTime - previousTime.get());
+                      swerveDrive.drive(newSetpoint.robotRelativeSpeeds(),
+                                        newSetpoint.moduleStates(),
+                                        newSetpoint.feedforwards().linearForces());
+                      prevSetpoint.set(newSetpoint);
+                      previousTime.set(newTime);
 
     });
   }
@@ -383,17 +386,18 @@ public class SwerveSubsystem extends SubsystemBase
   public Command driveWithSetpointGenerator(DoubleSupplier translationX, DoubleSupplier translationY,
                                             DoubleSupplier rotationX)
   {
-    SwerveController swerveController = swerveDrive.getSwerveController();
     try
     {
       return driveWithSetpointGenerator(() -> {
         Translation2d scaledInputs = SwerveMath.scaleTranslation(new Translation2d(
             translationX.getAsDouble() * swerveDrive.getMaximumChassisVelocity(),
             translationY.getAsDouble() * swerveDrive.getMaximumChassisVelocity()), 0.8);
+        ChassisSpeeds speeds =  new ChassisSpeeds(scaledInputs.getX(),
+            scaledInputs.getY(),
+            rotationX.getAsDouble() * swerveDrive.getMaximumChassisAngularVelocity());
+        speeds.toRobotRelativeSpeeds(getHeading());
+        return speeds;
 
-        return new ChassisSpeeds(scaledInputs.getX(),
-                                 scaledInputs.getY(),
-                                 rotationX.getAsDouble() * swerveDrive.getMaximumChassisAngularVelocity());
       });
     } catch (Exception e)
     {

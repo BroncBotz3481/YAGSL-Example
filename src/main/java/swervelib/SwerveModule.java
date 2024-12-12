@@ -402,7 +402,7 @@ public class SwerveModule
     LinearVelocity curVelocity = MetersPerSecond.of(lastState.speedMetersPerSecond);
     desiredState.speedMetersPerSecond = nextVelocity.magnitude();
 
-    setDesiredState(desiredState, isOpenLoop, driveMotorFeedforward.calculate(curVelocity, nextVelocity).magnitude());
+    setDesiredState(desiredState, isOpenLoop, driveMotorFeedforward.calculate(nextVelocity).magnitude());
   }
 
   /**
@@ -461,6 +461,11 @@ public class SwerveModule
                                desiredState.speedMetersPerSecond);
       SmartDashboard.putNumber("swerve/modules/" + configuration.name + "/Angle Setpoint",
                                desiredState.angle.getDegrees());
+    }
+
+    if (moduleNumber == SwerveDriveTelemetry.moduleCount - 1)
+    {
+      SwerveDriveTelemetry.endCtrlCycle();
     }
   }
 

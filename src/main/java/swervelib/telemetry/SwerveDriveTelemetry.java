@@ -3,13 +3,17 @@ package swervelib.telemetry;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import swervelib.SwerveDrive;
 
 /**
  * Telemetry to describe the {@link swervelib.SwerveDrive} following frc-web-components. (Which follows AdvantageKit)
@@ -164,12 +168,117 @@ public class SwerveDriveTelemetry
                                                                                                                  "swerve/advantagescope/robotRotation",
                                                                                                                  Rotation2d.struct)
                                                                                                              .publish();
+  /**
+   * Odometry cycle time, updated whenever {@link SwerveDrive#updateOdometry()} is called.
+   */
+  private static      DoublePublisher                         odomCycleTime
+                                                                                       = NetworkTableInstance.getDefault()
+                                                                                                             .getDoubleTopic(
+                                                                                                                 "swerve/odomCycleMS")
+                                                                                                             .publish();
+  /**
+   * Control cycle time, updated whenever
+   * {@link swervelib.SwerveModule#setDesiredState(SwerveModuleState, boolean, double)} is called for the last module.
+   */
+  private static      DoublePublisher                         ctrlCycleTime
+                                                                                       = NetworkTableInstance.getDefault()
+                                                                                                             .getDoubleTopic(
+                                                                                                                 "swerve/controlCycleMS")
+                                                                                                             .publish();
+  /**
+   * Odometry timer to track cycle times.
+   */
+  private static      Timer                                   odomTimer                = new Timer();
+  /**
+   * Control timer to track cycle times.
+   */
+  private static      Timer                                   ctrlTimer                = new Timer();
+  /**
+   * Update the telemetry settings that infrequently change.
+   */
+  public static       boolean                                 updateSettings           = true;
+
+  /**
+   * Start the ctrl timer to measure cycle time, independent of periodic loops.
+   */
+  public static void startCtrlCycle()
+  {
+    if (ctrlTimer.isRunning())
+    {
+      ctrlTimer.reset();
+    } else
+    {
+      ctrlTimer.start();
+    }
+  }
+
+  /**
+   * Update the Control cycle time.
+   */
+  public static void endCtrlCycle()
+  {
+    if (DriverStation.isTeleopEnabled() || DriverStation.isAutonomousEnabled() || DriverStation.isTestEnabled())
+    {
+      // 100ms per module on initialization is normal
+      ctrlCycleTime.set(ctrlTimer.get() * 1000);
+    }
+    ctrlTimer.reset();
+  }
+
+  /**
+   * Start the odom cycle timer to calculate how long each odom took. Independent of periodic loops.
+   */
+  public static void startOdomCycle()
+  {
+    if (odomTimer.isRunning())
+    {
+
+      odomTimer.reset();
+    } else
+    {
+      odomTimer.start();
+
+    }
+  }
+
+  /**
+   * Update the odom cycle time.
+   */
+  public static void endOdomCycle()
+  {
+    if (DriverStation.isTeleopEnabled() || DriverStation.isAutonomousEnabled() || DriverStation.isTestEnabled())
+    {
+      odomCycleTime.set(odomTimer.get() * 1000);
+    }
+    odomTimer.reset();
+  }
+
+  /**
+   * Update only the settings that infrequently or never change.
+   */
+  public static void updateSwerveTelemetrySettings()
+  {
+    if (updateSettings)
+    {
+      updateSettings = false;
+      SmartDashboard.putNumberArray("swerve/wheelLocations", wheelLocations);
+      SmartDashboard.putNumber("swerve/maxSpeed", maxSpeed);
+      SmartDashboard.putString("swerve/rotationUnit", rotationUnit);
+      SmartDashboard.putNumber("swerve/sizeLeftRight", sizeLeftRight);
+      SmartDashboard.putNumber("swerve/sizeFrontBack", sizeFrontBack);
+      SmartDashboard.putString("swerve/forwardDirection", forwardDirection);
+    }
+  }
 
   /**
    * Upload data to smartdashboard
    */
   public static void updateData()
   {
+    if (updateSettings)
+    {
+      updateSwerveTelemetrySettings();
+    }
     measuredChassisSpeeds[0] = measuredChassisSpeedsObj.vxMetersPerSecond;
     measuredChassisSpeeds[1] = measuredChassisSpeedsObj.vxMetersPerSecond;
     measuredChassisSpeeds[2] = Math.toDegrees(measuredChassisSpeedsObj.omegaRadiansPerSecond);
@@ -201,15 +310,9 @@ public class SwerveDriveTelemetry
     }
 
     SmartDashboard.putNumber("swerve/moduleCount", moduleCount);
-    SmartDashboard.putNumberArray("swerve/wheelLocations", wheelLocations);
     SmartDashboard.putNumberArray("swerve/measuredStates", measuredStates);
     SmartDashboard.putNumberArray("swerve/desiredStates", desiredStates);
     SmartDashboard.putNumber("swerve/robotRotation", robotRotation);
-    SmartDashboard.putNumber("swerve/maxSpeed", maxSpeed);
-    SmartDashboard.putString("swerve/rotationUnit", rotationUnit);
-    SmartDashboard.putNumber("swerve/sizeLeftRight", sizeLeftRight);
-    SmartDashboard.putNumber("swerve/sizeFrontBack", sizeFrontBack);
-    SmartDashboard.putString("swerve/forwardDirection", forwardDirection);
     SmartDashboard.putNumber("swerve/maxAngularVelocity", maxAngularVelocity);
     SmartDashboard.putNumberArray("swerve/measuredChassisSpeeds", measuredChassisSpeeds);
     SmartDashboard.putNumberArray("swerve/desiredChassisSpeeds", desiredChassisSpeeds);

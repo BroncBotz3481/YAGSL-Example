@@ -462,6 +462,11 @@ public class SwerveModule
       SmartDashboard.putNumber("swerve/modules/" + configuration.name + "/Angle Setpoint",
                                desiredState.angle.getDegrees());
     }
+
+    if (moduleNumber == SwerveDriveTelemetry.moduleCount - 1)
+    {
+      SwerveDriveTelemetry.endCtrlCycle();
+    }
   }
 
   /**

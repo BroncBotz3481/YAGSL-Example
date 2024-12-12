@@ -3,13 +3,16 @@ package swervelib.telemetry;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import swervelib.SwerveDrive;
 
 /**
  * Telemetry to describe the {@link swervelib.SwerveDrive} following frc-web-components. (Which follows AdvantageKit)
@@ -165,9 +168,60 @@ public class SwerveDriveTelemetry
                                                                                                                  Rotation2d.struct)
                                                                                                              .publish();
   /**
+   * Odometry cycle time, updated whenever {@link SwerveDrive#updateOdometry()} is called.
+   */
+  private static      DoublePublisher                         odomCycleTime
+                                                                                       = NetworkTableInstance.getDefault()
+                                                                                                             .getDoubleTopic(
+                                                                                                                 "swerve/odomCycleMS")
+                                                                                                             .publish();
+  /**
+   * Control cycle time, updated whenever
+   * {@link swervelib.SwerveModule#setDesiredState(SwerveModuleState, boolean, double)} is called for the last module.
+   */
+  private static      DoublePublisher                         ctrlCycleTime
+                                                                                       = NetworkTableInstance.getDefault()
+                                                                                                             .getDoubleTopic(
+                                                                                                                 "swerve/controlCycleMS")
+                                                                                                             .publish();
+  /**
+   * Odometry timer to track cycle times.
+   */
+  private static      Timer                                   odomTimer                = new Timer();
+  /**
+   * Control timer to track cycle times.
+   */
+  private static      Timer                                   ctrlTimer                = new Timer();
+  /**
    * Update the telemetry settings that infrequently change.
    */
   public static       boolean                                 updateSettings           = true;
+
+  /**
+   * Start the ctrl timer to measure cycle time, independent of WPILib loops.
+   */
+  public static void startCtrlCycle()
+  {
+    ctrlTimer.reset();
+  }
+
+  /**
+   * Update the Control cycle time.
+   */
+  public static void endCtrlCycle()
+  {
+    ctrlCycleTime.set(ctrlTimer.get()*1000);
+    ctrlTimer.reset();
+  }
+
+  /**
+   * Update the odom cycle time.
+   */
+  public static void feedOdomCycle()
+  {
+    odomCycleTime.set(odomTimer.get()*1000);
+    odomTimer.reset();
+  }
 
   /**
    * Update only the settings that infrequently or never change.
@@ -177,6 +231,14 @@ public class SwerveDriveTelemetry
     if (updateSettings)
     {
       updateSettings = false;
+      if (!odomTimer.isRunning())
+      {
+        odomTimer.start();
+      }
+      if (!ctrlTimer.isRunning())
+      {
+        ctrlTimer.start();
+      }
       SmartDashboard.putNumberArray("swerve/wheelLocations", wheelLocations);
       SmartDashboard.putNumber("swerve/maxSpeed", maxSpeed);
       SmartDashboard.putString("swerve/rotationUnit", rotationUnit);

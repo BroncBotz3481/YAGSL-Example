@@ -9,6 +9,7 @@ import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -198,11 +199,17 @@ public class SwerveDriveTelemetry
   public static       boolean                                 updateSettings           = true;
 
   /**
-   * Start the ctrl timer to measure cycle time, independent of WPILib loops.
+   * Start the ctrl timer to measure cycle time, independent of periodic loops.
    */
   public static void startCtrlCycle()
   {
-    ctrlTimer.reset();
+    if (ctrlTimer.isRunning())
+    {
+      ctrlTimer.reset();
+    } else
+    {
+      ctrlTimer.start();
+    }
   }
 
   /**
@@ -210,16 +217,39 @@ public class SwerveDriveTelemetry
    */
   public static void endCtrlCycle()
   {
-    ctrlCycleTime.set(ctrlTimer.get()*1000);
+    if (DriverStation.isTeleopEnabled() || DriverStation.isAutonomousEnabled() || DriverStation.isTestEnabled())
+    {
+      // 100ms per module on initialization is normal
+      ctrlCycleTime.set(ctrlTimer.get() * 1000);
+    }
     ctrlTimer.reset();
+  }
+
+  /**
+   * Start the odom cycle timer to calculate how long each odom took. Independent of periodic loops.
+   */
+  public static void startOdomCycle()
+  {
+    if (odomTimer.isRunning())
+    {
+
+      odomTimer.reset();
+    } else
+    {
+      odomTimer.start();
+
+    }
   }
 
   /**
    * Update the odom cycle time.
    */
-  public static void feedOdomCycle()
+  public static void endOdomCycle()
   {
-    odomCycleTime.set(odomTimer.get()*1000);
+    if (DriverStation.isTeleopEnabled() || DriverStation.isAutonomousEnabled() || DriverStation.isTestEnabled())
+    {
+      odomCycleTime.set(odomTimer.get() * 1000);
+    }
     odomTimer.reset();
   }
 
@@ -231,14 +261,6 @@ public class SwerveDriveTelemetry
     if (updateSettings)
     {
       updateSettings = false;
-      if (!odomTimer.isRunning())
-      {
-        odomTimer.start();
-      }
-      if (!ctrlTimer.isRunning())
-      {
-        ctrlTimer.start();
-      }
       SmartDashboard.putNumberArray("swerve/wheelLocations", wheelLocations);
       SmartDashboard.putNumber("swerve/maxSpeed", maxSpeed);
       SmartDashboard.putString("swerve/rotationUnit", rotationUnit);

@@ -1110,8 +1110,8 @@ public class SwerveDrive
    */
   public void updateOdometry()
   {
+    SwerveDriveTelemetry.startOdomCycle();
     odometryLock.lock();
-    SwerveDriveTelemetry.feedOdomCycle();
     invalidateCache();
     try
     {
@@ -1186,6 +1186,7 @@ public class SwerveDrive
       throw e;
     }
     odometryLock.unlock();
+    SwerveDriveTelemetry.endOdomCycle();
   }
 
   /**

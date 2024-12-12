@@ -101,12 +101,19 @@ public class RobotContainer
    */
   private void configureBindings()
   {
+    // (Condition) ? Return-On-True : Return-on-False
+    drivebase.setDefaultCommand(!RobotBase.isSimulation() ?
+                                driveFieldOrientedDirectAngle :
+                                driveFieldOrientedDirectAngleSim);
+
     if (Robot.isSimulation())
     {
       driverXbox.start().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
     }
     if (DriverStation.isTest())
     {
+      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity); // Overrides drive command above!
+
       driverXbox.b().whileTrue(drivebase.sysIdDriveMotorCommand());
       driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.y().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
@@ -114,8 +121,6 @@ public class RobotContainer
       driverXbox.back().whileTrue(drivebase.centerModulesCommand());
       driverXbox.leftBumper().onTrue(Commands.none());
       driverXbox.rightBumper().onTrue(Commands.none());
-      drivebase.setDefaultCommand(
-          !RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity : driveFieldOrientedDirectAngleSim);
     } else
     {
       driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
@@ -129,9 +134,8 @@ public class RobotContainer
       driverXbox.back().whileTrue(Commands.none());
       driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.rightBumper().onTrue(Commands.none());
-      drivebase.setDefaultCommand(
-          !RobotBase.isSimulation() ? driveFieldOrientedDirectAngle : driveFieldOrientedDirectAngleSim);
     }
+
   }
 
   /**

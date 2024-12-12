@@ -48,10 +48,10 @@ public class RobotContainer
                                                                                                OperatorConstants.LEFT_X_DEADBAND),
                                                                  () -> -MathUtil.applyDeadband(driverXbox.getRightX(),
                                                                                                OperatorConstants.RIGHT_X_DEADBAND),
-                                                                 driverXbox.getHID()::getYButtonPressed,
-                                                                 driverXbox.getHID()::getAButtonPressed,
-                                                                 driverXbox.getHID()::getXButtonPressed,
-                                                                 driverXbox.getHID()::getBButtonPressed);
+                                                                 ()-> (driverXbox.getHID().getPOV() == 0),
+                                                                 ()-> (driverXbox.getHID().getPOV() == 180),
+                                                                 ()-> (driverXbox.getHID().getPOV() == 90),
+                                                                 ()-> (driverXbox.getHID().getPOV() == 270));
 
   // Applies deadbands and inverts controls because joysticks
   // are back-right positive while robot
@@ -59,10 +59,10 @@ public class RobotContainer
   // left stick controls translation
   // right stick controls the desired angle NOT angular rotation
   Command driveFieldOrientedDirectAngle = drivebase.driveCommand(
-      () -> MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-      () -> MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-      () -> driverXbox.getRightX(),
-      () -> driverXbox.getRightY());
+      () -> MathUtil.applyDeadband(driverXbox.getLeftY() * -1, OperatorConstants.LEFT_Y_DEADBAND),
+      () -> MathUtil.applyDeadband(driverXbox.getLeftX() * -1, OperatorConstants.LEFT_X_DEADBAND),
+      () -> driverXbox.getRightX() * -1,
+      () -> driverXbox.getRightY() * -1);
 
   // Applies deadbands and inverts controls because joysticks
   // are back-right positive while robot

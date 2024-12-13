@@ -27,7 +27,7 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
   /**
    * Wait time for status frames to show up.
    */
-  public static double                          STATUS_TIMEOUT_SECONDS = Milliseconds.of(5).in(Seconds);
+  public static double STATUS_TIMEOUT_SECONDS = Milliseconds.of(20).in(Seconds);
   /**
    * CANCoder with WPILib sendable and support.
    */
@@ -169,7 +169,7 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
       readingFaulty.set(false);
     }
 
-    angle.refresh();
+    angle.waitForUpdate(STATUS_TIMEOUT_SECONDS);
 
     // Taken from democat's library.
     // Source: https://github.com/democat3457/swerve-lib/blob/7c03126b8c22f23a501b2c2742f9d173a5bcbc40/src/main/java/com/swervedrivespecialties/swervelib/ctre/CanCoderFactoryBuilder.java#L51-L74
@@ -219,7 +219,7 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
       return false;
     }
 
-    error = config.apply(cfg.MagnetSensor.withMagnetOffset(offset / 360););
+    error = config.apply(cfg.MagnetSensor.withMagnetOffset(offset / 360));
     cannotSetOffset.setText(
         "Failure to set CANCoder "
         + encoder.getDeviceID()

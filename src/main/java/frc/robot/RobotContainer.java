@@ -61,7 +61,7 @@ public class RobotContainer
                                                                 driverXbox::getLeftY)
                                                             .withRotation(driverXbox::getRightX)
                                                             .deadband(OperatorConstants.DEADBAND)
-                                                            .scale(0.8, 0);
+                                                            .scaleTranslation(0.8);
 
   /**
    * Clone's the angular velocity input stream and converts it to a fieldRelative input stream.
@@ -92,8 +92,7 @@ public class RobotContainer
                                                                    driverXbox::getLeftX)
                                                                .withRotation(() -> driverXbox.getRawAxis(2))
                                                                .deadband(OperatorConstants.DEADBAND)
-                                                               .scale(0.8, 0);
-
+                                                               .scaleTranslation(0.8);
   // Derive the heading axis with math!
   SwerveInputStream driveDirectAngleSim = driveAngularVelocitySim.copy()
                                                                  .withHeading(() -> Math.sin(

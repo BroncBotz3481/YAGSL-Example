@@ -1,10 +1,7 @@
 package swervelib;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -64,11 +61,6 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
    * Target to aim at.
    */
   private       Optional<Pose2d>          aimTarget              = Optional.empty();
-  /**
-   * Current years AprilTag field.
-   */
-  private final AprilTagFieldLayout       field                  = AprilTagFieldLayout
-      .loadField(AprilTagFields.k2024Crescendo);
   /**
    * Output {@link ChassisSpeeds} based on heading while this is True.
    */
@@ -287,33 +279,13 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
   /**
    * Aim the {@link SwerveDrive} at this pose while driving.
    *
-   * @param aimTarget {@link Pose2d} to point at.
+   * @param aimTarget {@link Pose2d} to point at. You can use {@link edu.wpi.first.apriltag.AprilTagFieldLayout} to get
+   *                  the pose of an april-tag here.
    * @return this
    */
   public SwerveInputStream aim(Pose2d aimTarget)
   {
     this.aimTarget = aimTarget.equals(Pose2d.kZero) ? Optional.empty() : Optional.of(aimTarget);
-    return this;
-  }
-
-
-  /**
-   * Aim at an AprilTagID given by the current years layout, blue-origin only.
-   *
-   * @param aprilTagId AprilTag to point to.
-   * @return this.
-   */
-  public SwerveInputStream aim(int aprilTagId)
-  {
-    Optional<Pose3d> aprilTagPose = field.getTagPose(aprilTagId);
-    if (aprilTagPose.isPresent())
-    {
-      this.aimTarget = Optional.of(aprilTagPose.get().toPose2d());
-    } else
-    {
-      this.aimTarget = Optional.empty();
-      DriverStation.reportError("AprilTagID " + aprilTagId + " is not found!", true);
-    }
     return this;
   }
 

@@ -169,7 +169,7 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
       readingFaulty.set(false);
     }
 
-    angle.waitForUpdate(STATUS_TIMEOUT_SECONDS);
+    angle.refresh();
 
     // Taken from democat's library.
     // Source: https://github.com/democat3457/swerve-lib/blob/7c03126b8c22f23a501b2c2742f9d173a5bcbc40/src/main/java/com/swervedrivespecialties/swervelib/ctre/CanCoderFactoryBuilder.java#L51-L74

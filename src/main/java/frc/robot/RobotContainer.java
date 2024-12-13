@@ -10,7 +10,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -47,10 +48,10 @@ public class RobotContainer
                                                                                                OperatorConstants.LEFT_X_DEADBAND),
                                                                  () -> -MathUtil.applyDeadband(driverXbox.getRightX(),
                                                                                                OperatorConstants.RIGHT_X_DEADBAND),
-                                                                 driverXbox.getHID()::getYButtonPressed,
-                                                                 driverXbox.getHID()::getAButtonPressed,
-                                                                 driverXbox.getHID()::getXButtonPressed,
-                                                                 driverXbox.getHID()::getBButtonPressed);
+                                                                 ()-> (driverXbox.getHID().getPOV() == 0),
+                                                                 ()-> (driverXbox.getHID().getPOV() == 180),
+                                                                 ()-> (driverXbox.getHID().getPOV() == 90),
+                                                                 ()-> (driverXbox.getHID().getPOV() == 270));
 
   // Applies deadbands and inverts controls because joysticks
   // are back-right positive while robot
@@ -58,17 +59,17 @@ public class RobotContainer
   // left stick controls translation
   // right stick controls the desired angle NOT angular rotation
   Command driveFieldOrientedDirectAngle = drivebase.driveCommand(
-      () -> MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-      () -> MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-      () -> driverXbox.getRightX(),
-      () -> driverXbox.getRightY());
+      () -> MathUtil.applyDeadband(driverXbox.getLeftY() * -1, OperatorConstants.LEFT_Y_DEADBAND),
+      () -> MathUtil.applyDeadband(driverXbox.getLeftX() * -1, OperatorConstants.LEFT_X_DEADBAND),
+      () -> driverXbox.getRightX() * -1,
+      () -> driverXbox.getRightY() * -1);
 
   // Applies deadbands and inverts controls because joysticks
   // are back-right positive while robot
   // controls are front-left positive
   // left stick controls translation
   // right stick controls the angular velocity of the robot
-  Command driveFieldOrientedAnglularVelocity = drivebase.driveCommand(
+  Command driveFieldOrientedAngularVelocity = drivebase.driveCommand(
       () -> MathUtil.applyDeadband(driverXbox.getLeftY() * -1, OperatorConstants.LEFT_Y_DEADBAND),
       () -> MathUtil.applyDeadband(driverXbox.getLeftX() * -1, OperatorConstants.LEFT_X_DEADBAND),
       () -> driverXbox.getRightX() * -1);
@@ -88,6 +89,16 @@ public class RobotContainer
       () -> MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
       () -> driverXbox.getRawAxis(2));
 
+  // Create a chooser to allow selecting the drive mode from a dashboard
+  enum DriveMode {
+    ABSOLUTE_ADVANCED,
+    DIRECT_ANGLE,
+    ANGULAR_VELOCITY,
+    SET_POINT_GEN
+  }
+
+  SendableChooser<DriveMode> driveChooser = new SendableChooser<>();
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -95,6 +106,15 @@ public class RobotContainer
   {
     // Configure the trigger bindings
     configureBindings();
+
+    // Setup chooser for selecting drive mode and set the default mode
+    driveChooser.setDefaultOption("Drive Mode - Direct Angle", DriveMode.DIRECT_ANGLE);
+    driveChooser.addOption("Drive Mode - Angular Velocity", DriveMode.ANGULAR_VELOCITY);
+    driveChooser.addOption("Drive Mode - Absolute Advanced", DriveMode.ABSOLUTE_ADVANCED);
+    driveChooser.addOption("Drive Mode - Set Point Gen", DriveMode.SET_POINT_GEN);
+    SmartDashboard.putData(driveChooser);
+
+    setDriveMode();
   }
 
   /**
@@ -106,10 +126,6 @@ public class RobotContainer
    */
   private void configureBindings()
   {
-    // (Condition) ? Return-On-True : Return-on-False
-    drivebase.setDefaultCommand(!RobotBase.isSimulation() ?
-                                driveFieldOrientedDirectAngle :
-                                driveFieldOrientedDirectAngleSim);
 
     if (Robot.isSimulation())
     {
@@ -117,8 +133,6 @@ public class RobotContainer
     }
     if (DriverStation.isTest())
     {
-      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity); // Overrides drive command above!
-
       driverXbox.b().whileTrue(drivebase.sysIdDriveMotorCommand());
       driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.y().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
@@ -154,9 +168,30 @@ public class RobotContainer
     return drivebase.getAutonomousCommand("New Auto");
   }
 
+  /**
+   * Use this to set the drive mode. This should be called in testInit and teleopInit in the {@link Robot} class.
+   * The mode change will then take effect when the robot is enabled.
+   */
   public void setDriveMode()
   {
-    configureBindings();
+    switch (driveChooser.getSelected()) {
+
+      case DIRECT_ANGLE:
+        drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
+        return;
+
+      case ABSOLUTE_ADVANCED:
+        drivebase.setDefaultCommand(closedAbsoluteDriveAdv);
+        return;
+
+      case SET_POINT_GEN:
+        drivebase.setDefaultCommand(driveSetpointGen);
+        return;
+
+      case ANGULAR_VELOCITY:
+      default:
+        drivebase.setDefaultCommand(driveFieldOrientedAngularVelocity);
+    }
   }
 
   public void setMotorBrake(boolean brake)

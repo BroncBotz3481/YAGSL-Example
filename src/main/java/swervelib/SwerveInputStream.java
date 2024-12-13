@@ -279,8 +279,7 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
   /**
    * Aim the {@link SwerveDrive} at this pose while driving.
    *
-   * @param aimTarget {@link Pose2d} to point at. You can use {@link edu.wpi.first.apriltag.AprilTagFieldLayout} to get
-   *                  the pose of an april-tag here.
+   * @param aimTarget {@link Pose2d} to point at.
    * @return this
    */
   public SwerveInputStream aim(Pose2d aimTarget)

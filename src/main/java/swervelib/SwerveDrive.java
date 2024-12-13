@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Newtons;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -57,7 +58,6 @@ import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import swervelib.encoders.CANCoderSwerve;
-import swervelib.imu.IMUVelocity;
 import swervelib.imu.Pigeon2Swerve;
 import swervelib.imu.SwerveIMU;
 import swervelib.math.SwerveMath;
@@ -102,18 +102,34 @@ public class SwerveDrive
   /**
    * Odometry lock to ensure thread safety.
    */
-  private final Lock                     odometryLock                                    = new ReentrantLock();
+  private final Lock                odometryLock                                    = new ReentrantLock();
   /**
    * Alert to recommend Tuner X if the configuration is compatible.
    */
-  private final Alert                    tunerXRecommendation                            = new Alert("Swerve Drive",
-                                                                                                     "Your Swerve Drive is compatible with Tuner X swerve generator, please consider using that instead of YAGSL. More information here!\n" +
-                                                                                                     "https://pro.docs.ctr-electronics.com/en/latest/docs/tuner/tuner-swerve/index.html",
-                                                                                                     AlertType.kWarning);
+  private final Alert               tunerXRecommendation                            = new Alert("Swerve Drive",
+                                                                                                "Your Swerve Drive is compatible with Tuner X swerve generator, please consider using that instead of YAGSL. More information here!\n" +
+                                                                                                "https://pro.docs.ctr-electronics.com/en/latest/docs/tuner/tuner-swerve/index.html",
+                                                                                                AlertType.kWarning);
+  /**
+   * NT4 Publisher for the IMU reading.
+   */
+  private final DoublePublisher     rawIMUPublisher
+                                                                                    = NetworkTableInstance.getDefault()
+                                                                                                          .getDoubleTopic(
+                                                                                                              "swerve/Raw IMU Yaw")
+                                                                                                          .publish();
+  /**
+   * NT4 Publisher for the IMU reading adjusted by offset and inversion.
+   */
+  private final DoublePublisher     adjustedIMUPublisher
+                                                                                    = NetworkTableInstance.getDefault()
+                                                                                                          .getDoubleTopic(
+                                                                                                              "swerve/Adjusted IMU Yaw")
+                                                                                                          .publish();
   /**
    * Field object.
    */
-  public        Field2d                  field                                           = new Field2d();
+  public        Field2d             field                                           = new Field2d();
   /**
    * Swerve controller for controlling heading of the robot.
    */
@@ -122,30 +138,30 @@ public class SwerveDrive
    * Correct chassis velocity in {@link SwerveDrive#drive(Translation2d, double, boolean, boolean)} using 254's
    * correction.
    */
-  public        boolean                  chassisVelocityCorrection                       = true;
+  public        boolean             chassisVelocityCorrection                       = true;
   /**
    * Correct chassis velocity in {@link SwerveDrive#setChassisSpeeds(ChassisSpeeds chassisSpeeds)} (auto) using 254's
    * correction during auto.
    */
-  public        boolean                  autonomousChassisVelocityCorrection             = false;
+  public        boolean             autonomousChassisVelocityCorrection             = false;
   /**
    * Correct for skew that scales with angular velocity in
    * {@link SwerveDrive#drive(Translation2d, double, boolean, boolean)}
    */
-  public        boolean                  angularVelocityCorrection                       = false;
+  public        boolean             angularVelocityCorrection                       = false;
   /**
    * Correct for skew that scales with angular velocity in
    * {@link SwerveDrive#setChassisSpeeds(ChassisSpeeds chassisSpeeds)} during auto.
    */
-  public        boolean                  autonomousAngularVelocityCorrection             = false;
+  public        boolean             autonomousAngularVelocityCorrection             = false;
   /**
    * Angular Velocity Correction Coefficent (expected values between -0.15 and 0.15).
    */
-  public        double                   angularVelocityCoefficient                      = 0;
+  public        double              angularVelocityCoefficient                      = 0;
   /**
    * Whether to correct heading when driving translationally. Set to true to enable.
    */
-  public        boolean                  headingCorrection                               = false;
+  public        boolean             headingCorrection                               = false;
   /**
    * MapleSim SwerveDrive.
    */
@@ -153,60 +169,39 @@ public class SwerveDrive
   /**
    * Amount of seconds the duration of the timestep the speeds should be applied for.
    */
-  private       double                   discretizationdtSeconds                         = 0.02;
+  private       double              discretizationdtSeconds                         = 0.02;
   /**
    * Deadband for speeds in heading correction.
    */
-  private       double                   HEADING_CORRECTION_DEADBAND                     = 0.01;
+  private       double              HEADING_CORRECTION_DEADBAND                     = 0.01;
   /**
    * Swerve IMU device for sensing the heading of the robot.
    */
   private       SwerveIMU                imu;
   /**
-   * Class that calculates robot's yaw velocity using IMU measurements. Used for angularVelocityCorrection in
-   * {@link SwerveDrive#drive(Translation2d, double, boolean, boolean)}.
-   */
-  private       IMUVelocity              imuVelocity;
-  /**
    * Simulation of the swerve drive.
    */
-  private       SwerveIMUSimulation      simIMU;
-  /**
-   * NT4 Publisher for the IMU reading.
-   */
-  private final DoublePublisher rawIMUPublisher
-      = NetworkTableInstance.getDefault()
-                            .getDoubleTopic(
-                                "swerve/Raw IMU Yaw")
-                            .publish();
-  /**
-   * NT4 Publisher for the IMU reading adjusted by offset and inversion.
-   */
-  private final DoublePublisher adjustedIMUPublisher
-      = NetworkTableInstance.getDefault()
-                            .getDoubleTopic(
-                                "swerve/Adjusted IMU Yaw")
-                            .publish();
+  private       SwerveIMUSimulation simIMU;
   /**
    * Counter to synchronize the modules relative encoder with absolute encoder when not moving.
    */
-  private       int                      moduleSynchronizationCounter                    = 0;
+  private       int                 moduleSynchronizationCounter                    = 0;
   /**
    * The last heading set in radians.
    */
-  private       double                   lastHeadingRadians                              = 0;
+  private       double              lastHeadingRadians                              = 0;
   /**
    * The absolute max speed that your robot can reach while translating in meters per second.
    */
-  private       double                   attainableMaxTranslationalSpeedMetersPerSecond  = 0;
+  private       double              attainableMaxTranslationalSpeedMetersPerSecond  = 0;
   /**
    * The absolute max speed the robot can reach while rotating radians per second.
    */
-  private       double                   attainableMaxRotationalVelocityRadiansPerSecond = 0;
+  private       double              attainableMaxRotationalVelocityRadiansPerSecond = 0;
   /**
    * Maximum speed of the robot in meters per second.
    */
-  private       double                   maxChassisSpeedMPS;
+  private       double              maxChassisSpeedMPS;
 
   /**
    * Creates a new swerve drivebase subsystem. Robot is controlled via the {@link SwerveDrive#drive} method, or via the
@@ -1464,7 +1459,6 @@ public class SwerveDrive
   {
     if (!SwerveDriveTelemetry.isSimulation)
     {
-      imuVelocity = IMUVelocity.createIMUVelocity(imu);
       angularVelocityCorrection = useInTeleop;
       autonomousAngularVelocityCorrection = useInAuto;
       angularVelocityCoefficient = angularVelocityCoeff;
@@ -1479,7 +1473,7 @@ public class SwerveDrive
    */
   public ChassisSpeeds angularVelocitySkewCorrection(ChassisSpeeds robotRelativeVelocity)
   {
-    var angularVelocity = new Rotation2d(imuVelocity.getVelocity() * angularVelocityCoefficient);
+    var angularVelocity = new Rotation2d(imu.getYawAngularVelocity().in(RadiansPerSecond) * angularVelocityCoefficient);
     if (angularVelocity.getRadians() != 0.0)
     {
       robotRelativeVelocity.toFieldRelativeSpeeds(getOdometryHeading());

@@ -27,7 +27,7 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
   /**
    * Wait time for status frames to show up.
    */
-  public static double STATUS_TIMEOUT_SECONDS = Milliseconds.of(20).in(Seconds);
+  public static double STATUS_TIMEOUT_SECONDS = Milliseconds.of(10).in(Seconds);
   /**
    * CANCoder with WPILib sendable and support.
    */

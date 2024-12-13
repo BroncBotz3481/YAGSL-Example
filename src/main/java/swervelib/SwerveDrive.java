@@ -31,6 +31,8 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Force;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -169,6 +171,22 @@ public class SwerveDrive
    * Simulation of the swerve drive.
    */
   private       SwerveIMUSimulation      simIMU;
+  /**
+   * NT4 Publisher for the IMU reading.
+   */
+  private final DoublePublisher rawIMUPublisher
+      = NetworkTableInstance.getDefault()
+                            .getDoubleTopic(
+                                "swerve/Raw IMU Yaw")
+                            .publish();
+  /**
+   * NT4 Publisher for the IMU reading adjusted by offset and inversion.
+   */
+  private final DoublePublisher adjustedIMUPublisher
+      = NetworkTableInstance.getDefault()
+                            .getDoubleTopic(
+                                "swerve/Adjusted IMU Yaw")
+                            .publish();
   /**
    * Counter to synchronize the modules relative encoder with absolute encoder when not moving.
    */
@@ -1158,8 +1176,8 @@ public class SwerveDrive
         if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)
         {
           module.updateTelemetry();
-          SmartDashboard.putNumber("Raw IMU Yaw", getYaw().getDegrees());
-          SmartDashboard.putNumber("Adjusted IMU Yaw", getOdometryHeading().getDegrees());
+          rawIMUPublisher.set(getYaw().getDegrees());
+          adjustedIMUPublisher.set(getOdometryHeading().getDegrees());
         }
         if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.INFO.ordinal())
         {

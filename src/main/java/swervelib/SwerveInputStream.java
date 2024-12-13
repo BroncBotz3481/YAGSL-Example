@@ -5,11 +5,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import swervelib.math.SwerveMath;
 
 /**
  * Helper class to easily transform Controller inputs into workable Chassis speeds. <br /> Inspired by SciBorgs.
@@ -470,16 +472,33 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
    * Apply the scalar value if it exists.
    *
    * @param axisValue Axis value to apply teh scalar too.
-   * @param scalar    Scalar option to use.
    * @return Axis value scaled by scalar value.
    */
-  private double applyScalar(double axisValue, Optional<Double> scalar)
+  private double applyRotationalScalar(double axisValue)
   {
-    if (scalar.isPresent())
+    if (angularVelocityScale.isPresent())
     {
-      return axisValue * scalar.get();
+      return axisValue * angularVelocityScale.get();
     }
     return axisValue;
+  }
+
+  /**
+   * Scale the translational axis by the {@link SwerveInputStream#translationScale} if it exists.
+   *
+   * @param xAxis X axis to scale.
+   * @param yAxis Y axis to scale.
+   * @return Scaled {@link Translation2d}
+   */
+  private Translation2d applyTranslationScalar(double xAxis, double yAxis)
+  {
+    if (translationScale.isPresent())
+
+    {
+      return SwerveMath.scaleTranslation(new Translation2d(xAxis, yAxis),
+                                         translationScale.get());
+    }
+    return new Translation2d(xAxis, yAxis);
   }
 
   /**
@@ -491,10 +510,11 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
   public ChassisSpeeds get()
   {
     double maximumChassisVelocity = swerveDrive.getMaximumChassisVelocity();
-    double vxMetersPerSecond = applyScalar(applyDeadband(controllerTranslationX.getAsDouble()),
-                                           translationScale) * maximumChassisVelocity;
-    double vyMetersPerSecond = applyScalar(applyDeadband(controllerTranslationY.getAsDouble()),
-                                           translationScale) * maximumChassisVelocity;
+    Translation2d scaledTranslation = applyTranslationScalar(applyDeadband(controllerTranslationX.getAsDouble()),
+                                                             applyDeadband(controllerTranslationY.getAsDouble()));
+
+    double vxMetersPerSecond = scaledTranslation.getX() * maximumChassisVelocity;
+    double vyMetersPerSecond = scaledTranslation.getY() * maximumChassisVelocity;
     double omegaRadiansPerSecond = 0;
 
     SwerveInputMode newMode = findMode();
@@ -518,7 +538,7 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
       }
       case ANGULAR_VELOCITY ->
       {
-        omegaRadiansPerSecond = applyScalar(applyDeadband(controllerTheta.get().getAsDouble()), angularVelocityScale) *
+        omegaRadiansPerSecond = applyRotationalScalar(applyDeadband(controllerTheta.get().getAsDouble())) *
                                 swerveDrive.getMaximumChassisAngularVelocity();
         break;
       }

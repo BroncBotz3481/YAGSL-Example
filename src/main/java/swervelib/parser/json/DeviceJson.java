@@ -222,16 +222,6 @@ public class DeviceJson
             // We are creating a motor for an angle motor which will use the absolute encoder attached to the data port.
             return new SparkMaxBrushedMotorSwerve(id, isDriveMotor, Type.kNoSensor, 0, false, DCMotor.getCIM(1));
         }
-      case "neo":
-      case "sparkmax":
-        return new SparkMaxSwerve(id, isDriveMotor);
-      case "sparkflex":
-        return new SparkFlexSwerve(id, isDriveMotor);
-      case "falcon":
-      case "talonfx":
-        return new TalonFXSwerve(id, canbus != null ? canbus : "", isDriveMotor);
-      case "talonsrx":
-        return new TalonSRXSwerve(id, isDriveMotor);
       case "thrifty_nova":
         return new ThriftyNovaSwerve(id, isDriveMotor);  
       default:

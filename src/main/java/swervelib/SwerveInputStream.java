@@ -199,7 +199,7 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
    * @param rot Rotation axis with values from [-1, 1]
    * @return self
    */
-  public SwerveInputStream withRotationControllerAxis(DoubleSupplier rot)
+  public SwerveInputStream withControllerRotationAxis(DoubleSupplier rot)
   {
     controllerOmega = Optional.of(rot);
     return this;
@@ -212,7 +212,7 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
    * @param headingY Heading Y axis with values from [-1, 1]
    * @return self
    */
-  public SwerveInputStream withHeadingControllerAxis(DoubleSupplier headingX, DoubleSupplier headingY)
+  public SwerveInputStream withControllerHeadingAxis(DoubleSupplier headingX, DoubleSupplier headingY)
   {
     controllerHeadingX = Optional.of(headingX);
     controllerHeadingY = Optional.of(headingY);
@@ -387,13 +387,13 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
       } else
       {
         DriverStation.reportError(
-            "Attempting to enter HEADING mode without heading axis, please use SwerveInputStream.withHeadingControllerAxis to add heading axis!",
+            "Attempting to enter HEADING mode without heading axis, please use SwerveInputStream.withControllerHeadingAxis to add heading axis!",
             false);
       }
     } else if (controllerOmega.isEmpty())
     {
       DriverStation.reportError(
-          "Attempting to enter ANGULAR_VELOCITY mode without a rotation axis, please use SwerveInputStream.withRotationControllerAxis to add angular velocity axis!",
+          "Attempting to enter ANGULAR_VELOCITY mode without a rotation axis, please use SwerveInputStream.withControllerRotationAxis to add angular velocity axis!",
           false);
       return SwerveInputMode.TRANSLATION_ONLY;
     }

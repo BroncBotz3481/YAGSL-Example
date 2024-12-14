@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import java.io.File;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;

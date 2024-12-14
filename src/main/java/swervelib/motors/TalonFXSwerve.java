@@ -66,12 +66,14 @@ public class TalonFXSwerve extends SwerveMotor
    *
    * @param motor        Motor to use.
    * @param isDriveMotor Whether this motor is a drive motor.
+   * @param motorType    {@link DCMotor} which the {@link TalonFX} is attached to.
    */
-  public TalonFXSwerve(TalonFX motor, boolean isDriveMotor)
+  public TalonFXSwerve(TalonFX motor, boolean isDriveMotor, DCMotor motorType)
   {
     this.isDriveMotor = isDriveMotor;
     this.motor = motor;
     this.cfg = motor.getConfigurator();
+    this.simMotor = motorType;
 
     factoryDefaults();
     clearStickyFaults();
@@ -88,10 +90,11 @@ public class TalonFXSwerve extends SwerveMotor
    * @param id           ID of the TalonFX on the CANBus.
    * @param canbus       CANBus on which the TalonFX is on.
    * @param isDriveMotor Whether the motor is a drive or steering motor.
+   * @param motorType    {@link DCMotor} which the {@link TalonFX} is attached to.
    */
-  public TalonFXSwerve(int id, String canbus, boolean isDriveMotor)
+  public TalonFXSwerve(int id, String canbus, boolean isDriveMotor, DCMotor motorType)
   {
-    this(new TalonFX(id, canbus), isDriveMotor);
+    this(new TalonFX(id, canbus), isDriveMotor, motorType);
   }
 
   /**
@@ -99,10 +102,11 @@ public class TalonFXSwerve extends SwerveMotor
    *
    * @param id           ID of the TalonFX on the canbus.
    * @param isDriveMotor Whether the motor is a drive or steering motor.
+   * @param motorType    {@link DCMotor} which the {@link TalonFX} is attached to.
    */
-  public TalonFXSwerve(int id, boolean isDriveMotor)
+  public TalonFXSwerve(int id, boolean isDriveMotor, DCMotor motorType)
   {
-    this(new TalonFX(id), isDriveMotor);
+    this(new TalonFX(id), isDriveMotor, motorType);
   }
 
   /**

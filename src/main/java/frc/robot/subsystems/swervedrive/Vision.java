@@ -402,7 +402,7 @@ public class Vision
     /**
      * Results list to be updated periodically and cached to avoid unnecessary queries.
      */
-    public        List<PhotonPipelineResult>   resultsList;
+    public        List<PhotonPipelineResult>   resultsList       = new ArrayList<>();
     /**
      * Last read from the camera timestamp to prevent lag due to slow data fetches.
      */
@@ -522,7 +522,7 @@ public class Vision
      */
     private void updateUnreadResults()
     {
-      double mostRecentTimestamp = resultsList.get(0).getTimestampSeconds();
+      double mostRecentTimestamp = resultsList.isEmpty() ? 0.0 : resultsList.get(0).getTimestampSeconds();
       double currentTimestamp    = Microseconds.of(NetworkTablesJNI.now()).in(Seconds);
       double debounceTime        = Milliseconds.of(15).in(Seconds);
       for (PhotonPipelineResult result : resultsList)
@@ -557,7 +557,7 @@ public class Vision
     private void updateEstimatedGlobalPose()
     {
       Optional<EstimatedRobotPose> visionEst = Optional.empty();
-      for (var change : camera.getAllUnreadResults())
+      for (var change : resultsList)
       {
         visionEst = poseEstimator.update(change);
         updateEstimationStdDevs(visionEst, change.getTargets());

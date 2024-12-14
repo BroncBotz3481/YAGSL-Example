@@ -1,15 +1,12 @@
 package swervelib.simulation;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Radian;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.Amps;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import org.ironmaple.simulation.motorsims.ControlRequest;
+import org.ironmaple.simulation.drivesims.SelfControlledSwerveDriveSimulation;
+import swervelib.parser.SwerveModulePhysicalCharacteristics;
 
 /**
  * Class that wraps around {@link org.ironmaple.simulation.drivesims.SwerveModuleSimulation}
@@ -17,19 +14,20 @@ import org.ironmaple.simulation.motorsims.ControlRequest;
 public class SwerveModuleSimulation
 {
 
-  private org.ironmaple.simulation.drivesims.SwerveModuleSimulation mapleSimModule = null;
+  private SelfControlledSwerveDriveSimulation.SelfControlledModuleSimulation mapleSimModule = null;
 
   /**
    * Configure the maple sim module
    *
-   * @param mapleSimModule the {@link org.ironmaple.simulation.drivesims.SwerveModuleSimulation} object for simulation
+   * @param simModule the {@link org.ironmaple.simulation.drivesims.SwerveModuleSimulation} object for simulation
    */
-  public void configureSimModule(org.ironmaple.simulation.drivesims.SwerveModuleSimulation mapleSimModule)
+  public void configureSimModule(org.ironmaple.simulation.drivesims.SwerveModuleSimulation simModule,
+                                 SwerveModulePhysicalCharacteristics physicalCharacteristics)
   {
-    this.mapleSimModule = mapleSimModule;
-    mapleSimModule.getDriveMotorConfigs()
-                  .withDefaultFeedForward(Volts.zero())
-                  .withVelocityVoltageController(Volts.per(RPM).ofNative(7.0 / 3000.0), true);
+    this.mapleSimModule = new SelfControlledSwerveDriveSimulation.SelfControlledModuleSimulation(simModule);
+    this.mapleSimModule.withCurrentLimits(
+        Amps.of(physicalCharacteristics.driveMotorCurrentLimit),
+        Amps.of(physicalCharacteristics.angleMotorCurrentLimit));
   }
 
   /**
@@ -40,10 +38,7 @@ public class SwerveModuleSimulation
    */
   public void updateStateAndPosition(SwerveModuleState desiredState)
   {
-    mapleSimModule.requestSteerControl(new ControlRequest.PositionVoltage(desiredState.angle.getMeasure()));
-    mapleSimModule.requestDriveControl(new ControlRequest.VelocityVoltage(
-        RadiansPerSecond.of(desiredState.speedMetersPerSecond / mapleSimModule.WHEEL_RADIUS.in(Meters))
-    ));
+    mapleSimModule.runModuleState(desiredState);
   }
 
   /**
@@ -53,10 +48,7 @@ public class SwerveModuleSimulation
    */
   public SwerveModulePosition getPosition()
   {
-    return new SwerveModulePosition(
-        mapleSimModule.getDriveWheelFinalPosition().in(Radian) * mapleSimModule.WHEEL_RADIUS.in(Meters),
-        mapleSimModule.getSteerAbsoluteFacing()
-    );
+    return mapleSimModule.getModulePosition();
   }
 
   /**
@@ -70,8 +62,8 @@ public class SwerveModuleSimulation
     {
       return new SwerveModuleState();
     }
-    SwerveModuleState state = mapleSimModule.getCurrentState();
-    state.angle = state.angle.minus(new Rotation2d());
+    SwerveModuleState state = mapleSimModule.getMeasuredState();
+    state.angle = state.angle.minus(Rotation2d.kZero);
     return state;
   }
 }

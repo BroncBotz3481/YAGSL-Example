@@ -19,7 +19,7 @@ public abstract class SwerveMotor
    * not change the simulation motor type! It is intended for use only if you are utilizing Feedforwards from
    * PathPlanner.
    */
-  public DCMotor simMotor;
+  public       DCMotor simMotor;
   /**
    * Whether the swerve motor is a drive motor.
    */

@@ -1,11 +1,17 @@
 package swervelib;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.BooleanPublisher;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -19,6 +25,7 @@ import swervelib.motors.SwerveMotor;
 import swervelib.parser.Cache;
 import swervelib.parser.PIDFConfig;
 import swervelib.parser.SwerveModuleConfiguration;
+import swervelib.parser.SwerveModulePhysicalCharacteristics;
 import swervelib.simulation.SwerveModuleSimulation;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
@@ -66,33 +73,45 @@ public class SwerveModule
    */
   private final Alert                  noEncoderWarning;
   /**
-   * NT3 Raw Absolute Angle publisher for the absolute encoder.
+   * NT4 Raw Absolute Angle publisher for the absolute encoder.
    */
-  private final String                 rawAbsoluteAngleName;
+  private final DoublePublisher  rawAbsoluteAnglePublisher;
   /**
-   * NT3 Adjusted Absolute angle publisher for the absolute encoder.
+   * NT4 Adjusted Absolute angle publisher for the absolute encoder.
    */
-  private final String                 adjAbsoluteAngleName;
+  private final DoublePublisher  adjAbsoluteAnglePublisher;
   /**
-   * NT3 Absolute encoder read issue.
+   * NT4 Absolute encoder read issue.
    */
-  private final String                 absoluteEncoderIssueName;
+  private final BooleanPublisher absoluteEncoderIssuePublisher;
   /**
-   * NT3 raw angle motor.
+   * NT4 raw angle motor.
    */
-  private final String                 rawAngleName;
+  private final DoublePublisher  rawAnglePublisher;
   /**
-   * NT3 Raw drive motor.
+   * NT4 Raw drive motor.
    */
-  private final String                 rawDriveName;
+  private final DoublePublisher  rawDriveEncoderPublisher;
   /**
-   * NT3 Raw drive motor.
+   * NT4 Raw drive motor.
    */
-  private final String                 rawDriveVelName;
+  private final DoublePublisher  rawDriveVelocityPublisher;
   /**
-   * Maximum speed of the drive motors in meters per second.
+   * Speed setpoint publisher for the module motor-controller PID.
    */
-  public        double                 maxSpeed;
+  private final DoublePublisher  speedSetpointPublisher;
+  /**
+   * Angle setpoint publisher for the module motor-controller PID.
+   */
+  private final DoublePublisher  angleSetpointPublisher;
+  /**
+   * Maximum {@link LinearVelocity} for the drive motor of the swerve module.
+   */
+  private       LinearVelocity         maxDriveVelocity;
+  /**
+   * Maximum {@link AngularVelocity} for the azimuth/angle motor of the swerve module.
+   */
+  private       AngularVelocity        maxAngularVelocity;
   /**
    * Feedforward for the drive motor during closed loop control.
    */
@@ -132,11 +151,8 @@ public class SwerveModule
    *
    * @param moduleNumber        Module number for kinematics.
    * @param moduleConfiguration Module constants containing CAN ID's and offsets.
-   * @param driveFeedforward    Drive motor feedforward created by
-   *                            {@link SwerveMath#createDriveFeedforward(double, double, double)}.
    */
-  public SwerveModule(int moduleNumber, SwerveModuleConfiguration moduleConfiguration,
-                      SimpleMotorFeedforward driveFeedforward)
+  public SwerveModule(int moduleNumber, SwerveModuleConfiguration moduleConfiguration)
   {
     //    angle = 0;
     //    speed = 0;
@@ -146,14 +162,14 @@ public class SwerveModule
     configuration = moduleConfiguration;
     angleOffset = moduleConfiguration.angleOffset;
 
-    // Initialize Feedforwards.
-    driveMotorFeedforward = driveFeedforward;
-
     // Create motors from configuration and reset them to defaults.
     angleMotor = moduleConfiguration.angleMotor;
     driveMotor = moduleConfiguration.driveMotor;
     angleMotor.factoryDefaults();
     driveMotor.factoryDefaults();
+
+    // Initialize Feedforwards.
+    driveMotorFeedforward = getDefaultFeedforward();
 
     // Configure voltage comp, current limit, and ramp rate.
     angleMotor.setVoltageCompensation(configuration.physicalCharacteristics.optimalVoltage);
@@ -204,11 +220,6 @@ public class SwerveModule
     drivePositionCache = new Cache<>(driveMotor::getPosition, 20);
     driveVelocityCache = new Cache<>(driveMotor::getVelocity, 20);
 
-    if (SwerveDriveTelemetry.isSimulation)
-    {
-      simModule = new SwerveModuleSimulation();
-    }
-
     // Force a cache update on init.
     driveVelocityCache.update();
     drivePositionCache.update();
@@ -226,12 +237,36 @@ public class SwerveModule
                                      moduleNumber,
                                      AlertType.kWarning);
 
-    rawAbsoluteAngleName = "swerve/modules/" + configuration.name + "/Raw Absolute Encoder";
-    adjAbsoluteAngleName = "swerve/modules/" + configuration.name + "/Adjusted Absolute Encoder";
-    absoluteEncoderIssueName = "swerve/modules/" + configuration.name + "/Absolute Encoder Read Issue";
-    rawAngleName = "swerve/modules/" + configuration.name + "/Raw Angle Encoder";
-    rawDriveName = "swerve/modules/" + configuration.name + "/Raw Drive Encoder";
-    rawDriveVelName = "swerve/modules/" + configuration.name + "/Raw Drive Velocity";
+    rawAbsoluteAnglePublisher = NetworkTableInstance.getDefault().getDoubleTopic(
+        "swerve/modules/" + configuration.name + "/Raw Absolute Encoder").publish();
+    adjAbsoluteAnglePublisher = NetworkTableInstance.getDefault().getDoubleTopic(
+        "swerve/modules/" + configuration.name + "/Adjusted Absolute Encoder").publish();
+    absoluteEncoderIssuePublisher = NetworkTableInstance.getDefault().getBooleanTopic(
+        "swerve/modules/" + configuration.name + "/Absolute Encoder Read Issue").publish();
+    rawAnglePublisher = NetworkTableInstance.getDefault().getDoubleTopic(
+        "swerve/modules/" + configuration.name + "/Raw Angle Encoder").publish();
+    rawDriveEncoderPublisher = NetworkTableInstance.getDefault().getDoubleTopic(
+        "swerve/modules/" + configuration.name + "/Raw Drive Encoder").publish();
+    rawDriveVelocityPublisher = NetworkTableInstance.getDefault().getDoubleTopic(
+        "swerve/modules/" + configuration.name + "/Raw Drive Velocity").publish();
+    speedSetpointPublisher = NetworkTableInstance.getDefault().getDoubleTopic(
+        "swerve/modules/" + configuration.name + "/Speed Setpoint").publish();
+    angleSetpointPublisher = NetworkTableInstance.getDefault().getDoubleTopic(
+        "swerve/modules/" + configuration.name + "/Angle Setpoint").publish();
+  }
+
+  /**
+   * Get the default {@link SimpleMotorFeedforward} for the swerve module drive motor.
+   *
+   * @return {@link SimpleMotorFeedforward} using motor details.
+   */
+  public SimpleMotorFeedforward getDefaultFeedforward()
+  {
+    double nominalVoltage   = driveMotor.getSimMotor().nominalVoltageVolts;
+    double maxDriveSpeedMPS = getMaxVelocity().in(MetersPerSecond);
+    return SwerveMath.createDriveFeedforward(nominalVoltage,
+                                             maxDriveSpeedMPS,
+                                             configuration.physicalCharacteristics.wheelGripCoefficientOfFriction);
   }
 
   /**
@@ -378,7 +413,7 @@ public class SwerveModule
     if (!force && antiJitterEnabled)
     {
       // Prevents module rotation if speed is less than 1%
-      SwerveMath.antiJitter(desiredState, lastState, Math.min(maxSpeed, 4));
+      SwerveMath.antiJitter(desiredState, lastState, Math.min(maxDriveVelocity.in(MetersPerSecond), 4));
     }
 
     // Cosine compensation.
@@ -388,7 +423,7 @@ public class SwerveModule
     LinearVelocity curVelocity = MetersPerSecond.of(lastState.speedMetersPerSecond);
     desiredState.speedMetersPerSecond = nextVelocity.magnitude();
 
-    setDesiredState(desiredState, isOpenLoop, driveMotorFeedforward.calculate(curVelocity, nextVelocity).magnitude());
+    setDesiredState(desiredState, isOpenLoop, driveMotorFeedforward.calculate(nextVelocity).magnitude());
   }
 
   /**
@@ -405,7 +440,7 @@ public class SwerveModule
 
     if (isOpenLoop)
     {
-      double percentOutput = desiredState.speedMetersPerSecond / maxSpeed;
+      double percentOutput = desiredState.speedMetersPerSecond / maxDriveVelocity.in(MetersPerSecond);
       driveMotor.set(percentOutput);
     } else
     {
@@ -443,10 +478,13 @@ public class SwerveModule
 
     if (SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)
     {
-      SmartDashboard.putNumber("swerve/modules/" + configuration.name + "/Speed Setpoint",
-                               desiredState.speedMetersPerSecond);
-      SmartDashboard.putNumber("swerve/modules/" + configuration.name + "/Angle Setpoint",
-                               desiredState.angle.getDegrees());
+      speedSetpointPublisher.set(desiredState.speedMetersPerSecond);
+      angleSetpointPublisher.set(desiredState.angle.getDegrees());
+    }
+
+    if (moduleNumber == SwerveDriveTelemetry.moduleCount - 1)
+    {
+      SwerveDriveTelemetry.endCtrlCycle();
     }
   }
 
@@ -711,6 +749,40 @@ public class SwerveModule
     }
   }
 
+
+  /**
+   * Get the maximum module velocity as a {@link LinearVelocity} based on the RPM and gear ratio.
+   *
+   * @return {@link LinearVelocity} max velocity of the drive wheel.
+   */
+  public LinearVelocity getMaxVelocity()
+  {
+    if (maxDriveVelocity == null)
+    {
+      maxDriveVelocity = MetersPerSecond.of(
+          (RadiansPerSecond.of(driveMotor.getSimMotor().freeSpeedRadPerSec).in(RotationsPerSecond) /
+           configuration.conversionFactors.drive.gearRatio) *
+          configuration.conversionFactors.drive.diameter);
+    }
+    return maxDriveVelocity;
+  }
+
+  /**
+   * Get the maximum module angular velocity as a {@link AngularVelocity} based on the RPM and gear ratio.
+   *
+   * @return {@link AngularVelocity} max velocity of the angle/azimuth.
+   */
+  public AngularVelocity getMaxAngularVelocity()
+  {
+    if (maxAngularVelocity == null)
+    {
+      maxAngularVelocity = RotationsPerSecond.of(
+          RadiansPerSecond.of(angleMotor.getSimMotor().freeSpeedRadPerSec).in(RotationsPerSecond) *
+          configuration.conversionFactors.angle.gearRatio);
+    }
+    return maxAngularVelocity;
+  }
+
   /**
    * Update data sent to {@link SmartDashboard}.
    */
@@ -718,13 +790,13 @@ public class SwerveModule
   {
     if (absoluteEncoder != null)
     {
-      SmartDashboard.putNumber(rawAbsoluteAngleName, absoluteEncoder.getAbsolutePosition());
+      rawAbsoluteAnglePublisher.set(absoluteEncoder.getAbsolutePosition());
     }
-    SmartDashboard.putNumber(rawAngleName, angleMotor.getPosition());
-    SmartDashboard.putNumber(rawDriveName, drivePositionCache.getValue());
-    SmartDashboard.putNumber(rawDriveVelName, driveVelocityCache.getValue());
-    SmartDashboard.putNumber(adjAbsoluteAngleName, getAbsolutePosition());
-    SmartDashboard.putNumber(absoluteEncoderIssueName, getAbsoluteEncoderReadIssue() ? 1 : 0);
+    rawAnglePublisher.set(angleMotor.getPosition());
+    rawDriveEncoderPublisher.set(drivePositionCache.getValue());
+    rawDriveVelocityPublisher.set(driveVelocityCache.getValue());
+    adjAbsoluteAnglePublisher.set(getAbsolutePosition());
+    absoluteEncoderIssuePublisher.set(getAbsoluteEncoderReadIssue());
   }
 
   /**
@@ -755,8 +827,9 @@ public class SwerveModule
    *                               configure with.
    */
   public void configureModuleSimulation(
-      org.ironmaple.simulation.drivesims.SwerveModuleSimulation swerveModuleSimulation)
+      org.ironmaple.simulation.drivesims.SwerveModuleSimulation swerveModuleSimulation,
+      SwerveModulePhysicalCharacteristics physicalCharacteristics)
   {
-    this.simModule.configureSimModule(swerveModuleSimulation);
+    this.simModule.configureSimModule(swerveModuleSimulation, physicalCharacteristics);
   }
 }

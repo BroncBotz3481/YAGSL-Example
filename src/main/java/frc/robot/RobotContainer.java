@@ -59,15 +59,15 @@ public class RobotContainer
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
                                                                 driverXbox::getLeftX,
                                                                 driverXbox::getLeftY)
-                                                            .withRotation(driverXbox::getRightX)
+                                                            .withRotationControllerAxis(driverXbox::getRightX)
                                                             .deadband(OperatorConstants.DEADBAND)
                                                             .scaleTranslation(0.8);
 
   /**
    * Clone's the angular velocity input stream and converts it to a fieldRelative input stream.
    */
-  SwerveInputStream driveDirectAngle = driveAngularVelocity.copy().withHeading(driverXbox::getRightX,
-                                                                               driverXbox::getRightY)
+  SwerveInputStream driveDirectAngle = driveAngularVelocity.copy().withHeadingControllerAxis(driverXbox::getRightX,
+                                                                                             driverXbox::getRightY)
                                                            .headingWhile(true);
 
 
@@ -90,15 +90,15 @@ public class RobotContainer
   SwerveInputStream driveAngularVelocitySim = SwerveInputStream.of(drivebase.getSwerveDrive(),
                                                                    driverXbox::getLeftY,
                                                                    driverXbox::getLeftX)
-                                                               .withRotation(() -> driverXbox.getRawAxis(2))
+                                                               .withRotationControllerAxis(() -> driverXbox.getRawAxis(2))
                                                                .deadband(OperatorConstants.DEADBAND)
                                                                .scaleTranslation(0.8);
   // Derive the heading axis with math!
   SwerveInputStream driveDirectAngleSim = driveAngularVelocitySim.copy()
-                                                                 .withHeading(() -> Math.sin(
+                                                                 .withHeadingControllerAxis(() -> Math.sin(
                                                                                   driverXbox.getRawAxis(
                                                                                       2) * Math.PI) * (Math.PI * 2),
-                                                                              () -> Math.cos(
+                                                                                            () -> Math.cos(
                                                                                   driverXbox.getRawAxis(
                                                                                       2) * Math.PI) *
                                                                                     (Math.PI * 2))

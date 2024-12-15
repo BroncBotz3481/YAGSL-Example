@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.swervedrive.drivebase.AbsoluteDrive;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
@@ -39,19 +40,34 @@ public class RobotContainer
   // controls are front-left positive
   // left stick controls translation
   // right stick controls the rotational velocity 
-  // buttons are quick rotation positions to different ways to face
-  // WARNING: default buttons are on the same buttons as the ones defined in configureBindings
+  // POV triggers quick rotation positions to different ways to face
   AbsoluteDriveAdv closedAbsoluteDriveAdv = new AbsoluteDriveAdv(drivebase,
-                                                                 () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
+                                                                 () -> MathUtil.applyDeadband(driverXbox.getLeftY() * -1,
                                                                                                OperatorConstants.LEFT_Y_DEADBAND),
-                                                                 () -> -MathUtil.applyDeadband(driverXbox.getLeftX(),
+                                                                 () -> MathUtil.applyDeadband(driverXbox.getLeftX() * -1,
                                                                                                OperatorConstants.LEFT_X_DEADBAND),
-                                                                 () -> -MathUtil.applyDeadband(driverXbox.getRightX(),
+                                                                 () -> MathUtil.applyDeadband(driverXbox.getRightX() * -1,
                                                                                                OperatorConstants.RIGHT_X_DEADBAND),
                                                                  ()-> (driverXbox.getHID().getPOV() == 0),
                                                                  ()-> (driverXbox.getHID().getPOV() == 180),
                                                                  ()-> (driverXbox.getHID().getPOV() == 90),
                                                                  ()-> (driverXbox.getHID().getPOV() == 270));
+
+  // Applies deadbands and inverts controls because joysticks
+  // are back-right positive while robot
+  // controls are front-left positive
+  // left stick controls translation
+  // right stick controls the desired angle NOT angular rotation
+  // This command prevents heading change when the comand starts
+  AbsoluteDrive absoluteDrive = new AbsoluteDrive(drivebase,
+                                                                 () -> MathUtil.applyDeadband(driverXbox.getLeftY() * -1,
+                                                                                               OperatorConstants.LEFT_Y_DEADBAND),
+                                                                 () -> MathUtil.applyDeadband(driverXbox.getLeftX() * -1,
+                                                                                               OperatorConstants.LEFT_X_DEADBAND),
+                                                                 () -> MathUtil.applyDeadband(driverXbox.getRightX() * -1,
+                                                                                               OperatorConstants.RIGHT_X_DEADBAND),
+                                                                 () -> MathUtil.applyDeadband(driverXbox.getRightY() * -1,
+                                                                                               OperatorConstants.RIGHT_X_DEADBAND));
 
   // Applies deadbands and inverts controls because joysticks
   // are back-right positive while robot
@@ -91,12 +107,16 @@ public class RobotContainer
 
   // Create a chooser to allow selecting the drive mode from a dashboard
   enum DriveMode {
+    ABSOLUTE_DRIVE,
     ABSOLUTE_ADVANCED,
     DIRECT_ANGLE,
     ANGULAR_VELOCITY,
     SET_POINT_GEN
   }
 
+  // Drive mode chooser to allow changing mode each time TeleOp is enabled. Default is used if 
+  // chooser is not opened.
+  // Pull up on dashboard or sim GUI (SmartDashborad/SendableChooser[0])
   SendableChooser<DriveMode> driveChooser = new SendableChooser<>();
 
   /**
@@ -110,6 +130,7 @@ public class RobotContainer
     // Setup chooser for selecting drive mode and set the default mode
     driveChooser.setDefaultOption("Drive Mode - Direct Angle", DriveMode.DIRECT_ANGLE);
     driveChooser.addOption("Drive Mode - Angular Velocity", DriveMode.ANGULAR_VELOCITY);
+    driveChooser.addOption("Drive Mode - Absolute Drive", DriveMode.ABSOLUTE_DRIVE);
     driveChooser.addOption("Drive Mode - Absolute Advanced", DriveMode.ABSOLUTE_ADVANCED);
     driveChooser.addOption("Drive Mode - Set Point Gen", DriveMode.SET_POINT_GEN);
     SmartDashboard.putData(driveChooser);
@@ -176,10 +197,14 @@ public class RobotContainer
   {
     switch (driveChooser.getSelected()) {
 
-      case DIRECT_ANGLE:
-        drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
+      case ANGULAR_VELOCITY:
+        drivebase.setDefaultCommand(driveFieldOrientedAngularVelocity);
         return;
 
+      case ABSOLUTE_DRIVE:
+        drivebase.setDefaultCommand(absoluteDrive);
+        return;
+        
       case ABSOLUTE_ADVANCED:
         drivebase.setDefaultCommand(closedAbsoluteDriveAdv);
         return;
@@ -188,9 +213,10 @@ public class RobotContainer
         drivebase.setDefaultCommand(driveSetpointGen);
         return;
 
-      case ANGULAR_VELOCITY:
+      case DIRECT_ANGLE:
       default:
-        drivebase.setDefaultCommand(driveFieldOrientedAngularVelocity);
+      drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
+
     }
   }
 

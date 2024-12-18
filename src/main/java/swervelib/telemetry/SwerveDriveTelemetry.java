@@ -45,6 +45,8 @@ public class SwerveDriveTelemetry
    */
   private static final DoublePublisher                         moduleCountPublisher
                                                                                         = NetworkTableInstance.getDefault()
+                                                                                                              .getTable(
+                                                                                                                  "SmartDashboard")
                                                                                                               .getDoubleTopic(
                                                                                                                   "swerve/moduleCount")
                                                                                                               .publish();
@@ -53,6 +55,8 @@ public class SwerveDriveTelemetry
    */
   private static final DoubleArrayPublisher                    measuredStatesArrayPublisher
                                                                                         = NetworkTableInstance.getDefault()
+                                                                                                              .getTable(
+                                                                                                                  "SmartDashboard")
                                                                                                               .getDoubleArrayTopic(
                                                                                                                   "swerve/measuredStates")
                                                                                                               .publish();
@@ -61,6 +65,8 @@ public class SwerveDriveTelemetry
    */
   private static final DoubleArrayPublisher                    desiredStatesArrayPublisher
                                                                                         = NetworkTableInstance.getDefault()
+                                                                                                              .getTable(
+                                                                                                                  "SmartDashboard")
                                                                                                               .getDoubleArrayTopic(
                                                                                                                   "swerve/desiredStates")
                                                                                                               .publish();
@@ -69,6 +75,8 @@ public class SwerveDriveTelemetry
    */
   private static final DoubleArrayPublisher                    measuredChassisSpeedsArrayPublisher
                                                                                         = NetworkTableInstance.getDefault()
+                                                                                                              .getTable(
+                                                                                                                  "SmartDashboard")
                                                                                                               .getDoubleArrayTopic(
                                                                                                                   "swerve/measuredChassisSpeeds")
                                                                                                               .publish();
@@ -77,6 +85,8 @@ public class SwerveDriveTelemetry
    */
   private static final DoubleArrayPublisher                    desiredChassisSpeedsArrayPublisher
                                                                                         = NetworkTableInstance.getDefault()
+                                                                                                              .getTable(
+                                                                                                                  "SmartDashboard")
                                                                                                               .getDoubleArrayTopic(
                                                                                                                   "swerve/desiredChassisSpeeds")
                                                                                                               .publish();
@@ -85,6 +95,8 @@ public class SwerveDriveTelemetry
    */
   private static final DoublePublisher                         robotRotationPublisher
                                                                                         = NetworkTableInstance.getDefault()
+                                                                                                              .getTable(
+                                                                                                                  "SmartDashboard")
                                                                                                               .getDoubleTopic(
                                                                                                                   "swerve/robotRotation")
                                                                                                               .publish();
@@ -93,6 +105,8 @@ public class SwerveDriveTelemetry
    */
   private static final DoublePublisher                         maxAngularVelocityPublisher
                                                                                         = NetworkTableInstance.getDefault()
+                                                                                                              .getTable(
+                                                                                                                  "SmartDashboard")
                                                                                                               .getDoubleTopic(
                                                                                                                   "swerve/maxAngularVelocity")
                                                                                                               .publish();
@@ -101,6 +115,8 @@ public class SwerveDriveTelemetry
    */
   private static final StructArrayPublisher<SwerveModuleState> measuredStatesStruct
                                                                                         = NetworkTableInstance.getDefault()
+                                                                                                              .getTable(
+                                                                                                                  "SmartDashboard")
                                                                                                               .getStructArrayTopic(
                                                                                                                   "swerve/advantagescope/currentStates",
                                                                                                                   SwerveModuleState.struct)
@@ -110,6 +126,8 @@ public class SwerveDriveTelemetry
    */
   private static final StructArrayPublisher<SwerveModuleState> desiredStatesStruct
                                                                                         = NetworkTableInstance.getDefault()
+                                                                                                              .getTable(
+                                                                                                                  "SmartDashboard")
                                                                                                               .getStructArrayTopic(
                                                                                                                   "swerve/advantagescope/desiredStates",
                                                                                                                   SwerveModuleState.struct)
@@ -119,6 +137,8 @@ public class SwerveDriveTelemetry
    */
   private static final StructPublisher<ChassisSpeeds>          measuredChassisSpeedsStruct
                                                                                         = NetworkTableInstance.getDefault()
+                                                                                                              .getTable(
+                                                                                                                  "SmartDashboard")
                                                                                                               .getStructTopic(
                                                                                                                   "swerve/advantagescope/measuredChassisSpeeds",
                                                                                                                   ChassisSpeeds.struct)
@@ -128,6 +148,8 @@ public class SwerveDriveTelemetry
    */
   private static final StructPublisher<ChassisSpeeds>          desiredChassisSpeedsStruct
                                                                                         = NetworkTableInstance.getDefault()
+                                                                                                              .getTable(
+                                                                                                                  "SmartDashboard")
                                                                                                               .getStructTopic(
                                                                                                                   "swerve/advantagescope/desiredChassisSpeeds",
                                                                                                                   ChassisSpeeds.struct)
@@ -137,6 +159,8 @@ public class SwerveDriveTelemetry
    */
   private static final StructPublisher<Rotation2d>             robotRotationStruct
                                                                                         = NetworkTableInstance.getDefault()
+                                                                                                              .getTable(
+                                                                                                                  "SmartDashboard")
                                                                                                               .getStructTopic(
                                                                                                                   "swerve/advantagescope/robotRotation",
                                                                                                                   Rotation2d.struct)
@@ -145,6 +169,8 @@ public class SwerveDriveTelemetry
    * Wheel locations array publisher for NT4.
    */
   private static final DoubleArrayPublisher wheelLocationsArrayPublisher = NetworkTableInstance.getDefault()
+                                                                                               .getTable(
+                                                                                                   "SmartDashboard")
                                                                                                .getDoubleArrayTopic(
                                                                                                    "swerve/wheelLocation")
                                                                                                .publish();
@@ -152,6 +178,8 @@ public class SwerveDriveTelemetry
    * Max speed publisher for NT4.
    */
   private static final DoublePublisher      maxSpeedPublisher            = NetworkTableInstance.getDefault()
+                                                                                               .getTable(
+                                                                                                   "SmartDashboard")
                                                                                                .getDoubleTopic(
                                                                                                    "swerve/maxSpeed")
                                                                                                .publish();
@@ -159,6 +187,8 @@ public class SwerveDriveTelemetry
    * Rotation unit for NT4.
    */
   private static final StringPublisher      rotationUnitPublisher        = NetworkTableInstance.getDefault()
+                                                                                               .getTable(
+                                                                                                   "SmartDashboard")
                                                                                                .getStringTopic(
                                                                                                    "swerve/rotationUnit")
                                                                                                .publish();
@@ -166,6 +196,8 @@ public class SwerveDriveTelemetry
    * Chassis width publisher
    */
   private static final DoublePublisher      sizeLeftRightPublisher       = NetworkTableInstance.getDefault()
+                                                                                               .getTable(
+                                                                                                   "SmartDashboard")
                                                                                                .getDoubleTopic(
                                                                                                    "swerve/sizeLeftRight")
                                                                                                .publish();
@@ -173,6 +205,8 @@ public class SwerveDriveTelemetry
    * Chassis Length publisher.
    */
   private static final DoublePublisher      sizeFrontBackPublisher       = NetworkTableInstance.getDefault()
+                                                                                               .getTable(
+                                                                                                   "SmartDashboard")
                                                                                                .getDoubleTopic(
                                                                                                    "swerve/sizeFrontBack")
                                                                                                .publish();
@@ -180,6 +214,8 @@ public class SwerveDriveTelemetry
    * Chassis direction widget publisher.
    */
   private static final StringPublisher      forwardDirectionPublisher    = NetworkTableInstance.getDefault()
+                                                                                               .getTable(
+                                                                                                   "SmartDashboard")
                                                                                                .getStringTopic(
                                                                                                    "swerve/forwardDirection")
                                                                                                .publish();
@@ -188,6 +224,8 @@ public class SwerveDriveTelemetry
    */
   private static final DoublePublisher      odomCycleTime
                                                                          = NetworkTableInstance.getDefault()
+                                                                                               .getTable(
+                                                                                                   "SmartDashboard")
                                                                                                .getDoubleTopic(
                                                                                                    "swerve/odomCycleMS")
                                                                                                .publish();
@@ -197,6 +235,8 @@ public class SwerveDriveTelemetry
    */
   private static final DoublePublisher      ctrlCycleTime
                                                                          = NetworkTableInstance.getDefault()
+                                                                                               .getTable(
+                                                                                                   "SmartDashboard")
                                                                                                .getDoubleTopic(
                                                                                                    "swerve/controlCycleMS")
                                                                                                .publish();

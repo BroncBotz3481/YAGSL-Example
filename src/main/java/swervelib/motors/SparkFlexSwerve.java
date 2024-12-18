@@ -11,7 +11,6 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
@@ -25,7 +24,6 @@ import edu.wpi.first.wpilibj.Timer;
 import java.util.function.Supplier;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.parser.PIDFConfig;
-import swervelib.parser.json.modules.ConversionFactorsJson;
 import swervelib.telemetry.SwerveDriveTelemetry;
 
 /**
@@ -74,15 +72,6 @@ public class SparkFlexSwerve extends SwerveMotor
    * Configuration object for {@link SparkFlex} motor.
    */
   private       SparkFlexConfig           cfg                    = new SparkFlexConfig();
-  /**
-   * After the first post-module config update there will be an error thrown to alert to a possible issue.
-   */
-  private boolean startupInitialized = false;
-  /**
-   * Module Conversion factors to use.
-   */
-  private ConversionFactorsJson moduleConversionFactors;
-
 
 
   /**
@@ -362,12 +351,6 @@ public class SparkFlexSwerve extends SwerveMotor
       }
     }
 
-  }
-
-  @Override
-  public void configureConversionFactor(ConversionFactorsJson factorsJson)
-  {
-    this.moduleConversionFactors = factorsJson;
   }
 
   /**

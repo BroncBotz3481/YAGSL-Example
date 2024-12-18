@@ -197,7 +197,6 @@ public class SwerveModule
 
     // Config angle motor/controller
     angleMotor.configureIntegratedEncoder(moduleConfiguration.conversionFactors.angle.factor);
-    angleMotor.configureConversionFactor(moduleConfiguration.conversionFactors);
     angleMotor.configurePIDF(moduleConfiguration.anglePIDF);
     angleMotor.configurePIDWrapping(0, 360);
     angleMotor.setInverted(moduleConfiguration.angleMotorInverted);
@@ -211,7 +210,6 @@ public class SwerveModule
 
     // Config drive motor/controller
     driveMotor.configureIntegratedEncoder(moduleConfiguration.conversionFactors.drive.factor);
-    driveMotor.configureConversionFactor(moduleConfiguration.conversionFactors);
     driveMotor.configurePIDF(moduleConfiguration.velocityPIDF);
     driveMotor.setInverted(moduleConfiguration.driveMotorInverted);
     driveMotor.setMotorBrake(true);

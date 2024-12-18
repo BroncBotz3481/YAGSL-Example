@@ -143,12 +143,6 @@ public class TalonSRXSwerve extends SwerveMotor
     configureCANStatusFrames(250);
   }
 
-  @Override
-  public void configureConversionFactor(ConversionFactorsJson factorsJson)
-  {
-    this.moduleConversionFactors = factorsJson;
-  }
-
   /**
    * Set the CAN status frames.
    *

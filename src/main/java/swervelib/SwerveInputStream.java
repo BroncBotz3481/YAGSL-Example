@@ -89,53 +89,6 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
 
 
   /**
-   * Drive modes to keep track of.
-   */
-  enum SwerveInputMode
-  {
-    /**
-     * Translation only mode, does not allow for rotation and maintains current heading.
-     */
-    TRANSLATION_ONLY,
-    /**
-     * Output based off angular velocity
-     */
-    ANGULAR_VELOCITY,
-    /**
-     * Output based off of heading.
-     */
-    HEADING,
-    /**
-     * Output based off of targeting.
-     */
-    AIM
-  }
-
-  /**
-   * Copy the {@link SwerveInputStream} object.
-   *
-   * @return Clone of current {@link SwerveInputStream}
-   */
-  public SwerveInputStream copy()
-  {
-    SwerveInputStream newStream = new SwerveInputStream(swerveDrive, controllerTranslationX, controllerTranslationY);
-    newStream.controllerOmega = controllerOmega;
-    newStream.controllerHeadingX = controllerHeadingX;
-    newStream.controllerHeadingY = controllerHeadingY;
-    newStream.axisDeadband = axisDeadband;
-    newStream.translationAxisScale = translationAxisScale;
-    newStream.omegaAxisScale = omegaAxisScale;
-    newStream.aimTarget = aimTarget;
-    newStream.headingEnabled = headingEnabled;
-    newStream.aimEnabled = aimEnabled;
-    newStream.currentMode = currentMode;
-    newStream.translationOnlyEnabled = translationOnlyEnabled;
-    newStream.lockedHeading = lockedHeading;
-    newStream.swerveController = swerveController;
-    return newStream;
-  }
-
-  /**
    * Create a {@link SwerveInputStream} for an easy way to generate {@link ChassisSpeeds} from a driver controller.
    *
    * @param drive {@link SwerveDrive} object for transformation.
@@ -191,6 +144,30 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
   public static SwerveInputStream of(SwerveDrive drive, DoubleSupplier x, DoubleSupplier y)
   {
     return new SwerveInputStream(drive, x, y);
+  }
+
+  /**
+   * Copy the {@link SwerveInputStream} object.
+   *
+   * @return Clone of current {@link SwerveInputStream}
+   */
+  public SwerveInputStream copy()
+  {
+    SwerveInputStream newStream = new SwerveInputStream(swerveDrive, controllerTranslationX, controllerTranslationY);
+    newStream.controllerOmega = controllerOmega;
+    newStream.controllerHeadingX = controllerHeadingX;
+    newStream.controllerHeadingY = controllerHeadingY;
+    newStream.axisDeadband = axisDeadband;
+    newStream.translationAxisScale = translationAxisScale;
+    newStream.omegaAxisScale = omegaAxisScale;
+    newStream.aimTarget = aimTarget;
+    newStream.headingEnabled = headingEnabled;
+    newStream.aimEnabled = aimEnabled;
+    newStream.currentMode = currentMode;
+    newStream.translationOnlyEnabled = translationOnlyEnabled;
+    newStream.lockedHeading = lockedHeading;
+    newStream.swerveController = swerveController;
+    return newStream;
   }
 
   /**
@@ -254,7 +231,6 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
     omegaAxisScale = scaleRotation == 0 ? Optional.empty() : Optional.of(scaleRotation);
     return this;
   }
-
 
   /**
    * Output {@link ChassisSpeeds} based on heading while the supplier is True.
@@ -572,5 +548,28 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
     currentMode = newMode;
 
     return new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
+  }
+
+  /**
+   * Drive modes to keep track of.
+   */
+  enum SwerveInputMode
+  {
+    /**
+     * Translation only mode, does not allow for rotation and maintains current heading.
+     */
+    TRANSLATION_ONLY,
+    /**
+     * Output based off angular velocity
+     */
+    ANGULAR_VELOCITY,
+    /**
+     * Output based off of heading.
+     */
+    HEADING,
+    /**
+     * Output based off of targeting.
+     */
+    AIM
   }
 }

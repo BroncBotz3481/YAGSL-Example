@@ -194,9 +194,6 @@ public class TalonFXSwerve extends SwerveMotor
                           .withSensorToMechanismRatio(positionConversionFactor);
 
     cfg.apply(configuration);
-    // Taken from democat's library.
-    // https://github.com/democat3457/swerve-lib/blob/7c03126b8c22f23a501b2c2742f9d173a5bcbc40/src/main/java/com/swervedrivespecialties/swervelib/ctre/Falcon500DriveControllerFactoryBuilder.java#L16
-    // configureCANStatusFrames(250);
   }
 
   @Override

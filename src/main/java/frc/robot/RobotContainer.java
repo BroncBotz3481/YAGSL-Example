@@ -94,15 +94,15 @@ public class RobotContainer
                                                                .deadband(OperatorConstants.DEADBAND)
                                                                .scaleTranslation(0.8);
   // Derive the heading axis with math!
-  SwerveInputStream driveDirectAngleSim     = driveAngularVelocitySim.copy()
-                                                                     .withControllerHeadingAxis(() -> Math.sin(
-                                                                                                    driverXbox.getRawAxis(
-                                                                                                        2) * Math.PI) * (Math.PI * 2),
-                                                                                                () -> Math.cos(
-                                                                                                    driverXbox.getRawAxis(
-                                                                                                        2) * Math.PI) *
-                                                                                                      (Math.PI * 2))
-                                                                     .headingWhile(true);
+  SwerveInputStream driveDirectAngleSim = driveAngularVelocitySim.copy()
+                                                                 .withControllerHeadingAxis(() -> Math.sin(
+                                                                                                driverXbox.getRawAxis(
+                                                                                                    2) * Math.PI) * (Math.PI * 2),
+                                                                                            () -> Math.cos(
+                                                                                                driverXbox.getRawAxis(
+                                                                                                    2) * Math.PI) *
+                                                                                                  (Math.PI * 2))
+                                                                 .headingWhile(true);
 
   Command driveFieldOrientedDirectAngleSim = drivebase.driveFieldOriented(driveDirectAngleSim);
 

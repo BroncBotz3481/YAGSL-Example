@@ -26,6 +26,7 @@ import swervelib.encoders.SparkMaxAnalogEncoderSwerve;
 import swervelib.encoders.SparkMaxEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.parser.PIDFConfig;
+import swervelib.parser.json.modules.ConversionFactorsJson;
 import swervelib.telemetry.SwerveDriveTelemetry;
 
 /**
@@ -79,13 +80,13 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
    */
   private       SparkMaxConfig            cfg                    = new SparkMaxConfig();
   /**
-   * Tracker for changes that need to be pushed.
+   * Module Conversion factors to use.
    */
-  private       boolean                   cfgUpdated             = false;
+  private ConversionFactorsJson moduleConversionFactors;
   /**
    * After the first post-module config update there will be an error thrown to alert to a possible issue.
    */
-  private boolean startupInitialized = false;
+  private boolean               startupInitialized = false;
 
   /**
    * Initialize the swerve motor.
@@ -152,7 +153,6 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
         // Configure feedback of the PID controller as the integrated encoder.
         cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
       }
-      cfgUpdated = true;
     }
     encoder.ifPresentOrElse((RelativeEncoder enc) -> {
       velocity = enc::getVelocity;
@@ -217,9 +217,12 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
    */
   public void updateConfig(SparkMaxConfig cfgGiven)
   {
+    if (!DriverStation.isDisabled())
+    {
+      throw new RuntimeException("Configuration changes cannot be applied while the robot is enabled.");
+    }
     cfg.apply(cfgGiven);
     configureSparkMax(() -> motor.configure(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters));
-    cfgUpdated = false;
   }
 
   /**
@@ -231,7 +234,6 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   public void setVoltageCompensation(double nominalVoltage)
   {
     cfg.voltageCompensation(nominalVoltage);
-    cfgUpdated = true;
   }
 
   /**
@@ -244,7 +246,6 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   public void setCurrentLimit(int currentLimit)
   {
     cfg.smartCurrentLimit(currentLimit);
-    cfgUpdated = true;
   }
 
   /**
@@ -257,7 +258,6 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   {
     cfg.closedLoopRampRate(rampRate)
        .openLoopRampRate(rampRate);
-    cfgUpdated = true;
   }
 
   /**
@@ -328,7 +328,6 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
     {
       absoluteEncoder = null;
       cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
-      cfgUpdated = true;
 
       this.encoder.ifPresentOrElse((RelativeEncoder enc) -> {
         velocity = enc::getVelocity;
@@ -341,7 +340,6 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
     {
       cfg.closedLoop.feedbackSensor(encoder instanceof SparkMaxAnalogEncoderSwerve
                                     ? FeedbackSensor.kAnalogSensor : FeedbackSensor.kAbsoluteEncoder);
-      cfgUpdated = true;
 
       DriverStation.reportWarning(
           "IF possible configure the encoder offset in the REV Hardware Client instead of using the" +
@@ -440,7 +438,12 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
             .velocityConversionFactor(positionConversionFactor / 60);
       }
     }
-    cfgUpdated = true;
+  }
+
+  @Override
+  public void configureConversionFactor(ConversionFactorsJson factorsJson)
+  {
+    this.moduleConversionFactors = factorsJson;
   }
 
   /**
@@ -454,7 +457,6 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
     cfg.closedLoop.pidf(config.p, config.i, config.d, config.f)
                   .iZone(config.iz)
                   .outputRange(config.output.min, config.output.max);
-    cfgUpdated = true;
   }
 
   /**
@@ -469,7 +471,6 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
     cfg.closedLoop
         .positionWrappingEnabled(true)
         .positionWrappingInputRange(minInput, maxInput);
-    cfgUpdated = true;
 
   }
 
@@ -482,7 +483,6 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   public void setMotorBrake(boolean isBrakeMode)
   {
     cfg.idleMode(isBrakeMode ? IdleMode.kBrake : IdleMode.kCoast);
-    cfgUpdated = true;
   }
 
   /**
@@ -494,7 +494,6 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   public void setInverted(boolean inverted)
   {
     cfg.inverted(inverted);
-    cfgUpdated = true;
   }
 
   /**
@@ -503,10 +502,13 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   @Override
   public void burnFlash()
   {
+    if (!DriverStation.isDisabled())
+    {
+      throw new RuntimeException("Config updates cannot be applied while the robot is Enabled!");
+    }
     configureSparkMax(() -> {
       return motor.configure(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
     });
-    cfgUpdated = false;
   }
 
   /**
@@ -530,19 +532,6 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   public void setReference(double setpoint, double feedforward)
   {
     int pidSlot = 0;
-
-    if (cfgUpdated)
-    {
-      burnFlash();
-      Timer.delay(0.01); // Give 10ms to apply changes
-      if (startupInitialized)
-      {
-        DriverStation.reportWarning("Applying changes mid-execution not recommended.", true);
-      } else
-      {
-        startupInitialized = true;
-      }
-    }
 
     if (isDriveMotor)
     {

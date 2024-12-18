@@ -197,6 +197,7 @@ public class SwerveModule
 
     // Config angle motor/controller
     angleMotor.configureIntegratedEncoder(moduleConfiguration.conversionFactors.angle.factor);
+    angleMotor.configureConversionFactor(moduleConfiguration.conversionFactors);
     angleMotor.configurePIDF(moduleConfiguration.anglePIDF);
     angleMotor.configurePIDWrapping(0, 360);
     angleMotor.setInverted(moduleConfiguration.angleMotorInverted);
@@ -210,6 +211,7 @@ public class SwerveModule
 
     // Config drive motor/controller
     driveMotor.configureIntegratedEncoder(moduleConfiguration.conversionFactors.drive.factor);
+    driveMotor.configureConversionFactor(moduleConfiguration.conversionFactors);
     driveMotor.configurePIDF(moduleConfiguration.velocityPIDF);
     driveMotor.setInverted(moduleConfiguration.driveMotorInverted);
     driveMotor.setMotorBrake(true);
@@ -237,21 +239,21 @@ public class SwerveModule
                                      moduleNumber,
                                      AlertType.kWarning);
 
-    rawAbsoluteAnglePublisher = NetworkTableInstance.getDefault().getDoubleTopic(
+    rawAbsoluteAnglePublisher = NetworkTableInstance.getDefault().getTable("SmartDashboard").getDoubleTopic(
         "swerve/modules/" + configuration.name + "/Raw Absolute Encoder").publish();
-    adjAbsoluteAnglePublisher = NetworkTableInstance.getDefault().getDoubleTopic(
+    adjAbsoluteAnglePublisher = NetworkTableInstance.getDefault().getTable("SmartDashboard").getDoubleTopic(
         "swerve/modules/" + configuration.name + "/Adjusted Absolute Encoder").publish();
-    absoluteEncoderIssuePublisher = NetworkTableInstance.getDefault().getBooleanTopic(
+    absoluteEncoderIssuePublisher = NetworkTableInstance.getDefault().getTable("SmartDashboard").getBooleanTopic(
         "swerve/modules/" + configuration.name + "/Absolute Encoder Read Issue").publish();
-    rawAnglePublisher = NetworkTableInstance.getDefault().getDoubleTopic(
+    rawAnglePublisher = NetworkTableInstance.getDefault().getTable("SmartDashboard").getDoubleTopic(
         "swerve/modules/" + configuration.name + "/Raw Angle Encoder").publish();
-    rawDriveEncoderPublisher = NetworkTableInstance.getDefault().getDoubleTopic(
+    rawDriveEncoderPublisher = NetworkTableInstance.getDefault().getTable("SmartDashboard").getDoubleTopic(
         "swerve/modules/" + configuration.name + "/Raw Drive Encoder").publish();
-    rawDriveVelocityPublisher = NetworkTableInstance.getDefault().getDoubleTopic(
+    rawDriveVelocityPublisher = NetworkTableInstance.getDefault().getTable("SmartDashboard").getDoubleTopic(
         "swerve/modules/" + configuration.name + "/Raw Drive Velocity").publish();
-    speedSetpointPublisher = NetworkTableInstance.getDefault().getDoubleTopic(
+    speedSetpointPublisher = NetworkTableInstance.getDefault().getTable("SmartDashboard").getDoubleTopic(
         "swerve/modules/" + configuration.name + "/Speed Setpoint").publish();
-    angleSetpointPublisher = NetworkTableInstance.getDefault().getDoubleTopic(
+    angleSetpointPublisher = NetworkTableInstance.getDefault().getTable("SmartDashboard").getDoubleTopic(
         "swerve/modules/" + configuration.name + "/Angle Setpoint").publish();
   }
 

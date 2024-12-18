@@ -3,6 +3,7 @@ package swervelib.motors;
 import edu.wpi.first.math.system.plant.DCMotor;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.parser.PIDFConfig;
+import swervelib.parser.json.modules.ConversionFactorsJson;
 
 /**
  * Swerve motor abstraction which defines a standard interface for motors within a swerve module.
@@ -49,6 +50,13 @@ public abstract class SwerveMotor
    * @param positionConversionFactor The conversion factor to apply for position.
    */
   public abstract void configureIntegratedEncoder(double positionConversionFactor);
+
+  /**
+   * Configure the motor controller conversion factors based off given ConversionFactors.
+   *
+   * @param factorsJson {@link ConversionFactorsJson} from {@link swervelib.parser.SwerveParser}.
+   */
+  public abstract void configureConversionFactor(ConversionFactorsJson factorsJson);
 
   /**
    * Configure the PIDF values for the closed loop controller. 0 is disabled or off.

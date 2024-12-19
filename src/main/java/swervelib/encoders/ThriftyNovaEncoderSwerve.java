@@ -9,7 +9,13 @@ import swervelib.motors.ThriftyNovaSwerve;
 public class ThriftyNovaEncoderSwerve extends SwerveAbsoluteEncoder {
     /** The absolute encoder is directly interfaced through the Thrifty Nova motor. */
     protected ThriftyNovaSwerve motor;
+    /**
+     * Inversion state of the attached encoder.
+     */
     protected boolean inverted = false;
+    /**
+     * Offset of the absolute encoder.
+     */
     protected double offset = 0.0;
    
     /**

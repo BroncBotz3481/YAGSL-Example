@@ -226,8 +226,10 @@ public class DeviceJson
             // We are creating a motor for an angle motor which will use the absolute encoder attached to the data port.
             return new SparkMaxBrushedMotorSwerve(id, isDriveMotor, Type.kNoSensor, 0, false, DCMotor.getCIM(1));
         }
-      case "thrifty_nova":
-        return new ThriftyNovaSwerve(id, isDriveMotor);  
+      case "nova_neo":
+        return new ThriftyNovaSwerve(id, isDriveMotor, DCMotor.getNEO(1));
+      case "nova_neo550":
+        return new ThriftyNovaSwerve(id, isDriveMotor, DCMotor.getNeo550(1));
       default:
         throw new RuntimeException(type + " is not a recognized motor type.");
     }

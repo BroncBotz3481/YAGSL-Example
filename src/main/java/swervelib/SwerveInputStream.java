@@ -6,6 +6,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.XboxController;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -16,8 +18,7 @@ import swervelib.math.SwerveMath;
  * Helper class to easily transform Controller inputs into workable Chassis speeds. <br /> Inspired by SciBorgs.
  * https://github.com/SciBorgs/Crescendo-2024/blob/main/src/main/java/org/sciborgs1155/lib/InputStream.java
  * <p>
- * Intended to easily create an interface that generates {@link ChassisSpeeds} from
- * {@link edu.wpi.first.wpilibj.XboxController}
+ * Intended to easily create an interface that generates {@link ChassisSpeeds} from {@link XboxController}
  */
 public class SwerveInputStream implements Supplier<ChassisSpeeds>
 {
@@ -86,6 +87,14 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
    * Cube the angular velocity axis from the controller.
    */
   private Optional<BooleanSupplier> omegaCube            = Optional.empty();
+  /**
+   * Robot relative oriented output expected.
+   */
+  private Optional<BooleanSupplier> robotRelative        = Optional.empty();
+  /**
+   * Field oriented chassis output is relative to your current alliance.
+   */
+  private Optional<BooleanSupplier> allianceRelative     = Optional.empty();
   /**
    * {@link SwerveController} for simple control over heading.
    */
@@ -177,7 +186,57 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
     newStream.swerveController = swerveController;
     newStream.omegaCube = omegaCube;
     newStream.translationCube = translationCube;
+    newStream.robotRelative = robotRelative;
+    newStream.allianceRelative = allianceRelative;
     return newStream;
+  }
+
+  /**
+   * Set the stream to output robot relative {@link ChassisSpeeds}
+   *
+   * @param enabled Robot-Relative {@link ChassisSpeeds} output.
+   * @return self
+   */
+  public SwerveInputStream robotRelative(BooleanSupplier enabled)
+  {
+    robotRelative = Optional.of(enabled);
+    return this;
+  }
+
+  /**
+   * Set the stream to output robot relative {@link ChassisSpeeds}
+   *
+   * @param enabled Robot-Relative {@link ChassisSpeeds} output.
+   * @return self
+   */
+  public SwerveInputStream robotRelative(boolean enabled)
+  {
+    robotRelative = enabled ? Optional.of(() -> enabled) : Optional.empty();
+    return this;
+  }
+
+  /**
+   * Modify the output {@link ChassisSpeeds} so that it is always relative to your alliance.
+   *
+   * @param enabled Alliance aware {@link ChassisSpeeds} output.
+   * @return self
+   */
+  public SwerveInputStream allianceRelativeControl(BooleanSupplier enabled)
+  {
+    allianceRelative = Optional.of(enabled);
+    return this;
+  }
+
+  /**
+   * Modify the output {@link ChassisSpeeds} so that it is always relative to your alliance.
+   *
+   * @param enabled Alliance aware {@link ChassisSpeeds} output.
+   * @return self
+   */
+  public SwerveInputStream allianceRelativeControl(boolean enabled)
+  {
+    allianceRelative = enabled ? Optional.of(() -> enabled) : Optional.empty();
+    return this;
   }
 
   /**
@@ -574,9 +633,68 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
   }
 
   /**
-   * Gets a field-oriented {@link ChassisSpeeds}
+   * Change {@link ChassisSpeeds} to robot relative.
    *
-   * @return field-oriented {@link ChassisSpeeds}
+   * @param fieldRelativeSpeeds Field relative speeds to translate into robot-relative speeds.
+   * @return Robot relative {@link ChassisSpeeds}.
+   */
+  private ChassisSpeeds applyRobotRelativeTranslation(ChassisSpeeds fieldRelativeSpeeds)
+  {
+    if (robotRelative.isPresent() && robotRelative.get().getAsBoolean())
+    {
+      return ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, swerveDrive.getOdometryHeading());
+    }
+    return fieldRelativeSpeeds;
+  }
+
+  /**
+   * Apply alliance aware translation which flips the {@link Translation2d} if the robot is on the Blue alliance.
+   *
+   * @param fieldRelativeTranslation Field-relative {@link Translation2d} to flip.
+   * @return Alliance-oriented {@link Translation2d}
+   */
+  private Translation2d applyAllianceAwareTranslation(Translation2d fieldRelativeTranslation)
+  {
+    if (allianceRelative.isPresent() && allianceRelative.get().getAsBoolean())
+    {
+      if (robotRelative.isPresent() && robotRelative.get().getAsBoolean())
+      {
+        throw new RuntimeException("Cannot use robot oriented control with Alliance aware movement!");
+      }
+      if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red)
+      {
+        return fieldRelativeTranslation.rotateBy(Rotation2d.k180deg);
+      }
+    }
+    return fieldRelativeTranslation;
+  }
+
+  /**
+   * Apply alliance aware translation which flips the {@link Rotation2d} if the robot is on the Blue alliance.
+   *
+   * @param fieldRelativeRotation Field-relative {@link Rotation2d} to flip.
+   * @return Alliance-oriented {@link Rotation2d}
+   */
+  private Rotation2d applyAllianceAwareRotation(Rotation2d fieldRelativeRotation)
+  {
+    if (allianceRelative.isPresent() && allianceRelative.get().getAsBoolean())
+    {
+      if (robotRelative.isPresent() && robotRelative.get().getAsBoolean())
+      {
+        throw new RuntimeException("Cannot use robot oriented control with Alliance aware movement!");
+      }
+      if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red)
+      {
+        return fieldRelativeRotation.rotateBy(Rotation2d.k180deg);
+      }
+    }
+    return fieldRelativeRotation;
+  }
+
+  /**
+   * Gets a {@link ChassisSpeeds}
+   *
+   * @return {@link ChassisSpeeds}
    */
   @Override
   public ChassisSpeeds get()
@@ -585,10 +703,12 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
     Translation2d scaledTranslation = applyTranslationScalar(applyDeadband(controllerTranslationX.getAsDouble()),
                                                              applyDeadband(controllerTranslationY.getAsDouble()));
     scaledTranslation = applyTranslationCube(scaledTranslation);
+    scaledTranslation = applyAllianceAwareTranslation(scaledTranslation);
 
-    double vxMetersPerSecond = scaledTranslation.getX() * maximumChassisVelocity;
-    double vyMetersPerSecond = scaledTranslation.getY() * maximumChassisVelocity;
-    double omegaRadiansPerSecond = 0;
+    double        vxMetersPerSecond     = scaledTranslation.getX() * maximumChassisVelocity;
+    double        vyMetersPerSecond     = scaledTranslation.getY() * maximumChassisVelocity;
+    double        omegaRadiansPerSecond = 0;
+    ChassisSpeeds speeds                = new ChassisSpeeds();
 
     SwerveInputMode newMode = findMode();
     // Handle transitions here.
@@ -607,6 +727,7 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
       {
         omegaRadiansPerSecond = swerveController.headingCalculate(swerveDrive.getOdometryHeading().getRadians(),
                                                                   lockedHeading.get().getRadians());
+        speeds = new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
         break;
       }
       case ANGULAR_VELOCITY ->
@@ -614,15 +735,19 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
         omegaRadiansPerSecond = applyOmegaCube(applyRotationalScalar(applyDeadband(controllerOmega.get()
                                                                                                   .getAsDouble()))) *
                                 swerveDrive.getMaximumChassisAngularVelocity();
+        speeds = new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
         break;
       }
       case HEADING ->
       {
         omegaRadiansPerSecond = swerveController.headingCalculate(swerveDrive.getOdometryHeading().getRadians(),
-                                                                  swerveController.getJoystickAngle(controllerHeadingX.get()
-                                                                                                                      .getAsDouble(),
-                                                                                                    controllerHeadingY.get()
-                                                                                                                      .getAsDouble()));
+                                                                  applyAllianceAwareRotation(Rotation2d.fromRadians(
+                                                                      swerveController.getJoystickAngle(
+                                                                          controllerHeadingX.get()
+                                                                                            .getAsDouble(),
+                                                                          controllerHeadingY.get()
+                                                                                            .getAsDouble()))).getRadians());
+        speeds = new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
         break;
       }
       case AIM ->
@@ -631,13 +756,14 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
         Translation2d relativeTrl    = aimTarget.get().relativeTo(swerveDrive.getPose()).getTranslation();
         Rotation2d    target         = new Rotation2d(relativeTrl.getX(), relativeTrl.getY()).plus(currentHeading);
         omegaRadiansPerSecond = swerveController.headingCalculate(currentHeading.getRadians(), target.getRadians());
+        speeds = new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
         break;
       }
     }
 
     currentMode = newMode;
 
-    return new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
+    return speeds;
   }
 
   /**

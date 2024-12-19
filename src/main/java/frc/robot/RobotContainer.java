@@ -57,8 +57,8 @@ public class RobotContainer
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
    */
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
-                                                                driverXbox::getLeftX,
-                                                                driverXbox::getLeftY)
+                                                                () -> driverXbox.getLeftY() * -1,
+                                                                () -> driverXbox.getLeftX() * -1)
                                                             .withControllerRotationAxis(driverXbox::getRightX)
                                                             .deadband(OperatorConstants.DEADBAND)
                                                             .scaleTranslation(0.8);
@@ -96,12 +96,12 @@ public class RobotContainer
   // Derive the heading axis with math!
   SwerveInputStream driveDirectAngleSim = driveAngularVelocitySim.copy()
                                                                  .withControllerHeadingAxis(() -> Math.sin(
-                                                                                  driverXbox.getRawAxis(
-                                                                                      2) * Math.PI) * (Math.PI * 2),
+                                                                                                driverXbox.getRawAxis(
+                                                                                                    2) * Math.PI) * (Math.PI * 2),
                                                                                             () -> Math.cos(
-                                                                                  driverXbox.getRawAxis(
-                                                                                      2) * Math.PI) *
-                                                                                    (Math.PI * 2))
+                                                                                                driverXbox.getRawAxis(
+                                                                                                    2) * Math.PI) *
+                                                                                                  (Math.PI * 2))
                                                                  .headingWhile(true);
 
   Command driveFieldOrientedDirectAngleSim = drivebase.driveFieldOriented(driveDirectAngleSim);

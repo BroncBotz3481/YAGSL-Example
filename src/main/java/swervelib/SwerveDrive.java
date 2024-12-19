@@ -979,7 +979,7 @@ public class SwerveDrive
     imuReadingCache.update();
     swerveController.lastAngleScalar = 0;
     lastHeadingRadians = 0;
-    resetOdometry(new Pose2d(getPose().getTranslation(), new Rotation2d()));
+    setPose(new Pose2d(getPose().getTranslation(), new Rotation2d()));
   }
 
   /**
@@ -1307,7 +1307,7 @@ public class SwerveDrive
     odometryLock.unlock();
 
 //    setGyroOffset(new Rotation3d(0, 0, robotPose.getRotation().getRadians()));
-//    resetOdometry(newOdometry);
+//    setPose(newOdometry);
   }
 
   /**

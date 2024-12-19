@@ -441,7 +441,7 @@ public class SwerveModule
     if (isOpenLoop)
     {
       double percentOutput = desiredState.speedMetersPerSecond / maxDriveVelocity.in(MetersPerSecond);
-      driveMotor.set(percentOutput);
+      driveMotor.setVoltage(percentOutput * 12);
     } else
     {
       driveMotor.setReference(desiredState.speedMetersPerSecond, driveFeedforwardVoltage);

@@ -37,7 +37,7 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
   /**
    * Rotation supplier as angular velocity.
    */
-  private Optional<DoubleSupplier> controllerOmega      = Optional.empty();
+  private Optional<DoubleSupplier>  controllerOmega      = Optional.empty();
   /**
    * Controller supplier as heading.
    */
@@ -49,19 +49,19 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
   /**
    * Axis deadband for the controller.
    */
-  private Optional<Double>         axisDeadband         = Optional.empty();
+  private Optional<Double>          axisDeadband         = Optional.empty();
   /**
    * Translational axis scalar value, should be between (0, 1].
    */
-  private Optional<Double>         translationAxisScale = Optional.empty();
+  private Optional<Double>          translationAxisScale = Optional.empty();
   /**
    * Angular velocity axis scalar value, should be between (0, 1]
    */
-  private Optional<Double>         omegaAxisScale       = Optional.empty();
+  private Optional<Double>          omegaAxisScale       = Optional.empty();
   /**
    * Target to aim at.
    */
-  private Optional<Pose2d>         aimTarget            = Optional.empty();
+  private Optional<Pose2d>          aimTarget            = Optional.empty();
   /**
    * Output {@link ChassisSpeeds} based on heading while this is True.
    */
@@ -78,6 +78,14 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
    * Maintain current heading and drive without rotating, ideally.
    */
   private       Optional<BooleanSupplier> translationOnlyEnabled = Optional.empty();
+  /**
+   * Cube the translation magnitude from the controller.
+   */
+  private Optional<BooleanSupplier> translationCube      = Optional.empty();
+  /**
+   * Cube the angular velocity axis from the controller.
+   */
+  private Optional<BooleanSupplier> omegaCube            = Optional.empty();
   /**
    * {@link SwerveController} for simple control over heading.
    */
@@ -167,7 +175,57 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
     newStream.translationOnlyEnabled = translationOnlyEnabled;
     newStream.lockedHeading = lockedHeading;
     newStream.swerveController = swerveController;
+    newStream.omegaCube = omegaCube;
+    newStream.translationCube = translationCube;
     return newStream;
+  }
+
+  /**
+   * Cube the angular velocity controller axis for a non-linear controls scheme.
+   *
+   * @param enabled Enabled state for the stream.
+   * @return self.
+   */
+  public SwerveInputStream cubeRotationControllerAxis(BooleanSupplier enabled)
+  {
+    omegaCube = Optional.of(enabled);
+    return this;
+  }
+
+  /**
+   * Cube the angular velocity controller axis for a non-linear controls scheme.
+   *
+   * @param enabled Enabled state for the stream.
+   * @return self.
+   */
+  public SwerveInputStream cubeRotationControllerAxis(boolean enabled)
+  {
+    omegaCube = Optional.of(() -> enabled);
+    return this;
+  }
+
+  /**
+   * Cube the translation axis magnitude for a non-linear control scheme.
+   *
+   * @param enabled Enabled state for the stream
+   * @return self
+   */
+  public SwerveInputStream cubeTranslationControllerAxis(BooleanSupplier enabled)
+  {
+    translationOnlyEnabled = Optional.of(enabled);
+    return this;
+  }
+
+  /**
+   * Cube the translation axis magnitude for a non-linear control scheme
+   *
+   * @param enabled Enabled state for the stream
+   * @return self
+   */
+  public SwerveInputStream cubeTranslationControllerAxis(boolean enabled)
+  {
+    translationCube = enabled ? Optional.of(() -> enabled) : Optional.empty();
+    return this;
   }
 
   /**
@@ -486,6 +544,36 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
   }
 
   /**
+   * Apply the cube transformation on the given {@link Translation2d}
+   *
+   * @param translation {@link Translation2d} representing controller input
+   * @return Cubed {@link Translation2d} if the {@link SwerveInputStream#translationCube} is present.
+   */
+  private Translation2d applyTranslationCube(Translation2d translation)
+  {
+    if (translationCube.isPresent() && translationCube.get().getAsBoolean())
+    {
+      return SwerveMath.cubeTranslation(translation);
+    }
+    return translation;
+  }
+
+  /**
+   * Apply the cube transformation on the given rotation controller axis
+   *
+   * @param rotationAxis Rotation controller axis to cube.
+   * @return Cubed axis value if the {@link SwerveInputStream#omegaCube} is present.
+   */
+  private double applyOmegaCube(double rotationAxis)
+  {
+    if (omegaCube.isPresent() && omegaCube.get().getAsBoolean())
+    {
+      return Math.pow(rotationAxis, 3);
+    }
+    return rotationAxis;
+  }
+
+  /**
    * Gets a field-oriented {@link ChassisSpeeds}
    *
    * @return field-oriented {@link ChassisSpeeds}
@@ -496,6 +584,7 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
     double maximumChassisVelocity = swerveDrive.getMaximumChassisVelocity();
     Translation2d scaledTranslation = applyTranslationScalar(applyDeadband(controllerTranslationX.getAsDouble()),
                                                              applyDeadband(controllerTranslationY.getAsDouble()));
+    scaledTranslation = applyTranslationCube(scaledTranslation);
 
     double vxMetersPerSecond = scaledTranslation.getX() * maximumChassisVelocity;
     double vyMetersPerSecond = scaledTranslation.getY() * maximumChassisVelocity;
@@ -522,7 +611,8 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
       }
       case ANGULAR_VELOCITY ->
       {
-        omegaRadiansPerSecond = applyRotationalScalar(applyDeadband(controllerOmega.get().getAsDouble())) *
+        omegaRadiansPerSecond = applyOmegaCube(applyRotationalScalar(applyDeadband(controllerOmega.get()
+                                                                                                  .getAsDouble()))) *
                                 swerveDrive.getMaximumChassisAngularVelocity();
         break;
       }

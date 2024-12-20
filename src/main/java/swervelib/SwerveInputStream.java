@@ -1,4 +1,4 @@
-mpackage swervelib;
+package swervelib;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;

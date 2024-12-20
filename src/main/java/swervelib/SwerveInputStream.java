@@ -1,4 +1,4 @@
-package swervelib;
+mpackage swervelib;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -763,7 +763,7 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
 
     currentMode = newMode;
 
-    return speeds;
+    return applyRobotRelativeTranslation(speeds);
   }
 
   /**

@@ -15,10 +15,28 @@ import java.util.function.Supplier;
 import swervelib.math.SwerveMath;
 
 /**
- * Helper class to easily transform Controller inputs into workable Chassis speeds. <br /> Inspired by SciBorgs.
- * https://github.com/SciBorgs/Crescendo-2024/blob/main/src/main/java/org/sciborgs1155/lib/InputStream.java
+ * Helper class to easily transform Controller inputs into workable Chassis speeds. Intended to easily create an
+ * interface that generates {@link ChassisSpeeds} from {@link XboxController}
  * <p>
- * Intended to easily create an interface that generates {@link ChassisSpeeds} from {@link XboxController}
+ * <br /> Inspired by SciBorgs FRC 1155. <br /> Example:
+ * <pre>
+ * {@code
+ *   XboxController driverXbox = new XboxController(0);
+ *
+ *   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
+ *                                                                 () -> driverXbox.getLeftY() * -1,
+ *                                                                 () -> driverXbox.getLeftX() * -1) // Axis which give the desired translational angle and speed.
+ *                                                             .withControllerRotationAxis(driverXbox::getRightX) // Axis which give the desired angular velocity.
+ *                                                             .deadband(0.01)                  // Controller deadband
+ *                                                             .scaleTranslation(0.8)           // Scaled controller translation axis
+ *                                                             .allianceRelativeControl(true);  // Alliance relative controls.
+ *
+ *   SwerveInputStream driveDirectAngle = driveAngularVelocity.copy()  // Copy the stream so further changes do not affect driveAngularVelocity
+ *                                                            .withControllerHeadingAxis(driverXbox::getRightX,
+ *                                                                                       driverXbox::getRightY) // Axis which give the desired heading angle using trigonometry.
+ *                                                            .headingWhile(true); // Enable heading based control.
+ * }
+ * </pre>
  */
 public class SwerveInputStream implements Supplier<ChassisSpeeds>
 {

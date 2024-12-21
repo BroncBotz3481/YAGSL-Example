@@ -1,7 +1,7 @@
 {
     "fileName": "yagsl.json",
     "name": "YAGSL",
-    "version": "2025.1.0.4",
+    "version": "2025.1.1",
     "frcYear": "2025",
     "uuid": "1ccce5a4-acd2-4d18-bca3-4b8047188400",
     "mavenUrls": [
@@ -12,7 +12,7 @@
         {
             "groupId": "swervelib",
             "artifactId": "YAGSL-java",
-            "version": "2025.1.0.4"
+            "version": "2025.1.1"
         }
     ],
     "requires": [
@@ -45,6 +45,12 @@
             "errorMessage": "NavX is required!",
             "offlineFileName": "Studica-2025.1.1-beta-3.json",
             "onlineUrl": "https://dev.studica.com/releases/2025/Studica-2025.1.1-beta-3.json"
+        },
+        {
+            "uuid": "60b2694b-9e6e-4026-81ee-6f167946f4b0",
+            "errorMessage": "ThriftyLib is required!",
+            "offlineFileName": "ThriftyLib.json",
+            "onlineUrl": "https://docs.home.thethriftybot.com/ThriftyLib.json"
         },
         {
             "uuid": "c39481e8-4a63-4a4c-9df6-48d91e4da37b",

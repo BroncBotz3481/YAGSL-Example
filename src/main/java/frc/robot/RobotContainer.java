@@ -89,8 +89,8 @@ public class RobotContainer
   Command driveSetpointGen = drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngle);
 
   SwerveInputStream driveAngularVelocitySim = SwerveInputStream.of(drivebase.getSwerveDrive(),
-                                                                   driverXbox::getLeftY,
-                                                                   driverXbox::getLeftX)
+                                                                   () -> -driverXbox.getLeftY(),
+                                                                   () -> -driverXbox.getLeftX())
                                                                .withControllerRotationAxis(() -> driverXbox.getRawAxis(2))
                                                                .deadband(OperatorConstants.DEADBAND)
                                                                .scaleTranslation(0.8)

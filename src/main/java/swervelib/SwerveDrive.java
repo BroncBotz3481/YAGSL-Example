@@ -1528,4 +1528,25 @@ public class SwerveDrive
     }
     return kinematics.toSwerveModuleStates(robotRelativeVelocity);
   }
+
+  /**
+   * Acquire the lock that governs entry to the odometry update routine. Acquire
+   * this lock before updating odometry outside of the odometry
+   * thread's inner loop.
+   * 
+   */
+
+  void acquireOdometryLock() {
+    odometryLock.lock();
+
+  }
+
+  /**
+   * Release the odometry thread lock. The lock must be released in order for the
+   * thread to update odometry.
+   */
+
+  void releaseOdometryLock() {
+    odometryLock.unlock();
+  }
 }

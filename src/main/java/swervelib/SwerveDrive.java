@@ -649,12 +649,12 @@ public class SwerveDrive
   }
 
   /**
-   * Get the minimum velocity from {@link SwerveDrive#attainableMaxTranslationalSpeedMetersPerSecond} or
-   * {@link SwerveDrive#maxChassisSpeedMPS} whichever is lower.
+   * Get the maximum velocity from {@link SwerveDrive#attainableMaxTranslationalSpeedMetersPerSecond} or
+   * {@link SwerveDrive#maxChassisSpeedMPS} whichever is the lower limit on the robot's speed. 
    *
-   * @return Minimum speed in meters/second.
+   * @return Minimum speed in meters/second of physically attainable and user allowable limits.
    */
-  public double getMinimumChassisVelocity()
+  public double getMaximumChassisVelocity()
   {
     return Math.min(this.attainableMaxTranslationalSpeedMetersPerSecond, maxChassisSpeedMPS);
   }
@@ -680,12 +680,12 @@ public class SwerveDrive
   }
 
   /**
-   * Get the minimum angular velocity, either {@link SwerveDrive#attainableMaxRotationalVelocityRadiansPerSecond} or
-   * {@link SwerveControllerConfiguration#maxAngularVelocity}, whichever is lower.
+   * Get the maximum angular velocity, either {@link SwerveDrive#attainableMaxRotationalVelocityRadiansPerSecond} or
+   * {@link SwerveControllerConfiguration#maxAngularVelocity}, whichever is the lower limit on the robot's speed.
    *
-   * @return Minimum angular velocity in radians per second.
+   * @return Minimum angular velocity in radians per second of physically attainable and user allowable limits.
    */
-  public double getMinimumChassisAngularVelocity()
+  public double getMaximumChassisAngularVelocity()
   {
     return Math.min(this.attainableMaxRotationalVelocityRadiansPerSecond, swerveController.config.maxAngularVelocity);
   }

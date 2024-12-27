@@ -717,7 +717,7 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
   @Override
   public ChassisSpeeds get()
   {
-    double maximumChassisVelocity = swerveDrive.getMinimumChassisVelocity();
+    double maximumChassisVelocity = swerveDrive.getMaximumChassisVelocity();
     Translation2d scaledTranslation = applyTranslationScalar(applyDeadband(controllerTranslationX.getAsDouble()),
                                                              applyDeadband(controllerTranslationY.getAsDouble()));
     scaledTranslation = applyTranslationCube(scaledTranslation);
@@ -752,7 +752,7 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
       {
         omegaRadiansPerSecond = applyOmegaCube(applyRotationalScalar(applyDeadband(controllerOmega.get()
                                                                                                   .getAsDouble()))) *
-                                swerveDrive.getMinimumChassisAngularVelocity();
+                                swerveDrive.getMaximumChassisAngularVelocity();
         speeds = new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
         break;
       }

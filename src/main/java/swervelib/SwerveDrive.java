@@ -326,6 +326,8 @@ public class SwerveDrive
     checkIfTunerXCompatible();
 
     HAL.report(kResourceType_RobotDrive, kRobotDriveSwerve_YAGSL);
+    // Defaulting to something reasonable for most robots
+    setMaximumAttainableSpeeds(6, 2 * Math.PI);
   }
 
   /**
@@ -615,31 +617,46 @@ public class SwerveDrive
   }
 
   /**
-   * Set the maximum speeds for desaturation.
+   * Set the maximum attainable speeds for desaturation.
    *
    * @param attainableMaxTranslationalSpeedMetersPerSecond  The absolute max speed that your robot can reach while
    *                                                        translating in meters per second.
    * @param attainableMaxRotationalVelocityRadiansPerSecond The absolute max speed the robot can reach while rotating in
    *                                                        radians per second.
    */
-  public void setMaximumSpeeds(
+  public void setMaximumAttainableSpeeds(
       double attainableMaxTranslationalSpeedMetersPerSecond,
       double attainableMaxRotationalVelocityRadiansPerSecond)
   {
     this.attainableMaxTranslationalSpeedMetersPerSecond = attainableMaxTranslationalSpeedMetersPerSecond;
     this.attainableMaxRotationalVelocityRadiansPerSecond = attainableMaxRotationalVelocityRadiansPerSecond;
-    this.swerveController.config.maxAngularVelocity = attainableMaxRotationalVelocityRadiansPerSecond;
   }
 
   /**
-   * Get the maximum velocity from {@link SwerveDrive#attainableMaxTranslationalSpeedMetersPerSecond} or
-   * {@link SwerveDrive#maxChassisSpeedMPS} whichever is higher.
+   * Set the maximum allowable speeds for desaturation.
    *
-   * @return Maximum speed in meters/second.
+   * @param maxTranslationalSpeedMetersPerSecond  The allowable max speed that your robot should reach while
+   *                                                        translating in meters per second.
+   * @param maxRotationalVelocityRadiansPerSecond The allowable max speed the robot should reach while rotating in
+   *                                                        radians per second.
    */
-  public double getMaximumChassisVelocity()
+  public void setMaximumAllowableSpeeds(
+      double maxTranslationalSpeedMetersPerSecond,
+      double maxRotationalVelocityRadiansPerSecond)
   {
-    return Math.max(this.attainableMaxTranslationalSpeedMetersPerSecond, maxChassisSpeedMPS);
+    this.maxChassisSpeedMPS = maxTranslationalSpeedMetersPerSecond;
+    this.swerveController.config.maxAngularVelocity = maxRotationalVelocityRadiansPerSecond;
+  }
+
+  /**
+   * Get the minimum velocity from {@link SwerveDrive#attainableMaxTranslationalSpeedMetersPerSecond} or
+   * {@link SwerveDrive#maxChassisSpeedMPS} whichever is lower.
+   *
+   * @return Minimum speed in meters/second.
+   */
+  public double getMinimumChassisVelocity()
+  {
+    return Math.min(this.attainableMaxTranslationalSpeedMetersPerSecond, maxChassisSpeedMPS);
   }
 
   /**
@@ -663,14 +680,14 @@ public class SwerveDrive
   }
 
   /**
-   * Get the maximum angular velocity, either {@link SwerveDrive#attainableMaxRotationalVelocityRadiansPerSecond} or
-   * {@link SwerveControllerConfiguration#maxAngularVelocity}.
+   * Get the minimum angular velocity, either {@link SwerveDrive#attainableMaxRotationalVelocityRadiansPerSecond} or
+   * {@link SwerveControllerConfiguration#maxAngularVelocity}, whichever is lower.
    *
-   * @return Maximum angular velocity in radians per second.
+   * @return Minimum angular velocity in radians per second.
    */
-  public double getMaximumChassisAngularVelocity()
+  public double getMinimumChassisAngularVelocity()
   {
-    return Math.max(this.attainableMaxRotationalVelocityRadiansPerSecond, swerveController.config.maxAngularVelocity);
+    return Math.min(this.attainableMaxRotationalVelocityRadiansPerSecond, swerveController.config.maxAngularVelocity);
   }
 
   /**

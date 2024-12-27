@@ -330,8 +330,8 @@ public class SwerveSubsystem extends SubsystemBase
   {
 // Create the constraints to use while pathfinding
     PathConstraints constraints = new PathConstraints(
-        swerveDrive.getMaximumChassisVelocity(), 4.0,
-        swerveDrive.getMaximumChassisAngularVelocity(), Units.degreesToRadians(720));
+        swerveDrive.getMinimumChassisVelocity(), 4.0,
+        swerveDrive.getMinimumChassisAngularVelocity(), Units.degreesToRadians(720));
 
 // Since AutoBuilder is configured, we can use it to build pathfinding commands
     return AutoBuilder.pathfindToPose(
@@ -353,7 +353,7 @@ public class SwerveSubsystem extends SubsystemBase
   throws IOException, ParseException
   {
     SwerveSetpointGenerator setpointGenerator = new SwerveSetpointGenerator(RobotConfig.fromGUISettings(),
-                                                                            swerveDrive.getMaximumChassisAngularVelocity());
+                                                                            swerveDrive.getMinimumChassisAngularVelocity());
     AtomicReference<SwerveSetpoint> prevSetpoint
         = new AtomicReference<>(new SwerveSetpoint(swerveDrive.getRobotVelocity(),
                                                    swerveDrive.getStates(),
@@ -476,9 +476,9 @@ public class SwerveSubsystem extends SubsystemBase
     return run(() -> {
       // Make the robot move
       swerveDrive.drive(SwerveMath.scaleTranslation(new Translation2d(
-                            translationX.getAsDouble() * swerveDrive.getMaximumChassisVelocity(),
-                            translationY.getAsDouble() * swerveDrive.getMaximumChassisVelocity()), 0.8),
-                        Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumChassisAngularVelocity(),
+                            translationX.getAsDouble() * swerveDrive.getMinimumChassisVelocity(),
+                            translationY.getAsDouble() * swerveDrive.getMinimumChassisVelocity()), 0.8),
+                        Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMinimumChassisAngularVelocity(),
                         true,
                         false);
     });
@@ -507,7 +507,7 @@ public class SwerveSubsystem extends SubsystemBase
                                                                       headingX.getAsDouble(),
                                                                       headingY.getAsDouble(),
                                                                       swerveDrive.getOdometryHeading().getRadians(),
-                                                                      swerveDrive.getMaximumChassisVelocity()));
+                                                                      swerveDrive.getMinimumChassisVelocity()));
     });
   }
 

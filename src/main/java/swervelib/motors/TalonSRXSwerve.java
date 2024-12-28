@@ -7,7 +7,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.system.plant.DCMotor;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.math.SwerveMath;
@@ -26,7 +25,7 @@ public class TalonSRXSwerve extends SwerveMotor
    */
   private final boolean               factoryDefaultOccurred   = false;
   /**
-   * Current TalonFX configuration.
+   * Current TalonSRX configuration.
    */
   private final TalonSRXConfiguration configuration            = new TalonSRXConfiguration();
   /**
@@ -46,7 +45,7 @@ public class TalonSRXSwerve extends SwerveMotor
    */
   private       ConversionFactorsJson moduleConversionFactors;
   /**
-   * If the TalonFX configuration has changed.
+   * If the TalonSRX configuration has changed.
    */
   private       boolean               configChanged            = true;
   /**
@@ -78,7 +77,7 @@ public class TalonSRXSwerve extends SwerveMotor
    *
    * @param id           ID of the TalonSRX on the canbus.
    * @param isDriveMotor Whether the motor is a drive or steering motor.
-   * @param motorType    {@link DCMotor} which the {@link TalonFX} is attached to.
+   * @param motorType    {@link DCMotor} which the {@link TalonSRX} is attached to.
    */
   public TalonSRXSwerve(int id, boolean isDriveMotor, DCMotor motorType)
   {

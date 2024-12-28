@@ -27,7 +27,7 @@ public class ThriftyNovaSwerve extends SwerveMotor
 {
 
   /**
-   * SparkMAX Instance.
+   * ThriftyNova Instance.
    */
   private       ThriftyNova   motor;
   /**
@@ -66,7 +66,7 @@ public class ThriftyNovaSwerve extends SwerveMotor
   /**
    * Initialize the swerve motor.
    *
-   * @param motor        The SwerveMotor as a SparkMax object.
+   * @param motor        The SwerveMotor as a ThriftyNova object.
    * @param isDriveMotor Is the motor being initialized a drive motor?
    * @param motorType    {@link DCMotor} controlled by the {@link ThriftyNova}
    */
@@ -96,7 +96,7 @@ public class ThriftyNovaSwerve extends SwerveMotor
   /**
    * Initialize the {@link SwerveMotor} as a {@link ThriftyNova} connected to a Brushless Motor.
    *
-   * @param id           CAN ID of the SparkMax.
+   * @param id           CAN ID of the ThriftyNova.
    * @param isDriveMotor Is the motor being initialized a drive motor?
    * @param motor        {@link DCMotor} controlled by the {@link ThriftyNova}
    */

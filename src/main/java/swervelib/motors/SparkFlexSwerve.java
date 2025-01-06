@@ -1,5 +1,6 @@
 package swervelib.motors;
 
+import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.Seconds;
 
 import com.revrobotics.AbsoluteEncoder;
@@ -8,6 +9,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -16,7 +18,6 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -131,7 +132,7 @@ public class SparkFlexSwerve extends SwerveMotor
       {
         return;
       }
-      Timer.delay(Units.Milliseconds.of(5).in(Seconds));
+      Timer.delay(Milliseconds.of(5).in(Seconds));
     }
     failureConfiguring.set(true);
   }
@@ -438,7 +439,6 @@ public class SparkFlexSwerve extends SwerveMotor
   @Override
   public void setReference(double setpoint, double feedforward)
   {
-    int pidSlot = 0;
 
     if (isDriveMotor)
     {
@@ -446,7 +446,7 @@ public class SparkFlexSwerve extends SwerveMotor
                              pid.setReference(
                                  setpoint,
                                  ControlType.kVelocity,
-                                 pidSlot,
+                                 ClosedLoopSlot.kSlot0,
                                  feedforward));
     } else
     {
@@ -454,7 +454,7 @@ public class SparkFlexSwerve extends SwerveMotor
                              pid.setReference(
                                  setpoint,
                                  ControlType.kPosition,
-                                 pidSlot,
+                                 ClosedLoopSlot.kSlot0,
                                  feedforward));
       if (SwerveDriveTelemetry.isSimulation)
       {

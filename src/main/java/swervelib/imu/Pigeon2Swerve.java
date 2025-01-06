@@ -29,7 +29,7 @@ public class Pigeon2Swerve extends SwerveIMU
    */
   private final Pigeon2            imu;
   /**
-   * Mutable {@link AngularVelocity} for readings.
+   * Mutable {@link MutAngularVelocity} for readings.
    */
   private final MutAngularVelocity yawVel                 = new MutAngularVelocity(0, 0, DegreesPerSecond);
 
@@ -49,15 +49,15 @@ public class Pigeon2Swerve extends SwerveIMU
   /**
    * X Acceleration supplier
    */
-  private Supplier<StatusSignal<LinearAcceleration>> xAcc;
+  private final Supplier<StatusSignal<LinearAcceleration>> xAcc;
   /**
    * Y Accelleration supplier.
    */
-  private Supplier<StatusSignal<LinearAcceleration>> yAcc;
+  private final Supplier<StatusSignal<LinearAcceleration>> yAcc;
   /**
    * Z Acceleration supplier.
    */
-  private Supplier<StatusSignal<LinearAcceleration>> zAcc;
+  private final Supplier<StatusSignal<LinearAcceleration>> zAcc;
 
   /**
    * Generate the SwerveIMU for {@link Pigeon2}.
@@ -159,9 +159,9 @@ public class Pigeon2Swerve extends SwerveIMU
   @Override
   public Optional<Translation3d> getAccel()
   {
-    // TODO: Implement later.
-
-    return Optional.empty();
+    return Optional.of(new Translation3d(xAcc.get().getValueAsDouble(),
+                                         yAcc.get().getValueAsDouble(),
+                                         zAcc.get().getValueAsDouble()));
   }
 
   @Override

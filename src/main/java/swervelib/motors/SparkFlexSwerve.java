@@ -42,7 +42,7 @@ public class SparkFlexSwerve extends SwerveMotor
    */
   public        RelativeEncoder           encoder;
   /**
-   * Absolute encoder attached to the SparkMax (if exists)
+   * Absolute encoder attached to the SparkFlex (if exists)
    */
   public        SwerveAbsoluteEncoder     absoluteEncoder;
   /**
@@ -94,7 +94,7 @@ public class SparkFlexSwerve extends SwerveMotor
     cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder); // Configure feedback of the PID controller as the integrated encoder.
 
     // Spin off configurations in a different thread.
-    // configureSparkMax(() -> motor.setCANTimeout(0)); // Commented out because it prevents feedback.
+    // configureSparkFlex(() -> motor.setCANTimeout(0)); // Commented out because it prevents feedback.
     failureConfiguring = new Alert("Motors",
                                    "Failure configuring motor " +
                                    motor.getDeviceId(),
@@ -110,7 +110,7 @@ public class SparkFlexSwerve extends SwerveMotor
   /**
    * Initialize the {@link SwerveMotor} as a {@link SparkFlex} connected to a Brushless Motor.
    *
-   * @param id           CAN ID of the SparkMax.
+   * @param id           CAN ID of the SparkFlex.
    * @param isDriveMotor Is the motor being initialized a drive motor?
    * @param motorType    {@link DCMotor} which the {@link SparkFlex} is attached to.
    */
@@ -140,7 +140,7 @@ public class SparkFlexSwerve extends SwerveMotor
   /**
    * Get the current configuration of the {@link SparkFlex}
    *
-   * @return {@link SparkMaxConfig}
+   * @return {@link SparkFlexConfig}
    */
   public SparkFlexConfig getConfig()
   {

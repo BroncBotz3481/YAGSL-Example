@@ -59,9 +59,9 @@ public abstract class SwerveIMU
   public abstract Optional<Translation3d> getAccel();
 
   /**
-   * Fetch the rotation rate from the IMU as {@link AngularVelocity}
+   * Fetch the rotation rate from the IMU as {@link MutAngularVelocity}
    *
-   * @return {@link AngularVelocity} of the rotation rate.
+   * @return {@link MutAngularVelocity} of the rotation rate.
    */
   public abstract MutAngularVelocity getYawAngularVelocity();
 

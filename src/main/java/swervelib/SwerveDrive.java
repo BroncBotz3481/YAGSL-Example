@@ -733,7 +733,6 @@ public class SwerveDrive
   /**
    * Drive the robot using the {@link SwerveModuleState}, it is recommended to have
    * {@link SwerveDrive#setCosineCompensator(boolean)} set to false for this.<br/>
-   * <p>
    *
    * @param robotRelativeVelocity Robot relative {@link ChassisSpeeds}
    * @param states                Corresponding {@link SwerveModuleState} to use (not checked against the

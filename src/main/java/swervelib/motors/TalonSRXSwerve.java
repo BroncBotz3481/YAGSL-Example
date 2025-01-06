@@ -77,7 +77,7 @@ public class TalonSRXSwerve extends SwerveMotor
    *
    * @param id           ID of the TalonSRX on the canbus.
    * @param isDriveMotor Whether the motor is a drive or steering motor.
-   * @param motorType    {@link DCMotor} which the {@link TalonSRX} is attached to.
+   * @param motorType    {@link DCMotor} which the {@link WPI_TalonSRX} is attached to.
    */
   public TalonSRXSwerve(int id, boolean isDriveMotor, DCMotor motorType)
   {

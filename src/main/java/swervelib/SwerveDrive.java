@@ -119,7 +119,7 @@ public class SwerveDrive
   private final DoublePublisher     rawIMUPublisher
                                                                                     = NetworkTableInstance.getDefault()
                                                                                                           .getDoubleTopic(
-                                                                                                              "swerve/Raw IMU Yaw")
+                                                                                                              "SmartDashboard/swerve/Raw IMU Yaw")
                                                                                                           .publish();
   /**
    * NT4 Publisher for the IMU reading adjusted by offset and inversion.
@@ -127,7 +127,7 @@ public class SwerveDrive
   private final DoublePublisher     adjustedIMUPublisher
                                                                                     = NetworkTableInstance.getDefault()
                                                                                                           .getDoubleTopic(
-                                                                                                              "swerve/Adjusted IMU Yaw")
+                                                                                                              "SmartDashboard/swerve/Adjusted IMU Yaw")
                                                                                                           .publish();
   /**
    * Field object.

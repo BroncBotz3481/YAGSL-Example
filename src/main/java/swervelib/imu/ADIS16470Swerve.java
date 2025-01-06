@@ -21,7 +21,7 @@ public class ADIS16470Swerve extends SwerveIMU
    */
   private final ADIS16470_IMU      imu;
   /**
-   * Mutable {@link AngularVelocity} for readings.
+   * Mutable {@link MutAngularVelocity} for readings.
    */
   private final MutAngularVelocity yawVel      = new MutAngularVelocity(0, 0, DegreesPerSecond);
   /**

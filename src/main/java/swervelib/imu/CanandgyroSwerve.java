@@ -24,7 +24,7 @@ public class CanandgyroSwerve extends SwerveIMU
    */
   private final Canandgyro         imu;
   /**
-   * Mutable {@link AngularVelocity} for readings.
+   * Mutable {@link MutAngularVelocity} for readings.
    */
   private final MutAngularVelocity yawVel                 = new MutAngularVelocity(0, 0, RotationsPerSecond);
   /**

@@ -167,7 +167,7 @@ public class Pigeon2Swerve extends SwerveIMU
   @Override
   public MutAngularVelocity getYawAngularVelocity()
   {
-    return yawVel.mut_replace(imu.getAngularVelocityZWorld().waitForUpdate(STATUS_TIMEOUT_SECONDS).getValue());
+    return yawVel.mut_replace(imu.getAngularVelocityZWorld().refresh().getValue());
   }
 
   /**

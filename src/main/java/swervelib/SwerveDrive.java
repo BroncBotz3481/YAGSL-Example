@@ -118,16 +118,20 @@ public class SwerveDrive
    */
   private final DoublePublisher     rawIMUPublisher
                                                                                     = NetworkTableInstance.getDefault()
+                                                                                                          .getTable(
+                                                                                                              "SmartDashboard")
                                                                                                           .getDoubleTopic(
-                                                                                                              "SmartDashboard/swerve/Raw IMU Yaw")
+                                                                                                              "swerve/imu/raw")
                                                                                                           .publish();
   /**
    * NT4 Publisher for the IMU reading adjusted by offset and inversion.
    */
   private final DoublePublisher     adjustedIMUPublisher
                                                                                     = NetworkTableInstance.getDefault()
+                                                                                                          .getTable(
+                                                                                                              "SmartDashboard")
                                                                                                           .getDoubleTopic(
-                                                                                                              "SmartDashboard/swerve/Adjusted IMU Yaw")
+                                                                                                              "swerve/imu/adjusted")
                                                                                                           .publish();
   /**
    * Field object.

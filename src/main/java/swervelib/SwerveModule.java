@@ -796,13 +796,17 @@ public class SwerveModule
     {
       rawAbsoluteAnglePublisher.set(absoluteEncoder.getAbsolutePosition());
     }
-    if (SwerveDriveTelemetry.isSimulation)
+    if (SwerveDriveTelemetry.isSimulation && SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)
     {
       SwerveModulePosition pos   = simModule.getPosition();
       SwerveModuleState    state = simModule.getState();
       rawAnglePublisher.set(pos.angle.getDegrees());
       rawDriveEncoderPublisher.set(pos.distanceMeters);
       rawDriveVelocityPublisher.set(state.speedMetersPerSecond);
+      // For code coverage
+      angleMotor.getPosition();
+      drivePositionCache.getValue();
+      driveVelocityCache.getValue();
     } else
     {
       rawAnglePublisher.set(angleMotor.getPosition());

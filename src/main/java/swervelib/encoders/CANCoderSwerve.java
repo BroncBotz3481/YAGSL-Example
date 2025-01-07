@@ -28,7 +28,7 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
   /**
    * Wait time for status frames to show up.
    */
-  public static double                          STATUS_TIMEOUT_SECONDS = Milliseconds.of(10).in(Seconds);
+  public static double STATUS_TIMEOUT_SECONDS = Milliseconds.of(1).in(Seconds);
   /**
    * An {@link Alert} for if the CANCoder magnet field is less than ideal.
    */
@@ -158,6 +158,7 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
   {
     readingError = false;
     MagnetHealthValue strength = magnetHealth.refresh().getValue();
+    angle.refresh();
 
     magnetFieldLessThanIdeal.set(strength != MagnetHealthValue.Magnet_Green);
     if (strength == MagnetHealthValue.Magnet_Invalid || strength == MagnetHealthValue.Magnet_Red)
@@ -170,7 +171,6 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
       readingFaulty.set(false);
     }
 
-    angle.refresh();
 
     // Taken from democat's library.
     // Source: https://github.com/democat3457/swerve-lib/blob/7c03126b8c22f23a501b2c2742f9d173a5bcbc40/src/main/java/com/swervedrivespecialties/swervelib/ctre/CanCoderFactoryBuilder.java#L51-L74
@@ -190,8 +190,8 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
     {
       readingIgnored.set(false);
     }
-
-    return angle.getValue().in(Degrees);
+    // Convert from Rotations to Degrees.
+    return angle.getValueAsDouble() * 360;
   }
 
   /**

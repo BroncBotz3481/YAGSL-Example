@@ -1,5 +1,6 @@
 package swervelib;
 
+import static edu.wpi.first.units.Units.InchesPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -762,10 +763,10 @@ public class SwerveModule
   {
     if (maxDriveVelocity == null)
     {
-      maxDriveVelocity = MetersPerSecond.of(
-          (RadiansPerSecond.of(driveMotor.getSimMotor().freeSpeedRadPerSec).in(RotationsPerSecond) /
-           configuration.conversionFactors.drive.gearRatio) *
-          configuration.conversionFactors.drive.diameter);
+      maxDriveVelocity = InchesPerSecond.of(
+          (driveMotor.getSimMotor().freeSpeedRadPerSec /
+              configuration.conversionFactors.drive.gearRatio) *
+              configuration.conversionFactors.drive.diameter / 2.0);
     }
     return maxDriveVelocity;
   }

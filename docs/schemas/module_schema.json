@@ -1,0 +1,114 @@
+{
+  "$schema": "https://broncbotz3481.github.io/YAGSL-Example/schemas/module_schema.json",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "drive": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "number"
+        },
+        "canbus": {
+          "type": "object",
+          "properties": {},
+          "required": []
+        }
+      },
+      "required": [
+        "type",
+        "id",
+        "canbus"
+      ]
+    },
+    "angle": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "number"
+        },
+        "canbus": {
+          "type": "object",
+          "properties": {},
+          "required": []
+        }
+      },
+      "required": [
+        "type",
+        "id",
+        "canbus"
+      ]
+    },
+    "encoder": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "number"
+        },
+        "canbus": {
+          "type": "object",
+          "properties": {},
+          "required": []
+        }
+      },
+      "required": [
+        "type",
+        "id",
+        "canbus"
+      ]
+    },
+    "inverted": {
+      "type": "object",
+      "properties": {
+        "drive": {
+          "type": "boolean"
+        },
+        "angle": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "drive",
+        "angle"
+      ]
+    },
+    "absoluteEncoderOffset": {
+      "type": "number"
+    },
+    "location": {
+      "type": "object",
+      "properties": {
+        "front": {
+          "type": "number"
+        },
+        "left": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "front",
+        "left"
+      ]
+    }
+  },
+  "required": [
+    "drive",
+    "angle",
+    "encoder",
+    "inverted",
+    "absoluteEncoderOffset",
+    "location"
+  ]
+}

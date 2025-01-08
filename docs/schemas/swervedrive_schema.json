@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "imu": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "number"
+        },
+        "canbus": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "id",
+        "canbus"
+      ]
+    },
+    "invertedIMU": {
+      "type": "boolean"
+    },
+    "modules": {
+      "type": "array",
+      "items": {
+        "required": [],
+        "properties": {}
+      }
+    }
+  },
+  "required": [
+    "imu",
+    "invertedIMU",
+    "modules"
+  ]
+}

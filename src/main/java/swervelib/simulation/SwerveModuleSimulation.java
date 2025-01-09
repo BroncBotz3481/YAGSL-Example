@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import org.ironmaple.simulation.drivesims.SelfControlledSwerveDriveSimulation;
+import swervelib.SwerveDrive;
 import swervelib.parser.SwerveModulePhysicalCharacteristics;
 
 /**
@@ -40,6 +41,31 @@ public class SwerveModuleSimulation
   public void updateStateAndPosition(SwerveModuleState desiredState)
   {
     mapleSimModule.runModuleState(desiredState);
+  }
+
+  /**
+   * Runs a drive motor characterization on the sim module.
+   * This is called from {@link swervelib.SwerveDriveTest#runDriveMotorsCharacterizationOnSimModules(SwerveDrive, double)}  to run sysId during simulation
+   *
+   * @param desiredFacing the desired facing of the module
+   * @param volts the voltage to run
+   * @see org.ironmaple.simulation.drivesims.SelfControlledSwerveDriveSimulation.SelfControlledModuleSimulation#runDriveMotorCharacterization(Rotation2d, double).
+   */
+  public void runDriveMotorCharacterization(Rotation2d desiredFacing, double volts)
+  {
+    mapleSimModule.runDriveMotorCharacterization(desiredFacing, volts);
+  }
+
+  /**
+   * Runs a drive motor characterization on the sim module.
+   * This method is called from {@link swervelib.SwerveDriveTest#runAngleMotorsCharacterizationOnSimModules(SwerveDrive, double)} to run sysId during simulation
+   *
+   * @param volts the voltage to run
+   * @see org.ironmaple.simulation.drivesims.SelfControlledSwerveDriveSimulation.SelfControlledModuleSimulation#runSteerMotorCharacterization(double).
+   */
+  public void runAngleMotorCharacterization(double volts)
+  {
+    mapleSimModule.runSteerMotorCharacterization(volts);
   }
 
   /**

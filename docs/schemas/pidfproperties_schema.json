@@ -1,0 +1,65 @@
+{
+  "$schema": "https://broncbotz3481.github.io/YAGSL-Example/schemas/pidfproperties_schema.json",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "drive": {
+      "type": "object",
+      "properties": {
+        "p": {
+          "type": "number"
+        },
+        "i": {
+          "type": "number"
+        },
+        "d": {
+          "type": "number"
+        },
+        "f": {
+          "type": "number"
+        },
+        "iz": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "p",
+        "i",
+        "d",
+        "f",
+        "iz"
+      ]
+    },
+    "angle": {
+      "type": "object",
+      "properties": {
+        "p": {
+          "type": "number"
+        },
+        "i": {
+          "type": "number"
+        },
+        "d": {
+          "type": "number"
+        },
+        "f": {
+          "type": "number"
+        },
+        "iz": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "p",
+        "i",
+        "d",
+        "f",
+        "iz"
+      ]
+    }
+  },
+  "required": [
+    "drive",
+    "angle"
+  ]
+}

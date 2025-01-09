@@ -1,0 +1,33 @@
+{
+  "$schema": "https://broncbotz3481.github.io/YAGSL-Example/schemas/controllerproperties_schema.json",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "angleJoystickRadiusDeadband": {
+      "type": "number"
+    },
+    "heading": {
+      "type": "object",
+      "properties": {
+        "p": {
+          "type": "number"
+        },
+        "i": {
+          "type": "number"
+        },
+        "d": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "p",
+        "i",
+        "d"
+      ]
+    }
+  },
+  "required": [
+    "angleJoystickRadiusDeadband",
+    "heading"
+  ]
+}

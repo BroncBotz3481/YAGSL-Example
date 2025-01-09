@@ -1,0 +1,93 @@
+{
+  "$schema": "https://broncbotz3481.github.io/YAGSL-Example/schemas/physicalproperties_schema.json",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "conversionFactors": {
+      "type": "object",
+      "properties": {
+        "angle": {
+          "type": "object",
+          "properties": {
+            "gearRatio": {
+              "type": "number"
+            },
+            "factor": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "gearRatio",
+            "factor"
+          ]
+        },
+        "drive": {
+          "type": "object",
+          "properties": {
+            "gearRatio": {
+              "type": "number"
+            },
+            "diameter": {
+              "type": "number"
+            },
+            "factor": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "gearRatio",
+            "diameter",
+            "factor"
+          ]
+        }
+      },
+      "required": [
+        "angle",
+        "drive"
+      ]
+    },
+    "currentLimit": {
+      "type": "object",
+      "properties": {
+        "drive": {
+          "type": "number"
+        },
+        "angle": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "drive",
+        "angle"
+      ]
+    },
+    "rampRate": {
+      "type": "object",
+      "properties": {
+        "drive": {
+          "type": "number"
+        },
+        "angle": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "drive",
+        "angle"
+      ]
+    },
+    "wheelGripCoefficientOfFriction": {
+      "type": "number"
+    },
+    "optimalVoltage": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "conversionFactors",
+    "currentLimit",
+    "rampRate",
+    "wheelGripCoefficientOfFriction",
+    "optimalVoltage"
+  ]
+}

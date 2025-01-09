@@ -19,6 +19,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import java.util.Optional;
 import java.util.function.Supplier;
 import swervelib.encoders.SparkMaxAnalogEncoderSwerve;
 import swervelib.encoders.SparkMaxEncoderSwerve;
@@ -35,35 +36,35 @@ public class SparkMaxSwerve extends SwerveMotor
   /**
    * {@link SparkMax} Instance.
    */
-  private final SparkMax                  motor;
+  private final SparkMax                        motor;
   /**
    * Integrated encoder.
    */
-  public        RelativeEncoder           encoder;
+  public        RelativeEncoder                 encoder;
   /**
    * Absolute encoder attached to the SparkMax (if exists)
    */
-  public        SwerveAbsoluteEncoder     absoluteEncoder;
+  private       Optional<SwerveAbsoluteEncoder> absoluteEncoder        = Optional.empty();
   /**
    * Closed-loop PID controller.
    */
-  public        SparkClosedLoopController pid;
+  public        SparkClosedLoopController       pid;
   /**
    * Factory default already occurred.
    */
-  private       boolean                   factoryDefaultOccurred = false;
+  private       boolean                         factoryDefaultOccurred = false;
   /**
    * Supplier for the velocity of the motor controller.
    */
-  private       Supplier<Double>          velocity;
+  private       Supplier<Double>                velocity;
   /**
    * Supplier for the position of the motor controller.
    */
-  private       Supplier<Double>          position;
+  private       Supplier<Double>                position;
   /**
    * Configuration object for {@link SparkMax} motor.
    */
-  private       SparkMaxConfig            cfg                    = new SparkMaxConfig();
+  private       SparkMaxConfig                  cfg                    = new SparkMaxConfig();
 
 
   /**
@@ -251,7 +252,7 @@ public class SparkMaxSwerve extends SwerveMotor
   {
     if (encoder == null)
     {
-      absoluteEncoder = null;
+      this.absoluteEncoder = Optional.empty();
       cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
 
       velocity = this.encoder::getVelocity;
@@ -262,9 +263,9 @@ public class SparkMaxSwerve extends SwerveMotor
       cfg.closedLoop.feedbackSensor(encoder instanceof SparkMaxAnalogEncoderSwerve
                                     ? FeedbackSensor.kAnalogSensor : FeedbackSensor.kAbsoluteEncoder);
 
-      absoluteEncoder = encoder;
-      velocity = absoluteEncoder::getVelocity;
-      position = absoluteEncoder::getAbsolutePosition;
+      this.absoluteEncoder = Optional.of(encoder);
+      velocity = encoder::getVelocity;
+      position = encoder::getAbsolutePosition;
     }
     return this;
   }
@@ -290,8 +291,7 @@ public class SparkMaxSwerve extends SwerveMotor
         .iAccumulationAlwaysOn(false)
         .appliedOutputPeriodMs(10)
         .faultsPeriodMs(20);
-
-    if (absoluteEncoder == null)
+    if (absoluteEncoder.isEmpty())
     {
       cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
       cfg.encoder
@@ -325,7 +325,7 @@ public class SparkMaxSwerve extends SwerveMotor
       // Some of the frames can probably be adjusted to decrease CAN utilization, with 65535 being the max.
       // From testing, 20ms on frame 5 sometimes returns the same value while constantly powering the azimuth but 8ms may be overkill,
       // with limited testing 19ms did not return the same value while the module was constatntly rotating.
-      if (absoluteEncoder.getAbsoluteEncoder() instanceof AbsoluteEncoder)
+      if (absoluteEncoder.get().getAbsoluteEncoder() instanceof AbsoluteEncoder)
       {
         cfg.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
 
@@ -542,7 +542,7 @@ public class SparkMaxSwerve extends SwerveMotor
   @Override
   public void setPosition(double position)
   {
-    if (absoluteEncoder == null)
+    if (absoluteEncoder.isEmpty())
     {
       configureSparkMax(() -> encoder.setPosition(position));
     }

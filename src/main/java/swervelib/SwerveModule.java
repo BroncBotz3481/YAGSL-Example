@@ -197,7 +197,10 @@ public class SwerveModule
     absolutePositionCache = new Cache<>(this::getRawAbsolutePosition, 20);
 
     // Config angle motor/controller
-    angleMotor.configureIntegratedEncoder(moduleConfiguration.conversionFactors.angle.factor);
+    if (!angleMotor.isAttachedAbsoluteEncoder())
+    {
+      angleMotor.configureIntegratedEncoder(moduleConfiguration.conversionFactors.angle.factor);
+    }
     angleMotor.configurePIDF(moduleConfiguration.anglePIDF);
     angleMotor.configurePIDWrapping(0, 360);
     angleMotor.setInverted(moduleConfiguration.angleMotorInverted);

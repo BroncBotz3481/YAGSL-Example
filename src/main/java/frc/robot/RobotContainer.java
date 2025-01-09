@@ -180,11 +180,6 @@ public class RobotContainer
     return drivebase.getAutonomousCommand("New Auto");
   }
 
-  public void setDriveMode()
-  {
-    configureBindings();
-  }
-
   public void setMotorBrake(boolean brake)
   {
     drivebase.setMotorBrake(brake);

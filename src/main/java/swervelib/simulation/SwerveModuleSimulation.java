@@ -49,7 +49,7 @@ public class SwerveModuleSimulation
    *
    * @param desiredFacing the desired facing of the module
    * @param volts the voltage to run
-   * @see org.ironmaple.simulation.drivesims.SelfControlledSwerveDriveSimulation.SelfControlledModuleSimulation#runDriveMotorCharacterization(Rotation2d, double).
+   * @apiNote See {@link org.ironmaple.simulation.drivesims.SelfControlledSwerveDriveSimulation.SelfControlledModuleSimulation#runDriveMotorCharacterization(Rotation2d, double)} to run.
    */
   public void runDriveMotorCharacterization(Rotation2d desiredFacing, double volts)
   {
@@ -61,7 +61,7 @@ public class SwerveModuleSimulation
    * This method is called from {@link swervelib.SwerveDriveTest#runAngleMotorsCharacterizationOnSimModules(SwerveDrive, double)} to run sysId during simulation
    *
    * @param volts the voltage to run
-   * @see org.ironmaple.simulation.drivesims.SelfControlledSwerveDriveSimulation.SelfControlledModuleSimulation#runSteerMotorCharacterization(double).
+   * @apiNote See {@link org.ironmaple.simulation.drivesims.SelfControlledSwerveDriveSimulation.SelfControlledModuleSimulation#runSteerMotorCharacterization(double)}.
    */
   public void runAngleMotorCharacterization(double volts)
   {

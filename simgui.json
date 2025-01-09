@@ -60,10 +60,16 @@
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
       "/LiveWindow/Ungrouped/Pigeon 2 [13]": "Gyro",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/SmartDashboard/Encoders": "Alerts",
       "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/IMU": "Alerts",
+      "/SmartDashboard/JSON": "Alerts",
+      "/SmartDashboard/Motors": "Alerts",
       "/SmartDashboard/Pigeon 2 (v6) [13]": "Gyro",
       "/SmartDashboard/Pigeon 2 [13]": "Gyro",
       "/SmartDashboard/SendableChooser[0]": "String Chooser",
+      "/SmartDashboard/Swerve Drive": "Alerts",
+      "/SmartDashboard/VisionSystemSim-Vision/Sim Field": "Field2d",
       "/SmartDashboard/navX-Sensor[1]": "Gyro",
       "/SmartDashboard/navX-Sensor[4]": "Gyro"
     },
@@ -74,6 +80,20 @@
         }
       },
       "/SmartDashboard/Field": {
+        "OdometryPose": {
+          "arrowColor": [
+            255.0,
+            255.0,
+            0.0,
+            255.0
+          ],
+          "color": [
+            224.99996948242188,
+            0.0,
+            255.0,
+            255.0
+          ]
+        },
         "XModules": {
           "arrowColor": [
             0.09611687064170837,
@@ -99,6 +119,9 @@
   },
   "NetworkTables": {
     "transitory": {
+      "FMSInfo": {
+        "open": true
+      },
       "SmartDashboard": {
         "Field": {
           "open": true

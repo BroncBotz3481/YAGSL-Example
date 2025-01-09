@@ -109,6 +109,8 @@ public class RobotContainer
 
   Command driveFieldOrientedDirectAngleSim = drivebase.driveFieldOriented(driveDirectAngleSim);
 
+  Command driveFieldOrientedAnglularVelocitySim = drivebase.driveFieldOriented(driveAngularVelocitySim);
+
   Command driveSetpointGenSim = drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngleSim);
 
   /**
@@ -133,8 +135,8 @@ public class RobotContainer
   {
     // (Condition) ? Return-On-True : Return-on-False
     drivebase.setDefaultCommand(!RobotBase.isSimulation() ?
-                                driveFieldOrientedDirectAngle :
-                                driveFieldOrientedDirectAngleSim);
+                                driveFieldOrientedAnglularVelocity :
+                                driveFieldOrientedAnglularVelocitySim);
 
     if (Robot.isSimulation())
     {

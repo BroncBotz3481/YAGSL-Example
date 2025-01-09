@@ -145,7 +145,9 @@ public class SwerveDriveTest
    */
   public static void runDriveMotorsCharacterizationOnSimModules(SwerveDrive swerveDrive, double volts) {
     for (SwerveModule module: swerveDrive.getModules())
+    {
       module.getSimModule().runDriveMotorCharacterization(Rotation2d.kZero, volts);
+    }
   }
 
   /**
@@ -157,7 +159,9 @@ public class SwerveDriveTest
    */
   public static void runAngleMotorsCharacterizationOnSimModules(SwerveDrive swerveDrive, double volts) {
     for (SwerveModule module: swerveDrive.getModules())
+    {
       module.getSimModule().runAngleMotorCharacterization(volts);
+    }
   }
 
   /**

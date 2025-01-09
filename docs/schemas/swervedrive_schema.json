@@ -1,0 +1,42 @@
+{
+  "$schema": "https://broncbotz3481.github.io/YAGSL-Example/schemas/swervedrive_schema.json",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "imu": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "number"
+        },
+        "canbus": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "id",
+        "canbus"
+      ]
+    },
+    "invertedIMU": {
+      "type": "boolean"
+    },
+    "modules": {
+      "type": "array",
+      "items": {
+        "required": [],
+        "properties": {}
+      }
+    }
+  },
+  "required": [
+    "imu",
+    "invertedIMU",
+    "modules"
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "$schema": "https://broncbotz3481.github.io/YAGSL-Example/schemas/controllerproperties_schema.json",
-  "description": "",
+  "description": "Controller Properties used within SwerveController",
   "type": "object",
   "properties": {
     "angleJoystickRadiusDeadband": {

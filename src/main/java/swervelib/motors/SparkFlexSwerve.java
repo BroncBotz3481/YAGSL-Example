@@ -34,6 +34,10 @@ public class SparkFlexSwerve extends SwerveMotor
 {
 
   /**
+   * Config retry delay.
+   */
+  private final double configDelay = Milliseconds.of(5).in(Seconds);
+  /**
    * {@link SparkFlex} Instance.
    */
   private final SparkFlex                 motor;
@@ -120,7 +124,7 @@ public class SparkFlexSwerve extends SwerveMotor
       {
         return;
       }
-      Timer.delay(Milliseconds.of(5).in(Seconds));
+      Timer.delay(configDelay);
     }
     failureConfiguring.set(true);
   }

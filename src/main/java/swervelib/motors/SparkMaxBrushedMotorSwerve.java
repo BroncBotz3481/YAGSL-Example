@@ -36,6 +36,10 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
 {
 
   /**
+   * Config retry delay.
+   */
+  private final double configDelay = Milliseconds.of(5).in(Seconds);
+  /**
    * SparkMAX Instance.
    */
   private final SparkMax                  motor;
@@ -187,7 +191,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
       {
         return;
       }
-      Timer.delay(Milliseconds.of(5).in(Seconds));
+      Timer.delay(configDelay);
     }
     failureConfiguringAlert.set(true);
   }

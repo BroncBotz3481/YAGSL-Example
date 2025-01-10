@@ -110,12 +110,12 @@ public class SparkMaxAnalogEncoderSwerve extends SwerveAbsoluteEncoder
     if (sparkMax instanceof SparkMaxSwerve)
     {
       SparkMaxConfig cfg = ((SparkMaxSwerve) sparkMax).getConfig();
-      cfg.analogSensor.inverted(true);
+      cfg.analogSensor.inverted(inverted);
       ((SparkMaxSwerve) sparkMax).updateConfig(cfg);
     } else if (sparkMax instanceof SparkMaxBrushedMotorSwerve)
     {
       SparkMaxConfig cfg = ((SparkMaxBrushedMotorSwerve) sparkMax).getConfig();
-      cfg.analogSensor.inverted(true);
+      cfg.analogSensor.inverted(inverted);
       ((SparkMaxBrushedMotorSwerve) sparkMax).updateConfig(cfg);
     }
   }

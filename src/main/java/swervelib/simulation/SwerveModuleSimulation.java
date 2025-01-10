@@ -48,7 +48,7 @@ public class SwerveModuleSimulation
 
   /**
    * Runs a drive motor characterization on the sim module.
-   * This is called from {@link swervelib.SwerveDriveTest#runDriveMotorsCharacterizationOnSimModules(SwerveDrive, double, Rotation2d)}  to run sysId during simulation
+   * This is called from {@link swervelib.SwerveDriveTest#runDriveMotorsCharacterizationOnSimModules(SwerveDrive, double)}  to run sysId during simulation
    *
    * @param desiredFacing the desired facing of the module
    * @param volts the voltage to run

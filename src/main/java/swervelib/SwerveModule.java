@@ -421,16 +421,16 @@ public class SwerveModule
     }
 
     // Cosine compensation.
-    LinearVelocity nextVelocity = configuration.useCosineCompensator
-                                  ? getCosineCompensatedVelocity(desiredState)
-                                  : MetersPerSecond.of(desiredState.speedMetersPerSecond);
-    LinearVelocity curVelocity = MetersPerSecond.of(lastState.speedMetersPerSecond);
-    desiredState.speedMetersPerSecond = nextVelocity.magnitude();
+    double nextVelocityMetersPerSecond = configuration.useCosineCompensator
+                                         ? getCosineCompensatedVelocity(desiredState)
+                                         : desiredState.speedMetersPerSecond;
+    double curVelocityMetersPerSecond = lastState.speedMetersPerSecond;
+    desiredState.speedMetersPerSecond = nextVelocityMetersPerSecond;
 
     setDesiredState(desiredState,
                     isOpenLoop,
-                    driveMotorFeedforward.calculateWithVelocities(curVelocity.in(MetersPerSecond),
-                                                                  nextVelocity.in(MetersPerSecond)));
+                    driveMotorFeedforward.calculateWithVelocities(curVelocityMetersPerSecond,
+                                                                  nextVelocityMetersPerSecond));
   }
 
   /**
@@ -501,7 +501,7 @@ public class SwerveModule
    * @param desiredState Desired {@link SwerveModuleState} to use.
    * @return Cosine compensated velocity in meters/second.
    */
-  private LinearVelocity getCosineCompensatedVelocity(SwerveModuleState desiredState)
+  private double getCosineCompensatedVelocity(SwerveModuleState desiredState)
   {
     double cosineScalar = 1.0;
     // Taken from the CTRE SwerveModule class.
@@ -519,7 +519,7 @@ public class SwerveModule
       cosineScalar = 1;
     }
 
-    return MetersPerSecond.of(desiredState.speedMetersPerSecond).times(cosineScalar);
+    return desiredState.speedMetersPerSecond * cosineScalar;
   }
 
   /**
@@ -768,8 +768,8 @@ public class SwerveModule
     {
       maxDriveVelocity = InchesPerSecond.of(
           (driveMotor.getSimMotor().freeSpeedRadPerSec /
-              configuration.conversionFactors.drive.gearRatio) *
-              configuration.conversionFactors.drive.diameter / 2.0);
+           configuration.conversionFactors.drive.gearRatio) *
+          configuration.conversionFactors.drive.diameter / 2.0);
     }
     return maxDriveVelocity;
   }

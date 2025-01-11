@@ -18,15 +18,7 @@ import swervelib.encoders.SparkMaxEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.encoders.TalonSRXEncoderSwerve;
 import swervelib.encoders.ThriftyNovaEncoderSwerve;
-import swervelib.imu.ADIS16448Swerve;
-import swervelib.imu.ADIS16470Swerve;
-import swervelib.imu.ADXRS450Swerve;
-import swervelib.imu.AnalogGyroSwerve;
-import swervelib.imu.CanandgyroSwerve;
-import swervelib.imu.NavXSwerve;
-import swervelib.imu.Pigeon2Swerve;
-import swervelib.imu.PigeonSwerve;
-import swervelib.imu.SwerveIMU;
+import swervelib.imu.*;
 import swervelib.motors.SparkFlexSwerve;
 import swervelib.motors.SparkMaxBrushedMotorSwerve;
 import swervelib.motors.SparkMaxBrushedMotorSwerve.Type;
@@ -154,6 +146,8 @@ public class DeviceJson
         return new NavXSwerve(NavXComType.kMXP_UART);
       case "pigeon":
         return new PigeonSwerve(id);
+      case "pigeon_via_talonsrx" :
+        return new PigeonViaTalonSRXSwerve(id);
       case "pigeon2":
         return new Pigeon2Swerve(id, canbus != null ? canbus : "");
       default:

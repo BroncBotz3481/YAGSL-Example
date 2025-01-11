@@ -1149,7 +1149,7 @@ public class SwerveDrive
   {
     SwerveDriveTelemetry.startOdomCycle();
     odometryLock.lock();
-    invalidateCache();
+//    invalidateCache();
     try
     {
       // Update odometry

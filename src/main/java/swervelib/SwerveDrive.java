@@ -672,9 +672,9 @@ public class SwerveDrive
    *
    * @return {@link LinearVelocity} representing the maximum drive speed of a module.
    */
-  public LinearVelocity getMaximumModuleDriveVelocity()
+  public double getMaximumModuleDriveVelocity()
   {
-    return swerveModules[0].getMaxVelocity();
+    return swerveModules[0].getMaxDriveVelocityMetersPerSecond();
   }
 
   /**
@@ -709,7 +709,7 @@ public class SwerveDrive
                                   boolean isOpenLoop)
   {
     // Desaturates wheel speeds
-    double maxModuleSpeedMPS = getMaximumModuleDriveVelocity().in(MetersPerSecond);
+    double maxModuleSpeedMPS = getMaximumModuleDriveVelocity();
     if (attainableMaxTranslationalSpeedMetersPerSecond != 0 || attainableMaxRotationalVelocityRadiansPerSecond != 0)
     {
       SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, desiredChassisSpeed,
@@ -740,7 +740,7 @@ public class SwerveDrive
   public void setModuleStates(SwerveModuleState[] desiredStates, boolean isOpenLoop)
   {
     SwerveDriveTelemetry.startCtrlCycle();
-    double maxModuleSpeedMPS = getMaximumModuleDriveVelocity().in(MetersPerSecond);
+    double maxModuleSpeedMPS = getMaximumModuleDriveVelocity();
     desiredStates = kinematics.toSwerveModuleStates(kinematics.toChassisSpeeds(desiredStates));
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, maxModuleSpeedMPS);
 

@@ -110,6 +110,10 @@ public class SwerveModule
    */
   private       LinearVelocity         maxDriveVelocity;
   /**
+   * Maximum velocity for the drive motor of the swerve module.
+   */
+  private       double           maxDriveVelocityMetersPerSecond;
+  /**
    * Maximum {@link AngularVelocity} for the azimuth/angle motor of the swerve module.
    */
   private       AngularVelocity        maxAngularVelocity;
@@ -411,13 +415,13 @@ public class SwerveModule
   public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop, boolean force)
   {
 
-    desiredState.optimize(Rotation2d.fromDegrees(getAbsolutePosition()));
+    desiredState.optimize(Rotation2d.fromDegrees(getRelativePosition()));
 
     // If we are forcing the angle
     if (!force && antiJitterEnabled)
     {
       // Prevents module rotation if speed is less than 1%
-      SwerveMath.antiJitter(desiredState, lastState, Math.min(maxDriveVelocity.in(MetersPerSecond), 4));
+      SwerveMath.antiJitter(desiredState, lastState, Math.min(maxDriveVelocityMetersPerSecond, 4));
     }
 
     // Cosine compensation.
@@ -764,14 +768,26 @@ public class SwerveModule
    */
   public LinearVelocity getMaxVelocity()
   {
+    getMaxDriveVelocityMetersPerSecond();
+    return maxDriveVelocity;
+  }
+
+  /**
+   * Get the maximum drive velocity of the module in Meters Per Second.
+   *
+   * @return Maximum drive motor velocity in Meters Per Second.
+   */
+  public double getMaxDriveVelocityMetersPerSecond()
+  {
     if (maxDriveVelocity == null)
     {
       maxDriveVelocity = InchesPerSecond.of(
           (driveMotor.getSimMotor().freeSpeedRadPerSec /
            configuration.conversionFactors.drive.gearRatio) *
           configuration.conversionFactors.drive.diameter / 2.0);
+      maxDriveVelocityMetersPerSecond = maxDriveVelocity.in(MetersPerSecond);
     }
-    return maxDriveVelocity;
+    return maxDriveVelocityMetersPerSecond;
   }
 
   /**

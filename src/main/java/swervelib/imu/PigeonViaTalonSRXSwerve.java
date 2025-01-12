@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.MutAngularVelocity;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.Optional;
@@ -50,9 +51,22 @@ public class PigeonViaTalonSRXSwerve extends SwerveIMU
   public PigeonViaTalonSRXSwerve(int canid)
   {
     talon = new TalonSRX(canid);
+    /**
+     *
+     * I want to add something like this but not too sure how to check if the talon was properly created
+     *
+    if (talon is not on canbus) {
+      DriverStation.reportWarning("pigeon_via_talonsrx can id should be the attached talon's can id", true);
+    }
+    */
+
     imu = new WPI_PigeonIMU(talon);
     offset = new Rotation3d();
     SmartDashboard.putData(imu);
+  }
+
+  public TalonSRX getTalonSRX() {
+    return talon;
   }
 
   /**

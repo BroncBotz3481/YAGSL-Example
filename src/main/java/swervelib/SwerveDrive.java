@@ -12,6 +12,7 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -62,6 +63,7 @@ import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 
 import swervelib.encoders.CANCoderSwerve;
 import swervelib.imu.Pigeon2Swerve;
+import swervelib.imu.PigeonViaTalonSRXSwerve;
 import swervelib.imu.SwerveIMU;
 import swervelib.math.SwerveMath;
 import swervelib.motors.TalonFXSwerve;
@@ -189,6 +191,10 @@ public class SwerveDrive
    * Simulation of the swerve drive.
    */
   private       SwerveIMUSimulation simIMU;
+  /**
+   * Pigeon attached to Talon class
+   */
+  public        final               PigeonViaTalonSRXSwerve pigeonViaTalonSRXSwerve;
   /**
    * Counter to synchronize the modules relative encoder with absolute encoder when not moving.
    */
@@ -947,7 +953,6 @@ public class SwerveDrive
     }
     return positions;
   }
-
   /**
    * Getter for the {@link SwerveIMU}.
    *
@@ -1054,6 +1059,16 @@ public class SwerveDrive
     {
       return simIMU.getAccel();
     }
+  }
+
+
+  /**
+   * Gets the {@link TalonSRX} that the WPI_PigeonIMU is attached to.
+   *
+   * @return the {@link TalonSRX} created for the WPI_PigeonIMU.
+   */
+  public TalonSRX getPigeonAttachedTalonSRX() {
+    return pigeonViaTalonSRXSwerve.getTalonSRX();
   }
 
   /**

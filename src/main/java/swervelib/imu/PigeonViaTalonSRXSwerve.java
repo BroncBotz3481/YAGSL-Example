@@ -44,22 +44,13 @@ public class PigeonViaTalonSRXSwerve extends SwerveIMU
   private       boolean            invertedIMU = false;
 
   /**
-   * Generate the SwerveIMU for {@link WPI_PigeonIMU}.
+   * Generate the SwerveIMU for {@link WPI_PigeonIMU} attached to a {@link TalonSRX}.
    *
-   * @param canid CAN ID for the {@link WPI_PigeonIMU}, does not support CANBus.
+   * @param canid CAN ID for the {@link TalonSRX} the {@link WPI_PigeonIMU} is attached to, does not support CANBus.
    */
   public PigeonViaTalonSRXSwerve(int canid)
   {
     talon = new TalonSRX(canid);
-    /**
-     *
-     * I want to add something like this but not too sure how to check if the talon was properly created
-     *
-    if (talon is not on canbus) {
-      DriverStation.reportWarning("pigeon_via_talonsrx can id should be the attached talon's can id", true);
-    }
-    */
-
     imu = new WPI_PigeonIMU(talon);
     offset = new Rotation3d();
     SmartDashboard.putData(imu);

@@ -70,6 +70,7 @@ import swervelib.motors.TalonFXSwerve;
 import swervelib.parser.Cache;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
+import swervelib.parser.SwerveParser;
 import swervelib.simulation.SwerveIMUSimulation;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
@@ -194,7 +195,7 @@ public class SwerveDrive
   /**
    * Pigeon attached to Talon class
    */
-  public        final               PigeonViaTalonSRXSwerve pigeonViaTalonSRXSwerve;
+  public        final       PigeonViaTalonSRXSwerve pigeonViaTalonSRXSwerve         =     new PigeonViaTalonSRXSwerve(SwerveParser.swerveDriveJson.imu.id);
   /**
    * Counter to synchronize the modules relative encoder with absolute encoder when not moving.
    */

@@ -415,7 +415,7 @@ public class SwerveModule
   public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop, boolean force)
   {
 
-    desiredState.optimize(Rotation2d.fromDegrees(getRelativePosition()));
+    desiredState.optimize(Rotation2d.fromDegrees(getAbsolutePosition()));
 
     // If we are forcing the angle
     if (!force && antiJitterEnabled)

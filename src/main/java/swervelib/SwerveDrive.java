@@ -335,7 +335,7 @@ public class SwerveDrive
 
     HAL.report(kResourceType_RobotDrive, kRobotDriveSwerve_YAGSL);
     // Defaulting to something reasonable for most robots
-    setMaximumAttainableSpeeds(12, 2 * Math.PI);
+    setMaximumAttainableSpeeds(maxSpeedMPS, 2 * Math.PI);
   }
 
   /**

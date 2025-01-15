@@ -322,7 +322,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   {
     if (encoder == null)
     {
-      absoluteEncoder = Optional.empty();
+      this.absoluteEncoder = Optional.empty();
       cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
 
       this.encoder.ifPresentOrElse((RelativeEncoder enc) -> {
@@ -337,9 +337,9 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
       cfg.closedLoop.feedbackSensor(encoder instanceof SparkMaxAnalogEncoderSwerve
                                     ? FeedbackSensor.kAnalogSensor : FeedbackSensor.kAbsoluteEncoder);
 
-      absoluteEncoder = Optional.of(encoder);
-      velocity = encoder::getVelocity;
-      position = encoder::getAbsolutePosition;
+      this.absoluteEncoder = Optional.of(encoder);
+      velocity = this.absoluteEncoder.get()::getVelocity;
+      position = this.absoluteEncoder.get()::getAbsolutePosition;
       noEncoderDefinedAlert.set(false);
     }
     if (absoluteEncoder == null && this.encoder.isEmpty())

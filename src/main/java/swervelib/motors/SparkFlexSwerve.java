@@ -258,7 +258,7 @@ public class SparkFlexSwerve extends SwerveMotor
   {
     if (encoder == null)
     {
-      absoluteEncoder = Optional.empty();
+      this.absoluteEncoder = Optional.empty();
       cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
 
       velocity = this.encoder::getVelocity;
@@ -266,10 +266,10 @@ public class SparkFlexSwerve extends SwerveMotor
     } else if (encoder.getAbsoluteEncoder() instanceof AbsoluteEncoder)
     {
       cfg.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-      absoluteEncoder = Optional.of(encoder);
+      this.absoluteEncoder = Optional.of(encoder);
 
-      velocity = encoder::getVelocity;
-      position = encoder::getAbsolutePosition;
+      velocity = this.absoluteEncoder.get()::getVelocity;
+      position = this.absoluteEncoder.get()::getAbsolutePosition;
     }
     return this;
   }

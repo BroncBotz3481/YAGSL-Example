@@ -46,7 +46,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   /**
    * Absolute encoder attached to the SparkMax (if exists)
    */
-  public        SwerveAbsoluteEncoder     absoluteEncoder;
+  public        Optional<SwerveAbsoluteEncoder>     absoluteEncoder;
   /**
    * Integrated encoder.
    */
@@ -290,7 +290,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   @Override
   public boolean isAttachedAbsoluteEncoder()
   {
-    return absoluteEncoder != null;
+    return absoluteEncoder.isPresent();
   }
 
   /**
@@ -322,7 +322,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   {
     if (encoder == null)
     {
-      absoluteEncoder = null;
+      absoluteEncoder = Optional.empty();
       cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
 
       this.encoder.ifPresentOrElse((RelativeEncoder enc) -> {
@@ -337,9 +337,9 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
       cfg.closedLoop.feedbackSensor(encoder instanceof SparkMaxAnalogEncoderSwerve
                                     ? FeedbackSensor.kAnalogSensor : FeedbackSensor.kAbsoluteEncoder);
 
-      absoluteEncoder = encoder;
-      velocity = absoluteEncoder::getVelocity;
-      position = absoluteEncoder::getAbsolutePosition;
+      absoluteEncoder = Optional.of(encoder);
+      velocity = encoder::getVelocity;
+      position = encoder::getAbsolutePosition;
       noEncoderDefinedAlert.set(false);
     }
     if (absoluteEncoder == null && this.encoder.isEmpty())
@@ -404,7 +404,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
       // Some of the frames can probably be adjusted to decrease CAN utilization, with 65535 being the max.
       // From testing, 20ms on frame 5 sometimes returns the same value while constantly powering the azimuth but 8ms may be overkill,
       // with limited testing 19ms did not return the same value while the module was constatntly rotating.
-      if (absoluteEncoder.getAbsoluteEncoder() instanceof AbsoluteEncoder)
+      if (absoluteEncoder.get().getAbsoluteEncoder() instanceof AbsoluteEncoder)
       {
         cfg.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
 

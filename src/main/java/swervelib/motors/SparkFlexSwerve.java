@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+
+import java.util.Optional;
 import java.util.function.Supplier;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.parser.PIDFConfig;
@@ -48,7 +50,7 @@ public class SparkFlexSwerve extends SwerveMotor
   /**
    * Absolute encoder attached to the SparkFlex (if exists)
    */
-  public        SwerveAbsoluteEncoder     absoluteEncoder;
+  public        Optional<SwerveAbsoluteEncoder>    absoluteEncoder                = Optional.empty();
   /**
    * Closed-loop PID controller.
    */
@@ -224,7 +226,7 @@ public class SparkFlexSwerve extends SwerveMotor
   @Override
   public boolean isAttachedAbsoluteEncoder()
   {
-    return absoluteEncoder != null;
+    return absoluteEncoder.isPresent();
   }
 
   /**
@@ -256,7 +258,7 @@ public class SparkFlexSwerve extends SwerveMotor
   {
     if (encoder == null)
     {
-      absoluteEncoder = null;
+      absoluteEncoder = Optional.empty();
       cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
 
       velocity = this.encoder::getVelocity;
@@ -264,10 +266,10 @@ public class SparkFlexSwerve extends SwerveMotor
     } else if (encoder.getAbsoluteEncoder() instanceof AbsoluteEncoder)
     {
       cfg.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-      absoluteEncoder = encoder;
+      absoluteEncoder = Optional.of(encoder);
 
-      velocity = absoluteEncoder::getVelocity;
-      position = absoluteEncoder::getAbsolutePosition;
+      velocity = encoder::getVelocity;
+      position = encoder::getAbsolutePosition;
     }
     return this;
   }
@@ -329,7 +331,7 @@ public class SparkFlexSwerve extends SwerveMotor
       // Some of the frames can probably be adjusted to decrease CAN utilization, with 65535 being the max.
       // From testing, 20ms on frame 5 sometimes returns the same value while constantly powering the azimuth but 8ms may be overkill,
       // with limited testing 19ms did not return the same value while the module was constatntly rotating.
-      if (absoluteEncoder.getAbsoluteEncoder() instanceof AbsoluteEncoder)
+      if (absoluteEncoder.get().getAbsoluteEncoder() instanceof AbsoluteEncoder)
       {
         cfg.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
 

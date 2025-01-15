@@ -224,7 +224,7 @@ public class SparkMaxSwerve extends SwerveMotor
   @Override
   public boolean isAttachedAbsoluteEncoder()
   {
-    return absoluteEncoder != null;
+    return absoluteEncoder.isPresent();
   }
 
   /**

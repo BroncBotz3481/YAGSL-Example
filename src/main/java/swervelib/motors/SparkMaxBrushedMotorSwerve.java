@@ -46,7 +46,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   /**
    * Absolute encoder attached to the SparkMax (if exists)
    */
-  public        SwerveAbsoluteEncoder     absoluteEncoder;
+  public        Optional<SwerveAbsoluteEncoder>     absoluteEncoder;
   /**
    * Integrated encoder.
    */
@@ -290,7 +290,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   @Override
   public boolean isAttachedAbsoluteEncoder()
   {
-    return absoluteEncoder != null;
+    return absoluteEncoder.isPresent();
   }
 
   /**
@@ -322,7 +322,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   {
     if (encoder == null)
     {
-      absoluteEncoder = null;
+      this.absoluteEncoder = Optional.empty();
       cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
 
       this.encoder.ifPresentOrElse((RelativeEncoder enc) -> {
@@ -337,12 +337,12 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
       cfg.closedLoop.feedbackSensor(encoder instanceof SparkMaxAnalogEncoderSwerve
                                     ? FeedbackSensor.kAnalogSensor : FeedbackSensor.kAbsoluteEncoder);
 
-      absoluteEncoder = encoder;
-      velocity = absoluteEncoder::getVelocity;
-      position = absoluteEncoder::getAbsolutePosition;
+      this.absoluteEncoder = Optional.of(encoder);
+      velocity = this.absoluteEncoder.get()::getVelocity;
+      position = this.absoluteEncoder.get()::getAbsolutePosition;
       noEncoderDefinedAlert.set(false);
     }
-    if (absoluteEncoder == null && this.encoder.isEmpty())
+    if (absoluteEncoder.isEmpty() && this.encoder.isEmpty())
     {
       noEncoderDefinedAlert.set(true);
       throw new RuntimeException("An encoder MUST be defined to work with a SparkMAX");
@@ -371,7 +371,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
         .iAccumulationAlwaysOn(false)
         .appliedOutputPeriodMs(10)
         .faultsPeriodMs(20);
-    if (absoluteEncoder == null)
+    if (absoluteEncoder.isEmpty())
     {
       cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
       cfg.encoder
@@ -404,7 +404,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
       // Some of the frames can probably be adjusted to decrease CAN utilization, with 65535 being the max.
       // From testing, 20ms on frame 5 sometimes returns the same value while constantly powering the azimuth but 8ms may be overkill,
       // with limited testing 19ms did not return the same value while the module was constatntly rotating.
-      if (absoluteEncoder.getAbsoluteEncoder() instanceof AbsoluteEncoder)
+      if (absoluteEncoder.get().getAbsoluteEncoder() instanceof AbsoluteEncoder)
       {
         cfg.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
 
@@ -620,7 +620,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   @Override
   public void setPosition(double position)
   {
-    if (absoluteEncoder == null)
+    if (absoluteEncoder.isEmpty())
     {
       encoder.ifPresent((RelativeEncoder enc) -> {
         configureSparkMax(() -> enc.setPosition(position));

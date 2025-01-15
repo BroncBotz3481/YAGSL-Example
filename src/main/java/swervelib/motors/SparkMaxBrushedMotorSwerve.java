@@ -342,7 +342,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
       position = this.absoluteEncoder.get()::getAbsolutePosition;
       noEncoderDefinedAlert.set(false);
     }
-    if (absoluteEncoder == null && this.encoder.isEmpty())
+    if (absoluteEncoder.isEmpty() && this.encoder.isEmpty())
     {
       noEncoderDefinedAlert.set(true);
       throw new RuntimeException("An encoder MUST be defined to work with a SparkMAX");
@@ -371,7 +371,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
         .iAccumulationAlwaysOn(false)
         .appliedOutputPeriodMs(10)
         .faultsPeriodMs(20);
-    if (absoluteEncoder == null)
+    if (absoluteEncoder.isEmpty())
     {
       cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
       cfg.encoder
@@ -620,7 +620,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   @Override
   public void setPosition(double position)
   {
-    if (absoluteEncoder == null)
+    if (absoluteEncoder.isEmpty())
     {
       encoder.ifPresent((RelativeEncoder enc) -> {
         configureSparkMax(() -> enc.setPosition(position));

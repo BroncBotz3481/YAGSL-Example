@@ -296,7 +296,7 @@ public class SparkFlexSwerve extends SwerveMotor
         .appliedOutputPeriodMs(10)
         .faultsPeriodMs(20)
     ;
-    if (absoluteEncoder == null)
+    if (absoluteEncoder.isEmpty())
     {
       cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
 
@@ -532,7 +532,7 @@ public class SparkFlexSwerve extends SwerveMotor
   @Override
   public void setPosition(double position)
   {
-    if (absoluteEncoder == null)
+    if (absoluteEncoder.isEmpty())
     {
       configureSparkFlex(() -> encoder.setPosition(position));
     }

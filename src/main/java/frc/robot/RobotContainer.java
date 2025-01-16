@@ -5,7 +5,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -17,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
 import swervelib.SwerveInputStream;
@@ -35,24 +33,6 @@ public class RobotContainer
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve/neo"));
-  // Applies deadbands and inverts controls because joysticks
-  // are back-right positive while robot
-  // controls are front-left positive
-  // left stick controls translation
-  // right stick controls the rotational velocity 
-  // buttons are quick rotation positions to different ways to face
-  // WARNING: default buttons are on the same buttons as the ones defined in configureBindings
-  AbsoluteDriveAdv closedAbsoluteDriveAdv = new AbsoluteDriveAdv(drivebase,
-                                                                 () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
-                                                                                               OperatorConstants.LEFT_Y_DEADBAND),
-                                                                 () -> -MathUtil.applyDeadband(driverXbox.getLeftX(),
-                                                                                               OperatorConstants.DEADBAND),
-                                                                 () -> -MathUtil.applyDeadband(driverXbox.getRightX(),
-                                                                                               OperatorConstants.RIGHT_X_DEADBAND),
-                                                                 driverXbox.getHID()::getYButtonPressed,
-                                                                 driverXbox.getHID()::getAButtonPressed,
-                                                                 driverXbox.getHID()::getXButtonPressed,
-                                                                 driverXbox.getHID()::getBButtonPressed);
 
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
@@ -73,22 +53,6 @@ public class RobotContainer
                                                            .headingWhile(true);
 
 
-  // Applies deadbands and inverts controls because joysticks
-  // are back-right positive while robot
-  // controls are front-left positive
-  // left stick controls translation
-  // right stick controls the desired angle NOT angular rotation
-  Command driveFieldOrientedDirectAngle = drivebase.driveFieldOriented(driveDirectAngle);
-
-  // Applies deadbands and inverts controls because joysticks
-  // are back-right positive while robot
-  // controls are front-left positive
-  // left stick controls translation
-  // right stick controls the angular velocity of the robot
-  Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
-
-  Command driveSetpointGen = drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngle);
-
   SwerveInputStream driveAngularVelocitySim = SwerveInputStream.of(drivebase.getSwerveDrive(),
                                                                    () -> -driverXbox.getLeftY(),
                                                                    () -> -driverXbox.getLeftX())
@@ -106,12 +70,6 @@ public class RobotContainer
                                                                                                         2) * Math.PI) *
                                                                                                       (Math.PI * 2))
                                                                      .headingWhile(true);
-
-  Command driveFieldOrientedDirectAngleSim = drivebase.driveFieldOriented(driveDirectAngleSim);
-
-  Command driveFieldOrientedAnglularVelocitySim = drivebase.driveFieldOriented(driveAngularVelocitySim);
-
-  Command driveSetpointGenSim = drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngleSim);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -133,10 +91,22 @@ public class RobotContainer
    */
   private void configureBindings()
   {
-    // (Condition) ? Return-On-True : Return-on-False
-    drivebase.setDefaultCommand(!RobotBase.isSimulation() ?
-                                driveFieldOrientedAnglularVelocity :
-                                driveFieldOrientedAnglularVelocitySim);
+
+    Command driveFieldOrientedDirectAngle         = drivebase.driveFieldOriented(driveDirectAngle);
+    Command driveFieldOrientedAnglularVelocity    = drivebase.driveFieldOriented(driveAngularVelocity);
+    Command driveSetpointGen                      = drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngle);
+    Command driveFieldOrientedDirectAngleSim      = drivebase.driveFieldOriented(driveDirectAngleSim);
+    Command driveFieldOrientedAnglularVelocitySim = drivebase.driveFieldOriented(driveAngularVelocitySim);
+    Command driveSetpointGenSim = drivebase.driveWithSetpointGeneratorFieldRelative(
+        driveDirectAngleSim);
+
+    if (RobotBase.isSimulation())
+    {
+      drivebase.setDefaultCommand(driveFieldOrientedDirectAngleSim);
+    } else
+    {
+      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+    }
 
     if (Robot.isSimulation())
     {

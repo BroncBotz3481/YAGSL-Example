@@ -58,7 +58,7 @@ public class RobotContainer
   SwerveInputStream driveRobotOriented = driveAngularVelocity.copy().robotRelative(true)
   .allianceRelativeControl(false);
 
-  SwerveInputStream driveAngularVelocitySim = SwerveInputStream.of(drivebase.getSwerveDrive(),
+  SwerveInputStream driveAngularVelocityKeyboard = SwerveInputStream.of(drivebase.getSwerveDrive(),
                                                                    () -> -driverXbox.getLeftY(),
                                                                    () -> -driverXbox.getLeftX())
                                                                .withControllerRotationAxis(() -> driverXbox.getRawAxis(2))
@@ -66,7 +66,7 @@ public class RobotContainer
                                                                .scaleTranslation(0.8)
                                                                .allianceRelativeControl(true);
   // Derive the heading axis with math!
-  SwerveInputStream driveDirectAngleSim     = driveAngularVelocitySim.copy()
+  SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocitySim.copy()
                                                                      .withControllerHeadingAxis(() -> Math.sin(
                                                                                                     driverXbox.getRawAxis(
                                                                                                         2) * Math.PI) * (Math.PI * 2),
@@ -101,10 +101,10 @@ public class RobotContainer
     Command driveFieldOrientedAnglularVelocity    = drivebase.driveFieldOriented(driveAngularVelocity);
     Command driveRobotOrientedAngularVelocity     = drivebase.driveFieldOriented(driveRobotOriented);
     Command driveSetpointGen                      = drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngle);
-    Command driveFieldOrientedDirectAngleSim      = drivebase.driveFieldOriented(driveDirectAngleSim);
-    Command driveFieldOrientedAnglularVelocitySim = drivebase.driveFieldOriented(driveAngularVelocitySim);
-    Command driveSetpointGenSim                   = drivebase.driveWithSetpointGeneratorFieldRelative(
-        driveDirectAngleSim);
+    Command driveFieldOrientedDirectAngleKeyboard      = drivebase.driveFieldOriented(driveDirectAngleKeyboard);
+    Command driveFieldOrientedAnglularVelocityKeyboard = drivebase.driveFieldOriented(driveAngularVelocityKeyboard);
+    Command driveSetpointGenKeyboard                   = drivebase.driveWithSetpointGeneratorFieldRelative(
+        driveDirectAngleKeyboard);
 
     if (RobotBase.isSimulation())
     {

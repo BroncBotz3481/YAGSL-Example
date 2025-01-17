@@ -224,7 +224,7 @@ public class SparkMaxSwerve extends SwerveMotor
   @Override
   public boolean isAttachedAbsoluteEncoder()
   {
-    return absoluteEncoder != null;
+    return absoluteEncoder.isPresent();
   }
 
   /**
@@ -268,8 +268,8 @@ public class SparkMaxSwerve extends SwerveMotor
                                     ? FeedbackSensor.kAnalogSensor : FeedbackSensor.kAbsoluteEncoder);
 
       this.absoluteEncoder = Optional.of(encoder);
-      velocity = encoder::getVelocity;
-      position = encoder::getAbsolutePosition;
+      velocity = this.absoluteEncoder.get()::getVelocity;
+      position = this.absoluteEncoder.get()::getAbsolutePosition;
     }
     return this;
   }

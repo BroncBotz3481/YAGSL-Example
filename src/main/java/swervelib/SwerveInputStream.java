@@ -651,16 +651,16 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
   }
 
   /**
-   * Change {@link ChassisSpeeds} to robot relative.
+   * Change {@link ChassisSpeeds} from robot relative if enabled.
    *
-   * @param fieldRelativeSpeeds Field relative speeds to translate into robot-relative speeds.
-   * @return Robot relative {@link ChassisSpeeds}.
+   * @param fieldRelativeSpeeds Field or robot relative speeds to translate into robot-relative speeds.
+   * @return Field relative {@link ChassisSpeeds}.
    */
   private ChassisSpeeds applyRobotRelativeTranslation(ChassisSpeeds fieldRelativeSpeeds)
   {
     if (robotRelative.isPresent() && robotRelative.get().getAsBoolean())
     {
-      return ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, swerveDrive.getOdometryHeading());
+      return ChassisSpeeds.fromRobotRelativeSpeeds(fieldRelativeSpeeds, swerveDrive.getOdometryHeading());
     }
     return fieldRelativeSpeeds;
   }

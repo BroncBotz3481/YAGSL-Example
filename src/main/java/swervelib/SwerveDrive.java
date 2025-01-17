@@ -6,7 +6,6 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Newtons;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
@@ -53,14 +52,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
-
 import swervelib.encoders.CANCoderSwerve;
 import swervelib.imu.Pigeon2Swerve;
 import swervelib.imu.PigeonViaTalonSRXSwerve;
@@ -235,7 +231,9 @@ public class SwerveDrive
       SwerveDriveConfiguration config, SwerveControllerConfiguration controllerConfig, double maxSpeedMPS,
       Pose2d startingPose)
   {
-    this.maxChassisSpeedMPS = maxSpeedMPS;
+    this.attainableMaxTranslationalSpeedMetersPerSecond = this.maxChassisSpeedMPS = maxSpeedMPS;
+    this.attainableMaxRotationalVelocityRadiansPerSecond = Math.PI *
+                                                           2; // Defaulting to something reasonable for most robots
     swerveDriveConfiguration = config;
     swerveController = new SwerveController(controllerConfig);
     // Create Kinematics from swerve module locations.
@@ -258,17 +256,17 @@ public class SwerveDrive
                                                                               .withCustomModuleTranslations(config.moduleLocationsMeters)
                                                                               .withGyro(config.getGyroSim())
                                                                               .withSwerveModule(new SwerveModuleSimulationConfig(
-                                                                                  config.getDriveMotorSim(),
-                                                                                  config.getAngleMotorSim(),
-                                                                                  config.physicalCharacteristics.conversionFactor.drive.gearRatio,
-                                                                                  config.physicalCharacteristics.conversionFactor.angle.gearRatio,
-                                                                                  Volts.of(config.physicalCharacteristics.driveFrictionVoltage),
-                                                                                  Volts.of(config.physicalCharacteristics.angleFrictionVoltage),
-                                                                                  Inches.of(
-                                                                                      config.physicalCharacteristics.conversionFactor.drive.diameter /
-                                                                                      2),
-                                                                                  KilogramSquareMeters.of(0.02),
-                                                                                  config.physicalCharacteristics.wheelGripCoefficientOfFriction)
+                                                                                                    config.getDriveMotorSim(),
+                                                                                                    config.getAngleMotorSim(),
+                                                                                                    config.physicalCharacteristics.conversionFactor.drive.gearRatio,
+                                                                                                    config.physicalCharacteristics.conversionFactor.angle.gearRatio,
+                                                                                                    Volts.of(config.physicalCharacteristics.driveFrictionVoltage),
+                                                                                                    Volts.of(config.physicalCharacteristics.angleFrictionVoltage),
+                                                                                                    Inches.of(
+                                                                                                        config.physicalCharacteristics.conversionFactor.drive.diameter /
+                                                                                                        2),
+                                                                                                    KilogramSquareMeters.of(0.02),
+                                                                                                    config.physicalCharacteristics.wheelGripCoefficientOfFriction)
                                                                                                );
 
       mapleSimDrive = new SwerveDriveSimulation(simulationConfig, startingPose);
@@ -341,8 +339,6 @@ public class SwerveDrive
     checkIfTunerXCompatible();
 
     HAL.report(kResourceType_RobotDrive, kRobotDriveSwerve_YAGSL);
-    // Defaulting to something reasonable for most robots
-    setMaximumAttainableSpeeds(6, 2 * Math.PI);
   }
 
   /**
@@ -580,7 +576,7 @@ public class SwerveDrive
 
     if (fieldRelative)
     {
-      ChassisSpeeds.fromFieldRelativeSpeeds(velocity, getOdometryHeading());
+      velocity = ChassisSpeeds.fromFieldRelativeSpeeds(velocity, getOdometryHeading());
     }
     drive(velocity, isOpenLoop, new Translation2d());
   }
@@ -650,10 +646,10 @@ public class SwerveDrive
   /**
    * Set the maximum allowable speeds for desaturation.
    *
-   * @param maxTranslationalSpeedMetersPerSecond  The allowable max speed that your robot should reach while
-   *                                                        translating in meters per second.
+   * @param maxTranslationalSpeedMetersPerSecond  The allowable max speed that your robot should reach while translating
+   *                                              in meters per second.
    * @param maxRotationalVelocityRadiansPerSecond The allowable max speed the robot should reach while rotating in
-   *                                                        radians per second.
+   *                                              radians per second.
    */
   public void setMaximumAllowableSpeeds(
       double maxTranslationalSpeedMetersPerSecond,
@@ -665,7 +661,7 @@ public class SwerveDrive
 
   /**
    * Get the maximum velocity from {@link SwerveDrive#attainableMaxTranslationalSpeedMetersPerSecond} or
-   * {@link SwerveDrive#maxChassisSpeedMPS} whichever is the lower limit on the robot's speed. 
+   * {@link SwerveDrive#maxChassisSpeedMPS} whichever is the lower limit on the robot's speed.
    *
    * @return Minimum speed in meters/second of physically attainable and user allowable limits.
    */
@@ -679,9 +675,9 @@ public class SwerveDrive
    *
    * @return {@link LinearVelocity} representing the maximum drive speed of a module.
    */
-  public LinearVelocity getMaximumModuleDriveVelocity()
+  public double getMaximumModuleDriveVelocity()
   {
-    return swerveModules[0].getMaxVelocity();
+    return swerveModules[0].getMaxDriveVelocityMetersPerSecond();
   }
 
   /**
@@ -716,8 +712,9 @@ public class SwerveDrive
                                   boolean isOpenLoop)
   {
     // Desaturates wheel speeds
-    double maxModuleSpeedMPS = getMaximumModuleDriveVelocity().in(MetersPerSecond);
-    if (attainableMaxTranslationalSpeedMetersPerSecond != 0 || attainableMaxRotationalVelocityRadiansPerSecond != 0)
+    double maxModuleSpeedMPS = getMaximumModuleDriveVelocity();
+    if ((attainableMaxTranslationalSpeedMetersPerSecond != 0 || attainableMaxRotationalVelocityRadiansPerSecond != 0) &&
+        attainableMaxTranslationalSpeedMetersPerSecond != maxChassisSpeedMPS)
     {
       SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, desiredChassisSpeed,
                                                   maxModuleSpeedMPS,
@@ -747,7 +744,7 @@ public class SwerveDrive
   public void setModuleStates(SwerveModuleState[] desiredStates, boolean isOpenLoop)
   {
     SwerveDriveTelemetry.startCtrlCycle();
-    double maxModuleSpeedMPS = getMaximumModuleDriveVelocity().in(MetersPerSecond);
+    double maxModuleSpeedMPS = getMaximumModuleDriveVelocity();
     desiredStates = kinematics.toSwerveModuleStates(kinematics.toChassisSpeeds(desiredStates));
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, maxModuleSpeedMPS);
 

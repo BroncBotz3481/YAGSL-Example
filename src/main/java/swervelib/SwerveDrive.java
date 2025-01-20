@@ -189,10 +189,6 @@ public class SwerveDrive
    */
   private       SwerveIMUSimulation simIMU;
   /**
-   * Pigeon attached to Talon class
-   */
-  public        final       PigeonViaTalonSRXSwerve pigeonViaTalonSRXSwerve         =     new PigeonViaTalonSRXSwerve(SwerveParser.swerveDriveJson.imu.id);
-  /**
    * Counter to synchronize the modules relative encoder with absolute encoder when not moving.
    */
   private       int                 moduleSynchronizationCounter                    = 0;
@@ -1057,16 +1053,6 @@ public class SwerveDrive
     {
       return simIMU.getAccel();
     }
-  }
-
-
-  /**
-   * Gets the {@link TalonSRX} that the WPI_PigeonIMU is attached to.
-   *
-   * @return the {@link TalonSRX} created for the WPI_PigeonIMU.
-   */
-  public TalonSRX getPigeonAttachedTalonSRX() {
-    return pigeonViaTalonSRXSwerve.getTalonSRX();
   }
 
   /**

@@ -56,10 +56,6 @@ public class PigeonViaTalonSRXSwerve extends SwerveIMU
     SmartDashboard.putData(imu);
   }
 
-  public TalonSRX getTalonSRX() {
-    return talon;
-  }
-
   /**
    * Reset IMU to factory default.
    */

@@ -539,7 +539,7 @@ public class Vision
         });
         if (!resultsList.isEmpty())
         {
-          updateEstimatedGlobalPose();
+          // updateEstimatedGlobalPose();
         }
       }
     }

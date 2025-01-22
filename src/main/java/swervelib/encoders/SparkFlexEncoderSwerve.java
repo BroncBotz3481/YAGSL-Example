@@ -4,23 +4,22 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.REVLibError;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import swervelib.motors.SparkMaxBrushedMotorSwerve;
-import swervelib.motors.SparkMaxSwerve;
+import swervelib.motors.SparkFlexSwerve;
 import swervelib.motors.SwerveMotor;
 
 import java.util.function.Supplier;
 
 /**
- * SparkMax absolute encoder, attached through the data port.
+ * SparkFlex absolute encoder, attached through the data port.
  */
 public class SparkFlexEncoderSwerve extends SwerveAbsoluteEncoder
 {
 
   /**
-   * The {@link AbsoluteEncoder} representing the duty cycle encoder attached to the SparkMax.
+   * The {@link AbsoluteEncoder} representing the duty cycle encoder attached to the SparkFlex.
    */
   public  SparkAbsoluteEncoder encoder;
   /**
@@ -32,7 +31,7 @@ public class SparkFlexEncoderSwerve extends SwerveAbsoluteEncoder
    */
   private Alert                offsetFailure;
   /**
-   * {@link SparkMaxBrushedMotorSwerve} or {@link SparkMaxSwerve} instance.
+   * {@link SparkFlexSwerve} instance.
    */
   private SwerveMotor sparkFlex;
 
@@ -47,7 +46,7 @@ public class SparkFlexEncoderSwerve extends SwerveAbsoluteEncoder
   {
     failureConfiguring = new Alert(
         "Encoders",
-        "Failure configuring SparkMax Absolute Encoder",
+        "Failure configuring SparkFlex Absolute Encoder",
         AlertType.kWarning);
     offsetFailure = new Alert(
         "Encoders",
@@ -61,7 +60,7 @@ public class SparkFlexEncoderSwerve extends SwerveAbsoluteEncoder
       motor.configureIntegratedEncoder(conversionFactor);
     } else
     {
-      throw new RuntimeException("Motor given to instantiate SparkMaxEncoder is not a CANSparkMax");
+      throw new RuntimeException("Motor given to instantiate SparkFlexEncoder is not a CANSparkFlex");
     }
   }
 
@@ -70,7 +69,7 @@ public class SparkFlexEncoderSwerve extends SwerveAbsoluteEncoder
    *
    * @param config Lambda supplier returning the error state.
    */
-  private void configureSparkMax(Supplier<REVLibError> config)
+  private void configureSparkFlex(Supplier<REVLibError> config)
   {
     for (int i = 0; i < maximumRetries; i++)
     {
@@ -108,11 +107,11 @@ public class SparkFlexEncoderSwerve extends SwerveAbsoluteEncoder
   @Override
   public void configure(boolean inverted)
   {
-    if (sparkFlex instanceof SparkMaxSwerve)
+    if (sparkFlex instanceof SparkFlexSwerve)
     {
-      SparkMaxConfig cfg = ((SparkMaxSwerve) sparkFlex).getConfig();
+      SparkFlexConfig cfg = ((SparkFlexSwerve) sparkFlex).getConfig();
       cfg.absoluteEncoder.inverted(inverted);
-      ((SparkMaxSwerve) sparkFlex).updateConfig(cfg);
+      ((SparkFlexSwerve) sparkFlex).updateConfig(cfg);
     }
   }
 
@@ -139,7 +138,7 @@ public class SparkFlexEncoderSwerve extends SwerveAbsoluteEncoder
   }
 
   /**
-   * Sets the Absolute Encoder Offset inside of the SparkMax's Memory.
+   * Sets the Absolute Encoder Offset inside of the SparkFlex's Memory.
    *
    * @param offset the offset the Absolute Encoder uses as the zero point.
    * @return if setting Absolute Encoder Offset was successful or not.
@@ -147,11 +146,11 @@ public class SparkFlexEncoderSwerve extends SwerveAbsoluteEncoder
   @Override
   public boolean setAbsoluteEncoderOffset(double offset)
   {
-    if (sparkFlex instanceof SparkMaxSwerve)
+    if (sparkFlex instanceof SparkFlexSwerve)
     {
-      SparkMaxConfig cfg = ((SparkMaxSwerve) sparkFlex).getConfig();
+      SparkFlexConfig cfg = ((SparkFlexSwerve) sparkFlex).getConfig();
       cfg.absoluteEncoder.zeroOffset(offset);
-      ((SparkMaxSwerve) sparkFlex).updateConfig(cfg);
+      ((SparkFlexSwerve) sparkFlex).updateConfig(cfg);
       return true;
     } 
     return false;

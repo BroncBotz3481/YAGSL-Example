@@ -9,24 +9,8 @@ import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DriverStation;
-import swervelib.encoders.AnalogAbsoluteEncoderSwerve;
-import swervelib.encoders.CANCoderSwerve;
-import swervelib.encoders.CanAndMagSwerve;
-import swervelib.encoders.PWMDutyCycleEncoderSwerve;
-import swervelib.encoders.SparkMaxAnalogEncoderSwerve;
-import swervelib.encoders.SparkMaxEncoderSwerve;
-import swervelib.encoders.SwerveAbsoluteEncoder;
-import swervelib.encoders.TalonSRXEncoderSwerve;
-import swervelib.encoders.ThriftyNovaEncoderSwerve;
-import swervelib.imu.ADIS16448Swerve;
-import swervelib.imu.ADIS16470Swerve;
-import swervelib.imu.ADXRS450Swerve;
-import swervelib.imu.AnalogGyroSwerve;
-import swervelib.imu.CanandgyroSwerve;
-import swervelib.imu.NavXSwerve;
-import swervelib.imu.Pigeon2Swerve;
-import swervelib.imu.PigeonSwerve;
-import swervelib.imu.SwerveIMU;
+import swervelib.encoders.*;
+import swervelib.imu.*;
 import swervelib.motors.SparkFlexSwerve;
 import swervelib.motors.SparkMaxBrushedMotorSwerve;
 import swervelib.motors.SparkMaxBrushedMotorSwerve.Type;
@@ -81,6 +65,11 @@ public class DeviceJson
         return new SparkMaxAnalogEncoderSwerve(motor, 3.3);
       case "sparkmax_analog5v":
         return new SparkMaxAnalogEncoderSwerve(motor, 5);
+      case "sparkflex_integrated":
+      case "sparkflex_attached":
+      case "sparkflex_canandmag":
+      case "sparkflex_canandcoder":
+        return new SparkFlexEncoderSwerve(motor, 360);
       case "canandcoder_can":
       case "canandmag_can":
         return new CanAndMagSwerve(id);
@@ -154,6 +143,8 @@ public class DeviceJson
         return new NavXSwerve(NavXComType.kMXP_UART);
       case "pigeon":
         return new PigeonSwerve(id);
+      case "pigeon_via_talonsrx" :
+        return new PigeonViaTalonSRXSwerve(id);
       case "pigeon2":
         return new Pigeon2Swerve(id, canbus != null ? canbus : "");
       default:

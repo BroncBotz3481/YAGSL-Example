@@ -49,6 +49,7 @@ public class SparkMaxAnalogEncoderSwerve extends SwerveAbsoluteEncoder
       encoder = ((SparkMax) motor.getMotor()).getAnalog();
       motor.setAbsoluteEncoder(this);
       sparkMax.configureIntegratedEncoder(360 / maxVoltage);
+      motor.setAbsoluteEncoder(null);
     } else
     {
       throw new RuntimeException("Motor given to instantiate SparkMaxEncoder is not a CANSparkMax");

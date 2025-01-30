@@ -153,34 +153,40 @@ public class SwerveDriveTest
   }
 
   /**
-   * Set the sim modules to center to 0 and power them to drive in a voltage.
-   * Calling this function in sim is equivalent to calling {@link #centerModules(SwerveDrive)} and {@link #powerDriveMotorsVoltage(SwerveDrive, double)} on a real robot.
+   * Set the sim modules to center to 0 and power them to drive in a voltage. Calling this function in sim is equivalent
+   * to calling {@link #centerModules(SwerveDrive)} and {@link #powerDriveMotorsVoltage(SwerveDrive, double)} on a real
+   * robot.
    *
-   * @param swerveDrive {@link SwerveDrive} to control.
-   * @param volts       Voltage to send to drive motors.
-   * @param testWithSpinning - Whether to make the robot spin in place instead of driving in a straight line, true to make the robot spin, false to make the robot drive in straight line
+   * @param swerveDrive      {@link SwerveDrive} to control.
+   * @param volts            Voltage to send to drive motors.
+   * @param testWithSpinning - Whether to make the robot spin in place instead of driving in a straight line, true to
+   *                         make the robot spin, false to make the robot drive in straight line
    */
-  public static void runDriveMotorsCharacterizationOnSimModules(SwerveDrive swerveDrive, double volts, boolean testWithSpinning) {
+  public static void runDriveMotorsCharacterizationOnSimModules(SwerveDrive swerveDrive, double volts,
+                                                                boolean testWithSpinning)
+  {
     SwerveModuleState[] rotaryStates = swerveDrive.kinematics.toSwerveModuleStates(new ChassisSpeeds(0, 0, 1));
     for (int i = 0; i < swerveDrive.getModules().length; i++)
     {
       swerveDrive.getModules()[i].getSimModule().runDriveMotorCharacterization(
-              testWithSpinning
-                      ? rotaryStates[i].angle
-                      : Rotation2d.kZero,
-              volts);
+          testWithSpinning
+          ? rotaryStates[i].angle
+          : Rotation2d.kZero,
+          volts);
     }
   }
 
   /**
-   * Set the sim modules to center to 0 and power them to drive in a voltage.
-   * Calling this function in sim is equivalent to calling {@link #centerModules(SwerveDrive)} and {@link #powerDriveMotorsVoltage(SwerveDrive, double)} on a real robot.
+   * Set the sim modules to center to 0 and power them to drive in a voltage. Calling this function in sim is equivalent
+   * to calling {@link #centerModules(SwerveDrive)} and {@link #powerDriveMotorsVoltage(SwerveDrive, double)} on a real
+   * robot.
    *
    * @param swerveDrive {@link SwerveDrive} to control.
    * @param volts       Voltage to send to angle motors.
    */
-  public static void runAngleMotorsCharacterizationOnSimModules(SwerveDrive swerveDrive, double volts) {
-    for (SwerveModule module: swerveDrive.getModules())
+  public static void runAngleMotorsCharacterizationOnSimModules(SwerveDrive swerveDrive, double volts)
+  {
+    for (SwerveModule module : swerveDrive.getModules())
     {
       module.getSimModule().runAngleMotorCharacterization(volts);
     }
@@ -354,7 +360,8 @@ public class SwerveDriveTest
    * @param swerveSubsystem  - the subsystem to add to requirements
    * @param swerveDrive      - the SwerveDrive from which to access motor info
    * @param maxVolts         - The maximum voltage that should be applied to the drive motors.
-   * @param testWithSpinning - Whether to make the robot spin in place instead of driving in a straight line, true to make the robot spin, false to make the robot drive in straight line
+   * @param testWithSpinning - Whether to make the robot spin in place instead of driving in a straight line, true to
+   *                         make the robot spin, false to make the robot drive in straight line
    * @return A SysIdRoutine runner
    */
   public static SysIdRoutine setDriveSysIdRoutine(Config config, SubsystemBase swerveSubsystem,
@@ -374,7 +381,9 @@ public class SwerveDriveTest
             SwerveDriveTest.powerDriveMotorsVoltage(swerveDrive, Math.min(voltage.in(Volts), maxVolts));
           } else
           {
-            SwerveDriveTest.runDriveMotorsCharacterizationOnSimModules(swerveDrive, voltage.in(Volts), testWithSpinning);
+            SwerveDriveTest.runDriveMotorsCharacterizationOnSimModules(swerveDrive,
+                                                                       voltage.in(Volts),
+                                                                       testWithSpinning);
           }
         },
         log -> {

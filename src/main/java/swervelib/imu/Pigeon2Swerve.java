@@ -23,29 +23,17 @@ public class Pigeon2Swerve extends SwerveIMU
   /**
    * Wait time for status frames to show up.
    */
-  public static double             STATUS_TIMEOUT_SECONDS = 0.04;
+  public static double              STATUS_TIMEOUT_SECONDS = 0.04;
   /**
    * {@link Pigeon2} IMU device.
    */
-  private final Pigeon2            imu;
+  private final Pigeon2             imu;
   /**
    * Mutable {@link MutAngularVelocity} for readings.
    */
-  private final MutAngularVelocity yawVel                 = new MutAngularVelocity(0, 0, DegreesPerSecond);
-
-  /**
-   * Offset for the {@link Pigeon2}.
-   */
-  private Rotation3d          offset      = new Rotation3d();
-  /**
-   * Inversion for the gyro
-   */
-  private boolean             invertedIMU = false;
-  /**
-   * {@link Pigeon2} configurator.
-   */
-  private Pigeon2Configurator cfg;
-
+  private final MutAngularVelocity  yawVel                 = new MutAngularVelocity(0,
+                                                                                    0,
+                                                                                    DegreesPerSecond);
   /**
    * X Acceleration supplier
    */
@@ -58,6 +46,18 @@ public class Pigeon2Swerve extends SwerveIMU
    * Z Acceleration supplier.
    */
   private final Supplier<StatusSignal<LinearAcceleration>> zAcc;
+  /**
+   * Offset for the {@link Pigeon2}.
+   */
+  private       Rotation3d          offset                 = new Rotation3d();
+  /**
+   * Inversion for the gyro
+   */
+  private       boolean             invertedIMU            = false;
+  /**
+   * {@link Pigeon2} configurator.
+   */
+  private       Pigeon2Configurator cfg;
 
   /**
    * Generate the SwerveIMU for {@link Pigeon2}.

@@ -6,10 +6,10 @@ import static edu.wpi.first.units.Units.Seconds;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -38,51 +38,51 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   /**
    * Config retry delay.
    */
-  private final double configDelay = Milliseconds.of(5).in(Seconds);
+  private final double                          configDelay            = Milliseconds.of(5).in(Seconds);
   /**
    * SparkMAX Instance.
    */
-  private final SparkMax                  motor;
+  private final SparkMax                        motor;
   /**
    * Absolute encoder attached to the SparkMax (if exists)
    */
-  public        Optional<SwerveAbsoluteEncoder>     absoluteEncoder;
+  public        Optional<SwerveAbsoluteEncoder> absoluteEncoder;
   /**
    * Integrated encoder.
    */
-  public        Optional<RelativeEncoder> encoder                = Optional.empty();
+  public        Optional<RelativeEncoder>       encoder                = Optional.empty();
   /**
    * Closed-loop PID controller.
    */
-  public        SparkClosedLoopController pid;
+  public        SparkClosedLoopController       pid;
   /**
    * Supplier for the velocity of the motor controller.
    */
-  private       Supplier<Double>          velocity;
+  private       Supplier<Double>                velocity;
   /**
    * Supplier for the position of the motor controller.
    */
-  private       Supplier<Double>          position;
+  private       Supplier<Double>                position;
   /**
    * Factory default already occurred.
    */
-  private       boolean                   factoryDefaultOccurred = false;
+  private       boolean                         factoryDefaultOccurred = false;
   /**
    * An {@link Alert} for if the motor has no encoder.
    */
-  private       Alert                     noEncoderAlert;
+  private       Alert                           noEncoderAlert;
   /**
    * An {@link Alert} for if there is an error configuring the motor.
    */
-  private       Alert                     failureConfiguringAlert;
+  private       Alert                           failureConfiguringAlert;
   /**
    * An {@link Alert} for if the motor has no encoder defined.
    */
-  private       Alert                     noEncoderDefinedAlert;
+  private       Alert                           noEncoderDefinedAlert;
   /**
    * Configuration object for {@link SparkMax} motor.
    */
-  private       SparkMaxConfig            cfg                    = new SparkMaxConfig();
+  private       SparkMaxConfig                  cfg                    = new SparkMaxConfig();
 
   /**
    * Initialize the swerve motor.

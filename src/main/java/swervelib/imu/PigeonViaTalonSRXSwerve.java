@@ -1,5 +1,7 @@
 package swervelib.imu;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import edu.wpi.first.math.geometry.Quaternion;
@@ -7,12 +9,8 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.MutAngularVelocity;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import java.util.Optional;
-
-import static edu.wpi.first.units.Units.DegreesPerSecond;
 
 /**
  * SwerveIMU interface for the {@link WPI_PigeonIMU}.

@@ -27,6 +27,14 @@ public class ThriftyNovaSwerve extends SwerveMotor
 {
 
   /**
+   * {@link DCMotor} for simulation and calculations.
+   */
+  private final DCMotor       simMotor;
+  /**
+   * Closed-loop PID controller.
+   */
+  public        PIDController pid;
+  /**
    * ThriftyNova Instance.
    */
   private       ThriftyNova   motor;
@@ -34,10 +42,6 @@ public class ThriftyNovaSwerve extends SwerveMotor
    * The Encoder type being used
    */
   private       EncoderType   encoderType;
-  /**
-   * Closed-loop PID controller.
-   */
-  public        PIDController pid;
   /**
    * Factory default already occurred.
    */
@@ -58,10 +62,6 @@ public class ThriftyNovaSwerve extends SwerveMotor
    * The position conversion factor for the encoder
    */
   private       double        velocityConversionFactor = 1.0 / 60.0;
-  /**
-   * {@link DCMotor} for simulation and calculations.
-   */
-  private final DCMotor       simMotor;
 
   /**
    * Initialize the swerve motor.

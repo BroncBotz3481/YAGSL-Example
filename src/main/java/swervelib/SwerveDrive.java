@@ -1273,7 +1273,7 @@ public class SwerveDrive
    *                                 {@link Timer#getFPGATimestamp()} or similar sources.
    * @param visionMeasurementStdDevs Vision measurement standard deviation that will be sent to the
    *                                 {@link SwerveDrivePoseEstimator}.The standard deviation of the vision measurement,
-   *                                 for best accuracy calculate the standard deviation at 2 or more  points and fit a
+   *                                 for best accuracy calculate the standard deviation at 2 or more points and fit a
    *                                 line to it with the calculated optimal standard deviation. (Units should be meters
    *                                 per pixel). By optimizing this you can get * vision accurate to inches instead of
    *                                 feet.
@@ -1393,6 +1393,20 @@ public class SwerveDrive
     for (SwerveModule module : swerveModules)
     {
       module.restoreInternalOffset();
+    }
+  }
+
+  /**
+   * Set module optimization to be utilized or not. Sometimes it is desirable to be enabled for debugging purposes
+   * only.
+   *
+   * @param enabled Optimization enabled state.
+   */
+  public void setModuleStateOptimization(boolean enabled)
+  {
+    for (SwerveModule module : swerveModules)
+    {
+      module.setModuleStateOptimization(enabled);
     }
   }
 

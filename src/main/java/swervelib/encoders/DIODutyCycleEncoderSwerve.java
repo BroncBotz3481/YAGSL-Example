@@ -5,14 +5,14 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
 /**
- * DutyCycle encoders such as "US Digital MA3 with PWM Output, the CTRE Mag Encoder, the Rev Hex Encoder, and the AM Mag
- * Encoder." attached via a PWM lane.
+ * DutyCycle encoders such as "US Digital MA3 with DIO Output, the CTRE Mag Encoder, the Rev Hex Encoder, and the AM Mag
+ * Encoder." attached via a DIO lane.
  * <p>
  * Credits to
- * <a href="https://github.com/p2reneker25/2035-YAGSL/blob/main/swervelib/encoders/PWMDutyCycleEncoderSwerve.java">
+ * <a href="https://github.com/p2reneker25/2035-YAGSL/blob/main/swervelib/encoders/DIODutyCycleEncoderSwerve.java">
  * p2reneker25</a> for building this.
  */
-public class PWMDutyCycleEncoderSwerve extends SwerveAbsoluteEncoder
+public class DIODutyCycleEncoderSwerve extends SwerveAbsoluteEncoder
 {
 
   /**
@@ -28,21 +28,21 @@ public class PWMDutyCycleEncoderSwerve extends SwerveAbsoluteEncoder
    */
   private       Alert            inaccurateVelocities;
   /**
-   * The Offset in degrees of the PWM absolute encoder.
+   * The Offset in degrees of the DIO absolute encoder.
    */
   private       double           offset;
 
   /**
-   * Constructor for the PWM duty cycle encoder.
+   * Constructor for the DIO duty cycle encoder.
    *
-   * @param pin PWM lane for the encoder.
+   * @param pin DIO lane for the encoder.
    */
-  public PWMDutyCycleEncoderSwerve(int pin)
+  public DIODutyCycleEncoderSwerve(int pin)
   {
     encoder = new DutyCycleEncoder(pin);
     inaccurateVelocities = new Alert(
         "Encoders",
-        "The PWM Duty Cycle encoder may not report accurate velocities!",
+        "The DIO Duty Cycle encoder may not report accurate velocities!",
         AlertType.kWarning);
 
   }

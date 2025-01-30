@@ -6,23 +6,21 @@ import static edu.wpi.first.units.Units.Seconds;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-
 import java.util.Optional;
 import java.util.function.Supplier;
 import swervelib.encoders.SwerveAbsoluteEncoder;
@@ -38,39 +36,39 @@ public class SparkFlexSwerve extends SwerveMotor
   /**
    * Config retry delay.
    */
-  private final double configDelay = Milliseconds.of(5).in(Seconds);
+  private final double                          configDelay     = Milliseconds.of(5).in(Seconds);
   /**
    * {@link SparkFlex} Instance.
    */
-  private final SparkFlex                 motor;
+  private final SparkFlex                       motor;
   /**
    * Integrated encoder.
    */
-  public        RelativeEncoder           encoder;
+  public        RelativeEncoder                 encoder;
   /**
    * Absolute encoder attached to the SparkFlex (if exists)
    */
-  public        Optional<SwerveAbsoluteEncoder>    absoluteEncoder                = Optional.empty();
+  public        Optional<SwerveAbsoluteEncoder> absoluteEncoder = Optional.empty();
   /**
    * Closed-loop PID controller.
    */
-  public        SparkClosedLoopController pid;
+  public        SparkClosedLoopController       pid;
   /**
    * Supplier for the velocity of the motor controller.
    */
-  private       Supplier<Double>          velocity;
+  private       Supplier<Double>                velocity;
   /**
    * Supplier for the position of the motor controller.
    */
-  private       Supplier<Double>          position;
+  private       Supplier<Double>                position;
   /**
    * An {@link Alert} for if there is an error configuring the motor.
    */
-  private       Alert                     failureConfiguring;
+  private       Alert                           failureConfiguring;
   /**
    * Configuration object for {@link SparkFlex} motor.
    */
-  private       SparkFlexConfig           cfg                    = new SparkFlexConfig();
+  private       SparkFlexConfig                 cfg             = new SparkFlexConfig();
 
 
   /**

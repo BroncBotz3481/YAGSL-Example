@@ -76,11 +76,11 @@ public class ModuleJson
     SwerveAbsoluteEncoder absEncoder = encoder.createEncoder(angleMotor);
 
     //Throw an error if module locations are improperly set
-    if (location.front==0 && location.left==0)
+    if (location.front == 0 && location.left == 0)
     {
       throw new RuntimeException("Improper Module Location Settings!\n" +
-              "Your module location is set to 0 for both 'front' and 'left' values.\n" +
-              "Set the distance from the center of the robot to the center of the wheel in your module JSON file!");
+                                 "Your module location is set to 0 for both 'front' and 'left' values.\n" +
+                                 "Set the distance from the center of the robot to the center of the wheel in your module JSON file!");
     }
 
     // Set the conversion factors to null if they are both 0.

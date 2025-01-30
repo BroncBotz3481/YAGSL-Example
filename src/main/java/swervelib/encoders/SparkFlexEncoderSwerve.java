@@ -7,10 +7,9 @@ import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import java.util.function.Supplier;
 import swervelib.motors.SparkFlexSwerve;
 import swervelib.motors.SwerveMotor;
-
-import java.util.function.Supplier;
 
 /**
  * SparkFlex absolute encoder, attached through the data port.
@@ -36,8 +35,7 @@ public class SparkFlexEncoderSwerve extends SwerveAbsoluteEncoder
   private SwerveMotor sparkFlex;
 
   /**
-   * Create the {@link SparkFlexEncoderSwerve} object as a duty cycle from the {@link SparkFlex}
-   * motor.
+   * Create the {@link SparkFlexEncoderSwerve} object as a duty cycle from the {@link SparkFlex} motor.
    *
    * @param motor            Motor to create the encoder from.
    * @param conversionFactor The conversion factor to set if the output is not from 0 to 360.
@@ -152,7 +150,7 @@ public class SparkFlexEncoderSwerve extends SwerveAbsoluteEncoder
       cfg.absoluteEncoder.zeroOffset(offset);
       ((SparkFlexSwerve) sparkFlex).updateConfig(cfg);
       return true;
-    } 
+    }
     return false;
   }
 

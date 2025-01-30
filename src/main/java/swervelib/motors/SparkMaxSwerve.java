@@ -36,7 +36,7 @@ public class SparkMaxSwerve extends SwerveMotor
   /**
    * Config retry delay.
    */
-  private final double configDelay = Milliseconds.of(5).in(Seconds);
+  private final double                          configDelay            = Milliseconds.of(5).in(Seconds);
   /**
    * {@link SparkMax} Instance.
    */
@@ -46,13 +46,13 @@ public class SparkMaxSwerve extends SwerveMotor
    */
   public        RelativeEncoder                 encoder;
   /**
-   * Absolute encoder attached to the SparkMax (if exists)
-   */
-  private       Optional<SwerveAbsoluteEncoder> absoluteEncoder        = Optional.empty();
-  /**
    * Closed-loop PID controller.
    */
   public        SparkClosedLoopController       pid;
+  /**
+   * Absolute encoder attached to the SparkMax (if exists)
+   */
+  private       Optional<SwerveAbsoluteEncoder> absoluteEncoder        = Optional.empty();
   /**
    * Factory default already occurred.
    */

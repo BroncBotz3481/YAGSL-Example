@@ -23,7 +23,8 @@ public class SwerveModuleSimulation
   /**
    * Configure the maple sim module
    *
-   * @param simModule the {@link org.ironmaple.simulation.drivesims.SwerveModuleSimulation} object for simulation
+   * @param simModule               the {@link org.ironmaple.simulation.drivesims.SwerveModuleSimulation} object for
+   *                                simulation
    * @param physicalCharacteristics Physical characteristics of the swerve drive from the JSON or built.
    */
   public void configureSimModule(org.ironmaple.simulation.drivesims.SwerveModuleSimulation simModule,
@@ -47,11 +48,12 @@ public class SwerveModuleSimulation
   }
 
   /**
-   * Runs a drive motor characterization on the sim module.
-   * This is called from {@link swervelib.SwerveDriveTest#runDriveMotorsCharacterizationOnSimModules(SwerveDrive, double, boolean)}  to run sysId during simulation
+   * Runs a drive motor characterization on the sim module. This is called from
+   * {@link swervelib.SwerveDriveTest#runDriveMotorsCharacterizationOnSimModules(SwerveDrive, double, boolean)}  to run
+   * sysId during simulation
    *
    * @param desiredFacing the desired facing of the module
-   * @param volts the voltage to run
+   * @param volts         the voltage to run
    */
   public void runDriveMotorCharacterization(Rotation2d desiredFacing, double volts)
   {
@@ -59,8 +61,9 @@ public class SwerveModuleSimulation
   }
 
   /**
-   * Runs a drive motor characterization on the sim module.
-   * This method is called from {@link swervelib.SwerveDriveTest#runAngleMotorsCharacterizationOnSimModules(SwerveDrive, double)} to run sysId during simulation
+   * Runs a drive motor characterization on the sim module. This method is called from
+   * {@link swervelib.SwerveDriveTest#runAngleMotorsCharacterizationOnSimModules(SwerveDrive, double)} to run sysId
+   * during simulation
    *
    * @param volts the voltage to run
    */

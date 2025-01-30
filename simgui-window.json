@@ -19,7 +19,7 @@
     "###/FMSInfo": {
       "Collapsed": "0",
       "Pos": "60,60",
-      "Size": "181,167"
+      "Size": "169,167"
     },
     "###/SmartDashboard/Field": {
       "Collapsed": "0",
@@ -29,7 +29,7 @@
     "###FMS": {
       "Collapsed": "0",
       "Pos": "4,414",
-      "Size": "169,184"
+      "Size": "283,140"
     },
     "###Joysticks": {
       "Collapsed": "0",
@@ -64,7 +64,7 @@
     "###Timing": {
       "Collapsed": "0",
       "Pos": "5,150",
-      "Size": "135,219"
+      "Size": "135,150"
     },
     "Debug##Default": {
       "Collapsed": "0",
@@ -74,7 +74,7 @@
     "Robot State": {
       "Collapsed": "0",
       "Pos": "7,20",
-      "Size": "92,116"
+      "Size": "99,116"
     }
   }
 }

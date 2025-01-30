@@ -138,6 +138,10 @@ public class SwerveModule
    */
   private       SwerveModuleSimulation simModule;
   /**
+   * Enables utilization off {@link SwerveModuleState#optimize(Rotation2d)}
+   */
+  private       boolean          optimizeSwerveModuleState = true;
+  /**
    * Encoder synchronization queued.
    */
   private       boolean                synchronizeEncoderQueued   = false;
@@ -278,6 +282,16 @@ public class SwerveModule
   }
 
   /**
+   * Set utilization of {@link SwerveModuleState#optimize(Rotation2d)} which should be disabled for some debugging.
+   *
+   * @param optimizationState Optimization enabled.
+   */
+  public void setModuleStateOptimization(boolean optimizationState)
+  {
+    optimizeSwerveModuleState = optimizationState;
+  }
+
+  /**
    * Set the voltage compensation for the swerve module motor.
    *
    * @param optimalVoltage Nominal voltage for operation to output to.
@@ -414,8 +428,11 @@ public class SwerveModule
    */
   public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop, boolean force)
   {
-
-    desiredState.optimize(Rotation2d.fromDegrees(getAbsolutePosition()));
+    // SwerveModuleState optimization might be desired to be disabled while debugging.
+    if (optimizeSwerveModuleState)
+    {
+      desiredState.optimize(Rotation2d.fromDegrees(getAbsolutePosition()));
+    }
 
     // If we are forcing the angle
     if (!force && antiJitterEnabled)
@@ -813,7 +830,7 @@ public class SwerveModule
   {
     if (absoluteEncoder != null)
     {
-      rawAbsoluteAnglePublisher.set(absoluteEncoder.getAbsolutePosition());
+      rawAbsoluteAnglePublisher.set(absolutePositionCache.getValue());
     }
     if (SwerveDriveTelemetry.isSimulation && SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)
     {

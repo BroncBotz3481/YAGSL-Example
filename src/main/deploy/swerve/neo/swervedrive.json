@@ -1,9 +1,9 @@
 {
   "$schema": "https://broncbotz3481.github.io/YAGSL-Example/schemas/swervedrive_schema.json",
   "imu": {
-    "type": "pigeon2",
-    "id": 13,
-    "canbus": "canivore"
+    "type": "navx_mxp_serial",
+    "id": 0,
+    "canbus": null
   },
   "invertedIMU": true,
   "modules": [

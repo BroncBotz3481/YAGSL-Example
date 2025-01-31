@@ -830,7 +830,7 @@ public class SwerveModule
   {
     if (absoluteEncoder != null)
     {
-      rawAbsoluteAnglePublisher.set(absolutePositionCache.getValue());
+      rawAbsoluteAnglePublisher.set(absoluteEncoder.getAbsolutePosition());
     }
     if (SwerveDriveTelemetry.isSimulation && SwerveDriveTelemetry.verbosity == TelemetryVerbosity.HIGH)
     {

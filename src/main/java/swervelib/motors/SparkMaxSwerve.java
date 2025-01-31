@@ -345,10 +345,12 @@ public class SparkMaxSwerve extends SwerveMotor
         cfg.closedLoop.feedbackSensor(FeedbackSensor.kAnalogSensor);
 
         cfg.signals
+            .analogVelocityAlwaysOn(true)
             .analogVoltageAlwaysOn(true)
             .analogPositionAlwaysOn(true)
             .analogVoltagePeriodMs(20)
-            .analogPositionPeriodMs(20);
+            .analogPositionPeriodMs(20)
+            .analogVelocityPeriodMs(20);
 
         cfg.analogSensor
             .positionConversionFactor(positionConversionFactor)

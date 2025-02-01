@@ -291,6 +291,11 @@ public class SwerveModule
     optimizeSwerveModuleState = optimizationState;
   }
 
+  /**
+   * Check if the module state optimization used by {@link SwerveModuleState#optimize(Rotation2d)} is enabled.
+   *
+   * @return optimization state.
+   */
   public boolean getModuleStateOptimization() {
     return optimizeSwerveModuleState;
   }
@@ -469,7 +474,6 @@ public class SwerveModule
   public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop,
                               double driveFeedforwardVoltage)
   {
-    
     if (isOpenLoop)
     {
       double percentOutput = desiredState.speedMetersPerSecond / maxDriveVelocity.in(MetersPerSecond);

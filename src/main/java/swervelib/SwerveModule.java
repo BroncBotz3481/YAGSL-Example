@@ -291,6 +291,10 @@ public class SwerveModule
     optimizeSwerveModuleState = optimizationState;
   }
 
+  public boolean getModuleStateOptimization() {
+    return optimizeSwerveModuleState;
+  }
+
   /**
    * Set the voltage compensation for the swerve module motor.
    *
@@ -465,11 +469,6 @@ public class SwerveModule
   public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop,
                               double driveFeedforwardVoltage)
   {
-    // SwerveModuleState optimization might be desired to be disabled while debugging.
-    if (optimizeSwerveModuleState)
-    {
-      desiredState.optimize(Rotation2d.fromDegrees(getAbsolutePosition()));
-    }
     
     if (isOpenLoop)
     {

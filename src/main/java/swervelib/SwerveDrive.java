@@ -766,6 +766,12 @@ public class SwerveDrive
     }
     for (SwerveModule module : swerveModules)
     {
+      // SwerveModuleState optimization might be desired to be disabled while debugging.
+      if (module.getModuleStateOptimization())
+      {
+        states[module.moduleNumber].optimize(Rotation2d.fromDegrees(module.getAbsolutePosition()));
+      }
+      
       // from the module configuration, obtain necessary information to calculate feed-forward
       // Warning: Will not work well if motor is not what we are expecting.
       // Warning: Should replace module.getDriveMotor().simMotor with expected motor type first.

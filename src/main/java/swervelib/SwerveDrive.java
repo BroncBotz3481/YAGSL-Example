@@ -770,6 +770,7 @@ public class SwerveDrive
       if (module.getModuleStateOptimization())
       {
         states[module.moduleNumber].optimize(Rotation2d.fromDegrees(module.getAbsolutePosition()));
+        module.applyAntiJitter(states[module.moduleNumber], false);
       }
       
       // from the module configuration, obtain necessary information to calculate feed-forward

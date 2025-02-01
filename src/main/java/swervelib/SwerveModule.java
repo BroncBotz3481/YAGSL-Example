@@ -551,6 +551,15 @@ public class SwerveModule
     return desiredState.speedMetersPerSecond * cosineScalar;
   }
 
+  public void applyAntiJitter(SwerveModuleState desiredState, boolean force) 
+  {
+    if (!force && antiJitterEnabled)
+    {
+      // Prevents module rotation if speed is less than 1%
+      SwerveMath.antiJitter(desiredState, lastState, Math.min(maxDriveVelocityMetersPerSecond, 4));
+    }
+  }
+
   /**
    * Set the angle for the module.
    *

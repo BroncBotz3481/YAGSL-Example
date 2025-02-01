@@ -465,7 +465,12 @@ public class SwerveModule
   public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop,
                               double driveFeedforwardVoltage)
   {
-
+    // SwerveModuleState optimization might be desired to be disabled while debugging.
+    if (optimizeSwerveModuleState)
+    {
+      desiredState.optimize(Rotation2d.fromDegrees(getAbsolutePosition()));
+    }
+    
     if (isOpenLoop)
     {
       double percentOutput = desiredState.speedMetersPerSecond / maxDriveVelocity.in(MetersPerSecond);

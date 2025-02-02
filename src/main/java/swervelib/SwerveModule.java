@@ -292,6 +292,15 @@ public class SwerveModule
   }
 
   /**
+   * Check if the module state optimization used by {@link SwerveModuleState#optimize(Rotation2d)} is enabled.
+   *
+   * @return optimization state.
+   */
+  public boolean getModuleStateOptimization() {
+    return optimizeSwerveModuleState;
+  }
+
+  /**
    * Set the voltage compensation for the swerve module motor.
    *
    * @param optimalVoltage Nominal voltage for operation to output to.
@@ -465,7 +474,6 @@ public class SwerveModule
   public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop,
                               double driveFeedforwardVoltage)
   {
-
     if (isOpenLoop)
     {
       double percentOutput = desiredState.speedMetersPerSecond / maxDriveVelocity.in(MetersPerSecond);
@@ -541,6 +549,15 @@ public class SwerveModule
     }
 
     return desiredState.speedMetersPerSecond * cosineScalar;
+  }
+
+  public void applyAntiJitter(SwerveModuleState desiredState, boolean force) 
+  {
+    if (!force && antiJitterEnabled)
+    {
+      // Prevents module rotation if speed is less than 1%
+      SwerveMath.antiJitter(desiredState, lastState, Math.min(maxDriveVelocityMetersPerSecond, 4));
+    }
   }
 
   /**

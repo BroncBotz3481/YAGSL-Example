@@ -3,6 +3,7 @@ package swervelib.encoders;
 import com.revrobotics.REVLibError;
 import com.revrobotics.spark.SparkAnalogSensor;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -47,9 +48,7 @@ public class SparkMaxAnalogEncoderSwerve extends SwerveAbsoluteEncoder
     {
       sparkMax = motor;
       encoder = ((SparkMax) motor.getMotor()).getAnalog();
-      motor.setAbsoluteEncoder(this);
-      sparkMax.configureIntegratedEncoder(360 / maxVoltage);
-      motor.setAbsoluteEncoder(null);
+      setConversionFactor(360.0 / maxVoltage);
     } else
     {
       throw new RuntimeException("Motor given to instantiate SparkMaxEncoder is not a CANSparkMax");
@@ -81,6 +80,49 @@ public class SparkMaxAnalogEncoderSwerve extends SwerveAbsoluteEncoder
     }
     failureConfiguring.set(true);
   }
+
+  /**
+   * Set the conversion factor of the {@link SparkMaxAnalogEncoderSwerve}.
+   *
+   * @param conversionFactor Position conversion factor from ticks to unit.
+   */
+  public void setConversionFactor(double conversionFactor)
+  {
+    SparkMaxConfig cfg = null;
+    if (sparkMax instanceof SparkMaxSwerve)
+    {
+      cfg = ((SparkMaxSwerve) sparkMax).getConfig();
+
+    } else if (sparkMax instanceof SparkMaxBrushedMotorSwerve)
+    {
+      cfg = ((SparkMaxBrushedMotorSwerve) sparkMax).getConfig();
+    }
+    if (cfg != null)
+    {
+      cfg.closedLoop.feedbackSensor(FeedbackSensor.kAnalogSensor);
+
+      cfg.signals
+          .analogVelocityAlwaysOn(true)
+          .analogVoltageAlwaysOn(true)
+          .analogPositionAlwaysOn(true)
+          .analogVoltagePeriodMs(20)
+          .analogPositionPeriodMs(20)
+          .analogVelocityPeriodMs(20);
+
+      cfg.analogSensor
+          .positionConversionFactor(conversionFactor)
+          .velocityConversionFactor(conversionFactor / 60);
+    }
+    if (sparkMax instanceof SparkMaxSwerve)
+    {
+      ((SparkMaxSwerve) sparkMax).updateConfig(cfg);
+    } else if (sparkMax instanceof SparkMaxBrushedMotorSwerve)
+    {
+      ((SparkMaxBrushedMotorSwerve) sparkMax).updateConfig(cfg);
+    }
+
+  }
+
 
   /**
    * Reset the encoder to factory defaults.

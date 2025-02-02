@@ -4,6 +4,7 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.REVLibError;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -56,8 +57,7 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
     {
       sparkMax = motor;
       encoder = ((SparkMax) motor.getMotor()).getAbsoluteEncoder();
-      motor.setAbsoluteEncoder(this);
-      motor.configureIntegratedEncoder(conversionFactor);
+      setConversionFactor(conversionFactor);
     } else
     {
       throw new RuntimeException("Motor given to instantiate SparkMaxEncoder is not a CANSparkMax");
@@ -119,6 +119,54 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
       ((SparkMaxBrushedMotorSwerve) sparkMax).updateConfig(cfg);
     }
   }
+
+
+  /**
+   * Set the conversion factor of the {@link SparkMaxEncoderSwerve}.
+   *
+   * @param conversionFactor Position conversion factor from ticks to unit.
+   */
+  public void setConversionFactor(double conversionFactor)
+  {
+    // By default the SparkMax relays the info from the duty cycle encoder to the roborio every 200ms on CAN frame 5
+    // This needs to be set to 20ms or under to properly update the swerve module position for odometry
+    // Configuration taken from 3005, the team who helped develop the Max Swerve:
+    // https://github.com/FRC3005/Charged-Up-2023-Public/blob/2b6a7c695e23edebafa27a76cf639a00f6e8a3a6/src/main/java/frc/robot/subsystems/drive/REVSwerveModule.java#L227-L244
+    // Some of the frames can probably be adjusted to decrease CAN utilization, with 65535 being the max.
+    // From testing, 20ms on frame 5 sometimes returns the same value while constantly powering the azimuth but 8ms may be overkill,
+    // with limited testing 19ms did not return the same value while the module was constatntly rotating.
+
+    SparkMaxConfig cfg = null;
+    if (sparkMax instanceof SparkMaxSwerve)
+    {
+      cfg = ((SparkMaxSwerve) sparkMax).getConfig();
+
+    } else if (sparkMax instanceof SparkMaxBrushedMotorSwerve)
+    {
+      cfg = ((SparkMaxBrushedMotorSwerve) sparkMax).getConfig();
+    }
+    if (cfg != null)
+    {
+      cfg.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
+
+      cfg.signals
+          .absoluteEncoderPositionAlwaysOn(true)
+          .absoluteEncoderPositionPeriodMs(20);
+
+      cfg.absoluteEncoder
+          .positionConversionFactor(conversionFactor)
+          .velocityConversionFactor(conversionFactor / 60);
+    }
+    if (sparkMax instanceof SparkMaxSwerve)
+    {
+      ((SparkMaxSwerve) sparkMax).updateConfig(cfg);
+    } else if (sparkMax instanceof SparkMaxBrushedMotorSwerve)
+    {
+      ((SparkMaxBrushedMotorSwerve) sparkMax).updateConfig(cfg);
+    }
+
+  }
+
 
   /**
    * Get the absolute position of the encoder.

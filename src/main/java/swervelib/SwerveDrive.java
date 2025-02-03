@@ -766,6 +766,9 @@ public class SwerveDrive
     }
     for (SwerveModule module : swerveModules)
     {
+      module.applyStateOptimizations(states[module.moduleNumber]);
+      module.applyAntiJitter(states[module.moduleNumber], false);
+      
       // from the module configuration, obtain necessary information to calculate feed-forward
       // Warning: Will not work well if motor is not what we are expecting.
       // Warning: Should replace module.getDriveMotor().simMotor with expected motor type first.

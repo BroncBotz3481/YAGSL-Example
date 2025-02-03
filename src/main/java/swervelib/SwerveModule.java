@@ -292,6 +292,15 @@ public class SwerveModule
   }
 
   /**
+   * Check if the module state optimization used by {@link SwerveModuleState#optimize(Rotation2d)} is enabled.
+   *
+   * @return optimization state.
+   */
+  public boolean getModuleStateOptimization() {
+    return optimizeSwerveModuleState;
+  }
+
+  /**
    * Set the voltage compensation for the swerve module motor.
    *
    * @param optimalVoltage Nominal voltage for operation to output to.
@@ -428,18 +437,8 @@ public class SwerveModule
    */
   public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop, boolean force)
   {
-    // SwerveModuleState optimization might be desired to be disabled while debugging.
-    if (optimizeSwerveModuleState)
-    {
-      desiredState.optimize(Rotation2d.fromDegrees(getAbsolutePosition()));
-    }
-
-    // If we are forcing the angle
-    if (!force && antiJitterEnabled)
-    {
-      // Prevents module rotation if speed is less than 1%
-      SwerveMath.antiJitter(desiredState, lastState, Math.min(maxDriveVelocityMetersPerSecond, 4));
-    }
+    applyStateOptimizations(desiredState);
+    applyAntiJitter(desiredState, force);
 
     // Cosine compensation.
     double nextVelocityMetersPerSecond = configuration.useCosineCompensator
@@ -465,7 +464,6 @@ public class SwerveModule
   public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop,
                               double driveFeedforwardVoltage)
   {
-
     if (isOpenLoop)
     {
       double percentOutput = desiredState.speedMetersPerSecond / maxDriveVelocity.in(MetersPerSecond);
@@ -541,6 +539,38 @@ public class SwerveModule
     }
 
     return desiredState.speedMetersPerSecond * cosineScalar;
+  }
+
+  /**
+   * Apply the {@link SwerveModuleState#optimize(Rotation2d)} function if the module state optimization is enabled
+   * while debugging.
+   *
+   * @param desiredState The desired state to apply the optimization to.
+   */
+  public void applyStateOptimizations(SwerveModuleState desiredState) 
+  {
+    // SwerveModuleState optimization might be desired to be disabled while debugging.
+    if (optimizeSwerveModuleState)
+    {
+      desiredState.optimize(Rotation2d.fromDegrees(getAbsolutePosition()));
+    }    
+  }
+  
+  /**
+   * Apply anti-jitter to the desired state. This will prevent the module from rotating if the speed requested is
+   * too low. If force is true, the anti-jitter will not be applied.
+   *
+   * @param desiredState The desired state to apply the anti-jitter to.
+   * @param force         Whether to ignore the {@link SwerveModule#antiJitterEnabled} state and apply the anti-jitter
+   *                      anyway.
+   */
+  public void applyAntiJitter(SwerveModuleState desiredState, boolean force) 
+  {
+    if (!force && antiJitterEnabled)
+    {
+      // Prevents module rotation if speed is less than 1%
+      SwerveMath.antiJitter(desiredState, lastState, Math.min(maxDriveVelocityMetersPerSecond, 4));
+    }
   }
 
   /**

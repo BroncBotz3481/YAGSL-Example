@@ -766,12 +766,8 @@ public class SwerveDrive
     }
     for (SwerveModule module : swerveModules)
     {
-      // SwerveModuleState optimization might be desired to be disabled while debugging.
-      if (module.getModuleStateOptimization())
-      {
-        states[module.moduleNumber].optimize(Rotation2d.fromDegrees(module.getAbsolutePosition()));
-        module.applyAntiJitter(states[module.moduleNumber], false);
-      }
+      module.applyStateOptimizations(states[module.moduleNumber]);
+      module.applyAntiJitter(states[module.moduleNumber], false);
       
       // from the module configuration, obtain necessary information to calculate feed-forward
       // Warning: Will not work well if motor is not what we are expecting.

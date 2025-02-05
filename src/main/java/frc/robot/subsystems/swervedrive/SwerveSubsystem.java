@@ -64,10 +64,6 @@ public class SwerveSubsystem extends SubsystemBase
    */
   private final SwerveDrive         swerveDrive;
   /**
-   * AprilTag field layout.
-   */
-  private final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
-  /**
    * Enable vision odometry updates while driving.
    */
   private final boolean             visionDriveTest     = false;

@@ -45,6 +45,11 @@ public class CanandgyroSwerve extends SwerveIMU
     imu = new Canandgyro(canid);
   }
 
+  @Override
+  public void close() {
+    imu.close();
+  }
+
   /**
    * Reset {@link Canandgyro} to factory default.
    */

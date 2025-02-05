@@ -130,7 +130,8 @@ public class SparkFlexSwerve extends SwerveMotor
   }
 
   @Override
-  public void close() {
+  public void close()
+  {
     motor.close();
   }
 
@@ -384,7 +385,7 @@ public class SparkFlexSwerve extends SwerveMotor
   @Override
   public void disablePIDWrapping()
   {
-
+    cfg.closedLoop.positionWrappingEnabled(false);
   }
 
   /**

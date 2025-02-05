@@ -220,6 +220,17 @@ public class TalonFXSSwerve extends SwerveMotor
   }
 
   /**
+   * Disable PID Wrapping on the motor.
+   */
+  @Override
+  public void disablePIDWrapping()
+  {
+    cfg.refresh(configuration.ClosedLoopGeneral);
+    configuration.ClosedLoopGeneral.ContinuousWrap = false;
+    cfg.apply(configuration.ClosedLoopGeneral);
+  }
+
+  /**
    * Set the idle mode.
    *
    * @param isBrakeMode Set the brake mode.

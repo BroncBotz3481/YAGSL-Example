@@ -223,6 +223,15 @@ public class TalonSRXSwerve extends SwerveMotor
   }
 
   /**
+   * Disable PID Wrapping on the motor.
+   */
+  @Override
+  public void disablePIDWrapping()
+  {
+    // Do nothing
+  }
+
+  /**
    * Set the idle mode.
    *
    * @param isBrakeMode Set the brake mode.

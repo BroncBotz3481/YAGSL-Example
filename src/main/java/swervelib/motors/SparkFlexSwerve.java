@@ -379,6 +379,15 @@ public class SparkFlexSwerve extends SwerveMotor
   }
 
   /**
+   * Disable PID Wrapping on the motor.
+   */
+  @Override
+  public void disablePIDWrapping()
+  {
+
+  }
+
+  /**
    * Set the idle mode.
    *
    * @param isBrakeMode Set the brake mode.

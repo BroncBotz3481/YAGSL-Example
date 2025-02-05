@@ -319,6 +319,11 @@ public class SwerveModule implements AutoCloseable
   public void setModuleStateOptimization(boolean optimizationState)
   {
     optimizeSwerveModuleState = optimizationState;
+    if (!optimizeSwerveModuleState)
+    {
+      angleMotor.disablePIDWrapping();
+      angleMotor.burnFlash();
+    }
   }
 
   /**

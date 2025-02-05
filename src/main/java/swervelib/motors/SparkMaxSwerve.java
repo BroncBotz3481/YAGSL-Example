@@ -35,7 +35,7 @@ public class SparkMaxSwerve extends SwerveMotor
   /**
    * Config retry delay.
    */
-  private final double                          configDelay            = Milliseconds.of(5).in(Seconds);
+  private final double                          configDelay     = Milliseconds.of(5).in(Seconds);
   /**
    * {@link SparkMax} Instance.
    */
@@ -51,7 +51,7 @@ public class SparkMaxSwerve extends SwerveMotor
   /**
    * Absolute encoder attached to the SparkMax (if exists)
    */
-  private       Optional<SwerveAbsoluteEncoder> absoluteEncoder        = Optional.empty();
+  private       Optional<SwerveAbsoluteEncoder> absoluteEncoder = Optional.empty();
   /**
    * Supplier for the velocity of the motor controller.
    */
@@ -63,7 +63,7 @@ public class SparkMaxSwerve extends SwerveMotor
   /**
    * Configuration object for {@link SparkMax} motor.
    */
-  private       SparkMaxConfig                  cfg                    = new SparkMaxConfig();
+  private       SparkMaxConfig                  cfg             = new SparkMaxConfig();
 
 
   /**
@@ -124,7 +124,8 @@ public class SparkMaxSwerve extends SwerveMotor
   }
 
   @Override
-  public void close() {
+  public void close()
+  {
     motor.close();
   }
 
@@ -349,6 +350,16 @@ public class SparkMaxSwerve extends SwerveMotor
         .positionWrappingEnabled(true)
         .positionWrappingInputRange(minInput, maxInput);
 
+  }
+
+  /**
+   * Disable PID Wrapping on the motor.
+   */
+  @Override
+  public void disablePIDWrapping()
+  {
+    cfg.closedLoop
+        .positionWrappingEnabled(false);
   }
 
   /**

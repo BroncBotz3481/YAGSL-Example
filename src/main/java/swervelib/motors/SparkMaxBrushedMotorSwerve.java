@@ -425,6 +425,15 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   }
 
   /**
+   * Disable PID Wrapping on the motor.
+   */
+  @Override
+  public void disablePIDWrapping()
+  {
+    cfg.closedLoop.positionWrappingEnabled(false);
+  }
+
+  /**
    * Set the idle mode.
    *
    * @param isBrakeMode Set the brake mode.

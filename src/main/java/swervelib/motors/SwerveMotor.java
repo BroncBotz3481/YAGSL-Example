@@ -69,6 +69,11 @@ public abstract class SwerveMotor implements AutoCloseable
   public abstract void configurePIDWrapping(double minInput, double maxInput);
 
   /**
+   * Disable PID Wrapping on the motor.
+   */
+  public abstract void disablePIDWrapping();
+
+  /**
    * Set the idle mode.
    *
    * @param isBrakeMode Set the brake mode.

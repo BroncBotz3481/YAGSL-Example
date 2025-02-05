@@ -131,6 +131,12 @@ public class TalonFXSwerve extends SwerveMotor
     }
   }
 
+  @Override
+  public void close() {
+    motor.close();
+  }
+
+
   /**
    * Clear the sticky faults on the motor controller.
    */

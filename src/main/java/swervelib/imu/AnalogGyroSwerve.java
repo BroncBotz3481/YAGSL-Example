@@ -49,6 +49,11 @@ public class AnalogGyroSwerve extends SwerveIMU
     SmartDashboard.putData(imu);
   }
 
+  @Override
+  public void close() {
+    imu.close();
+  }
+
   /**
    * Reset IMU to factory default.
    */

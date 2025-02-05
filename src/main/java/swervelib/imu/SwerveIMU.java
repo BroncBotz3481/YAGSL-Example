@@ -8,8 +8,11 @@ import java.util.Optional;
 /**
  * Swerve IMU abstraction to define a standard interface with a swerve drive.
  */
-public abstract class SwerveIMU
+public abstract class SwerveIMU implements AutoCloseable
 {
+
+  @Override
+  public abstract void close();
 
   /**
    * Reset IMU to factory default.

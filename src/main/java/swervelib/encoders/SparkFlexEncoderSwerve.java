@@ -62,6 +62,15 @@ public class SparkFlexEncoderSwerve extends SwerveAbsoluteEncoder
     }
   }
 
+  @Override
+  public void close()
+  {
+    // SPARK Flex encoder gets closed with the motor
+    // I don't think an encoder getting closed should 
+    // close the entire motor so i will keep this empty
+    // sparkFlex.close();
+  }
+
   /**
    * Run the configuration until it succeeds or times out.
    *

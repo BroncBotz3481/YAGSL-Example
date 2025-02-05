@@ -195,6 +195,11 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
     failureConfiguringAlert.set(true);
   }
 
+  @Override
+  public void close() {
+    motor.close();
+  }
+
   /**
    * Get the current configuration of the {@link SparkMax}
    *

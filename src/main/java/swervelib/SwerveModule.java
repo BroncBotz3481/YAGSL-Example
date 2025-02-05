@@ -269,9 +269,9 @@ public class SwerveModule implements AutoCloseable
 
   @Override
   public void close() {
-    configuration.angleMotor.close();
-    configuration.driveMotor.close();
-    configuration.absoluteEncoder.close();
+    angleMotor.close();
+    driveMotor.close();
+    absoluteEncoder.close();
   }
 
   /**

@@ -337,8 +337,9 @@ public class SwerveDrive implements AutoCloseable
   @Override
   public void close() {
     imu.close();
+    tunerXRecommendation.close();
 
-    for (var module : swerveDriveConfiguration.modules) {
+    for (var module : swerveModules) {
       module.close();
     }
   }

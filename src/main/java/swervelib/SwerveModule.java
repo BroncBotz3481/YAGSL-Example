@@ -147,7 +147,7 @@ public class SwerveModule implements AutoCloseable
   /**
    * Anti-Jitter AKA auto-centering disabled.
    */
-  private       boolean                antiJitterEnabled          = true;
+  private       boolean          antiJitterEnabled            = true;
   /**
    * Last swerve module state applied.
    */
@@ -167,15 +167,15 @@ public class SwerveModule implements AutoCloseable
   /**
    * Encoder synchronization queued.
    */
-  private       boolean                synchronizeEncoderQueued   = false;
+  private       boolean          synchronizeEncoderQueued     = false;
   /**
    * Encoder, Absolute encoder synchronization enabled.
    */
-  private       boolean                synchronizeEncoderEnabled  = false;
+  private       boolean          synchronizeEncoderEnabled    = false;
   /**
    * Encoder synchronization deadband in degrees.
    */
-  private       double                 synchronizeEncoderDeadband = 3;
+  private       double           synchronizeEncoderDeadband   = 3;
 
 
   /**
@@ -291,7 +291,8 @@ public class SwerveModule implements AutoCloseable
   }
 
   @Override
-  public void close() {
+  public void close()
+  {
     angleMotor.close();
     driveMotor.close();
     absoluteEncoder.close();
@@ -331,7 +332,8 @@ public class SwerveModule implements AutoCloseable
    *
    * @return optimization state.
    */
-  public boolean getModuleStateOptimization() {
+  public boolean getModuleStateOptimization()
+  {
     return optimizeSwerveModuleState;
   }
 
@@ -577,29 +579,29 @@ public class SwerveModule implements AutoCloseable
   }
 
   /**
-   * Apply the {@link SwerveModuleState#optimize(Rotation2d)} function if the module state optimization is enabled
-   * while debugging.
+   * Apply the {@link SwerveModuleState#optimize(Rotation2d)} function if the module state optimization is enabled while
+   * debugging.
    *
    * @param desiredState The desired state to apply the optimization to.
    */
-  public void applyStateOptimizations(SwerveModuleState desiredState) 
+  public void applyStateOptimizations(SwerveModuleState desiredState)
   {
     // SwerveModuleState optimization might be desired to be disabled while debugging.
     if (optimizeSwerveModuleState)
     {
       desiredState.optimize(Rotation2d.fromDegrees(getAbsolutePosition()));
-    }    
+    }
   }
-  
+
   /**
-   * Apply anti-jitter to the desired state. This will prevent the module from rotating if the speed requested is
-   * too low. If force is true, the anti-jitter will not be applied.
+   * Apply anti-jitter to the desired state. This will prevent the module from rotating if the speed requested is too
+   * low. If force is true, the anti-jitter will not be applied.
    *
    * @param desiredState The desired state to apply the anti-jitter to.
-   * @param force         Whether to ignore the {@link SwerveModule#antiJitterEnabled} state and apply the anti-jitter
-   *                      anyway.
+   * @param force        Whether to ignore the {@link SwerveModule#antiJitterEnabled} state and apply the anti-jitter
+   *                     anyway.
    */
-  public void applyAntiJitter(SwerveModuleState desiredState, boolean force) 
+  public void applyAntiJitter(SwerveModuleState desiredState, boolean force)
   {
     if (!force && antiJitterEnabled)
     {
@@ -695,10 +697,13 @@ public class SwerveModule implements AutoCloseable
     {
       angle = getRelativePosition();
     }
-    angle %= 360;
-    if (angle < 0.0)
+    if (optimizeSwerveModuleState)
     {
-      angle += 360;
+      angle %= 360;
+      if (angle < 0.0)
+      {
+        angle += 360;
+      }
     }
 
     return angle;

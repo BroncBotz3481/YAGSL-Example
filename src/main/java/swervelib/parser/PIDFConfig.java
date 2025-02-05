@@ -104,7 +104,9 @@ public class PIDFConfig
   public PIDController createPIDController()
   {
     PIDController pidController = new PIDController(p, i, d);
-    pidController.setIZone(iz);
+    if (iz != 0) {
+      pidController.setIZone(iz);
+    }
     return pidController;
   }
 }

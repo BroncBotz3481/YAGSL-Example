@@ -33,6 +33,7 @@ import swervelib.motors.SparkMaxBrushedMotorSwerve;
 import swervelib.motors.SparkMaxBrushedMotorSwerve.Type;
 import swervelib.motors.SparkMaxSwerve;
 import swervelib.motors.SwerveMotor;
+import swervelib.motors.TalonFXSSwerve;
 import swervelib.motors.TalonFXSwerve;
 import swervelib.motors.TalonSRXSwerve;
 import swervelib.motors.ThriftyNovaSwerve;
@@ -183,10 +184,22 @@ public class DeviceJson
     }
     switch (type)
     {
+      case "talonfxs_neo":
+        return new TalonFXSSwerve(id, canbus != null ? canbus : "", isDriveMotor, DCMotor.getNEO(1));
+      case "talonfxs_neo550":
+        return new TalonFXSSwerve(id, canbus != null ? canbus : "", isDriveMotor, DCMotor.getNeo550(1));
+      case "talonfxs_vortex":
+        return new TalonFXSSwerve(id, canbus != null ? canbus : "", isDriveMotor, DCMotor.getNeoVortex(1));
+      case "talonfxs_minion":
+        throw new UnsupportedOperationException("Cannot create minion combination yet"); //new TalonFXSSwerve(id, canbus != null ? canbus : "", isDriveMotor, DCMotor.getNeoVortex(1));
       case "sparkmax_neo":
       case "neo":
       case "sparkmax":
         return new SparkMaxSwerve(id, isDriveMotor, DCMotor.getNEO(1));
+      case "sparkmax_vortex":
+        return new SparkMaxSwerve(id, isDriveMotor, DCMotor.getNeoVortex(1));
+      case "sparkmax_minion":
+        throw new UnsupportedOperationException("Cannot create minion combination yet");
       case "sparkmax_neo550":
       case "neo550":
         return new SparkMaxSwerve(id, isDriveMotor, DCMotor.getNeo550(1));
@@ -198,6 +211,8 @@ public class DeviceJson
         return new SparkFlexSwerve(id, isDriveMotor, DCMotor.getNEO(1));
       case "sparkflex_neo550":
         return new SparkFlexSwerve(id, isDriveMotor, DCMotor.getNeo550(1));
+      case "sparkflex_minion":
+        throw new UnsupportedOperationException("Cannot create minion combination yet");
       case "falcon500":
       case "falcon":
         return new TalonFXSwerve(id, canbus != null ? canbus : "", isDriveMotor, DCMotor.getFalcon500(1));
@@ -241,6 +256,10 @@ public class DeviceJson
         return new ThriftyNovaSwerve(id, isDriveMotor, DCMotor.getNEO(1));
       case "nova_neo550":
         return new ThriftyNovaSwerve(id, isDriveMotor, DCMotor.getNeo550(1));
+      case "nova_vortex":
+        return new ThriftyNovaSwerve(id, isDriveMotor, DCMotor.getNeoVortex(1));
+      case "nova_minion":
+        throw new UnsupportedOperationException("Cannot create minion combination");//return new ThriftyNovaSwerve(id, isDriveMotor, DCMotor.getMinion(1));
       default:
         throw new RuntimeException(type + " is not a recognized motor type.");
     }

@@ -63,10 +63,6 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
    */
   private       Supplier<Double>                position;
   /**
-   * Factory default already occurred.
-   */
-  private       boolean                         factoryDefaultOccurred = false;
-  /**
    * An {@link Alert} for if the motor has no encoder.
    */
   private       Alert                           noEncoderAlert;
@@ -292,7 +288,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
    * @return connected absolute encoder state.
    */
   @Override
-  public boolean isAttachedAbsoluteEncoder()
+  public boolean usingExternalFeedbackSensor()
   {
     return absoluteEncoder.isPresent();
   }

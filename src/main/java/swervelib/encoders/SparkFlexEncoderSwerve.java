@@ -26,10 +26,6 @@ public class SparkFlexEncoderSwerve extends SwerveAbsoluteEncoder
    */
   private Alert                failureConfiguring;
   /**
-   * An {@link Alert} for if there is a failure configuring the encoder offset.
-   */
-  private Alert                offsetFailure;
-  /**
    * {@link SparkFlexSwerve} instance.
    */
   private SwerveMotor sparkFlex;
@@ -45,10 +41,6 @@ public class SparkFlexEncoderSwerve extends SwerveAbsoluteEncoder
     failureConfiguring = new Alert(
         "Encoders",
         "Failure configuring SparkFlex Absolute Encoder",
-        AlertType.kWarning);
-    offsetFailure = new Alert(
-        "Encoders",
-        "Failure to set Absolute Encoder Offset",
         AlertType.kWarning);
     if (motor.getMotor() instanceof SparkFlex)
     {
@@ -69,23 +61,6 @@ public class SparkFlexEncoderSwerve extends SwerveAbsoluteEncoder
     // I don't think an encoder getting closed should 
     // close the entire motor so i will keep this empty
     // sparkFlex.close();
-  }
-
-  /**
-   * Run the configuration until it succeeds or times out.
-   *
-   * @param config Lambda supplier returning the error state.
-   */
-  private void configureSparkFlex(Supplier<REVLibError> config)
-  {
-    for (int i = 0; i < maximumRetries; i++)
-    {
-      if (config.get() == REVLibError.kOk)
-      {
-        return;
-      }
-    }
-    failureConfiguring.set(true);
   }
 
   /**

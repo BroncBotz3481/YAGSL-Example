@@ -194,5 +194,5 @@ public abstract class SwerveMotor implements AutoCloseable
    *
    * @return connected absolute encoder state.
    */
-  public abstract boolean isAttachedAbsoluteEncoder();
+  public abstract boolean usingExternalFeedbackSensor();
 }

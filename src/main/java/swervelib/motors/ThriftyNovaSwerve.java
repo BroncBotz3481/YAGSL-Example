@@ -426,7 +426,7 @@ public class ThriftyNovaSwerve extends SwerveMotor
    * @return connected absolute encoder state.
    */
   @Override
-  public boolean isAttachedAbsoluteEncoder()
+  public boolean usingExternalFeedbackSensor()
   {
     return EncoderType.ABS == encoderType;
   }

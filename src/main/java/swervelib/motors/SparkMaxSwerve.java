@@ -53,10 +53,6 @@ public class SparkMaxSwerve extends SwerveMotor
    */
   private       Optional<SwerveAbsoluteEncoder> absoluteEncoder        = Optional.empty();
   /**
-   * Factory default already occurred.
-   */
-  private       boolean                         factoryDefaultOccurred = false;
-  /**
    * Supplier for the velocity of the motor controller.
    */
   private       Supplier<Double>                velocity;
@@ -226,7 +222,7 @@ public class SparkMaxSwerve extends SwerveMotor
    * @return connected absolute encoder state.
    */
   @Override
-  public boolean isAttachedAbsoluteEncoder()
+  public boolean usingExternalFeedbackSensor()
   {
     return absoluteEncoder.isPresent();
   }

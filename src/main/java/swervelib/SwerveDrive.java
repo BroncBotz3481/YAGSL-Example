@@ -1387,9 +1387,33 @@ public class SwerveDrive implements AutoCloseable
   }
 
   /**
+   * Set the motor controller closed loop feedback device to the defined external absolute encoder, with the given
+   * offset from the supplied configuration, overwriting any native offset.
+   */
+  public void useExternalFeedbackSensor()
+  {
+    for (SwerveModule module : swerveModules)
+    {
+      module.useExternalFeedbackSensor();
+    }
+  }
+
+  /**
+   * Set the motor controller closed loop feedback device to the internal encoder instead of the absolute encoder.
+   */
+  public void useInternalFeedbackSensor()
+  {
+    for (SwerveModule module : swerveModules)
+    {
+      module.useInternalFeedbackSensor();
+    }
+  }
+
+  /**
    * Pushes the Absolute Encoder offsets to the Encoder or Motor Controller, depending on type. Also removes the
    * internal offsets to prevent double offsetting.
    */
+  @Deprecated
   public void pushOffsetsToEncoders()
   {
     for (SwerveModule module : swerveModules)
@@ -1401,6 +1425,7 @@ public class SwerveDrive implements AutoCloseable
   /**
    * Restores Internal YAGSL Encoder offsets and sets the Encoder stored offset back to 0
    */
+  @Deprecated
   public void restoreInternalOffset()
   {
     for (SwerveModule module : swerveModules)

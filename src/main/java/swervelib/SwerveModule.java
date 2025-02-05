@@ -74,6 +74,29 @@ public class SwerveModule implements AutoCloseable
    */
   private final Alert                  noEncoderWarning;
   /**
+   * An {@link Alert} for if there is no Absolute Encoder on the module.
+   */
+  private final Alert            externalSensorIsNull         = new Alert("No absolute Encoder found.",
+                                                                          AlertType.kError);
+  /**
+   * An {@link Alert} for if the offset is 0 degrees.
+   */
+  private final Alert            internalOffsetIsZero         = new Alert(
+      "Absolute encoder offset is 0, this may be a problem.",
+      AlertType.kWarning);
+  /**
+   * An {@link Alert} for if the angle/steer/azimuth motor is incompatible with the absolute encoder.
+   */
+  private final Alert            externalFeedbackIncompatible = new Alert(
+      "Absolute encoder is incompatible, cannot set as an external feedback device.",
+      AlertType.kError);
+  /**
+   * An {@link Alert} for if the absolute encoder cannot set an offset.
+   */
+  private final Alert            externalOffsetIncompatible   = new Alert(
+      "Absolute encoder is incompatible, cannot set an offset internally.",
+      AlertType.kError);
+  /**
    * NT4 Raw Absolute Angle publisher for the absolute encoder.
    */
   private final DoublePublisher  rawAbsoluteAnglePublisher;
@@ -140,7 +163,7 @@ public class SwerveModule implements AutoCloseable
   /**
    * Enables utilization off {@link SwerveModuleState#optimize(Rotation2d)}
    */
-  private       boolean          optimizeSwerveModuleState = true;
+  private       boolean          optimizeSwerveModuleState    = true;
   /**
    * Encoder synchronization queued.
    */
@@ -205,7 +228,7 @@ public class SwerveModule implements AutoCloseable
     absolutePositionCache = new Cache<>(this::getRawAbsolutePosition, 20);
 
     // Config angle motor/controller
-    if (!angleMotor.isAttachedAbsoluteEncoder())
+    if (!angleMotor.usingExternalFeedbackSensor())
     {
       angleMotor.configureIntegratedEncoder(moduleConfiguration.conversionFactors.angle.factor);
     }
@@ -758,9 +781,64 @@ public class SwerveModule implements AutoCloseable
     return configuration;
   }
 
+
+  /**
+   * Use external sensors for the feedback of the angle/azimuth/steer controller.
+   */
+  public void useExternalFeedbackSensor()
+  {
+    if (absoluteEncoder == null)
+    {
+      externalSensorIsNull.set(true);
+      return;
+    }
+    if (angleOffset == 0)
+    {
+      internalOffsetIsZero.set(true);
+    }
+    if (absoluteEncoder.setAbsoluteEncoderOffset(configuration.angleOffset))
+    {
+      angleMotor.setAbsoluteEncoder(absoluteEncoder);
+      if (angleMotor.usingExternalFeedbackSensor())
+      {
+        angleOffset = 0;
+      } else
+      {
+        externalFeedbackIncompatible.set(true);
+        angleMotor.setAbsoluteEncoder(null);
+        absoluteEncoder.setAbsoluteEncoderOffset(0);
+      }
+
+    } else
+    {
+      externalOffsetIncompatible.set(true);
+      absoluteEncoder.setAbsoluteEncoderOffset(0);
+    }
+  }
+
+  /**
+   * Use external sensors for the feedback of the angle/azimuth/steer controller.
+   */
+  public void useInternalFeedbackSensor()
+  {
+    if (absoluteEncoder == null)
+    {
+      externalSensorIsNull.set(true);
+      return;
+    }
+    if (angleOffset == 0)
+    {
+      internalOffsetIsZero.set(true);
+    }
+    angleMotor.setAbsoluteEncoder(null);
+    absoluteEncoder.setAbsoluteEncoderOffset(0);
+    angleOffset = configuration.angleOffset;
+  }
+
   /**
    * Push absolute encoder offset in the memory of the encoder or controller. Also removes the internal angle offset.
    */
+  @Deprecated
   public void pushOffsetsToEncoders()
   {
     if (absoluteEncoder != null && angleOffset == configuration.angleOffset)

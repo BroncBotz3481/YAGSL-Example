@@ -473,7 +473,7 @@ public class TalonSRXSwerve extends SwerveMotor
    * @return connected absolute encoder state.
    */
   @Override
-  public boolean isAttachedAbsoluteEncoder()
+  public boolean usingExternalFeedbackSensor()
   {
     return absoluteEncoder;
   }

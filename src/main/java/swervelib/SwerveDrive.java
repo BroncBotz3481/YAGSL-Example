@@ -71,7 +71,7 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 /**
  * Swerve Drive class representing and controlling the swerve drive.
  */
-public class SwerveDrive
+public class SwerveDrive implements AutoCloseable
 {
 
   /**
@@ -332,6 +332,16 @@ public class SwerveDrive
     checkIfTunerXCompatible();
 
     HAL.report(kResourceType_RobotDrive, kRobotDriveSwerve_YAGSL);
+  }
+
+  @Override
+  public void close() {
+    imu.close();
+    tunerXRecommendation.close();
+
+    for (var module : swerveModules) {
+      module.close();
+    }
   }
 
   /**

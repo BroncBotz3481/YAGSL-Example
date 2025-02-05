@@ -29,6 +29,12 @@ public class CanAndMagSwerve extends SwerveAbsoluteEncoder
     settings = encoder.getSettings();
   }
 
+  @Override
+  public void close() 
+  {
+    encoder.close();
+  }
+
   /**
    * Reset the encoder to factory defaults.
    * <p>

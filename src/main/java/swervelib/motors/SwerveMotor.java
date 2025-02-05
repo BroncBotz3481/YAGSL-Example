@@ -7,8 +7,11 @@ import swervelib.parser.PIDFConfig;
 /**
  * Swerve motor abstraction which defines a standard interface for motors within a swerve module.
  */
-public abstract class SwerveMotor
+public abstract class SwerveMotor implements AutoCloseable
 {
+
+  @Override
+  public abstract void close();
 
   /**
    * The maximum amount of times the swerve motor will attempt to configure a motor if failures occur.

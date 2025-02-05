@@ -127,6 +127,11 @@ public class SparkMaxSwerve extends SwerveMotor
     DriverStation.reportWarning("Failure configuring motor " + motor.getDeviceId(), true);
   }
 
+  @Override
+  public void close() {
+    motor.close();
+  }
+
   /**
    * Get the current configuration of the {@link SparkMax}
    *

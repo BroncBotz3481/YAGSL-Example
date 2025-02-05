@@ -34,7 +34,7 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 /**
  * The Swerve Module class which represents and controls Swerve Modules for the swerve drive.
  */
-public class SwerveModule
+public class SwerveModule implements AutoCloseable
 {
 
   /**
@@ -265,6 +265,13 @@ public class SwerveModule
         "swerve/modules/" + configuration.name + "/Speed Setpoint").publish();
     angleSetpointPublisher = NetworkTableInstance.getDefault().getTable("SmartDashboard").getDoubleTopic(
         "swerve/modules/" + configuration.name + "/Angle Setpoint").publish();
+  }
+
+  @Override
+  public void close() {
+    angleMotor.close();
+    driveMotor.close();
+    absoluteEncoder.close();
   }
 
   /**

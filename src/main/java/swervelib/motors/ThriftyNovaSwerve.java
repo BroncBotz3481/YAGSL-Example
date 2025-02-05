@@ -105,6 +105,16 @@ public class ThriftyNovaSwerve extends SwerveMotor
     this(new ThriftyNova(id), isDriveMotor, motor);
   }
 
+  @Override
+  public void close() {
+    try {
+    motor.close();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+
   /**
    * Set factory defaults on the motor controller.
    */

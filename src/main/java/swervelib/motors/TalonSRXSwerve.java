@@ -84,6 +84,11 @@ public class TalonSRXSwerve extends SwerveMotor
     this(new WPI_TalonSRX(id), isDriveMotor, motorType);
   }
 
+  @Override
+  public void close() {
+    motor.close();
+  }
+
   /**
    * Configure the factory defaults.
    */

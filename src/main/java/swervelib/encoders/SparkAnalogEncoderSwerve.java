@@ -1,67 +1,70 @@
 package swervelib.encoders;
 
-import com.revrobotics.REVLibError;
 import com.revrobotics.spark.SparkAnalogSensor;
-import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import java.util.function.Supplier;
 import swervelib.motors.SparkMaxBrushedMotorSwerve;
 import swervelib.motors.SparkMaxSwerve;
+import swervelib.motors.SparkSwerve;
 import swervelib.motors.SwerveMotor;
 
 /**
- * SparkMax absolute encoder, attached through the data port analog pin.
+ * SparkBase absolute encoder, attached through the data port analog pin.
  */
-public class SparkMaxAnalogEncoderSwerve extends SwerveAbsoluteEncoder
+public class SparkAnalogEncoderSwerve extends SwerveAbsoluteEncoder
 {
+
+  /**
+   * The {@link SparkAnalogSensor} representing the duty cycle encoder attached to the SparkBase analog port.
+   */
+  public SparkAnalogSensor encoder;
 
   /**
    * {@link swervelib.motors.SparkMaxSwerve} or {@link swervelib.motors.SparkMaxBrushedMotorSwerve} object.
    */
-  private final SwerveMotor       sparkMax;
-  /**
-   * The {@link SparkAnalogSensor} representing the duty cycle encoder attached to the SparkMax analog port.
-   */
-  public        SparkAnalogSensor encoder;
+  protected final SwerveMotor motor;
+
   /**
    * An {@link Alert} for if there is a failure configuring the encoder.
    */
-  private       Alert             failureConfiguring;
+  protected final Alert failureConfiguring;
+
   /**
    * An {@link Alert} for if the absolute encoder does not support integrated offsets.
    */
-  private       Alert             doesNotSupportIntegratedOffsets;
+  protected final Alert doesNotSupportIntegratedOffsets;
 
   /**
-   * Create the {@link SparkMaxAnalogEncoderSwerve} object as a analog sensor from the {@link SparkMax} motor data port
-   * analog pin.
+   * Create the {@link SparkAnalogEncoderSwerve} object as a analog sensor from the {@link SparkBase}
+   * motor data port analog pin.
    *
-   * @param motor      Motor to create the encoder from.
+   * @param motor Motor to create the encoder from.
    * @param maxVoltage Maximum voltage for analog input reading.
    */
-  public SparkMaxAnalogEncoderSwerve(SwerveMotor motor, double maxVoltage)
+  public SparkAnalogEncoderSwerve(SwerveMotor motor, double maxVoltage)
   {
-    if (motor.getMotor() instanceof SparkMax)
+    if (motor.getMotor() instanceof SparkBase)
     {
-      sparkMax = motor;
-      encoder = ((SparkMax) motor.getMotor()).getAnalog();
+      this.motor = motor;
+      encoder = ((SparkBase) motor.getMotor()).getAnalog();
+      motor.setAbsoluteEncoder(this);
       setConversionFactor(360.0 / maxVoltage);
     } else
     {
-      throw new RuntimeException("Motor given to instantiate SparkMaxEncoder is not a CANSparkMax");
+      throw new RuntimeException("Motor given to instantiate SparkAnalogEncoderSwerve is not a SparkBase");
     }
     failureConfiguring = new Alert(
-        "Encoders",
-        "Failure configuring SparkMax Analog Encoder",
+        "Encoders", 
+        "Failure configuring SparkBase Analog Encoder", 
         AlertType.kWarning);
     doesNotSupportIntegratedOffsets = new Alert(
         "Encoders",
-        "SparkMax Analog Sensors do not support integrated offsets",
+        "SparkBase Analog Sensors do not support integrated offsets",
         AlertType.kWarning);
-
   }
 
   @Override
@@ -74,37 +77,19 @@ public class SparkMaxAnalogEncoderSwerve extends SwerveAbsoluteEncoder
   }
 
   /**
-   * Run the configuration until it succeeds or times out.
-   *
-   * @param config Lambda supplier returning the error state.
-   */
-  private void configureSparkMax(Supplier<REVLibError> config)
-  {
-    for (int i = 0; i < maximumRetries; i++)
-    {
-      if (config.get() == REVLibError.kOk)
-      {
-        return;
-      }
-    }
-    failureConfiguring.set(true);
-  }
-
-  /**
    * Set the conversion factor of the {@link SparkMaxAnalogEncoderSwerve}.
    *
    * @param conversionFactor Position conversion factor from ticks to unit.
    */
   public void setConversionFactor(double conversionFactor)
   {
-    SparkMaxConfig cfg = null;
-    if (sparkMax instanceof SparkMaxSwerve)
+    SparkBaseConfig cfg = null;
+    if (motor instanceof SparkMaxSwerve)
     {
-      cfg = ((SparkMaxSwerve) sparkMax).getConfig();
-
-    } else if (sparkMax instanceof SparkMaxBrushedMotorSwerve)
+      cfg = ((SparkMaxSwerve) motor).getConfig();
+    } else if (motor instanceof SparkMaxBrushedMotorSwerve)
     {
-      cfg = ((SparkMaxBrushedMotorSwerve) sparkMax).getConfig();
+      cfg = ((SparkMaxBrushedMotorSwerve) motor).getConfig();
     }
     if (cfg != null)
     {
@@ -122,16 +107,14 @@ public class SparkMaxAnalogEncoderSwerve extends SwerveAbsoluteEncoder
           .positionConversionFactor(conversionFactor)
           .velocityConversionFactor(conversionFactor / 60);
     }
-    if (sparkMax instanceof SparkMaxSwerve)
+    if (motor instanceof SparkMaxSwerve)
     {
-      ((SparkMaxSwerve) sparkMax).updateConfig(cfg);
-    } else if (sparkMax instanceof SparkMaxBrushedMotorSwerve)
+      ((SparkMaxSwerve) motor).updateConfig(cfg);
+    } else if (motor instanceof SparkMaxBrushedMotorSwerve)
     {
-      ((SparkMaxBrushedMotorSwerve) sparkMax).updateConfig(cfg);
+      ((SparkMaxBrushedMotorSwerve) motor).updateConfig((SparkMaxConfig) cfg);
     }
-
   }
-
 
   /**
    * Reset the encoder to factory defaults.
@@ -143,8 +126,7 @@ public class SparkMaxAnalogEncoderSwerve extends SwerveAbsoluteEncoder
   }
 
   /**
-   * Clear sticky faults on the encoder.
-   */
+   * Clear sticky faults on the encoder. */
   @Override
   public void clearStickyFaults()
   {
@@ -159,16 +141,16 @@ public class SparkMaxAnalogEncoderSwerve extends SwerveAbsoluteEncoder
   @Override
   public void configure(boolean inverted)
   {
-    if (sparkMax instanceof SparkMaxSwerve)
-    {
-      SparkMaxConfig cfg = ((SparkMaxSwerve) sparkMax).getConfig();
+    if (motor instanceof SparkSwerve) {
+      var sparkBase = (SparkSwerve) motor;
+      SparkBaseConfig cfg = sparkBase.getConfig();
       cfg.analogSensor.inverted(inverted);
-      ((SparkMaxSwerve) sparkMax).updateConfig(cfg);
-    } else if (sparkMax instanceof SparkMaxBrushedMotorSwerve)
-    {
-      SparkMaxConfig cfg = ((SparkMaxBrushedMotorSwerve) sparkMax).getConfig();
+      sparkBase.updateConfig(cfg);
+    } else if (motor instanceof SparkMaxBrushedMotorSwerve) {
+      var sparkMax = (SparkMaxBrushedMotorSwerve) motor;
+      SparkMaxConfig cfg = sparkMax.getConfig();
       cfg.analogSensor.inverted(inverted);
-      ((SparkMaxBrushedMotorSwerve) sparkMax).updateConfig(cfg);
+      sparkMax.updateConfig(cfg);
     }
   }
 

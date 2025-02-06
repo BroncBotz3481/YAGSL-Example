@@ -6,23 +6,19 @@ import static edu.wpi.first.units.Units.Seconds;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.Optional;
 import java.util.function.Supplier;
-
 import swervelib.encoders.SparkAnalogEncoderSwerve;
 import swervelib.encoders.SparkEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
@@ -30,148 +26,77 @@ import swervelib.parser.PIDFConfig;
 import swervelib.telemetry.SwerveDriveTelemetry;
 
 /**
- * Brushed motor control with {@link SparkMax}.
+ * An implementation of {@link SparkBase} as a {@link SwerveMotor}.
  */
-public class SparkMaxBrushedMotorSwerve extends SwerveMotor
+public class SparkSwerve extends SwerveMotor
 {
 
   /**
-   * Config retry delay.
+   * Config retry delay. 
    */
-  private final double                          configDelay            = Milliseconds.of(5).in(Seconds);
+  private final double configDelay = Milliseconds.of(5).in(Seconds);
+
   /**
-   * SparkMAX Instance.
+   * {@link SparkBase} Instance.
    */
-  private final SparkMax                        motor;
-  /**
-   * Absolute encoder attached to the SparkMax (if exists)
-   */
-  public        Optional<SwerveAbsoluteEncoder> absoluteEncoder;
+  private final SparkBase motor;
+  
   /**
    * Integrated encoder.
    */
-  public        Optional<RelativeEncoder>       encoder                = Optional.empty();
+  public RelativeEncoder encoder;
+  
   /**
    * Closed-loop PID controller.
    */
-  public        SparkClosedLoopController       pid;
+  public SparkClosedLoopController pid;
+  
+  /**
+   * Absolute encoder attached to the SparkBase (if exists)
+   */
+  private Optional<SwerveAbsoluteEncoder> absoluteEncoder = Optional.empty();
+  
   /**
    * Supplier for the velocity of the motor controller.
    */
-  private       Supplier<Double>                velocity;
+  private Supplier<Double> velocity;
+  
   /**
    * Supplier for the position of the motor controller.
    */
-  private       Supplier<Double>                position;
+  private Supplier<Double> position;
+  
   /**
-   * An {@link Alert} for if the motor has no encoder.
+   * Configuration object for {@link SparkBase} motor.
    */
-  private       Alert                           noEncoderAlert;
-  /**
-   * An {@link Alert} for if there is an error configuring the motor.
-   */
-  private       Alert                           failureConfiguringAlert;
-  /**
-   * An {@link Alert} for if the motor has no encoder defined.
-   */
-  private       Alert                           noEncoderDefinedAlert;
-  /**
-   * Configuration object for {@link SparkMax} motor.
-   */
-  private       SparkMaxConfig                  cfg                    = new SparkMaxConfig();
+  private final SparkBaseConfig cfg;
 
   /**
    * Initialize the swerve motor.
    *
-   * @param motor                  The SwerveMotor as a SparkMax object.
-   * @param isDriveMotor           Is the motor being initialized a drive motor?
-   * @param encoderType            {@link Type} of encoder to use for the {@link SparkMax} device.
-   * @param countsPerRevolution    The number of encoder pulses for the {@link Type} encoder per revolution.
-   * @param useDataPortQuadEncoder Use the encoder attached to the data port of the spark max for a quadrature encoder.
-   * @param motorType              {@link DCMotor} which the {@link SparkMax} is attached to.
+   * @param motor The SwerveMotor as a SparkBase object.
+   * @param cfg Configuration for the SparkBase motor controller.
+   * @param isDriveMotor Is the motor being initialized a drive motor?
+   * @param motorType Motor type controlled by the {@link SparkBase} motor controller.
    */
-  public SparkMaxBrushedMotorSwerve(SparkMax motor, boolean isDriveMotor, Type encoderType, int countsPerRevolution,
-                                    boolean useDataPortQuadEncoder, DCMotor motorType)
+  public SparkSwerve(SparkBase motor, SparkBaseConfig cfg, boolean isDriveMotor, DCMotor motorType)
   {
-    noEncoderAlert = new Alert("Motors",
-                               "Cannot use motor without encoder.",
-                               AlertType.kError);
-    failureConfiguringAlert = new Alert("Motors",
-                                        "Failure configuring motor " + motor.getDeviceId(),
-                                        AlertType.kWarning);
-    noEncoderDefinedAlert = new Alert("Motors",
-                                      "An encoder MUST be defined to work with a SparkMAX",
-                                      AlertType.kError);
-
-    // Drive motors **MUST** have an encoder attached.
-    if (isDriveMotor && encoderType == Type.kNoSensor)
-    {
-      noEncoderAlert.set(true);
-      throw new RuntimeException("Cannot use SparkMAX as a drive motor without an encoder attached.");
-    }
-
-    // Hall encoders can be used as quadrature encoders.
-    if (encoderType == Type.kHallSensor)
-    {
-      encoderType = Type.kQuadrature;
-    }
-
     this.motor = motor;
+    this.cfg = cfg;
     this.isDriveMotor = isDriveMotor;
     this.simMotor = motorType;
-
     factoryDefaults();
     clearStickyFaults();
 
-    // Get the onboard PID controller.
+    encoder = motor.getEncoder();
     pid = motor.getClosedLoopController();
 
-    // If there is a sensor attached to the data port or encoder port set the relative encoder.
-    if (isDriveMotor || (encoderType != Type.kNoSensor || useDataPortQuadEncoder))
-    {
+    cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder); // Configure feedback of the PID controller as the integrated encoder.
+    velocity = encoder::getVelocity;
+    position = encoder::getPosition;
 
-      if (useDataPortQuadEncoder)
-      {
-        this.encoder = Optional.of(motor.getAlternateEncoder());
-        cfg.alternateEncoder.countsPerRevolution(countsPerRevolution);
-
-        // Configure feedback of the PID controller as the integrated encoder.
-        cfg.closedLoop.feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder);
-      } else
-      {
-        this.encoder = Optional.of(motor.getEncoder());
-        cfg.encoder.countsPerRevolution(countsPerRevolution);
-
-        // Configure feedback of the PID controller as the integrated encoder.
-        cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
-      }
-    }
-    encoder.ifPresentOrElse((RelativeEncoder enc) -> {
-      velocity = enc::getVelocity;
-      position = enc::getPosition;
-    }, () -> {
-      noEncoderDefinedAlert.set(true);
-    });
     // Spin off configurations in a different thread.
-    // configureSparkMax(() -> motor.setCANTimeout(0)); // Commented it out because it prevents feedback.
-
-  }
-
-  /**
-   * Initialize the {@link SwerveMotor} as a {@link SparkMax} connected to a Brushless Motor.
-   *
-   * @param id                     CAN ID of the SparkMax.
-   * @param isDriveMotor           Is the motor being initialized a drive motor?
-   * @param encoderType            {@link Type} of encoder to use for the {@link SparkMax} device.
-   * @param countsPerRevolution    The number of encoder pulses for the {@link Type} encoder per revolution.
-   * @param useDataPortQuadEncoder Use the encoder attached to the data port of the spark max for a quadrature encoder.
-   * @param motorType              Motor type controlled by the {@link SparkMax} motor controller.
-   */
-  public SparkMaxBrushedMotorSwerve(int id, boolean isDriveMotor, Type encoderType, int countsPerRevolution,
-                                    boolean useDataPortQuadEncoder, DCMotor motorType)
-  {
-    this(new SparkMax(id, MotorType.kBrushed), isDriveMotor, encoderType, countsPerRevolution,
-         useDataPortQuadEncoder, motorType);
+    // configureSparkBase(() -> motor.setCANTimeout(0)); // Commented out because it prevents feedback.
   }
 
   /**
@@ -179,7 +104,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
    *
    * @param config Lambda supplier returning the error state.
    */
-  private void configureSparkMax(Supplier<REVLibError> config)
+  private void configureSparkBase(Supplier<REVLibError> config)
   {
     for (int i = 0; i < maximumRetries; i++)
     {
@@ -189,37 +114,38 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
       }
       Timer.delay(configDelay);
     }
-    failureConfiguringAlert.set(true);
+    DriverStation.reportWarning("Failure configuring motor " + motor.getDeviceId(), true);
   }
 
   @Override
-  public void close() {
-    motor.close();
+  public void close()
+  {
+      motor.close();
   }
 
   /**
-   * Get the current configuration of the {@link SparkMax}
+   * Get the current configuration of the {@link SparkBase}
    *
-   * @return {@link SparkMaxConfig}
+   * @return {@link SparkBaseConfig}
    */
-  public SparkMaxConfig getConfig()
+  public SparkBaseConfig getConfig()
   {
     return cfg;
   }
 
   /**
-   * Update the config for the {@link SparkMax}
+   * Update the config for the {@link SparkBase}
    *
-   * @param cfgGiven Given {@link SparkMaxConfig} which should have minimal modifications.
+   * @param cfgGiven Given {@link SparkBaseConfig} which should have minimal modifications.
    */
-  public void updateConfig(SparkMaxConfig cfgGiven)
+  public void updateConfig(SparkBaseConfig cfgGiven)
   {
     if (!DriverStation.isDisabled())
     {
       throw new RuntimeException("Configuration changes cannot be applied while the robot is enabled.");
     }
     cfg.apply(cfgGiven);
-    configureSparkMax(() -> motor.configure(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters));
+    configureSparkBase(() -> motor.configure(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters));
   }
 
   /**
@@ -234,8 +160,8 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   }
 
   /**
-   * Set the current limit for the swerve drive motor, remember this may cause jumping if used in conjunction with
-   * voltage compensation. This is useful to protect the motor from current spikes.
+   * Set the current limit for the swerve drive motor, remember this may cause jumping if used in
+   * conjunction with voltage compensation. This is useful to protect the motor from current spikes.
    *
    * @param currentLimit Current limit in AMPS at free speed.
    */
@@ -253,8 +179,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   @Override
   public void setLoopRampRate(double rampRate)
   {
-    cfg.closedLoopRampRate(rampRate)
-       .openLoopRampRate(rampRate);
+    cfg.closedLoopRampRate(rampRate).openLoopRampRate(rampRate);
   }
 
   /**
@@ -278,7 +203,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   {
     if (simMotor == null)
     {
-      simMotor = DCMotor.getCIM(1);
+      simMotor = DCMotor.getNEO(1);
     }
     return simMotor;
   }
@@ -291,7 +216,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   @Override
   public boolean usingExternalFeedbackSensor()
   {
-    return absoluteEncoder.isPresent();
+      return absoluteEncoder.isPresent();
   }
 
   /**
@@ -309,7 +234,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   @Override
   public void clearStickyFaults()
   {
-    configureSparkMax(motor::clearFaults);
+    configureSparkBase(motor::clearFaults);
   }
 
   /**
@@ -326,12 +251,8 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
       this.absoluteEncoder = Optional.empty();
       cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
 
-      this.encoder.ifPresentOrElse((RelativeEncoder enc) -> {
-        velocity = enc::getVelocity;
-        position = enc::getPosition;
-      }, () -> {
-        noEncoderDefinedAlert.set(true);
-      });
+      velocity = this.encoder::getVelocity;
+      position = this.encoder::getPosition;
       burnFlash();
     } else if (encoder instanceof SparkAnalogEncoderSwerve || encoder instanceof SparkEncoderSwerve)
     {
@@ -341,18 +262,13 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
       this.absoluteEncoder = Optional.of(encoder);
       velocity = this.absoluteEncoder.get()::getVelocity;
       position = this.absoluteEncoder.get()::getAbsolutePosition;
-      noEncoderDefinedAlert.set(false);
-    }
-    if (absoluteEncoder.isEmpty() && this.encoder.isEmpty())
-    {
-      noEncoderDefinedAlert.set(true);
-      throw new RuntimeException("An encoder MUST be defined to work with a SparkMAX");
     }
     return this;
   }
 
   /**
-   * Configure the integrated encoder for the swerve module. Sets the conversion factors for position and velocity.
+   * Configure the integrated encoder for the swerve module. Sets the conversion factors for
+   * position and velocity.
    *
    * @param positionConversionFactor The conversion factor to apply.
    */
@@ -377,16 +293,14 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
     cfg.encoder
         .positionConversionFactor(positionConversionFactor)
         .velocityConversionFactor(positionConversionFactor / 60);
-    // Changes the measurement period and number of samples used to calculate the velocity for the intergrated motor controller
+    // Changes the measurement period and number of samples used to calculate the velocity for the integrated motor controller
     // Notability this changes the returned velocity and the velocity used for the onboard velocity PID loop (TODO: triple check the PID portion of this statement)
     // Default settings of 32ms and 8 taps introduce ~100ms of measurement lag
     // https://www.chiefdelphi.com/t/shooter-encoder/400211/11
     // This value was taken from:
     // https://github.com/Mechanical-Advantage/RobotCode2023/blob/9884d13b2220b76d430e82248fd837adbc4a10bc/src/main/java/org/littletonrobotics/frc2023/subsystems/drive/ModuleIOSparkMax.java#L132-L133
     // and tested on 9176 for YAGSL, notably 3005 uses 16ms instead of 10 but 10 is more common based on github searches
-    cfg.encoder
-        .quadratureMeasurementPeriod(10)
-        .quadratureAverageDepth(2);
+    cfg.encoder.quadratureMeasurementPeriod(10).quadratureAverageDepth(2);
 
     // Taken from
     // https://github.com/frc3512/SwerveBot-2022/blob/9d31afd05df6c630d5acb4ec2cf5d734c9093bf8/src/main/java/frc/lib/util/SparkMaxUtil.java#L67
@@ -420,9 +334,8 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   public void configurePIDWrapping(double minInput, double maxInput)
   {
     cfg.closedLoop
-        .positionWrappingEnabled(true)
-        .positionWrappingInputRange(minInput, maxInput);
-
+      .positionWrappingEnabled(true)
+      .positionWrappingInputRange(minInput, maxInput);
   }
 
   /**
@@ -466,9 +379,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
     {
       throw new RuntimeException("Config updates cannot be applied while the robot is Enabled!");
     }
-    configureSparkMax(() -> {
-      return motor.configure(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-    });
+    configureSparkBase(() -> motor.configure(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters));
   }
 
   /**
@@ -477,43 +388,37 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
    * @param percentOutput percent out for the motor controller.
    */
   @Override
-  public void set(double percentOutput)
-  {
+  public void set(double percentOutput) {
     motor.set(percentOutput);
   }
 
   /**
    * Set the closed loop PID controller reference point.
    *
-   * @param setpoint    Setpoint in MPS or Angle in degrees.
+   * @param setpoint Setpoint in MPS or Angle in degrees.
    * @param feedforward Feedforward in volt-meter-per-second or kV.
    */
   @Override
   public void setReference(double setpoint, double feedforward)
   {
-    int pidSlot = 0;
-
     if (isDriveMotor)
     {
-      configureSparkMax(() ->
+      configureSparkBase(() ->
                             pid.setReference(
-                                setpoint,
-                                ControlType.kVelocity,
-                                ClosedLoopSlot.kSlot0,
+                                setpoint, 
+                                ControlType.kVelocity, 
+                                ClosedLoopSlot.kSlot0, 
                                 feedforward));
-    } else
+    } else 
     {
-      configureSparkMax(() ->
-                            pid.setReference(
-                                setpoint,
-                                ControlType.kPosition,
-                                ClosedLoopSlot.kSlot0,
-                                feedforward));
+      configureSparkBase(() -> pid.setReference(
+                                   setpoint, 
+                                   ControlType.kPosition, 
+                                   ClosedLoopSlot.kSlot0, 
+                                   feedforward));
       if (SwerveDriveTelemetry.isSimulation)
       {
-        encoder.ifPresent((RelativeEncoder enc) -> {
-          enc.setPosition(setpoint);
-        });
+        encoder.setPosition(setpoint);
       }
     }
   }
@@ -521,9 +426,9 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   /**
    * Set the closed loop PID controller reference point.
    *
-   * @param setpoint    Setpoint in meters per second or angle in degrees.
+   * @param setpoint Setpoint in meters per second or angle in degrees.
    * @param feedforward Feedforward in volt-meter-per-second or kV.
-   * @param position    Only used on the angle motor, the position of the motor in degrees.
+   * @param position Only used on the angle motor, the position of the motor in degrees.
    */
   @Override
   public void setReference(double setpoint, double feedforward, double position)
@@ -594,30 +499,9 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   @Override
   public void setPosition(double position)
   {
-    if (absoluteEncoder.isEmpty())
-    {
-      encoder.ifPresent((RelativeEncoder enc) -> {
-        configureSparkMax(() -> enc.setPosition(position));
-      });
+    if (absoluteEncoder.isEmpty()) {
+      configureSparkBase(() -> encoder.setPosition(position));
     }
   }
 
-  /**
-   * Type for encoder for {@link SparkMax}
-   */
-  public enum Type
-  {
-    /**
-     * NO sensor
-     */
-    kNoSensor,
-    /**
-     * Hall sensor attached to dataport
-     */
-    kHallSensor,
-    /**
-     * Quad encoder attached to alt
-     */
-    kQuadrature,
-  }
 }

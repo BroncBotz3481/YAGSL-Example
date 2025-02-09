@@ -40,6 +40,7 @@ public class DIODutyCycleEncoderSwerve extends SwerveAbsoluteEncoder
   public DIODutyCycleEncoderSwerve(int pin)
   {
     encoder = new DutyCycleEncoder(pin);
+    Timer.delay(2);
     inaccurateVelocities = new Alert(
         "Encoders",
         "The DIO Duty Cycle encoder may not report accurate velocities!",

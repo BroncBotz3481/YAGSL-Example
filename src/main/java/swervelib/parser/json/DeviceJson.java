@@ -12,9 +12,8 @@ import swervelib.encoders.AnalogAbsoluteEncoderSwerve;
 import swervelib.encoders.CANCoderSwerve;
 import swervelib.encoders.CanAndMagSwerve;
 import swervelib.encoders.DIODutyCycleEncoderSwerve;
-import swervelib.encoders.SparkFlexEncoderSwerve;
-import swervelib.encoders.SparkMaxAnalogEncoderSwerve;
-import swervelib.encoders.SparkMaxEncoderSwerve;
+import swervelib.encoders.SparkAnalogEncoderSwerve;
+import swervelib.encoders.SparkEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.encoders.TalonSRXEncoderSwerve;
 import swervelib.encoders.ThriftyNovaEncoderSwerve;
@@ -78,16 +77,19 @@ public class DeviceJson
       case "attached":
       case "canandmag":
       case "canandcoder":
-        return new SparkMaxEncoderSwerve(motor, 360);
-      case "sparkmax_analog":
-        return new SparkMaxAnalogEncoderSwerve(motor, 3.3);
-      case "sparkmax_analog5v":
-        return new SparkMaxAnalogEncoderSwerve(motor, 5);
       case "sparkflex_integrated":
       case "sparkflex_attached":
       case "sparkflex_canandmag":
       case "sparkflex_canandcoder":
-        return new SparkFlexEncoderSwerve(motor, 360);
+        return new SparkEncoderSwerve(motor, 360);
+      case "sparkmax_analog":
+      case "sparkflex_analog":
+      case "spark_analog":
+        return new SparkAnalogEncoderSwerve(motor, 3.3);
+      case "sparkmax_analog5v":
+      case "sparkflex_analog5v":
+      case "spark_analog5v":
+        return new SparkAnalogEncoderSwerve(motor, 5);
       case "canandcoder_can":
       case "canandmag_can":
         return new CanAndMagSwerve(id);

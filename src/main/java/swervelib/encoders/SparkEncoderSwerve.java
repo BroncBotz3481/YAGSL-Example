@@ -1,93 +1,81 @@
 package swervelib.encoders;
 
 import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.REVLibError;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
-import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import java.util.function.Supplier;
+import swervelib.motors.SparkFlexSwerve;
 import swervelib.motors.SparkMaxBrushedMotorSwerve;
 import swervelib.motors.SparkMaxSwerve;
+import swervelib.motors.SparkSwerve;
 import swervelib.motors.SwerveMotor;
 
 /**
- * SparkMax absolute encoder, attached through the data port.
+ * SparkBase absolute encoder, attached through the data port.
  */
-public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
+public class SparkEncoderSwerve extends SwerveAbsoluteEncoder
 {
 
   /**
-   * The {@link AbsoluteEncoder} representing the duty cycle encoder attached to the SparkMax.
+   * The {@link AbsoluteEncoder} representing the duty cycle encoder attached to the SparkBase.
    */
-  public  SparkAbsoluteEncoder encoder;
+  public final SparkAbsoluteEncoder encoder;
+
+  /**
+   * {@link SparkMaxBrushedMotorSwerve} or {@link SparkSwerve} instance.
+   */
+  protected final SwerveMotor motor;
+
   /**
    * An {@link Alert} for if there is a failure configuring the encoder.
    */
-  private Alert                failureConfiguring;
+  protected final Alert failureConfiguring;
+
   /**
    * An {@link Alert} for if there is a failure configuring the encoder offset.
    */
-  private Alert                offsetFailure;
-  /**
-   * {@link SparkMaxBrushedMotorSwerve} or {@link SparkMaxSwerve} instance.
-   */
-  private SwerveMotor          sparkMax;
+  protected final Alert offsetFailure;
 
   /**
-   * Create the {@link SparkMaxEncoderSwerve} object as a duty cycle from the {@link com.revrobotics.spark.SparkMax}
-   * motor.
+   * Create the {@link SparkEncoderSwerve} object as a duty cycle from the {@link
+   * com.revrobotics.spark.SparkBase} motor.
    *
-   * @param motor            Motor to create the encoder from.
+   * @param motor Motor to create the encoder from.
    * @param conversionFactor The conversion factor to set if the output is not from 0 to 360.
    */
-  public SparkMaxEncoderSwerve(SwerveMotor motor, int conversionFactor)
+  public SparkEncoderSwerve(SwerveMotor motor, int conversionFactor)
   {
     failureConfiguring = new Alert(
-        "Encoders",
-        "Failure configuring SparkMax Absolute Encoder",
-        AlertType.kWarning);
+      "Encoders", 
+      "Failure configuring SparkBase Absolute Encoder", 
+      AlertType.kWarning);
     offsetFailure = new Alert(
-        "Encoders",
-        "Failure to set Absolute Encoder Offset",
-        AlertType.kWarning);
-    if (motor.getMotor() instanceof SparkMax)
+      "Encoders", 
+      "Failure to set Absolute Encoder Offset", 
+      AlertType.kWarning);
+    if (motor.getMotor() instanceof SparkBase)
     {
-      sparkMax = motor;
-      encoder = ((SparkMax) motor.getMotor()).getAbsoluteEncoder();
+      this.motor = motor;
+      encoder = ((SparkBase) motor.getMotor()).getAbsoluteEncoder();
+      motor.setAbsoluteEncoder(this);
       setConversionFactor(conversionFactor);
     } else
     {
-      throw new RuntimeException("Motor given to instantiate SparkMaxEncoder is not a CANSparkMax");
+      throw new RuntimeException("Motor given to instantiate SparkEncoderSwerve is not a SparkBase");
     }
   }
 
   @Override
   public void close()
   {
-    // SPARK MAX encoder gets closed with the motor
-    // I don't think an encoder getting closed should 
-    // close the entire motor so i will keep this empty
-    // sparkFlex.close();
-  }
-
-  /**
-   * Run the configuration until it succeeds or times out.
-   *
-   * @param config Lambda supplier returning the error state.
-   */
-  private void configureSparkMax(Supplier<REVLibError> config)
-  {
-    for (int i = 0; i < maximumRetries; i++)
-    {
-      if (config.get() == REVLibError.kOk)
-      {
-        return;
-      }
-    }
-    failureConfiguring.set(true);
+      // SPARK MAX/FLEX encoder gets closed with the motor
+      // I don't think an encoder getting closed should 
+      // close the entire motor so i will keep this empty
+      // sparkFlex.close();
   }
 
   /**
@@ -116,22 +104,17 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
   @Override
   public void configure(boolean inverted)
   {
-    if (sparkMax instanceof SparkMaxSwerve)
+    if (motor instanceof SparkSwerve)
     {
-      SparkMaxConfig cfg = ((SparkMaxSwerve) sparkMax).getConfig();
+      var sparkBase = (SparkSwerve) motor;
+      SparkBaseConfig cfg = sparkBase.getConfig();
       cfg.absoluteEncoder.inverted(inverted);
-      ((SparkMaxSwerve) sparkMax).updateConfig(cfg);
-    } else if (sparkMax instanceof SparkMaxBrushedMotorSwerve)
-    {
-      SparkMaxConfig cfg = ((SparkMaxBrushedMotorSwerve) sparkMax).getConfig();
-      cfg.absoluteEncoder.inverted(inverted);
-      ((SparkMaxBrushedMotorSwerve) sparkMax).updateConfig(cfg);
+      sparkBase.updateConfig(cfg);
     }
   }
 
-
   /**
-   * Set the conversion factor of the {@link SparkMaxEncoderSwerve}.
+   * Set the conversion factor of the {@link SparkEncoderSwerve}.
    *
    * @param conversionFactor Position conversion factor from ticks to unit.
    */
@@ -145,14 +128,13 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
     // From testing, 20ms on frame 5 sometimes returns the same value while constantly powering the azimuth but 8ms may be overkill,
     // with limited testing 19ms did not return the same value while the module was constatntly rotating.
 
-    SparkMaxConfig cfg = null;
-    if (sparkMax instanceof SparkMaxSwerve)
+    SparkBaseConfig cfg = null;
+    if (motor instanceof SparkSwerve)
     {
-      cfg = ((SparkMaxSwerve) sparkMax).getConfig();
-
-    } else if (sparkMax instanceof SparkMaxBrushedMotorSwerve)
+      cfg = ((SparkSwerve) motor).getConfig();
+    } else if (motor instanceof SparkMaxBrushedMotorSwerve)
     {
-      cfg = ((SparkMaxBrushedMotorSwerve) sparkMax).getConfig();
+      cfg = ((SparkMaxBrushedMotorSwerve) motor).getConfig();
     }
     if (cfg != null)
     {
@@ -166,16 +148,14 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
           .positionConversionFactor(conversionFactor)
           .velocityConversionFactor(conversionFactor / 60);
     }
-    if (sparkMax instanceof SparkMaxSwerve)
+    if (motor instanceof SparkSwerve)
     {
-      ((SparkMaxSwerve) sparkMax).updateConfig(cfg);
-    } else if (sparkMax instanceof SparkMaxBrushedMotorSwerve)
+      ((SparkMaxSwerve) motor).updateConfig(cfg);
+    } else if (motor instanceof SparkMaxBrushedMotorSwerve)
     {
-      ((SparkMaxBrushedMotorSwerve) sparkMax).updateConfig(cfg);
+      ((SparkMaxBrushedMotorSwerve) motor).updateConfig((SparkMaxConfig) cfg);
     }
-
   }
-
 
   /**
    * Get the absolute position of the encoder.
@@ -200,7 +180,7 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
   }
 
   /**
-   * Sets the Absolute Encoder Offset inside of the SparkMax's Memory.
+   * Sets the Absolute Encoder Offset inside of the SparkBase's Memory.
    *
    * @param offset the offset the Absolute Encoder uses as the zero point.
    * @return if setting Absolute Encoder Offset was successful or not.
@@ -208,6 +188,14 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
   @Override
   public boolean setAbsoluteEncoderOffset(double offset)
   {
+    if (motor instanceof SparkFlexSwerve)
+    {
+      var sparkFlex = (SparkFlexSwerve) motor;
+      SparkBaseConfig cfg = sparkFlex.getConfig();
+      cfg.absoluteEncoder.zeroOffset(offset);
+      sparkFlex.updateConfig(cfg);
+      return true;
+    }
     return false;
   }
 
@@ -221,4 +209,5 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
   {
     return encoder.getVelocity();
   }
+
 }

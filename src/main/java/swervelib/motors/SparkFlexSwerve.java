@@ -82,6 +82,10 @@ public class SparkFlexSwerve extends SwerveMotor
   {
     this.motor = motor;
     this.isDriveMotor = isDriveMotor;
+    failureConfiguring = new Alert("Motors",
+                                   "Failure configuring motor " +
+                                   motor.getDeviceId(),
+                                   AlertType.kWarning);
     factoryDefaults();
     clearStickyFaults();
 
@@ -91,10 +95,7 @@ public class SparkFlexSwerve extends SwerveMotor
 
     // Spin off configurations in a different thread.
     // configureSparkFlex(() -> motor.setCANTimeout(0)); // Commented out because it prevents feedback.
-    failureConfiguring = new Alert("Motors",
-                                   "Failure configuring motor " +
-                                   motor.getDeviceId(),
-                                   AlertType.kWarning);
+    
     velocity = encoder::getVelocity;
     position = encoder::getPosition;
   }

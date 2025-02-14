@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -39,9 +40,9 @@ public class RobotContainer
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
    */
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
-                                                                () -> driverPS5.getLeftY(),
-                                                                () -> driverPS5.getLeftX())
-                                                            .withControllerRotationAxis(driverPS5::getRightX)
+                                                                () -> -driverPS5.getLeftY(),
+                                                                () -> -driverPS5.getLeftX())
+                                                            .withControllerRotationAxis(() -> -driverPS5.getRightX())
                                                             .deadband(OperatorConstants.DEADBAND)
                                                             .scaleTranslation(0.8)
                                                             .allianceRelativeControl(true);
@@ -164,7 +165,7 @@ public class RobotContainer
   public Command getAutonomousCommand()
   {
     // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("Test Auto");
+    return drivebase.getAutonomousCommand("Test Auto").repeatedly();
   }
 
   public void setMotorBrake(boolean brake)

@@ -39,8 +39,8 @@ public class RobotContainer
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
    */
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
-                                                                () -> -driverPS5.getLeftY(),
-                                                                () -> -driverPS5.getLeftX())
+                                                                () -> driverPS5.getLeftY(),
+                                                                () -> driverPS5.getLeftX())
                                                             .withControllerRotationAxis(driverPS5::getRightX)
                                                             .deadband(OperatorConstants.DEADBAND)
                                                             .scaleTranslation(0.8)
@@ -133,7 +133,7 @@ public class RobotContainer
     if (DriverStation.isTest())
     {
       drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity); // Overrides drive command above!
-
+      driverPS5.triangle().onTrue(drivebase.sysIdDriveMotorCommand());
       // driverPS5.square().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       // driverPS5.triangle().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
       // driverPS5.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
@@ -164,7 +164,7 @@ public class RobotContainer
   public Command getAutonomousCommand()
   {
     // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("New Auto");
+    return drivebase.getAutonomousCommand("Test Auto");
   }
 
   public void setMotorBrake(boolean brake)

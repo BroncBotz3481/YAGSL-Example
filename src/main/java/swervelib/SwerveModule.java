@@ -942,7 +942,7 @@ public class SwerveModule implements AutoCloseable
     if (maxAngularVelocity == null)
     {
       maxAngularVelocity = RotationsPerSecond.of(
-          RadiansPerSecond.of(angleMotor.getSimMotor().freeSpeedRadPerSec).in(RotationsPerSecond) *
+          RadiansPerSecond.of(angleMotor.getSimMotor().freeSpeedRadPerSec).in(RotationsPerSecond) /
           configuration.conversionFactors.angle.gearRatio);
     }
     return maxAngularVelocity;

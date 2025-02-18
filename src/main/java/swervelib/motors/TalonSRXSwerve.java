@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.math.system.plant.DCMotor;
 import swervelib.encoders.SwerveAbsoluteEncoder;
+import swervelib.encoders.TalonSRXEncoderSwerve;
 import swervelib.math.SwerveMath;
 import swervelib.parser.PIDFConfig;
 import swervelib.parser.json.modules.ConversionFactorsJson;
@@ -119,6 +120,7 @@ public class TalonSRXSwerve extends SwerveMotor
   @Override
   public SwerveMotor setAbsoluteEncoder(SwerveAbsoluteEncoder encoder)
   {
+    absoluteEncoder = encoder instanceof TalonSRXEncoderSwerve;
     // Do not support.
     return this;
   }

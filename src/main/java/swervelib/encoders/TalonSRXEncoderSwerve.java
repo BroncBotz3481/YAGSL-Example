@@ -38,6 +38,7 @@ public class TalonSRXEncoderSwerve extends SwerveAbsoluteEncoder
         case Analog -> 360.0 / 1024.0;
         default -> 360.0 / 4096.0;
       };
+      talon.setSelectedSensorPosition(0);
     } else
     {
       throw new RuntimeException("Motor given to instantiate TalonSRXEncoder is not a WPI_TalonSRX");

@@ -1,5 +1,5 @@
 {
-  "angleJoystickRadiusDeadband": 0.5,
+  "angleJoystickRadiusDeadband": 1,
   "heading": {
     "p": 0.6,
     "i": 0,

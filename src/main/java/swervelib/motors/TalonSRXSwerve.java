@@ -32,7 +32,7 @@ public class TalonSRXSwerve extends SwerveMotor
   /**
    * Whether the absolute encoder is integrated.
    */
-  private final boolean               absoluteEncoder          = false;
+  private       boolean               absoluteEncoder          = false;
   /**
    * TalonSRX motor controller.
    */

@@ -831,6 +831,12 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
                                                                                                     .getAsDouble(),
                                                                                   controllerHeadingY.get()
                                                                                                     .getAsDouble())))).getRadians());
+
+        // Prevent rotation if controller heading inputs are not past axisDeadband
+        if(Math.abs(controllerHeadingX.get().getAsDouble())+Math.abs(controllerHeadingY.get().getAsDouble()) < axisDeadband.get()) {
+          omegaRadiansPerSecond = 0;
+        }
+
         speeds = new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
         break;
       }

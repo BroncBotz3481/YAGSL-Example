@@ -9,6 +9,24 @@
           "data": {
             "pathName": "New Path"
           }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreElevator"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Test Path"
+          }
         }
       ]
     }

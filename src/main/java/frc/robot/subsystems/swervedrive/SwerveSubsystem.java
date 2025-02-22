@@ -473,6 +473,11 @@ public class SwerveSubsystem extends SubsystemBase
                       false); // Open loop is disabled since it shouldn't be used most of the time.
   }
 
+  public void drive(double x, double y, double absoluteAngle) {
+    drive(swerveDrive.swerveController.getTargetSpeeds(x, y, absoluteAngle,
+        swerveDrive.getOdometryHeading().getRadians(), swerveDrive.getMaximumChassisVelocity()));
+  }
+
   /**
    * Drive the robot given a chassis field oriented velocity.
    *

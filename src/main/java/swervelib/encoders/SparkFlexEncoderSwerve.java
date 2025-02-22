@@ -108,6 +108,7 @@ public class SparkFlexEncoderSwerve extends SwerveAbsoluteEncoder
     cfg.absoluteEncoder
         .positionConversionFactor(conversionFactor)
         .velocityConversionFactor(conversionFactor / 60);
+    ((SparkFlexSwerve) sparkFlex).updateConfig(cfg);
   }
 
   /**

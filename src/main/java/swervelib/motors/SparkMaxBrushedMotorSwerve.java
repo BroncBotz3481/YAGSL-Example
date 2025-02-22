@@ -37,7 +37,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   /**
    * Config retry delay.
    */
-  private final double                          configDelay            = Milliseconds.of(5).in(Seconds);
+  private final double                    configDelay = Milliseconds.of(5).in(Seconds);
   /**
    * SparkMAX Instance.
    */
@@ -49,7 +49,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   /**
    * Integrated encoder.
    */
-  public        Optional<RelativeEncoder>       encoder                = Optional.empty();
+  public        Optional<RelativeEncoder> encoder     = Optional.empty();
   /**
    * Closed-loop PID controller.
    */
@@ -77,7 +77,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   /**
    * Configuration object for {@link SparkMax} motor.
    */
-  private       SparkMaxConfig                  cfg                    = new SparkMaxConfig();
+  private       SparkMaxConfig            cfg         = new SparkMaxConfig();
 
   /**
    * Initialize the swerve motor.
@@ -192,7 +192,8 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   }
 
   @Override
-  public void close() {
+  public void close()
+  {
     motor.close();
   }
 
@@ -453,6 +454,10 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   public void setInverted(boolean inverted)
   {
     cfg.inverted(inverted);
+    if (isDriveMotor)
+    {
+      cfg.encoder.inverted(inverted);
+    }
   }
 
   /**

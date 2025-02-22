@@ -383,6 +383,10 @@ public class SparkMaxSwerve extends SwerveMotor
   public void setInverted(boolean inverted)
   {
     cfg.inverted(inverted);
+    if (isDriveMotor)
+    {
+      cfg.encoder.inverted(inverted);
+    }
   }
 
   /**

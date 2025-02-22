@@ -384,6 +384,10 @@ public class SparkFlexSwerve extends SwerveMotor
   public void setInverted(boolean inverted)
   {
     cfg.inverted(inverted);
+    if (isDriveMotor)
+    {
+      cfg.encoder.inverted(inverted);
+    }
   }
 
   /**

@@ -156,8 +156,6 @@ public class SparkMaxEncoderSwerve extends SwerveAbsoluteEncoder
     }
     if (cfg != null)
     {
-      cfg.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-
       cfg.signals
           .absoluteEncoderPositionAlwaysOn(true)
           .absoluteEncoderPositionPeriodMs(20);

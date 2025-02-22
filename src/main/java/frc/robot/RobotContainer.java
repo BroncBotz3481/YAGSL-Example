@@ -5,9 +5,11 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -104,7 +106,6 @@ public class RobotContainer
    */
   private void configureBindings()
   {
-
     Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
     Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
     Command driveRobotOrientedAngularVelocity  = drivebase.driveFieldOriented(driveRobotOriented);
@@ -125,8 +126,25 @@ public class RobotContainer
 
     if (Robot.isSimulation())
     {
+      driveDirectAngleKeyboard.driveToPose(() -> new Pose2d(new Translation2d(9, 3),
+                                                            Rotation2d.fromDegrees(90)),
+                                           new ProfiledPIDController(5,
+                                                                     0,
+                                                                     0,
+                                                                     new Constraints(5,
+                                                                                     3)),
+                                           new ProfiledPIDController(5,
+                                                                     0,
+                                                                     0,
+                                                                     new Constraints(
+                                                                         Math.toRadians(
+                                                                             360),
+                                                                         Math.toRadians(
+                                                                             90))));
       driverXbox.start().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
       driverXbox.button(1).whileTrue(drivebase.sysIdDriveMotorCommand());
+      driverXbox.button(2).whileTrue(Commands.runEnd(() -> driveDirectAngleKeyboard.driveToPoseEnabled(true),
+                                                     () -> driveDirectAngleKeyboard.driveToPoseEnabled(false)));
 
     }
     if (DriverStation.isTest())

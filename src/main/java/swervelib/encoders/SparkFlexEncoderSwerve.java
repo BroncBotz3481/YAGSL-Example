@@ -46,7 +46,6 @@ public class SparkFlexEncoderSwerve extends SwerveAbsoluteEncoder
     {
       sparkFlex = motor;
       encoder = ((SparkFlex) motor.getMotor()).getAbsoluteEncoder();
-      motor.setAbsoluteEncoder(this);
       motor.configureIntegratedEncoder(conversionFactor);
     } else
     {

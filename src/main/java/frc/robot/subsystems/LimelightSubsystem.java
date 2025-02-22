@@ -31,10 +31,16 @@ public class LimelightSubsystem {
     }
 
     public void scanAprilTag() { //x
-        Optional<PoseEstimate> poseEstimate = poseEstimator.getPoseEstimate();
+        Optional<PoseEstimate> poseEstimateResults = poseEstimator.getPoseEstimate();
 
-        if (poseEstimate.isPresent()) {
-            System.out.println(poseEstimate.get());
+        if (poseEstimateResults.isPresent()) {
+            if (poseEstimateResults.get().hasData) {
+                PoseEstimate poseEstimate = poseEstimateResults.get();
+
+                System.out.println(poseEstimate.rawFiducials);
+            } else {
+                System.out.println("the pose estimate has no data :(");
+            }
         } else {
             System.out.println("there is no apriltag :(");
         }

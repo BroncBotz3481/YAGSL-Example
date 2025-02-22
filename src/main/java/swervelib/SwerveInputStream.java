@@ -299,14 +299,10 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
   public SwerveInputStream driveToPose(Supplier<Pose2d> pose, ProfiledPIDController translation,
                                        ProfiledPIDController rotation)
   {
-    driveToPose = Optional.of(pose);
-    driveToPoseXPIDController = Optional.of(translation);
-    driveToPoseYPIDController = Optional.of(new ProfiledPIDController(translation.getP(),
-                                                                      translation.getI(),
-                                                                      translation.getD(),
-                                                                      translation.getConstraints()));
-    driveToPoseOmegaPIDController = Optional.of(rotation);
-    return this;
+    return driveToPose(pose, translation, new ProfiledPIDController(translation.getP(),
+                                                                    translation.getI(),
+                                                                    translation.getD(),
+                                                                    translation.getConstraints()), rotation);
   }
 
   /**

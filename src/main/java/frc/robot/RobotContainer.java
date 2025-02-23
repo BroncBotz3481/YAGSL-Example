@@ -19,8 +19,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.swervedrive.Actuator.Pull;
+import frc.robot.commands.swervedrive.Actuator.Push;
 import frc.robot.commands.swervedrive.drivebase.LimelightAlign;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import frc.robot.subsystems.swervedrive.ActuatorSubsystem.ActuatorSubystem;
+
 import java.io.File;
 import swervelib.SwerveInputStream;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -93,13 +97,16 @@ public class RobotContainer
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
+
+   private final ActuatorSubystem actuatorSubystem = new ActuatorSubystem();
+
   public RobotContainer()
   {
     // Configure the trigger bindings
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
     NamedCommands.registerCommand("test", Commands.print("I EXIST"));
-    NamedCommands.registerCommand("AmpAlign", new LimelightAlign(drivebase));
+    NamedCommands.registerCommand("LimelightAlign", new LimelightAlign(drivebase));
   }
 
   /**
@@ -112,6 +119,9 @@ public class RobotContainer
   private void configureBindings()
   {
     driverXbox.x().onTrue(new LimelightAlign(drivebase));
+    driverXbox.a().whileTrue(new Pull(actuatorSubystem, 0.9));
+    driverXbox.b().whileTrue(new Push(actuatorSubystem, 0.9));
+    driverXbox.start().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
     Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
     Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
     Command driveRobotOrientedAngularVelocity  = drivebase.driveFieldOriented(driveRobotOriented);

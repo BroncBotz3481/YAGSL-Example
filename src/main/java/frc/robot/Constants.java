@@ -39,12 +39,52 @@ public final class Constants
     public static final double WHEEL_LOCK_TIME = 10; // seconds
   }
 
+  public static class PIDConstants {
+    public static final double ELEVATOR_P = 1.0;
+    public static final double ELEVATOR_I = 0.0;
+    public static final double ELEVATOR_D = 0.0;
+
+    public static final double C_WRIST_P = 1.0;
+    public static final double C_WRIST_I = 0.0;
+    public static final double C_WRIST_D = 0.0;
+
+    public static final double A_WRIST_P = 1.0;
+    public static final double A_WRIST_I = 0.0;
+    public static final double A_WRIST_D = 0.0;
+  }
+
+  public static class HomeConstants {
+    public static final double CORAL_HOME_POSITION = 0.0;
+    public static final double ALGAE_HOME_POSITION = 0.0;
+    public static final double ELEVATOR_HOME_POSITION = 0.0;
+  }
+
+  public static class IOSpeeds {
+    public static final double CORAL_INTAKE_SPEED = 1.0;
+    public static final double ALGAE_INTAKE_SPEED = 1.0;
+    public static final double CORAL_SHOOT_SPEED = -0.75;
+    public static final double ALGAE_SHOOT_SPEED = -0.75;
+  }
+
+  public static class ReefLevels {
+    public static final double E_L1_POSITION = 1.0;
+    public static final double E_L2_POSITION = 2.0;
+    public static final double E_L3_POSITION = 3.0;
+
+    public static final double C_L1_POSITION = 1.0;
+    public static final double C_L2_POSITION = 2.0;
+    public static final double C_L3_POSITION = 3.0;
+  }
+
+  public static class Tolerances {
+    public static final double ELEVATOR_TOLERANCE = 0.5;
+  }
+
   public static class OperatorConstants
   {
-
     // Joystick Deadband
-    public static final double DEADBAND        = 0.1;
-    public static final double LEFT_Y_DEADBAND = 0.1;
+    public static final double DEADBAND         = 0.1;
+    public static final double LEFT_Y_DEADBAND  = 0.1;
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT    = 6;
   }

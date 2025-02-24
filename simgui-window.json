@@ -19,7 +19,7 @@
     "###/FMSInfo": {
       "Collapsed": "0",
       "Pos": "60,60",
-      "Size": "169,167"
+      "Size": "181,167"
     },
     "###/SmartDashboard/Field": {
       "Collapsed": "0",
@@ -29,7 +29,7 @@
     "###FMS": {
       "Collapsed": "0",
       "Pos": "4,414",
-      "Size": "283,140"
+      "Size": "169,184"
     },
     "###Joysticks": {
       "Collapsed": "0",
@@ -64,7 +64,7 @@
     "###Timing": {
       "Collapsed": "0",
       "Pos": "5,150",
-      "Size": "135,150"
+      "Size": "135,173"
     },
     "Debug##Default": {
       "Collapsed": "0",

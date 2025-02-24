@@ -53,6 +53,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
+import org.ironmaple.simulation.drivesims.GyroSimulation;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
@@ -272,7 +273,6 @@ public class SwerveDrive implements AutoCloseable
 
       // register the drivetrain simulation
       SimulatedArena.getInstance().addDriveTrainSimulation(mapleSimDrive);
-
       simIMU = new SwerveIMUSimulation(mapleSimDrive.getGyroSimulation());
       imuReadingCache = new Cache<>(simIMU::getGyroRotation3d, 5L);
     } else
@@ -289,11 +289,11 @@ public class SwerveDrive implements AutoCloseable
             getYaw(),
             getModulePositions(),
             startingPose); // x,y,heading in radians; Vision measurement std dev, higher=less weight
-
-    double     offset      = imu.getRawRotation3d().toRotation2d().getRadians() +
-                             startingPose.getRotation().getRadians();
-    Rotation3d currentGyro = imu.getRawRotation3d();
-    setGyroOffset(new Rotation3d(currentGyro.getX(), currentGyro.getY(), offset));
+//
+//    Rotation3d currentGyro = imuReadingCache.getValue();
+//    double offset = currentGyro.getZ() +
+//                    startingPose.getRotation().getRadians();
+//    setGyroOffset(new Rotation3d(currentGyro.getX(), currentGyro.getY(), offset));
 
     // Initialize Telemetry
     if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.POSE.ordinal())
@@ -338,11 +338,13 @@ public class SwerveDrive implements AutoCloseable
   }
 
   @Override
-  public void close() {
+  public void close()
+  {
     imu.close();
     tunerXRecommendation.close();
 
-    for (var module : swerveModules) {
+    for (var module : swerveModules)
+    {
       module.close();
     }
   }
@@ -781,7 +783,7 @@ public class SwerveDrive implements AutoCloseable
     {
       module.applyStateOptimizations(states[module.moduleNumber]);
       module.applyAntiJitter(states[module.moduleNumber], false);
-      
+
       // from the module configuration, obtain necessary information to calculate feed-forward
       // Warning: Will not work well if motor is not what we are expecting.
       // Warning: Should replace module.getDriveMotor().simMotor with expected motor type first.

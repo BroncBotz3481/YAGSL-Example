@@ -290,7 +290,10 @@ public class SwerveDrive implements AutoCloseable
             getModulePositions(),
             startingPose); // x,y,heading in radians; Vision measurement std dev, higher=less weight
 
-    zeroGyro();
+    double     offset      = imu.getRawRotation3d().toRotation2d().getRadians() +
+                             startingPose.getRotation().getRadians();
+    Rotation3d currentGyro = imu.getRawRotation3d();
+    setGyroOffset(new Rotation3d(currentGyro.getX(), currentGyro.getY(), offset));
 
     // Initialize Telemetry
     if (SwerveDriveTelemetry.verbosity.ordinal() >= TelemetryVerbosity.POSE.ordinal())

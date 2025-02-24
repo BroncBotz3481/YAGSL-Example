@@ -851,7 +851,7 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
     {
       if (headingOffset.isPresent())
       {
-        return fieldRelativeRotation.rotateBy(headingOffset.get());
+        return Rotation2d.fromRadians(fieldRelativeRotation.getRadians() + headingOffset.get().getRadians());
       }
     }
     return fieldRelativeRotation;

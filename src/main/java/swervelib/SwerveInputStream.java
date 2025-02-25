@@ -865,6 +865,32 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
   }
 
   /**
+   * When the {@link SwerveInputStream} is in {@link SwerveInputMode#DRIVE_TO_POSE} this function will return if the
+   * robot is at the desired pose within the defined tolerance.
+   *
+   * @param toleranceMeters Tolerance in meters.
+   * @return At target pose, true if current mode is not {@link SwerveInputMode#DRIVE_TO_POSE} and no pose supplier has
+   * been given.
+   */
+  public boolean atTargetPose(double toleranceMeters)
+  {
+    if (currentMode != SwerveInputMode.DRIVE_TO_POSE)
+    {
+      DriverStation.reportError("SwerveInputStream.atTargetPose called while not set to DriveToPose.", false);
+      if (!driveToPose.isPresent())
+      {
+        return true;
+      }
+    }
+    if (driveToPose.isPresent())
+    {
+      Pose2d targetPose = driveToPose.get().get();
+      return swerveDrive.getPose().getTranslation().getDistance(targetPose.getTranslation()) <= toleranceMeters;
+    }
+    return true;
+  }
+
+  /**
    * Gets a {@link ChassisSpeeds}
    *
    * @return {@link ChassisSpeeds}

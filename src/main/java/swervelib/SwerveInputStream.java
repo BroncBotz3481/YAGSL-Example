@@ -279,6 +279,8 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
   public SwerveInputStream driveToPose(Supplier<Pose2d> pose, ProfiledPIDController xPIDController,
                                        ProfiledPIDController omegaPIDController)
   {
+    System.out.println("Target Pose: " + pose.get());
+    System.out.println("Current Pose: " + swerveDrive.getPose());
     omegaPIDController.reset(swerveDrive.getPose().getRotation().getRadians());
     xPIDController.reset(swerveDrive.getPose().getTranslation().getDistance(pose.get().getTranslation()));
     driveToPose = Optional.of(pose);
@@ -954,7 +956,8 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
         Vector<N2> traversalVector = new Vector(Nat.N2());
         traversalVector.set(0, 0, targetPoseRelativeToRobotPose.get(0, 0));
         traversalVector.set(1, 0, targetPoseRelativeToRobotPose.get(1, 0));
-        traversalVector = traversalVector.unit().times(-translationPIDController.calculate(distanceFromTarget));
+        traversalVector = traversalVector.unit()
+                                         .times(-translationPIDController.calculate(distanceFromTarget, 0));
 
         Vector<N2> robotForwardVec = robotPose.transformBy(new Transform2d(1, 0, new Rotation2d())).getTranslation()
                                               .toVector().minus(robotVec);

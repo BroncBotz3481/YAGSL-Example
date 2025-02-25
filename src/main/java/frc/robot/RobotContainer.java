@@ -134,11 +134,11 @@ public class RobotContainer
                                  Rotation2d.fromDegrees(90));
       drivebase.getSwerveDrive().field.getObject("targetPose").setPose(target);
       driveDirectAngleKeyboard.driveToPose(() -> target,
-                                           new ProfiledPIDController(0.01,
+                                           new ProfiledPIDController(100,
                                                                      0,
                                                                      0,
-                                                                     new Constraints(1, 2)),
-                                           new ProfiledPIDController(0.001,
+                                                                     new Constraints(5, 2)),
+                                           new ProfiledPIDController(5,
                                                                      0,
                                                                      0,
                                                                      new Constraints(Units.degreesToRadians(360),

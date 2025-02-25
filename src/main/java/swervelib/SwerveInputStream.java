@@ -665,10 +665,6 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
       }
       case DRIVE_TO_POSE ->
       {
-        if (allianceRelative.isPresent() && robotRelative.isPresent())
-        {
-          robotRelative(false);
-        }
         break;
       }
     }
@@ -699,10 +695,6 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
         if (swerveDrive.headingCorrection)
         {
           swerveDrive.setHeadingCorrection(false);
-        }
-        if (!robotRelative.isPresent())
-        {
-          robotRelative(true);
         }
       }
     }
@@ -813,6 +805,10 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
     {
       if (robotRelative.isPresent() && robotRelative.get().getAsBoolean())
       {
+        if (driveToPoseEnabled.isPresent() && driveToPoseEnabled.get().getAsBoolean())
+        {
+          return fieldRelativeTranslation;
+        }
         throw new RuntimeException("Cannot use robot oriented control with Alliance aware movement!");
       }
       if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red)
@@ -964,11 +960,13 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
                                               .toVector().minus(robotVec);
 
         currentMode = newMode;
-        return applyRobotRelativeTranslation(new ChassisSpeeds(
+        speeds = applyRobotRelativeTranslation(new ChassisSpeeds(
             robotForwardVec.norm() * traversalVector.dot(robotForwardVec),
             robotLateralVec.norm() * traversalVector.dot(robotLateralVec),
             rotationPIDController.calculate(robotPose.getRotation().getRadians(),
                                             swervePoseSetpoint.getRotation().getRadians())));
+        System.out.println(speeds);
+        return speeds;
       }
     }
 

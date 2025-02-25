@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.XboxController;
@@ -279,10 +280,9 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
   public SwerveInputStream driveToPose(Supplier<Pose2d> pose, ProfiledPIDController xPIDController,
                                        ProfiledPIDController omegaPIDController)
   {
-    System.out.println("Target Pose: " + pose.get());
-    System.out.println("Current Pose: " + swerveDrive.getPose());
     omegaPIDController.reset(swerveDrive.getPose().getRotation().getRadians());
     xPIDController.reset(swerveDrive.getPose().getTranslation().getDistance(pose.get().getTranslation()));
+    xPIDController.setGoal(new State(0, 0));
     driveToPose = Optional.of(pose);
     driveToPoseTranslationPIDController = Optional.of(xPIDController);
     driveToPoseOmegaPIDController = Optional.of(omegaPIDController);
@@ -601,17 +601,16 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
   {
     if (driveToPoseEnabled.isPresent() && driveToPoseEnabled.get().getAsBoolean())
     {
-//      if (driveToPose.isPresent())
-//      {
-//        if (driveToPoseOmegaPIDController.isPresent() && driveToPoseXPIDController.isPresent() &&
-//            driveToPoseYPIDController.isPresent())
-//        {
-      return SwerveInputMode.DRIVE_TO_POSE;
-//        }
-//        System.out.println("Drive to pose present");
-//        DriverStation.reportError("Drive to pose not supplied with pid controllers.", false);
-//      }
-//      DriverStation.reportError("Drive to pose enabled without supplier present.", false);
+      if (driveToPose.isPresent())
+      {
+        if (driveToPoseOmegaPIDController.isPresent() && driveToPoseTranslationPIDController.isPresent())
+        {
+          return SwerveInputMode.DRIVE_TO_POSE;
+        }
+        System.out.println("Drive to pose present");
+        DriverStation.reportError("Drive to pose not supplied with pid controllers.", false);
+      }
+      DriverStation.reportError("Drive to pose enabled without supplier present.", false);
     } else if (translationOnlyEnabled.isPresent() && translationOnlyEnabled.get().getAsBoolean())
     {
       return SwerveInputMode.TRANSLATION_ONLY;
@@ -894,7 +893,6 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
     {
       swerveController = swerveDrive.getSwerveController();
     }
-
     switch (newMode)
     {
       case TRANSLATION_ONLY ->
@@ -965,12 +963,21 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
                                               .toVector().minus(robotVec);
 
         currentMode = newMode;
-        speeds = applyRobotRelativeTranslation(new ChassisSpeeds(
-            robotForwardVec.norm() * traversalVector.dot(robotForwardVec),
-            robotLateralVec.norm() * traversalVector.dot(robotLateralVec),
-            rotationPIDController.calculate(robotPose.getRotation().getRadians(),
-                                            swervePoseSetpoint.getRotation().getRadians())));
-        System.out.println(speeds);
+        speeds = ChassisSpeeds.fromRobotRelativeSpeeds(new ChassisSpeeds(
+                                                           robotForwardVec.norm() * traversalVector.dot(robotForwardVec),
+                                                           robotLateralVec.norm() * traversalVector.dot(robotLateralVec),
+                                                           rotationPIDController.calculate(robotPose.getRotation().getRadians(),
+                                                                                           swervePoseSetpoint.getRotation().getRadians())),
+                                                       swerveDrive.getOdometryHeading());
+        double lerpDistance = robotPose.getTranslation().plus(new Translation2d(speeds.vxMetersPerSecond,
+                                                                                vyMetersPerSecond).times(0.02))
+                                       .getDistance(swervePoseSetpoint.getTranslation());
+        // Filter out incorrect ChassisSpeeds.
+        if (lerpDistance > distanceFromTarget)
+        {
+          speeds = new ChassisSpeeds(0, 0, 0);
+        }
+
         return speeds;
       }
     }

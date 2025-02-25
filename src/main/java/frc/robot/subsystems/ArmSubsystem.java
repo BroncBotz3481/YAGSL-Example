@@ -7,6 +7,8 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import static frc.robot.Constants.HomeConstants.ALGAE_HOME_POSITION;
+import static frc.robot.Constants.HomeConstants.CORAL_HOME_POSITION;
 import static frc.robot.Constants.HomeConstants.ELEVATOR_HOME_POSITION;
 import static frc.robot.Constants.IOSpeeds.ALGAE_INTAKE_SPEED;
 import static frc.robot.Constants.IOSpeeds.ALGAE_SHOOT_SPEED;
@@ -56,10 +58,12 @@ public class ArmSubsystem extends SubsystemBase {
     private double coralWristPosition = 0;
     private double elevatorPosition = 0;
 
-    private Trigger badElevTrigger = new Trigger(() -> Math.abs(lElevator.getEncoder().getPosition() - rElevator.getEncoder().getPosition()) <= ELEVATOR_TOLERANCE);
+    private Trigger badElevTrigger = new Trigger(() -> Math
+            .abs(lElevator.getEncoder().getPosition() - rElevator.getEncoder().getPosition()) <= ELEVATOR_TOLERANCE);
 
     public ArmSubsystem() {
-        badElevTrigger.onTrue(Commands.runOnce(() -> {/* send elastic notification */}));
+        badElevTrigger.onTrue(Commands.runOnce(() -> {
+            /* TODO elastic notifications */}));
         config.idleMode(IdleMode.kBrake);
         coralShooter.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         lAlgaeIntake.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -91,13 +95,10 @@ public class ArmSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Algae Wrist Setpoint", algaeWristPosition);
         SmartDashboard.putNumber("Elevator Setpoint", elevatorPosition);
 
-        // TODO: add safetys
-        // if |le - re| > somevalue stopMotor();
-
         coralWrist.getClosedLoopController().setReference(coralWristPosition, ControlType.kPosition);
         algaeWrist.getClosedLoopController().setReference(algaeWristPosition, ControlType.kPosition);
 
-        if (Math.abs(lElevator.getEncoder().getPosition() - rElevator.getEncoder().getPosition()) <= ELEVATOR_TOLERANCE) {
+        if (!badElevTrigger.getAsBoolean()) {
             lElevator.getClosedLoopController().setReference(elevatorPosition, ControlType.kPosition);
             rElevator.getClosedLoopController().setReference(elevatorPosition, ControlType.kPosition);
         } else {
@@ -119,15 +120,51 @@ public class ArmSubsystem extends SubsystemBase {
                 (lElevator.getEncoder().getPosition() + rElevator.getEncoder().getPosition()) / 2.0, 2);
     }
 
+    public boolean isCoralHomed() {
+        return MathUtil.isNear(CORAL_HOME_POSITION, coralWrist.getEncoder().getPosition(), 1);
+    }
+
+    public boolean isAlgaeHomed() {
+        return MathUtil.isNear(ALGAE_HOME_POSITION, algaeWrist.getEncoder().getPosition(), 1);
+    }
+
     public boolean isElevatorAtPosition() {
         return MathUtil.isNear(elevatorPosition,
                 (lElevator.getEncoder().getPosition() + rElevator.getEncoder().getPosition()) / 2.0, 2);
+    }
+
+    public boolean isCoralAtPosition() {
+        return MathUtil.isNear(coralWristPosition, coralWrist.getEncoder().getPosition(), 1);
+    }
+
+    public boolean isAlgaeAtPosition() {
+        return MathUtil.isNear(algaeWristPosition, algaeWrist.getEncoder().getPosition(), 1);
     }
 
     public Command homeElevator() {
         return Commands.runOnce(() -> {
             elevatorPosition = ELEVATOR_HOME_POSITION;
         }).andThen(Commands.waitUntil(this::isElevatorHomed));
+    }
+
+    public Command homeCoral() {
+        return Commands.runOnce(() -> {
+            coralWristPosition = CORAL_HOME_POSITION;
+        }).andThen(Commands.waitUntil(this::isCoralHomed));
+    }
+
+    public Command homeAlgae() {
+        return Commands.runOnce(() -> {
+            algaeWristPosition = ALGAE_HOME_POSITION;
+        }).andThen(Commands.waitUntil(this::isAlgaeHomed));
+    }
+
+    public Command homeEverything() {
+        return Commands.runOnce(() -> {
+            homeCoral();
+            homeElevator();
+            homeAlgae();
+        });
     }
 
     public Command intakeCoral() {
@@ -146,6 +183,8 @@ public class ArmSubsystem extends SubsystemBase {
     public Command shootCoral() {
         return Commands.run(() -> {
             coralShooter.set(CORAL_SHOOT_SPEED);
+        }).handleInterrupt(() -> {
+            coralShooter.stopMotor();
         });
     }
 
@@ -153,29 +192,61 @@ public class ArmSubsystem extends SubsystemBase {
         return Commands.run(() -> {
             lAlgaeIntake.set(ALGAE_SHOOT_SPEED);
             rAlgaeIntake.set(ALGAE_SHOOT_SPEED);
+        }).handleInterrupt(() -> {
+            lAlgaeIntake.stopMotor();
+            rAlgaeIntake.stopMotor();
         });
     }
 
-    // TODO: extend elevator and wait command #unnecessary ahh but ok
-    public Command scoreL1() {
+    public Command extendTo(double pos) {
+        return Commands.runOnce(() -> {
+            elevatorPosition = pos;
+        }).andThen(Commands.waitUntil(this::isElevatorAtPosition));
+    }
+
+    public Command coralTo(double pos) {
+        return Commands.runOnce(() -> {
+            coralWristPosition = pos;
+        }).andThen(Commands.waitUntil(this::isCoralAtPosition));
+    }
+
+    public Command algaeTo(double pos) {
+        return Commands.runOnce(() -> {
+            algaeWristPosition = pos;
+        }).andThen(Commands.waitUntil(this::isAlgaeAtPosition));
+    }
+
+    public Command extendL1() {
         return Commands.runOnce(() -> {
             elevatorPosition = E_L1_POSITION;
             coralWristPosition = C_L1_POSITION;
-        }).andThen(Commands.waitUntil(this::isElevatorAtPosition)).andThen(this::shootCoral);
+        }).andThen(Commands.waitUntil(this::isElevatorAtPosition));
     }
 
-    public Command scoreL2() {
+    public Command scoreL1() {
+        return extendL1().andThen(shootCoral()).withTimeout(1).andThen(homeElevator()).alongWith(homeCoral());
+    }
+
+    public Command extendL2() {
         return Commands.runOnce(() -> {
             elevatorPosition = E_L2_POSITION;
             coralWristPosition = C_L2_POSITION;
-        }).andThen(this::shootCoral);
+        });
     }
 
-    public Command scoreL3() {
+    public Command scoreL2() {
+        return extendL2().andThen(shootCoral()).withTimeout(1).andThen(homeElevator()).alongWith(homeCoral());
+    }
+
+    public Command extendL3() {
         return Commands.runOnce(() -> {
             elevatorPosition = E_L3_POSITION;
             coralWristPosition = C_L3_POSITION;
-        }).andThen(this::shootCoral);
+        });
+    }
+
+    public Command scoreL3() {
+        return extendL3().andThen(shootCoral()).withTimeout(1).andThen(homeElevator()).alongWith(homeCoral());
     }
 
     public Command scoreCoral(int level) {

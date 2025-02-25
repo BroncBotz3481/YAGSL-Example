@@ -53,6 +53,11 @@ public final class Constants
     public static final double A_WRIST_D = 0.0;
   }
 
+  public static class ClimbConstants {
+    public static final double CLIMB_LIMIT = 10.0;
+    public static final double CLIMB_SPEED = 0.7;
+  }
+
   public static class HomeConstants {
     public static final double CORAL_HOME_POSITION = 0.0;
     public static final double ALGAE_HOME_POSITION = 0.0;

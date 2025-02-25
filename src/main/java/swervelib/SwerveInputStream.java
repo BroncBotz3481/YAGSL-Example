@@ -272,13 +272,15 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
    * Drive to a given pose with the provided {@link ProfiledPIDController}s
    *
    * @param pose               {@link Supplier<Pose2d>} for ease of use.
-   * @param xPIDController     PID controller for the X axis, units are m/s.
+   * @param xPIDController     PID controller for the translational axis, units are m/s.
    * @param omegaPIDController PID Controller for rotational axis, units are rad/s.
    * @return self
    */
   public SwerveInputStream driveToPose(Supplier<Pose2d> pose, ProfiledPIDController xPIDController,
                                        ProfiledPIDController omegaPIDController)
   {
+    omegaPIDController.reset(swerveDrive.getPose().getRotation().getRadians());
+    xPIDController.reset(swerveDrive.getPose().getTranslation().getDistance(pose.get().getTranslation()));
     driveToPose = Optional.of(pose);
     driveToPoseTranslationPIDController = Optional.of(xPIDController);
     driveToPoseOmegaPIDController = Optional.of(omegaPIDController);

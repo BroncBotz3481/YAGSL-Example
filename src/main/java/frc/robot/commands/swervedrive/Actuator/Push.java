@@ -1,25 +1,25 @@
 package frc.robot.commands.swervedrive.Actuator;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.swervedrive.ActuatorSubsystem.ActuatorSubystem;
+import frc.robot.subsystems.swervedrive.ActuatorSubsystem.ActuatorSubsystem;
 
 public class Push extends Command {
-    ActuatorSubystem actuatorSubystem;
+    ActuatorSubsystem actuatorSubsystem;
     double speed;
 
-    public Push(ActuatorSubystem actuatorSubystem, double speed){
-        this.actuatorSubystem = actuatorSubystem;
+    public Push(ActuatorSubsystem actuatorSubsystem, double speed){
+        this.actuatorSubsystem = actuatorSubsystem;
         this.speed = speed;
-        addRequirements(actuatorSubystem);
+        addRequirements(actuatorSubsystem);
     }
 
     @Override
     public void execute(){
-        actuatorSubystem.push(speed);
+        actuatorSubsystem.push(speed);
     }
 
     @Override
     public void end(boolean interrupted){
-        actuatorSubystem.stop();
+        actuatorSubsystem.stop();
     }
 }

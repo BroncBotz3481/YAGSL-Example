@@ -6,9 +6,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
 
-public class ActuatorSubystem extends SubsystemBase {
+public class ActuatorSubsystem extends SubsystemBase {
     private final SparkMax actuator;
-    public ActuatorSubystem(){
+    public ActuatorSubsystem(){
         actuator = new SparkMax(5, MotorType.kBrushed);
     }
 

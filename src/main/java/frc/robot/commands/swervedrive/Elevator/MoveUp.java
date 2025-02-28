@@ -1,4 +1,4 @@
-package frc.robot.commands.swervedrive.Elevator;
+package frc.robot.commands.swervedrive.elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.swervedrive.ElevatorSubsystem.ElevatorSubsystem;

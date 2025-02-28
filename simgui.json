@@ -1,54 +1,39 @@
 {
   "HALProvider": {
     "Other Devices": {
-      "SPARK MAX [2]": {
-        "header": {
-          "open": true
-        }
-      },
-      "SPARK MAX [4]": {
-        "header": {
-          "open": true
-        }
-      },
-      "SPARK MAX [5]": {
-        "header": {
-          "open": true
-        }
-      },
-      "SPARK MAX [7]": {
+      "SPARK MAX [9]": {
         "header": {
           "open": true
         }
       },
       "Talon FX (v6)[2]/Rotor Sensor": {
         "header": {
-          "open": true
+          "open": false
         }
       },
       "Talon FX (v6)[51]": {
         "header": {
-          "open": true
+          "open": false
         }
       },
       "Talon FX[50]": {
         "header": {
-          "open": true
+          "open": false
         }
       },
       "Talon FX[51]/Integrated Sensor": {
         "header": {
-          "open": true
+          "open": false
         }
       },
       "Talon FX[52]/Integrated Sensor": {
         "header": {
-          "open": true
+          "open": false
         }
       },
       "Talon FX[8]/Integrated Sensor": {
         "header": {
-          "open": true
+          "open": false
         }
       }
     }
@@ -56,84 +41,49 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
-      "/LiveWindow/SwerveSubsystem": "Subsystem",
-      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
-      "/LiveWindow/Ungrouped/Pigeon 2 [13]": "Gyro",
-      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/SmartDashboard/Alerts": "Alerts",
       "/SmartDashboard/Encoders": "Alerts",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/IMU": "Alerts",
       "/SmartDashboard/JSON": "Alerts",
       "/SmartDashboard/Motors": "Alerts",
-      "/SmartDashboard/Pigeon 2 (v6) [13]": "Gyro",
-      "/SmartDashboard/Pigeon 2 [13]": "Gyro",
-      "/SmartDashboard/SendableChooser[0]": "String Chooser",
-      "/SmartDashboard/Swerve Drive": "Alerts",
-      "/SmartDashboard/VisionSystemSim-Vision/Sim Field": "Field2d",
-      "/SmartDashboard/navX-Sensor[1]": "Gyro",
-      "/SmartDashboard/navX-Sensor[4]": "Gyro"
+      "/SmartDashboard/Pigeon 2 (v6) [0]": "Gyro",
+      "/SmartDashboard/Swerve Drive": "Alerts"
     },
     "windows": {
-      "/FMSInfo": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/Field": {
-        "OdometryPose": {
-          "arrowColor": [
-            255.0,
-            255.0,
-            0.0,
-            255.0
-          ],
-          "color": [
-            224.99996948242188,
-            0.0,
-            255.0,
-            255.0
-          ]
-        },
-        "XModules": {
-          "arrowColor": [
-            0.09611687064170837,
-            0.17414122819900513,
-            0.9803921580314636,
-            255.0
-          ],
-          "arrowSize": 33,
-          "arrowWeight": 3.0,
-          "style": "Hidden"
-        },
-        "bottom": 1476,
-        "height": 8.210550308227539,
-        "left": 150,
-        "right": 2961,
-        "top": 79,
-        "width": 16.541748046875,
+        "bottom": 1638,
+        "builtin": "2025 Reefscape",
+        "height": 8.051901817321777,
+        "left": 534,
+        "right": 3466,
+        "top": 291,
+        "width": 17.54825210571289,
         "window": {
           "visible": true
-        }
-      }
-    }
-  },
-  "NetworkTables": {
-    "transitory": {
-      "FMSInfo": {
-        "open": true
-      },
-      "SmartDashboard": {
-        "Field": {
-          "open": true
-        },
-        "open": true,
-        "swerve": {
-          "open": true
         }
       }
     }
   },
   "NetworkTables Info": {
     "visible": true
+  },
+  "Plot": {
+    "Plot <0>": {
+      "plots": [
+        {
+          "backgroundColor": [
+            0.0,
+            0.0,
+            0.0,
+            0.8500000238418579
+          ],
+          "height": 332
+        }
+      ],
+      "window": {
+        "visible": false
+      }
+    }
   }
 }

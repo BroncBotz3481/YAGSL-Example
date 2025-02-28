@@ -14,9 +14,11 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import java.io.File;
 import swervelib.SwerveInputStream;
@@ -31,11 +33,13 @@ public class RobotContainer
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final         CommandXboxController driverXbox = new CommandXboxController(0);
+  final         CommandJoystick       driverJoystick = new CommandJoystick(1);
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve/neo"));
 
   private final LimelightSubsystem    limelight  = new LimelightSubsystem();
+  private final ArmSubsystem          arm         = new ArmSubsystem();
 
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
@@ -156,7 +160,10 @@ public class RobotContainer
 
       driverXbox.a().onTrue(Commands.runOnce(limelight::turnOn));
       driverXbox.b().onTrue(Commands.runOnce(limelight::turnOff));
-      driverXbox.x().onTrue(Commands.runOnce(limelight::scanAprilTag));
+      //driverXbox.x().onTrue(Commands.runOnce(limelight::scanAprilTag));
+
+      driverJoystick.button(2).onTrue(Commands.runOnce(arm::testFunction));
+      driverJoystick.button(3).onTrue(Commands.runOnce(arm::testFunction2));
     }
   }
 

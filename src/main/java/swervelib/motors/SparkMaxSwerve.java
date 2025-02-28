@@ -148,7 +148,7 @@ public class SparkMaxSwerve extends SwerveMotor
   {
     if (!DriverStation.isDisabled())
     {
-      throw new RuntimeException("Configuration changes cannot be applied while the robot is enabled.");
+      DriverStation.reportWarning("Configuration changes cannot be applied while the robot is enabled.", false);
     }
     cfg.apply(cfgGiven);
     configureSparkMax(() -> motor.configure(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters));

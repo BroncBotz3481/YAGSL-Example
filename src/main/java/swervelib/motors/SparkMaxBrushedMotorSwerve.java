@@ -468,7 +468,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   {
     if (!DriverStation.isDisabled())
     {
-      throw new RuntimeException("Config updates cannot be applied while the robot is Enabled!");
+      DriverStation.reportWarning("Config updates cannot be applied while the robot is Enabled!", false);
     }
     configureSparkMax(() -> {
       return motor.configure(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);

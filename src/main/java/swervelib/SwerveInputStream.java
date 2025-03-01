@@ -34,7 +34,8 @@ import swervelib.math.SwerveMath;
  *                                                                 () -> driverXbox.getLeftX() * -1) // Axis which give the desired translational angle and speed.
  *                                                             .withControllerRotationAxis(driverXbox::getRightX) // Axis which give the desired angular velocity.
  *                                                             .deadband(0.01)                  // Controller deadband
- *                                                             .scaleTranslation(0.8);           // Scaled controller translation axis
+ *                                                             .scaleTranslation(0.8)           // Scaled controller translation axis
+ *                                                             .allianceRelativeControl(true);  // Alliance relative controls.
  *
  *   SwerveInputStream driveDirectAngle = driveAngularVelocity.copy()  // Copy the stream so further changes do not affect driveAngularVelocity
  *                                                            .withControllerHeadingAxis(driverXbox::getRightX,
@@ -130,6 +131,10 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
    * Robot relative oriented output expected.
    */
   private Optional<BooleanSupplier>       robotRelative                       = Optional.empty();
+  /**
+   * Field oriented chassis output is relative to your current alliance.
+   */
+  private Optional<BooleanSupplier>       allianceRelative                    = Optional.empty();
   /**
    * Heading offset enable state.
    */
@@ -234,6 +239,7 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
     newStream.omegaCube = omegaCube;
     newStream.translationCube = translationCube;
     newStream.robotRelative = robotRelative;
+    newStream.allianceRelative = allianceRelative;
     newStream.translationHeadingOffsetEnabled = translationHeadingOffsetEnabled;
     newStream.translationHeadingOffset = translationHeadingOffset;
     return newStream;
@@ -356,9 +362,9 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
    * @param enabled Alliance aware {@link ChassisSpeeds} output.
    * @return self
    */
-  @Deprecated(since = "2025")
   public SwerveInputStream allianceRelativeControl(BooleanSupplier enabled)
   {
+    allianceRelative = Optional.of(enabled);
     return this;
   }
 
@@ -368,9 +374,9 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
    * @param enabled Alliance aware {@link ChassisSpeeds} output.
    * @return self
    */
-  @Deprecated(since = "2025")
   public SwerveInputStream allianceRelativeControl(boolean enabled)
   {
+    allianceRelative = enabled ? Optional.of(() -> enabled) : Optional.empty();
     return this;
   }
 
@@ -791,6 +797,32 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
   }
 
   /**
+   * Apply alliance aware translation which flips the {@link Translation2d} if the robot is on the Blue alliance.
+   *
+   * @param fieldRelativeTranslation Field-relative {@link Translation2d} to flip.
+   * @return Alliance-oriented {@link Translation2d}
+   */
+  private Translation2d applyAllianceAwareTranslation(Translation2d fieldRelativeTranslation)
+  {
+    if (allianceRelative.isPresent() && allianceRelative.get().getAsBoolean())
+    {
+      if (robotRelative.isPresent() && robotRelative.get().getAsBoolean())
+      {
+        if (driveToPoseEnabled.isPresent() && driveToPoseEnabled.get().getAsBoolean())
+        {
+          return fieldRelativeTranslation;
+        }
+        throw new RuntimeException("Cannot use robot oriented control with Alliance aware movement!");
+      }
+      if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red)
+      {
+        return fieldRelativeTranslation.rotateBy(Rotation2d.k180deg);
+      }
+    }
+    return fieldRelativeTranslation;
+  }
+
+  /**
    * Adds offset to translation if one is set.
    *
    * @param speeds {@link ChassisSpeeds} to offset
@@ -848,6 +880,7 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
     Translation2d scaledTranslation = applyTranslationScalar(applyDeadband(controllerTranslationX.getAsDouble()),
                                                              applyDeadband(controllerTranslationY.getAsDouble()));
     scaledTranslation = applyTranslationCube(scaledTranslation);
+    scaledTranslation = applyAllianceAwareTranslation(scaledTranslation);
 
     double        vxMetersPerSecond     = scaledTranslation.getX() * maximumChassisVelocity;
     double        vyMetersPerSecond     = scaledTranslation.getY() * maximumChassisVelocity;
@@ -884,13 +917,13 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
       case HEADING ->
       {
         omegaRadiansPerSecond = swerveController.headingCalculate(swerveDrive.getOdometryHeading().getRadians(),
-                                                                      Rotation2d.fromRadians(
-                                                                          swerveController.getJoystickAngle(
-                                                                              controllerHeadingX.get()
-                                                                                                .getAsDouble(),
-                                                                              controllerHeadingY.get()
-                                                                                                .getAsDouble()))
-                                                                                .getRadians());
+                                                                  Rotation2d.fromRadians(
+                                                                                swerveController.getJoystickAngle(
+                                                                                    controllerHeadingX.get()
+                                                                                                      .getAsDouble(),
+                                                                                    controllerHeadingY.get()
+                                                                                                      .getAsDouble()))
+                                                                            .getRadians());
 
         // Prevent rotation if controller heading inputs are not past axisDeadband
         if (Math.abs(controllerHeadingX.get().getAsDouble()) + Math.abs(controllerHeadingY.get().getAsDouble()) <

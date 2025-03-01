@@ -1,4 +1,4 @@
-package frc.robot.commands.swervedrive.actuator;
+package frc.robot.commands.swervedrive.Actuator;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.swervedrive.ActuatorSubsystem.ActuatorSubsystem;

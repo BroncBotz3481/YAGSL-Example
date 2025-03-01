@@ -17,16 +17,20 @@ public class ArmSubsystem extends SubsystemBase {
     double armSpeed = 0.0;
 
     public void adjustArmSpeed() { // apologies for the duplicate functions but this basically sets the arm speed
-        setArmSpeed(joystick.getRawAxis(1)); // this sucks but it will do for now
+        double speedTarget = joystick.getRawAxis(1) * -1;
+
+        setArmSpeed(lerpDouble(armSpeed, speedTarget, 0.5)); // this sucks but it will do for now
     }
 
     private void setArmSpeed(double speed) {
-        armSpeed = speed * -0.5;
+        armSpeed = speed;
         sparkMax.set(armSpeed);
     }
 
     public void stopArm() {
-        armSpeed = 0;
+        while (armSpeed > )
+
+
         sparkMax.stopMotor();
     }
 
@@ -37,5 +41,10 @@ public class ArmSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("Arm Enabled?", joystick.getRawButton(1));
         SmartDashboard.putNumber("Arm Speed Raw", armSpeed);
         SmartDashboard.putNumber("Arm Speed Percentage", armSpeed * 100);
+    }
+
+    private double lerpDouble(double current, double end, double lerpSpeed) {
+        double z = (current + end) * lerpSpeed;
+        return z;
     }
 }

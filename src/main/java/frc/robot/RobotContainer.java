@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -84,7 +85,10 @@ public class RobotContainer
                                                                                                                   Math.PI) *
                                                                                                               (Math.PI *
                                                                                                                2))
-                                                                               .headingWhile(true);
+                                                                               .headingWhile(true)
+                                                                               .translationHeadingOffset(true)
+                                                                               .translationHeadingOffset(Rotation2d.fromDegrees(
+                                                                                   0));
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -126,25 +130,29 @@ public class RobotContainer
 
     if (Robot.isSimulation())
     {
-      driveDirectAngleKeyboard.driveToPose(() -> new Pose2d(new Translation2d(9, 3),
-                                                            Rotation2d.fromDegrees(90)),
+      Pose2d target = new Pose2d(new Translation2d(1, 4),
+                                 Rotation2d.fromDegrees(90));
+      //drivebase.getSwerveDrive().field.getObject("targetPose").setPose(target);
+      driveDirectAngleKeyboard.driveToPose(() -> target,
                                            new ProfiledPIDController(5,
                                                                      0,
                                                                      0,
-                                                                     new Constraints(5,
-                                                                                     3)),
+                                                                     new Constraints(5, 2)),
                                            new ProfiledPIDController(5,
                                                                      0,
                                                                      0,
-                                                                     new Constraints(
-                                                                         Math.toRadians(
-                                                                             360),
-                                                                         Math.toRadians(
-                                                                             90))));
+                                                                     new Constraints(Units.degreesToRadians(360),
+                                                                                     Units.degreesToRadians(180))
+                                           ));
       driverXbox.start().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
       driverXbox.button(1).whileTrue(drivebase.sysIdDriveMotorCommand());
       driverXbox.button(2).whileTrue(Commands.runEnd(() -> driveDirectAngleKeyboard.driveToPoseEnabled(true),
                                                      () -> driveDirectAngleKeyboard.driveToPoseEnabled(false)));
+
+//      driverXbox.b().whileTrue(
+//          drivebase.driveToPose(
+//              new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
+//                              );
 
     }
     if (DriverStation.isTest())
@@ -161,10 +169,6 @@ public class RobotContainer
     {
       driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
       driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
-      driverXbox.b().whileTrue(
-          drivebase.driveToPose(
-              new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
-                              );
       driverXbox.start().whileTrue(Commands.none());
       driverXbox.back().whileTrue(Commands.none());
       driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());

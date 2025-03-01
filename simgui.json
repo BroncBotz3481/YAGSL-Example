@@ -65,6 +65,11 @@
       }
     }
   },
+  "NetworkTables": {
+    "Retained Values": {
+      "open": false
+    }
+  },
   "NetworkTables Info": {
     "visible": true
   },
@@ -81,6 +86,11 @@
           "height": 332
         }
       ],
+      "window": {
+        "visible": false
+      }
+    },
+    "Plot <1>": {
       "window": {
         "visible": false
       }

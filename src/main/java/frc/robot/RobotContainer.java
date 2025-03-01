@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -158,12 +159,13 @@ public class RobotContainer
       driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.rightBumper().onTrue(Commands.none());
 
-      driverXbox.a().onTrue(Commands.runOnce(limelight::turnOn));
+      //driverXbox.a().onTrue(Commands.runOnce(limelight::turnOn));
       driverXbox.b().onTrue(Commands.runOnce(limelight::turnOff));
       //driverXbox.x().onTrue(Commands.runOnce(limelight::scanAprilTag));
 
-      driverJoystick.button(2).onTrue(Commands.runOnce(arm::testFunction));
-      driverJoystick.button(3).onTrue(Commands.runOnce(arm::testFunction2));
+      driverJoystick.button(8).onTrue(Commands.run(arm::putArmDiagnostics));
+      driverJoystick.button(1).whileTrue(Commands.run(arm::adjustArmSpeed)); // move arm when joystick trigger is held down
+      driverJoystick.button(1).whileFalse(Commands.runOnce(arm::stopArm));
     }
   }
 

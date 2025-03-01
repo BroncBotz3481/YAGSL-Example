@@ -31,23 +31,38 @@
   "Window": {
     "###/FMSInfo": {
       "Collapsed": "0",
-      "Pos": "200,52",
-      "Size": "217,194"
+      "Pos": "600,132",
+      "Size": "202,194"
+    },
+    "###/SmartDashboard/Encoders": {
+      "Collapsed": "0",
+      "Pos": "391,126",
+      "Size": "300,150"
     },
     "###/SmartDashboard/Field": {
-      "Collapsed": "0",
-      "Pos": "310,137",
+      "Collapsed": "1",
+      "Pos": "339,29",
       "Size": "1503,771"
+    },
+    "###/SmartDashboard/IMU": {
+      "Collapsed": "0",
+      "Pos": "60,60",
+      "Size": "300,150"
+    },
+    "###/SmartDashboard/JSON": {
+      "Collapsed": "0",
+      "Pos": "60,60",
+      "Size": "300,150"
     },
     "###FMS": {
       "Collapsed": "0",
       "Pos": "64,393",
-      "Size": "202,214"
+      "Size": "336,158"
     },
     "###Joysticks": {
       "Collapsed": "0",
-      "Pos": "459,759",
-      "Size": "976,278"
+      "Pos": "362,789",
+      "Size": "976,172"
     },
     "###Keyboard 0 Settings": {
       "Collapsed": "0",
@@ -56,20 +71,25 @@
     },
     "###NetworkTables": {
       "Collapsed": "0",
-      "Pos": "971,509",
-      "Size": "750,236"
+      "Pos": "861,265",
+      "Size": "750,584"
     },
     "###NetworkTables Info": {
       "Collapsed": "0",
       "Pos": "291,135",
-      "Size": "750,145"
+      "Size": "750,437"
     },
     "###Other Devices": {
       "Collapsed": "0",
-      "Pos": "1288,30",
+      "Pos": "1282,50",
       "Size": "250,695"
     },
     "###Plot <0>": {
+      "Collapsed": "0",
+      "Pos": "461,87",
+      "Size": "700,400"
+    },
+    "###Plot <1>": {
       "Collapsed": "0",
       "Pos": "60,60",
       "Size": "700,400"
@@ -86,7 +106,7 @@
     },
     "###Timing": {
       "Collapsed": "0",
-      "Pos": "5,150",
+      "Pos": "4,157",
       "Size": "162,194"
     },
     "Debug##Default": {

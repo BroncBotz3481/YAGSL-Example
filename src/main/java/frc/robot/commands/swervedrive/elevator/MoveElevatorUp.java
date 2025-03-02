@@ -1,13 +1,13 @@
-package frc.robot.commands.swervedrive.Elevator;
+package frc.robot.commands.swervedrive.elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.swervedrive.ElevatorSubsystem.ElevatorSubsystem;
 
-public class MoveUp extends Command {
+public class MoveElevatorUp extends Command {
     ElevatorSubsystem elevatorSubsystem;
     double speed;
 
-    public MoveUp(ElevatorSubsystem elevatorSubsystem, double speed){
+    public MoveElevatorUp(ElevatorSubsystem elevatorSubsystem, double speed){
         this.elevatorSubsystem = elevatorSubsystem;
         this.speed = speed;
         addRequirements(elevatorSubsystem);
@@ -15,8 +15,12 @@ public class MoveUp extends Command {
 
     @Override
     public void execute(){
+        //if(elevatorSubsystem.getEncoderValue() < 10){
         elevatorSubsystem.moveUp(speed);
-        System.out.println("moving up");
+        //}
+        // else{
+        //     elevatorSubsystem.stop();
+        // }
     }
 
     @Override

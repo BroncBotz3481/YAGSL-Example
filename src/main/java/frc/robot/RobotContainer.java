@@ -19,14 +19,17 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.utilities.Constants.OperatorConstants;
-import frc.robot.commands.swervedrive.Actuator.Pull;
-import frc.robot.commands.swervedrive.Actuator.Push;
+import frc.robot.commands.swervedrive.actuator.PullActuator;
+import frc.robot.commands.swervedrive.actuator.PushActuator;
 import frc.robot.commands.swervedrive.drivebase.LimelightAlign;
-import frc.robot.commands.swervedrive.Elevator.MoveDown;
-import frc.robot.commands.swervedrive.Elevator.MoveUp;
+import frc.robot.commands.swervedrive.elevator.MoveElevatorDown;
+import frc.robot.commands.swervedrive.elevator.MoveElevatorUp;
+import frc.robot.commands.swervedrive.funnel.MoveFunnelDown;
+import frc.robot.commands.swervedrive.funnel.MoveFunnelUp;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.swervedrive.ActuatorSubsystem.ActuatorSubsystem;
 import frc.robot.subsystems.swervedrive.ElevatorSubsystem.ElevatorSubsystem;
+import frc.robot.subsystems.swervedrive.FunnelSubsystem.FunnelSubsystem;
 
 import java.io.File;
 import swervelib.SwerveInputStream;
@@ -103,6 +106,8 @@ public class RobotContainer
 
    private final ActuatorSubsystem actuatorSubsystem = new ActuatorSubsystem();
    private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
+   private final FunnelSubsystem funnelSubsystem = new FunnelSubsystem();
+
 
   public RobotContainer()
   {
@@ -123,11 +128,13 @@ public class RobotContainer
   private void configureBindings()
   {
     driverXbox.x().onTrue(new LimelightAlign(drivebase));
-    driverXbox.a().whileTrue(new Pull(actuatorSubsystem, 0.9));
-    driverXbox.b().whileTrue(new Push(actuatorSubsystem, 0.9));
+    driverXbox.a().whileTrue(new PullActuator(actuatorSubsystem, 0.9));
+    driverXbox.b().whileTrue(new PushActuator(actuatorSubsystem, 0.9));
     driverXbox.start().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
-    driverXbox.povUp().whileTrue(new MoveUp(elevatorSubsystem, 0.2));
-    driverXbox.povDown().whileTrue(new MoveDown(elevatorSubsystem, 0.2));
+    driverXbox.povUp().whileTrue(new MoveElevatorUp(elevatorSubsystem, 0.4));
+    driverXbox.povDown().whileTrue(new MoveElevatorDown(elevatorSubsystem, 0.4));
+    driverXbox.povRight().whileTrue(new MoveFunnelUp(funnelSubsystem, 0.7));
+    driverXbox.povLeft().whileTrue(new MoveFunnelDown(funnelSubsystem, 0.7));
     
     Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
     Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);

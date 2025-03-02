@@ -4,8 +4,6 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-
-
 public class ElevatorSubsystem extends SubsystemBase {
     private final SparkMax elevator;
     public ElevatorSubsystem(){
@@ -19,8 +17,11 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void moveDown(double x){
         elevator.set(-x);
-        System.out.println("encoder:" + elevator.getEncoder().getPosition())
-        ;
+        System.out.println("encoder:" + elevator.getEncoder().getPosition());
+    }
+
+    public double getEncoderValue(){
+        return elevator.getEncoder().getPosition();
     }
 
     public void stop(){

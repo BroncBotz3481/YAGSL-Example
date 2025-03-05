@@ -23,9 +23,11 @@ public class LedSubsystem extends SubsystemBase {
 
     // Set the data
     m_led.setData(m_ledBuffer);
-    m_led.start();
+    m_led.start();}
+
+    
     // Create an LED pattern that sets the entire strip to solid red
- LEDPattern red = LEDPattern.solid(Color.kRed);
+  public void turnRed(){ LEDPattern red = LEDPattern.solid(Color.kRed);
 
  // Apply the LED pattern to the data buffer
  red.applyTo(m_ledBuffer);
@@ -33,6 +35,6 @@ public class LedSubsystem extends SubsystemBase {
  // Write the data to the LED strip
  m_led.setData(m_ledBuffer);
 }
-
+    
 }
 

@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.utilities.Constants.OperatorConstants;
-import frc.robot.commands.swervedrive.Led.LedControll;
+import frc.robot.commands.swervedrive.led.LedControll;
 import frc.robot.commands.swervedrive.actuator.PullActuator;
 import frc.robot.commands.swervedrive.actuator.PushActuator;
 import frc.robot.commands.swervedrive.drivebase.LimelightAlign;
@@ -130,7 +130,7 @@ public class RobotContainer
    */
   private void configureBindings()
   {
-    driverXbox.x().onTrue(new LimelightAlign(drivebase));
+    driverXbox.x().whileTrue(new LimelightAlign(drivebase));
     driverXbox.a().whileTrue(new PullActuator(actuatorSubsystem, 0.9));
     driverXbox.b().whileTrue(new PushActuator(actuatorSubsystem, 0.9));
     driverXbox.start().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));

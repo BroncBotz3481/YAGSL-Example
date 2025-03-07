@@ -16,6 +16,7 @@ public class LimelightAlign extends Command{
     @Override
     public void execute() {
         double tx = NetworkTables.getTx();
+        System.out.println(tx);
         desiredAngle = driveBase.getHeading().getDegrees() - tx;
         driveBase.drive(0, 0, Math.toRadians(desiredAngle));
 

@@ -53,7 +53,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
-import org.ironmaple.simulation.drivesims.GyroSimulation;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
@@ -398,7 +397,10 @@ public class SwerveDrive implements AutoCloseable
   public void setOdometryPeriod(double period)
   {
     odometryThread.stop();
-    SimulatedArena.overrideSimulationTimings(Seconds.of(period), 1);
+    if (SwerveDriveTelemetry.isSimulation)
+    {
+      SimulatedArena.overrideSimulationTimings(Seconds.of(period), 1);
+    }
     odometryThread.startPeriodic(period);
   }
 
@@ -408,7 +410,10 @@ public class SwerveDrive implements AutoCloseable
   public void stopOdometryThread()
   {
     odometryThread.stop();
-    SimulatedArena.overrideSimulationTimings(Seconds.of(TimedRobot.kDefaultPeriod), 5);
+    if (SwerveDriveTelemetry.isSimulation)
+    {
+      SimulatedArena.overrideSimulationTimings(Seconds.of(TimedRobot.kDefaultPeriod), 5);
+    }
   }
 
   /**

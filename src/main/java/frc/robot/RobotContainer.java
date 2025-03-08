@@ -23,6 +23,7 @@ import frc.robot.commands.swervedrive.led.LedControll;
 import frc.robot.commands.swervedrive.actuator.PullActuator;
 import frc.robot.commands.swervedrive.actuator.PushActuator;
 import frc.robot.commands.swervedrive.drivebase.LimelightAlign;
+import frc.robot.commands.swervedrive.drivebase.LimelightDriveAlignCommand;
 import frc.robot.commands.swervedrive.elevator.MoveElevatorDown;
 import frc.robot.commands.swervedrive.elevator.MoveElevatorUp;
 import frc.robot.commands.swervedrive.funnel.MoveFunnelDown;
@@ -130,7 +131,8 @@ public class RobotContainer
    */
   private void configureBindings()
   {
-    driverXbox.x().whileTrue(new LimelightAlign(drivebase));
+    driverXbox.x().whileTrue(new LimelightDriveAlignCommand(drivebase));
+    driverXbox.y().whileTrue(new LimelightAlign(drivebase));
     driverXbox.a().whileTrue(new PullActuator(actuatorSubsystem, 0.9));
     driverXbox.b().whileTrue(new PushActuator(actuatorSubsystem, 0.9));
     driverXbox.start().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));

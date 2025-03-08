@@ -26,6 +26,6 @@ public class MoveElevatorUp extends Command {
     @Override
     public void end(boolean interrupted){
         elevatorSubsystem.stop();
-        System.out.println("stoped moving up");
+        System.out.println("stoped moving elevator up");
     }
 }

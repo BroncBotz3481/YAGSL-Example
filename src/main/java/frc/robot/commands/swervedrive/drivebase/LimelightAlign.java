@@ -17,22 +17,22 @@ public class LimelightAlign extends Command{
     public void execute() {
         double tx = NetworkTables.getTx();
         System.out.println(tx);
-        desiredAngle = driveBase.getHeading().getDegrees() - tx;
+        desiredAngle = driveBase.getHeading().getDegrees() + tx;
         driveBase.drive(0, 0, Math.toRadians(desiredAngle));
 
         //System.out.println(tx);
     }
 
-    @Override 
-    public boolean isFinished(){
+    // @Override 
+    // public boolean isFinished(){
 
-         if(NetworkTables.getTv() && Math.abs(NetworkTables.getTx()) < 1) {
-            return true;
-        }
+    //      if(NetworkTables.getTv() && Math.abs(NetworkTables.getTx()) < 1) {
+    //         return true;
+    //     }
 
-        return false;
+    //     return false;
 
-    }
+    // }
 
     
 

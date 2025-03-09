@@ -1,26 +1,28 @@
 package frc.robot.commands.swervedrive.claw;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.swervedrive.ClawSubsystem.ClawSubsystem;
 
-public class MoveClawUp extends Command {
+public class MoveClaw extends Command {
     ClawSubsystem clawSubsystem;
-    double speed;
+    DoubleSupplier velocity;
 
-    public MoveClawUp(ClawSubsystem clawSubsystem, double speed){
+    public MoveClaw(ClawSubsystem clawSubsystem, DoubleSupplier velocity){
         this.clawSubsystem = clawSubsystem;
-        this.speed = speed;
+        this.velocity = velocity;
         addRequirements(clawSubsystem);
     }
 
     @Override
     public void execute(){
-        clawSubsystem.moveUp(speed);
+        clawSubsystem.move(velocity);
     }
 
     @Override
     public void end(boolean interrupted){
         clawSubsystem.stop();
-        System.out.println("stoped moving claw up");
+        System.out.println("stoped moving");
     }
 }

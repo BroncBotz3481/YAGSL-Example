@@ -7,6 +7,8 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -19,17 +21,21 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.utilities.Constants.OperatorConstants;
-import frc.robot.commands.swervedrive.led.LedControll;
+import frc.robot.utilities.Constants.SpeedConstants;
+import frc.robot.commands.swervedrive.Led.LedControll;
 import frc.robot.commands.swervedrive.actuator.PullActuator;
 import frc.robot.commands.swervedrive.actuator.PushActuator;
+import frc.robot.commands.swervedrive.claw.MoveClaw;
+import frc.robot.commands.swervedrive.claw.MoveKicker;
+import frc.robot.commands.swervedrive.debug.Debug;
 import frc.robot.commands.swervedrive.drivebase.LimelightAlign;
 import frc.robot.commands.swervedrive.drivebase.LimelightDriveAlignCommand;
-import frc.robot.commands.swervedrive.elevator.MoveElevatorDown;
-import frc.robot.commands.swervedrive.elevator.MoveElevatorUp;
+import frc.robot.commands.swervedrive.elevator.MoveElevator;
 import frc.robot.commands.swervedrive.funnel.MoveFunnelDown;
 import frc.robot.commands.swervedrive.funnel.MoveFunnelUp;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.swervedrive.ActuatorSubsystem.ActuatorSubsystem;
+import frc.robot.subsystems.swervedrive.ClawSubsystem.ClawSubsystem;
 import frc.robot.subsystems.swervedrive.ElevatorSubsystem.ElevatorSubsystem;
 import frc.robot.subsystems.swervedrive.FunnelSubsystem.FunnelSubsystem;
 import frc.robot.subsystems.swervedrive.LedSubsystem.LedSubsystem;
@@ -50,6 +56,7 @@ public class RobotContainer
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final         CommandXboxController driverXbox = new CommandXboxController(0);
+  final         CommandXboxController manipulatorXbox = new CommandXboxController(1);
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve/neo"));
@@ -111,6 +118,7 @@ public class RobotContainer
    private final ActuatorSubsystem actuatorSubsystem = new ActuatorSubsystem();
    private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
    private final FunnelSubsystem funnelSubsystem = new FunnelSubsystem();
+   private final ClawSubsystem clawSubsystem = new ClawSubsystem();
    private final LedSubsystem ledSubsystem = new LedSubsystem();
 
   public RobotContainer()
@@ -135,11 +143,22 @@ public class RobotContainer
     driverXbox.y().whileTrue(new LimelightAlign(drivebase));
     driverXbox.a().whileTrue(new PullActuator(actuatorSubsystem, 0.9));
     driverXbox.b().whileTrue(new PushActuator(actuatorSubsystem, 0.9));
-    driverXbox.start().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
-    driverXbox.povUp().whileTrue(new MoveElevatorUp(elevatorSubsystem, 0.4));
-    driverXbox.povDown().whileTrue(new MoveElevatorDown(elevatorSubsystem, 0.4));
+    driverXbox.back().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
+    driverXbox.start().whileTrue(new Debug(elevatorSubsystem));
+    //driverXbox.povUp().whileTrue(new MoveElevatorUp(elevatorSubsystem, 0.4));
+    //driverXbox.povDown().whileTrue(new MoveElevatorDown(elevatorSubsystem, 0.4));
     driverXbox.povRight().whileTrue(new MoveFunnelUp(funnelSubsystem, 0.7));
     driverXbox.povLeft().whileTrue(new MoveFunnelDown(funnelSubsystem, 0.7));
+
+    manipulatorXbox.a().whileTrue(new MoveKicker(clawSubsystem, 0.9));
+    manipulatorXbox.b().whileTrue(new MoveKicker(clawSubsystem, -0.9));
+
+
+    elevatorSubsystem.setDefaultCommand(
+      new MoveElevator(elevatorSubsystem, () -> MathUtil.applyDeadband(manipulatorXbox.getLeftY(), 0.3) * -SpeedConstants.ELEVATOR_SPEED));
+
+    clawSubsystem.setDefaultCommand(
+      new MoveClaw(clawSubsystem, () -> MathUtil.applyDeadband(manipulatorXbox.getRightY(), 0.3) * -SpeedConstants.CLAW_SPEED));
     
     Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
     Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);

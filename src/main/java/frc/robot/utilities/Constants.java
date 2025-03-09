@@ -48,4 +48,14 @@ public final class Constants
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT    = 6;
   }
+
+  public static class SpeedConstants
+  {
+    public static final double ELEVATOR_SPEED = 0.9;
+    public static final double CLAW_SPEED = 0.3;
+  }
+
+  public static class LimitConstants{
+    public static final double ELEVATOR_HEIGHT_LIMIT = 200;
+  }
 }

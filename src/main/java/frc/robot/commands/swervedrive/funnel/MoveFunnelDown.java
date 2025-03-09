@@ -15,13 +15,13 @@ public class MoveFunnelDown extends Command {
 
     @Override
     public void execute(){
-        if(funnelSubsystem.getEncoderValue() < 0.4){
+        //if(funnelSubsystem.getEncoderValue() < 0.4){
             funnelSubsystem.moveDown(speed);
-            System.out.println(funnelSubsystem.getEncoderValue());
-        }
-        else{
-            funnelSubsystem.stop();
-        }
+            //System.out.println(funnelSubsystem.getEncoderValue());
+        //}
+        //else{
+            //funnelSubsystem.stop();
+        //}
     }
 
     @Override

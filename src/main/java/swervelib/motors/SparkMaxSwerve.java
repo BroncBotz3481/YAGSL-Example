@@ -391,10 +391,6 @@ public class SparkMaxSwerve extends SwerveMotor
   @Override
   public void burnFlash()
   {
-    if (!DriverStation.isDisabled())
-    {
-      throw new RuntimeException("Config updates cannot be applied while the robot is Enabled!");
-    }
     configureSparkMax(() -> {
       return motor.configure(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
     });

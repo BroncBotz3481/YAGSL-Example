@@ -144,7 +144,8 @@ public class RobotContainer
   private void configureBindings()
   {
     //driverCommandXbox.x().whileTrue(new LimelightDriveAlignCommand(drivebase, 1, 0));
-    triggers.povRightX(driverXbox).whileTrue(new LimelightDriveAlignCommand(drivebase, 1, 0));
+    triggers.povRightX(driverXbox).whileTrue(new LimelightDriveAlignCommand(drivebase, 1, -0.2));
+    triggers.povLeftX(driverXbox).whileTrue(new LimelightDriveAlignCommand(drivebase, 1, 0.2));
     driverCommandXbox.y().whileTrue(new LimelightAlign(drivebase));
     driverCommandXbox.back().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
     driverCommandXbox.start().whileTrue(new Debug(elevatorSubsystem, clawSubsystem));

@@ -16,5 +16,9 @@ public class NetworkTables {
     public static boolean getTv() {
         return NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0.0) > 0;
     }
+
+    public static double getAprilTagID(){
+        return NetworkTableInstance.getDefault().getTable("limelight").getEntry("tid").getDouble(0.0);
+    }
     
 }

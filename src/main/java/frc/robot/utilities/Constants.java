@@ -51,11 +51,23 @@ public final class Constants
 
   public static class SpeedConstants
   {
-    public static final double ELEVATOR_SPEED = 0.9;
+    public static final double ELEVATOR_SPEED = 0.95;
     public static final double CLAW_SPEED = 0.3;
+    public static final double KICKER_SPEED = 0.9;
+    public static final double FUNNEL_SPEED = 0.7;
+    public static final double ACTUATOR_SPEED = 0.9;
+    
   }
 
   public static class LimitConstants{
-    public static final double ELEVATOR_HEIGHT_LIMIT = 200;
+    public static final double ELEVATOR_HEIGHT_LIMIT = 290;
+    public static final double CLAW_UPPER_LIMIT = 0.0;
+    public static final double CLAW_LOWER_LIMIT = -0.5737;
+    ;
+  }
+
+  public static class AutoConstants{
+    public static final double HIGH_CORAL_CLAW_POSITION = 0.3;
+    public static final double HIGH_CORAL_ELEVATOR_POSITION = 25;
   }
 }

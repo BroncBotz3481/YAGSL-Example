@@ -5,24 +5,22 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.swervedrive.ClawSubsystem.ClawSubsystem;
 
 public class MoveKicker extends Command {
-    ClawSubsystem kickerSubsystem;
+    ClawSubsystem clawSubsystem;
     Double velocity;
 
-    public MoveKicker(ClawSubsystem kickerSubsystem, Double velocity){
-        this.kickerSubsystem = kickerSubsystem;
+    public MoveKicker(ClawSubsystem clawSubsystem, Double velocity){
+        this.clawSubsystem = clawSubsystem;
         this.velocity = velocity;
-        addRequirements(kickerSubsystem);
+        addRequirements(clawSubsystem);
     }
 
     @Override
     public void execute(){
-        kickerSubsystem.kickerMove(velocity);
-        System.out.println("moving kicker");
+        clawSubsystem.kickerMove(velocity);
     }
 
     @Override
     public void end(boolean interrupted){
-        kickerSubsystem.stopKicker();
-        System.out.println("stoped moving kicker");
+        clawSubsystem.stopKicker();
     }
 }

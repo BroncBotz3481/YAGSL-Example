@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.utilities.Constants.OperatorConstants;
@@ -26,11 +27,13 @@ import frc.robot.commands.swervedrive.Led.LedControll;
 import frc.robot.commands.swervedrive.actuator.PullActuator;
 import frc.robot.commands.swervedrive.actuator.PushActuator;
 import frc.robot.commands.swervedrive.claw.MoveClaw;
+import frc.robot.commands.swervedrive.claw.MoveClawHighCoral;
 import frc.robot.commands.swervedrive.claw.MoveKicker;
 import frc.robot.commands.swervedrive.debug.Debug;
 import frc.robot.commands.swervedrive.drivebase.LimelightAlign;
 import frc.robot.commands.swervedrive.drivebase.LimelightDriveAlignCommand;
 import frc.robot.commands.swervedrive.elevator.MoveElevator;
+import frc.robot.commands.swervedrive.elevator.MoveElevatorHighCoral;
 import frc.robot.commands.swervedrive.funnel.MoveFunnelDown;
 import frc.robot.commands.swervedrive.funnel.MoveFunnelUp;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
@@ -141,18 +144,18 @@ public class RobotContainer
   {
     driverXbox.x().whileTrue(new LimelightDriveAlignCommand(drivebase));
     driverXbox.y().whileTrue(new LimelightAlign(drivebase));
-    driverXbox.a().whileTrue(new PullActuator(actuatorSubsystem, 0.9));
-    driverXbox.b().whileTrue(new PushActuator(actuatorSubsystem, 0.9));
     driverXbox.back().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
-    driverXbox.start().whileTrue(new Debug(elevatorSubsystem));
-    //driverXbox.povUp().whileTrue(new MoveElevatorUp(elevatorSubsystem, 0.4));
-    //driverXbox.povDown().whileTrue(new MoveElevatorDown(elevatorSubsystem, 0.4));
-    driverXbox.povRight().whileTrue(new MoveFunnelUp(funnelSubsystem, 0.7));
-    driverXbox.povLeft().whileTrue(new MoveFunnelDown(funnelSubsystem, 0.7));
+    driverXbox.start().whileTrue(new Debug(elevatorSubsystem, clawSubsystem));
 
-    manipulatorXbox.a().whileTrue(new MoveKicker(clawSubsystem, 0.9));
-    manipulatorXbox.b().whileTrue(new MoveKicker(clawSubsystem, -0.9));
-
+    manipulatorXbox.povRight().whileTrue(new MoveFunnelUp(funnelSubsystem, SpeedConstants.FUNNEL_SPEED));
+    manipulatorXbox.povLeft().whileTrue(new MoveFunnelDown(funnelSubsystem, SpeedConstants.FUNNEL_SPEED));
+    manipulatorXbox.povUp().whileTrue(new PullActuator(actuatorSubsystem, SpeedConstants.ACTUATOR_SPEED));
+    manipulatorXbox.povDown().whileTrue(new PushActuator(actuatorSubsystem, SpeedConstants.ACTUATOR_SPEED));
+    manipulatorXbox.rightBumper().whileTrue(new MoveKicker(clawSubsystem, SpeedConstants.KICKER_SPEED));
+    manipulatorXbox.leftBumper().whileTrue(new MoveKicker(clawSubsystem, -SpeedConstants.KICKER_SPEED));
+    manipulatorXbox.x().whileTrue(new MoveClawHighCoral(clawSubsystem));
+    manipulatorXbox.a().whileTrue(new MoveElevatorHighCoral(elevatorSubsystem));
+    manipulatorXbox.y().whileTrue(new ParallelCommandGroup(new MoveClawHighCoral(clawSubsystem), new MoveElevatorHighCoral(elevatorSubsystem)));
 
     elevatorSubsystem.setDefaultCommand(
       new MoveElevator(elevatorSubsystem, () -> MathUtil.applyDeadband(manipulatorXbox.getLeftY(), 0.3) * -SpeedConstants.ELEVATOR_SPEED));
@@ -229,4 +232,5 @@ public class RobotContainer
   {
     drivebase.setMotorBrake(brake);
   }
+
 }

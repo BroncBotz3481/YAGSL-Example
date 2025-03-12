@@ -286,6 +286,7 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
     driveToPose = Optional.of(pose);
     driveToPoseTranslationPIDController = Optional.of(xPIDController);
     driveToPoseOmegaPIDController = Optional.of(omegaPIDController);
+    if(driveToPoseOmegaPIDController.isPresent()) {driveToPoseOmegaPIDController.get().enableContinuousInput(-Math.PI, Math.PI);}
     return this;
   }
 

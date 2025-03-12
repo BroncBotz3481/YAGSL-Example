@@ -14,8 +14,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -24,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.utilities.Constants.OperatorConstants;
 import frc.robot.utilities.Constants.SpeedConstants;
 import frc.robot.commands.swervedrive.Led.LedControll;
+import frc.robot.commands.swervedrive.Led.MovingRainbow;
 import frc.robot.commands.swervedrive.actuator.PullActuator;
 import frc.robot.commands.swervedrive.actuator.PushActuator;
 import frc.robot.commands.swervedrive.claw.MoveClaw;
@@ -123,7 +126,7 @@ public class RobotContainer
    private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
    private final FunnelSubsystem funnelSubsystem = new FunnelSubsystem();
    private final ClawSubsystem clawSubsystem = new ClawSubsystem();
-   private final LedSubsystem ledSubsystem = new LedSubsystem();
+   private final LedSubsystem ledSubsystem = new LedSubsystem(9, 220);
 
   public RobotContainer()
   {
@@ -166,6 +169,7 @@ public class RobotContainer
     clawSubsystem.setDefaultCommand(
       new MoveClaw(clawSubsystem, () -> MathUtil.applyDeadband(manipulatorXbox.getRightY(), 0.3) * -SpeedConstants.CLAW_SPEED));
     
+      ledSubsystem.setDefaultCommand(new MovingRainbow(ledSubsystem));
 
     Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
     Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);

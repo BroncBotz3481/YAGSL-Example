@@ -155,6 +155,10 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
    * Current {@link SwerveInputMode} to use.
    */
   private SwerveInputMode                 currentMode                         = SwerveInputMode.ANGULAR_VELOCITY;
+  /**
+   * Output {@link ChassisSpeeds} based on direct heading while this is True.
+   */
+  private Optional<BooleanSupplier>       directHeadingEnabled                = Optional.empty();
 
 
   /**
@@ -247,6 +251,7 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
     newStream.allianceRelative = allianceRelative;
     newStream.translationHeadingOffsetEnabled = translationHeadingOffsetEnabled;
     newStream.translationHeadingOffset = translationHeadingOffset;
+    newStream.directHeadingEnabled = directHeadingEnabled;
     return newStream;
   }
 
@@ -541,6 +546,36 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
   }
 
   /**
+   * Enable direct heading control while the supplier is True.
+   *
+   * @param trigger Supplier to use.
+   * @return this.
+   */
+  public SwerveInputStream directHeadingWhile(BooleanSupplier trigger)
+  {
+    directHeadingEnabled = Optional.of(trigger);
+    return this;
+  }
+
+  /**
+   * Set the direct heading enable state.
+   *
+   * @param headingState Direct heading enabled state.
+   * @return this
+   */
+  public SwerveInputStream directHeadingWhile(boolean headingState)
+  {
+    if (headingState)
+    {
+      directHeadingEnabled = Optional.of(() -> true);
+    } else
+    {
+      directHeadingEnabled = Optional.empty();
+    }
+    return this;
+  }
+
+  /**
    * Aim the {@link SwerveDrive} at this pose while driving.
    *
    * @param aimTarget {@link Pose2d} to point at.
@@ -643,6 +678,17 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
       {
         DriverStation.reportError(
             "Attempting to enter AIM mode without target, please use SwerveInputStream.aim() to select a target first!",
+            false);
+      }
+    } else if (directHeadingEnabled.isPresent() && directHeadingEnabled.get().getAsBoolean())
+    {
+      if (headingSupplier.isPresent())
+      {
+        return SwerveInputMode.DIRECT_HEADING;
+      } else
+      {
+        DriverStation.reportError(
+            "Attempting to enter DIRECT_HEADING mode without heading information, please use SwerveInputStream.withHeading to add heading supplier!",
             false);
       }
     } else if (headingEnabled.isPresent() && headingEnabled.get().getAsBoolean())
@@ -980,33 +1026,36 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
       }
       case HEADING ->
       {
-        if (headingSupplier.isPresent()) {
-          // Use direct heading supplier
-          Rotation2d targetHeading = applyHeadingOffset(
-                                        applyAllianceAwareRotation(
-                                          headingSupplier.get().get()));
-                                          
-          omegaRadiansPerSecond = swerveController.headingCalculate(
-              swerveDrive.getOdometryHeading().getRadians(),
-              targetHeading.getRadians());
-        } else {
-          // Use controller joystick inputs
-          omegaRadiansPerSecond = swerveController.headingCalculate(swerveDrive.getOdometryHeading().getRadians(),
-                                                                  Rotation2d.fromRadians(
-                                                                                swerveController.getJoystickAngle(
-                                                                                    controllerHeadingX.get()
-                                                                                                      .getAsDouble(),
-                                                                                    controllerHeadingY.get()
-                                                                                                      .getAsDouble()))
-                                                                            .getRadians());
+        // Use controller joystick inputs
+        omegaRadiansPerSecond = swerveController.headingCalculate(swerveDrive.getOdometryHeading().getRadians(),
+                                                                Rotation2d.fromRadians(
+                                                                              swerveController.getJoystickAngle(
+                                                                                  controllerHeadingX.get()
+                                                                                                    .getAsDouble(),
+                                                                                  controllerHeadingY.get()
+                                                                                                    .getAsDouble()))
+                                                                          .getRadians());
 
-          // Prevent rotation if controller heading inputs are not past axisDeadband
-          if (Math.abs(controllerHeadingX.get().getAsDouble()) + Math.abs(controllerHeadingY.get().getAsDouble()) <
-              axisDeadband.get())
-          {
-            omegaRadiansPerSecond = 0;
-          }
+        // Prevent rotation if controller heading inputs are not past axisDeadband
+        if (Math.abs(controllerHeadingX.get().getAsDouble()) + Math.abs(controllerHeadingY.get().getAsDouble()) <
+            axisDeadband.get())
+        {
+          omegaRadiansPerSecond = 0;
         }
+        speeds = new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
+        break;
+      }
+      case DIRECT_HEADING ->
+      {
+        // Use direct heading supplier
+        Rotation2d targetHeading = applyHeadingOffset(
+                                      applyAllianceAwareRotation(
+                                        headingSupplier.get().get()));
+                                        
+        omegaRadiansPerSecond = swerveController.headingCalculate(
+            swerveDrive.getOdometryHeading().getRadians(),
+            targetHeading.getRadians());
+            
         speeds = new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
         break;
       }
@@ -1081,9 +1130,13 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
      */
     ANGULAR_VELOCITY,
     /**
-     * Output based off of heading.
+     * Output based off of heading from controller axes.
      */
     HEADING,
+    /**
+     * Output based off of direct heading supplier.
+     */
+    DIRECT_HEADING,
     /**
      * Output based off of targeting.
      */

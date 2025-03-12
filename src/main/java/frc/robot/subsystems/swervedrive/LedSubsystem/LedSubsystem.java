@@ -1,40 +1,47 @@
 package frc.robot.subsystems.swervedrive.LedSubsystem;
 
+
+
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.LEDPattern;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LedSubsystem extends SubsystemBase {
-    private final AddressableLED m_led;
-    private final AddressableLEDBuffer m_ledBuffer;
+    private final AddressableLED led;
+    private final AddressableLEDBuffer ledBuffer;
+    private int rainbowFirstPixelHue = 0;
 
-    public LedSubsystem() {
-    // PWM port 9
-    // Must be a PWM header, not MXP or DIO
-    m_led = new AddressableLED(9);
+    public LedSubsystem(int pwmPort, int ledLength) {
+        led = new AddressableLED(pwmPort);
+        ledBuffer = new AddressableLEDBuffer(ledLength);
+        led.setLength(ledBuffer.getLength());
+        led.setData(ledBuffer);
+        led.start();
+    }
 
-    // Reuse buffer
-    // Default to a length of 60, start empty output
-    // Length is expensive to set, so only set it once, then just update data
-    m_ledBuffer = new AddressableLEDBuffer(60);
-    m_led.setLength(m_ledBuffer.getLength());
+    public void setColor(int r, int g, int b) {
+        for (int i = 0; i < ledBuffer.getLength(); i++) {
+            ledBuffer.setRGB(i, r, g, b);
+        }
+        led.setData(ledBuffer);
+    }
 
-    // Set the data
-    m_led.setData(m_ledBuffer);
-    m_led.start();}
-
-    
-    // Create an LED pattern that sets the entire strip to solid red
-  public void turnRed(){ LEDPattern red = LEDPattern.solid(Color.kRed);
-
- // Apply the LED pattern to the data buffer
- red.applyTo(m_ledBuffer);
-
- // Write the data to the LED strip
- m_led.setData(m_ledBuffer);
+    public void setMovingRainbow() {
+      for (int i = 0; i < ledBuffer.getLength(); i++) {
+          // Each LED gets a hue that shifts over time
+          int hue = (rainbowFirstPixelHue + (i * 10)) % 180; // Spread the hue changes across the strip
+          ledBuffer.setHSV(i, hue, 255, 128); // Full saturation, medium brightness
+      }
+  
+      // Shift the entire pattern forward for animation
+      rainbowFirstPixelHue += 3;  
+      rainbowFirstPixelHue %= 180;
+  
+      led.setData(ledBuffer);
+  }
+    @Override
+    public void periodic() {
+        // This could update animations automatically, like a rainbow effect.
+        
+    }
 }
-    
-}
-

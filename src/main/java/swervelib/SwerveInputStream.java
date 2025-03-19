@@ -72,6 +72,10 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
    */
   private Optional<DoubleSupplier>        controllerHeadingY                  = Optional.empty();
   /**
+   * Direct heading supplier as Rotation2d.
+   */
+  private Optional<Supplier<Rotation2d>>  headingSupplier                     = Optional.empty();
+  /**
    * Axis deadband for the controller.
    */
   private Optional<Double>                axisDeadband                        = Optional.empty();
@@ -151,6 +155,10 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
    * Current {@link SwerveInputMode} to use.
    */
   private SwerveInputMode                 currentMode                         = SwerveInputMode.ANGULAR_VELOCITY;
+  /**
+   * Output {@link ChassisSpeeds} based on direct heading while this is True.
+   */
+  private Optional<BooleanSupplier>       directHeadingEnabled                = Optional.empty();
 
 
   /**
@@ -222,6 +230,7 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
     newStream.controllerOmega = controllerOmega;
     newStream.controllerHeadingX = controllerHeadingX;
     newStream.controllerHeadingY = controllerHeadingY;
+    newStream.headingSupplier = headingSupplier;
     newStream.axisDeadband = axisDeadband;
     newStream.translationAxisScale = translationAxisScale;
     newStream.omegaAxisScale = omegaAxisScale;
@@ -242,6 +251,7 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
     newStream.allianceRelative = allianceRelative;
     newStream.translationHeadingOffsetEnabled = translationHeadingOffsetEnabled;
     newStream.translationHeadingOffset = translationHeadingOffset;
+    newStream.directHeadingEnabled = directHeadingEnabled;
     return newStream;
   }
 
@@ -452,6 +462,21 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
   {
     controllerHeadingX = Optional.of(headingX);
     controllerHeadingY = Optional.of(headingY);
+    headingSupplier = Optional.empty(); // Clear any direct heading supplier
+    return this;
+  }
+  
+  /**
+   * Add direct heading supplier for Heading based control.
+   *
+   * @param heading Supplier that provides the desired heading as Rotation2d
+   * @return self
+   */
+  public SwerveInputStream withHeading(Supplier<Rotation2d> heading)
+  {
+    headingSupplier = Optional.of(heading);
+    controllerHeadingX = Optional.empty(); // Clear controller axes
+    controllerHeadingY = Optional.empty(); // Clear controller axes
     return this;
   }
 
@@ -517,6 +542,36 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
     } else
     {
       headingEnabled = Optional.empty();
+    }
+    return this;
+  }
+
+  /**
+   * Enable direct heading control while the supplier is True.
+   *
+   * @param trigger Supplier to use.
+   * @return this.
+   */
+  public SwerveInputStream directHeadingWhile(BooleanSupplier trigger)
+  {
+    directHeadingEnabled = Optional.of(trigger);
+    return this;
+  }
+
+  /**
+   * Set the direct heading enable state.
+   *
+   * @param headingState Direct heading enabled state.
+   * @return this
+   */
+  public SwerveInputStream directHeadingWhile(boolean headingState)
+  {
+    if (headingState)
+    {
+      directHeadingEnabled = Optional.of(() -> true);
+    } else
+    {
+      directHeadingEnabled = Optional.empty();
     }
     return this;
   }
@@ -626,15 +681,26 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
             "Attempting to enter AIM mode without target, please use SwerveInputStream.aim() to select a target first!",
             false);
       }
+    } else if (directHeadingEnabled.isPresent() && directHeadingEnabled.get().getAsBoolean())
+    {
+      if (headingSupplier.isPresent())
+      {
+        return SwerveInputMode.DIRECT_HEADING;
+      } else
+      {
+        DriverStation.reportError(
+            "Attempting to enter DIRECT_HEADING mode without heading information, please use SwerveInputStream.withHeading to add heading supplier!",
+            false);
+      }
     } else if (headingEnabled.isPresent() && headingEnabled.get().getAsBoolean())
     {
-      if (controllerHeadingX.isPresent() && controllerHeadingY.isPresent())
+      if (headingSupplier.isPresent() || (controllerHeadingX.isPresent() && controllerHeadingY.isPresent()))
       {
         return SwerveInputMode.HEADING;
       } else
       {
         DriverStation.reportError(
-            "Attempting to enter HEADING mode without heading axis, please use SwerveInputStream.withControllerHeadingAxis to add heading axis!",
+            "Attempting to enter HEADING mode without heading information, please use SwerveInputStream.withHeading or SwerveInputStream.withControllerHeadingAxis to add heading axis!",
             false);
       }
     } else if (controllerOmega.isEmpty())
@@ -824,6 +890,32 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
   }
 
   /**
+   * Apply alliance aware translation which flips the {@link Rotation2d} if the robot is on the Blue alliance.
+   *
+   * @param fieldRelativeRotation Field-relative {@link Rotation2d} to flip.
+   * @return Alliance-oriented {@link Rotation2d}
+   */
+  private Rotation2d applyAllianceAwareRotation(Rotation2d fieldRelativeRotation)
+  {
+    if (allianceRelative.isPresent() && allianceRelative.get().getAsBoolean())
+    {
+      if (robotRelative.isPresent() && robotRelative.get().getAsBoolean())
+      {
+        if (driveToPoseEnabled.isPresent() && driveToPoseEnabled.get().getAsBoolean())
+        {
+          return fieldRelativeRotation;
+        }
+        throw new RuntimeException("Cannot use robot oriented control with Alliance aware movement!");
+      }
+      if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red)
+      {
+        return fieldRelativeRotation.rotateBy(Rotation2d.k180deg);
+      }
+    }
+    return fieldRelativeRotation;
+  }
+  
+  /**
    * Adds offset to translation if one is set.
    *
    * @param speeds {@link ChassisSpeeds} to offset
@@ -841,6 +933,24 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
       }
     }
     return speeds;
+  }
+  
+  /**
+   * Adds offset to heading if one is set.
+   *
+   * @param fieldRelativeRotation Field-relative {@link Rotation2d} to offset
+   * @return Offsetted {@link Rotation2d}
+   */
+  private Rotation2d applyHeadingOffset(Rotation2d fieldRelativeRotation)
+  {
+    if (translationHeadingOffsetEnabled.isPresent() && translationHeadingOffsetEnabled.get().getAsBoolean())
+    {
+      if (translationHeadingOffset.isPresent())
+      {
+        return fieldRelativeRotation.rotateBy(translationHeadingOffset.get());
+      }
+    }
+    return fieldRelativeRotation;
   }
 
   /**
@@ -917,14 +1027,15 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
       }
       case HEADING ->
       {
+        // Use controller joystick inputs
         omegaRadiansPerSecond = swerveController.headingCalculate(swerveDrive.getOdometryHeading().getRadians(),
-                                                                  Rotation2d.fromRadians(
-                                                                                swerveController.getJoystickAngle(
-                                                                                    controllerHeadingX.get()
-                                                                                                      .getAsDouble(),
-                                                                                    controllerHeadingY.get()
-                                                                                                      .getAsDouble()))
-                                                                            .getRadians());
+                                                                Rotation2d.fromRadians(
+                                                                              swerveController.getJoystickAngle(
+                                                                                  controllerHeadingX.get()
+                                                                                                    .getAsDouble(),
+                                                                                  controllerHeadingY.get()
+                                                                                                    .getAsDouble()))
+                                                                          .getRadians());
 
         // Prevent rotation if controller heading inputs are not past axisDeadband
         if (Math.abs(controllerHeadingX.get().getAsDouble()) + Math.abs(controllerHeadingY.get().getAsDouble()) <
@@ -932,6 +1043,20 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
         {
           omegaRadiansPerSecond = 0;
         }
+        speeds = new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
+        break;
+      }
+      case DIRECT_HEADING ->
+      {
+        // Use direct heading supplier
+        Rotation2d targetHeading = applyHeadingOffset(
+                                      applyAllianceAwareRotation(
+                                        headingSupplier.get().get()));
+                                        
+        omegaRadiansPerSecond = swerveController.headingCalculate(
+            swerveDrive.getOdometryHeading().getRadians(),
+            targetHeading.getRadians());
+            
         speeds = new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
         break;
       }
@@ -1006,9 +1131,13 @@ public class SwerveInputStream implements Supplier<ChassisSpeeds>
      */
     ANGULAR_VELOCITY,
     /**
-     * Output based off of heading.
+     * Output based off of heading from controller axes.
      */
     HEADING,
+    /**
+     * Output based off of direct heading supplier.
+     */
+    DIRECT_HEADING,
     /**
      * Output based off of targeting.
      */

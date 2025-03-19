@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class ArmSubsystem extends SubsystemBase {
-    SparkMax sparkMax = new SparkMax(9, MotorType.kBrushed);
+    //SparkMax sparkMax = new SparkMax(9, MotorType.kBrushed);
     Joystick joystick = new Joystick(1);
     double armSpeed = 0.0;
 
@@ -24,7 +24,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     private void setArmSpeed(double speed) {
         armSpeed = speed;
-        sparkMax.set(armSpeed);
+        //sparkMax.set(armSpeed);
     }
 
     public void stopArm() {
@@ -32,7 +32,7 @@ public class ArmSubsystem extends SubsystemBase {
             setArmSpeed(lerpDouble(armSpeed, 0.0, 0.45));
         } else {
             setArmSpeed(0.0);
-            sparkMax.stopMotor();
+            //sparkMax.stopMotor();
         }        
     }
 

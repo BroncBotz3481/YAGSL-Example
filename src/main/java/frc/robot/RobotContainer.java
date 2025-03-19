@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.LimelightSubsystem;
 import java.io.File;
 import swervelib.SwerveInputStream;
 
@@ -39,7 +38,6 @@ public class RobotContainer
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve/neo"));
 
-  private final LimelightSubsystem    limelight  = new LimelightSubsystem();
   private final ArmSubsystem          arm         = new ArmSubsystem();
 
   /**
@@ -158,10 +156,6 @@ public class RobotContainer
       driverXbox.back().whileTrue(Commands.none());
       driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.rightBumper().onTrue(Commands.none());
-
-      //driverXbox.a().onTrue(Commands.runOnce(limelight::turnOn));
-      driverXbox.b().onTrue(Commands.runOnce(limelight::turnOff));
-      //driverXbox.x().onTrue(Commands.runOnce(limelight::scanAprilTag));
 
       driverJoystick.button(8).onTrue(Commands.run(arm::putArmDiagnostics));
       driverJoystick.button(1).whileTrue(Commands.run(arm::adjustArmSpeed)); // move arm when joystick trigger is held down

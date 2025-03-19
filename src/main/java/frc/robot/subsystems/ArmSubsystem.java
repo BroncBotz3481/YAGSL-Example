@@ -28,10 +28,12 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void stopArm() {
-        while (armSpeed > )
-
-
-        sparkMax.stopMotor();
+        if (armSpeed >= 0.0000001 || armSpeed <= -0.0000001) {
+            setArmSpeed(lerpDouble(armSpeed, 0.0, 0.45));
+        } else {
+            setArmSpeed(0.0);
+            sparkMax.stopMotor();
+        }        
     }
 
     public void putArmDiagnostics() { // show arm diagnostics in the smart dashboard

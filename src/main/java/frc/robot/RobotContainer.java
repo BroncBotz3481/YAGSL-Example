@@ -165,7 +165,7 @@ public class RobotContainer
 
       driverJoystick.button(8).onTrue(Commands.run(arm::putArmDiagnostics));
       driverJoystick.button(1).whileTrue(Commands.run(arm::adjustArmSpeed)); // move arm when joystick trigger is held down
-      driverJoystick.button(1).whileFalse(Commands.runOnce(arm::stopArm));
+      driverJoystick.button(1).whileFalse(Commands.run(arm::stopArm));
     }
   }
 

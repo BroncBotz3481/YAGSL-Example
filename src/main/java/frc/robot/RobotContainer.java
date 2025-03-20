@@ -147,7 +147,7 @@ public class RobotContainer
       driverXbox.rightBumper().onTrue(Commands.none());
     } else
     {
-      //driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+      driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
       //driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
       //driverXbox.b().whileTrue(
       //    drivebase.driveToPose(
@@ -157,9 +157,9 @@ public class RobotContainer
       driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.rightBumper().onTrue(Commands.none());
 
-      driverJoystick.button(8).onTrue(Commands.run(arm::putArmDiagnostics));
-      driverJoystick.button(1).whileTrue(Commands.run(arm::adjustArmSpeed)); // move arm when joystick trigger is held down
-      driverJoystick.button(1).whileFalse(Commands.run(arm::stopArm));
+      //driverJoystick.button(8).onTrue(Commands.run(arm::putArmDiagnostics));
+      //driverJoystick.button(1).whileTrue(Commands.run(arm::adjustArmSpeed)); // move arm when joystick trigger is held down
+      //driverJoystick.button(1).whileFalse(Commands.run(arm::stopArm));
     }
   }
 

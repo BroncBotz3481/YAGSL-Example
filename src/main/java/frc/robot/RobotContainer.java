@@ -19,7 +19,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ArmSpinnySubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+
 import java.io.File;
 import swervelib.SwerveInputStream;
 
@@ -38,7 +42,10 @@ public class RobotContainer
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve/neo"));
 
-  private final ArmSubsystem          arm         = new ArmSubsystem();
+  private final ElevatorSubsystem          elevator         = new ElevatorSubsystem();
+  private final IntakeSubsystem            intake      = new IntakeSubsystem();
+  private final ArmSpinnySubsystem         armSpin    = new ArmSpinnySubsystem();
+  private final ClimberSubsystem           climber     = new ClimberSubsystem();
 
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
@@ -157,9 +164,31 @@ public class RobotContainer
       driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.rightBumper().onTrue(Commands.none());
 
-      //driverJoystick.button(8).onTrue(Commands.run(arm::putArmDiagnostics));
-      //driverJoystick.button(1).whileTrue(Commands.run(arm::adjustArmSpeed)); // move arm when joystick trigger is held down
-      //driverJoystick.button(1).whileFalse(Commands.run(arm::stopArm));
+
+      // elevator
+      driverJoystick.button(1).whileTrue(Commands.run(elevator::getJoystickInput)); // move elevator when joystick trigger is held down
+      driverJoystick.button(1).whileFalse(Commands.run(elevator::stopElevator));
+
+      // intake
+      driverJoystick.button(2).whileTrue(Commands.run(intake::intakeIn)); // intake in
+      driverJoystick.button(3).whileTrue(Commands.run(intake::intakeOut)); // intake out
+      driverJoystick.button(2).or(driverJoystick.button(3)).whileFalse(Commands.runOnce(intake::intakeStop)); // stop intake
+
+      // arm spin
+      driverJoystick.button(4).whileTrue(Commands.run(armSpin::clockwiseSpin)); // clockwise spin
+      driverJoystick.button(5).whileTrue(Commands.run(armSpin::counterClockwiseSpin)); // counter clockwise spin
+      driverJoystick.button(4).or(driverJoystick.button(5)).whileFalse(Commands.run(armSpin::stopSpin)); // stop arm
+
+      // climber
+      driverJoystick.button(6).whileTrue(Commands.run(climber::climberIn)); // climber in
+      driverJoystick.button(7).whileTrue(Commands.run(climber::climberOut)); // climber out
+      driverJoystick.button(6).or(driverJoystick.button(7)).whileFalse(Commands.run(climber::climberStop)); // stop climber
+
+      // diagnostics
+      driverJoystick.button(8).onTrue(Commands.run(elevator::putElevatorDiagnostics));
+      driverJoystick.button(8).onTrue(Commands.run(intake::putIntakeDiagnostics));
+      driverJoystick.button(8).onTrue(Commands.run(armSpin::putArmDiagnostics));
+      driverJoystick.button(8).onTrue(Commands.run(climber::putClimberDiagnostics));
     }
   }
 

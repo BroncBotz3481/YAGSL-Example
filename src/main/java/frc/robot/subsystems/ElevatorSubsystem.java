@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class ElevatorSubsystem extends SubsystemBase {
-    SparkMax elevator = new SparkMax(13, MotorType.kBrushless);
+    SparkMax elevator = new SparkMax(21, MotorType.kBrushless); // TODO: FIX THIS, IS BROKEN!!!!
     DigitalInput topLimitSwitch = new DigitalInput(0); // TODO: temporary values, replace later
     DigitalInput bottomLimitSwitch = new DigitalInput(1);
 

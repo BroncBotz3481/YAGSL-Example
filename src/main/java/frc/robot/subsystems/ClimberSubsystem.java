@@ -11,7 +11,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ClimberSubsystem extends SubsystemBase {
-    SparkMax climber = new SparkMax(16, MotorType.kBrushless); // TODO: temporary value, replace later
+    SparkMax climber = new SparkMax(26, MotorType.kBrushless); // TODO: temporary value, replace later
 
     double climberSpeed = 0.0;
     

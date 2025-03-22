@@ -10,7 +10,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ArmSpinnySubsystem extends SubsystemBase {
-    SparkMax armSpinny = new SparkMax(15, MotorType.kBrushless); // TODO: temp value, fix
+    SparkMax armSpinny = new SparkMax(25, MotorType.kBrushless); // TODO: temp value, fix
 
     double armSpeed = 0.0;
 

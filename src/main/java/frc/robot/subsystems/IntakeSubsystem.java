@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 
 public class IntakeSubsystem extends SubsystemBase {
-    SparkMax intake = new SparkMax(14, MotorType.kBrushless); // TODO: temporary value, replace later
+    SparkMax intake = new SparkMax(23, MotorType.kBrushless); // TODO: temporary value, replace later
 
     double intakeSpeed = 0.0; // this is here to assist with debugging
     

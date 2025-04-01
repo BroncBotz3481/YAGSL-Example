@@ -6,65 +6,65 @@
     "GLOBAL": {
       "font": "Proggy Dotted",
       "fps": "120",
-      "height": "720",
-      "maximized": "0",
+      "height": "1984",
+      "maximized": "1",
       "style": "0",
       "userScale": "2",
-      "width": "1280",
-      "xpos": "193",
-      "ypos": "106"
+      "width": "3840",
+      "xpos": "0",
+      "ypos": "56"
     }
   },
   "Window": {
     "###/FMSInfo": {
       "Collapsed": "0",
-      "Pos": "60,60",
-      "Size": "181,167"
+      "Pos": "819,899",
+      "Size": "368,329"
     },
     "###/SmartDashboard/Field": {
       "Collapsed": "0",
-      "Pos": "166,24",
-      "Size": "740,373"
+      "Pos": "1478,31",
+      "Size": "1920,1157"
     },
     "###FMS": {
       "Collapsed": "0",
-      "Pos": "4,414",
-      "Size": "169,184"
+      "Pos": "342,656",
+      "Size": "383,364"
     },
     "###Joysticks": {
       "Collapsed": "0",
-      "Pos": "250,465",
-      "Size": "796,189"
+      "Pos": "1205,1515",
+      "Size": "1876,462"
     },
     "###Keyboard 0 Settings": {
       "Collapsed": "0",
-      "Pos": "369,59",
-      "Size": "300,560"
+      "Pos": "368,1359",
+      "Size": "367,560"
     },
     "###NetworkTables": {
       "Collapsed": "0",
-      "Pos": "399,253",
+      "Pos": "670,1253",
       "Size": "750,236"
     },
     "###NetworkTables Info": {
-      "Collapsed": "1",
-      "Pos": "250,129",
-      "Size": "750,145"
+      "Collapsed": "0",
+      "Pos": "80,63",
+      "Size": "750,320"
     },
     "###Other Devices": {
       "Collapsed": "0",
-      "Pos": "1025,20",
-      "Size": "250,695"
+      "Pos": "1006,51",
+      "Size": "278,695"
     },
     "###System Joysticks": {
       "Collapsed": "0",
-      "Pos": "205,308",
-      "Size": "192,218"
+      "Pos": "900,977",
+      "Size": "435,434"
     },
     "###Timing": {
       "Collapsed": "0",
-      "Pos": "5,150",
-      "Size": "135,219"
+      "Pos": "42,507",
+      "Size": "294,299"
     },
     "Debug##Default": {
       "Collapsed": "0",
@@ -73,8 +73,8 @@
     },
     "Robot State": {
       "Collapsed": "0",
-      "Pos": "7,20",
-      "Size": "92,116"
+      "Pos": "37,101",
+      "Size": "213,224"
     }
   }
 }

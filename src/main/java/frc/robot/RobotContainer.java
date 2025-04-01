@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,6 +15,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -36,6 +39,14 @@ public class RobotContainer
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve/neo"));
+
+  // Establishing the Auto Chooser that will appear on the SmartDashboard
+  private final SendableChooser<Command> autoChooser;
+
+  /**
+   * Enable using PathPlanner for autos
+   */  
+  private final boolean     usingPathPlanner = false; //default is set to not use PathPlanner
 
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
@@ -98,7 +109,20 @@ public class RobotContainer
     // Configure the trigger bindings
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
+    
+    
+    // Create the NamedCommands that will be used in PathPlanner
     NamedCommands.registerCommand("test", Commands.print("I EXIST"));
+  
+    
+    //Set the default auto and put the autoChoser on the SmartDashboard
+    autoChooser = AutoBuilder.buildAutoChooser("Drive Forward"); // A default auto will be run in autonomous if a different auto is not selected
+                                                                                 // This auto has only a path that will drive forward 0.5M from the start line
+                                                                                 // The usingPathPlanner boolean must be set to true for this auto to run
+
+    SmartDashboard.putData("Auto Chooser", autoChooser); 
+    
+
   }
 
   /**
@@ -184,9 +208,18 @@ public class RobotContainer
    */
   public Command getAutonomousCommand()
   {
-    // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("New Auto");
+    if (usingPathPlanner) {
+
+      return autoChooser.getSelected();
+    }
+    else {
+
+      return Commands.runOnce(drivebase::zeroGyroWithAlliance);
+
+    }
+    
   }
+
 
   public void setMotorBrake(boolean brake)
   {

@@ -18,7 +18,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -37,7 +36,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   /**
    * Config retry delay.
    */
-  private final double                    configDelay = Milliseconds.of(5).in(Seconds);
+  private final double                          configDelay     = Milliseconds.of(5).in(Seconds);
   /**
    * SparkMAX Instance.
    */
@@ -45,11 +44,11 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   /**
    * Absolute encoder attached to the SparkMax (if exists)
    */
-  public        Optional<SwerveAbsoluteEncoder> absoluteEncoder;
+  public        Optional<SwerveAbsoluteEncoder> absoluteEncoder = Optional.empty();
   /**
    * Integrated encoder.
    */
-  public        Optional<RelativeEncoder> encoder     = Optional.empty();
+  public        Optional<RelativeEncoder>       encoder         = Optional.empty();
   /**
    * Closed-loop PID controller.
    */
@@ -77,7 +76,7 @@ public class SparkMaxBrushedMotorSwerve extends SwerveMotor
   /**
    * Configuration object for {@link SparkMax} motor.
    */
-  private       SparkMaxConfig            cfg         = new SparkMaxConfig();
+  private       SparkMaxConfig                  cfg             = new SparkMaxConfig();
 
   /**
    * Initialize the swerve motor.

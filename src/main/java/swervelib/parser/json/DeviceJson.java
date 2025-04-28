@@ -17,7 +17,6 @@ import swervelib.encoders.SparkMaxAnalogEncoderSwerve;
 import swervelib.encoders.SparkMaxEncoderSwerve;
 import swervelib.encoders.SwerveAbsoluteEncoder;
 import swervelib.encoders.TalonSRXEncoderSwerve;
-import swervelib.encoders.ThriftyNovaEncoderSwerve;
 import swervelib.imu.ADIS16448Swerve;
 import swervelib.imu.ADIS16470Swerve;
 import swervelib.imu.ADXRS450Swerve;
@@ -36,7 +35,8 @@ import swervelib.motors.SwerveMotor;
 import swervelib.motors.TalonFXSSwerve;
 import swervelib.motors.TalonFXSwerve;
 import swervelib.motors.TalonSRXSwerve;
-import swervelib.motors.ThriftyNovaSwerve;
+import swervelib.parser.deserializer.ReflectionsManager;
+import swervelib.parser.deserializer.ReflectionsManager.VENDOR;
 
 /**
  * Device JSON parsed class. Used to access the JSON data.
@@ -111,7 +111,10 @@ public class DeviceJson
       case "talonsrx_analog":
         return new TalonSRXEncoderSwerve(motor, FeedbackDevice.Analog);
       case "thrifty_nova":
-        return new ThriftyNovaEncoderSwerve(motor);
+        return ReflectionsManager.<SwerveAbsoluteEncoder>create(VENDOR.THRIFTYBOT,
+                                                                "com.thethriftybot.ThriftyNova",
+                                                                new Class[]{SwerveMotor.class},
+                                                                new Object[]{motor});
       default:
         throw new RuntimeException(type + " is not a recognized absolute encoder type.");
     }
@@ -247,21 +250,37 @@ public class DeviceJson
           default:
             if (isDriveMotor)
             {
-              throw new RuntimeException("Spark MAX " + id + " MUST have a encoder attached to the motor controller.");
+              throw new RuntimeException(
+                  "Spark MAX " + id + " MUST have a encoder attached to the motor controller.");
             }
             // We are creating a motor for an angle motor which will use the absolute encoder attached to the data port.
             return new SparkMaxBrushedMotorSwerve(id, isDriveMotor, Type.kNoSensor, 0, false, DCMotor.getCIM(1));
         }
       case "nova_neo":
-        return new ThriftyNovaSwerve(id, isDriveMotor, DCMotor.getNEO(1));
+        return ReflectionsManager.<SwerveMotor>create(VENDOR.THRIFTYBOT,
+                                                      "swervelib.motors.ThriftyNovaSwerve",
+                                                      new Class[]{int.class, boolean.class, DCMotor.class},
+                                                      new Object[]{id, isDriveMotor, DCMotor.getNEO(1)});
+
       case "nova_neo550":
-        return new ThriftyNovaSwerve(id, isDriveMotor, DCMotor.getNeo550(1));
+
+        return ReflectionsManager.<SwerveMotor>create(VENDOR.THRIFTYBOT,
+                                                      "swervelib.motors.ThriftyNovaSwerve",
+                                                      new Class[]{int.class, boolean.class, DCMotor.class},
+                                                      new Object[]{id, isDriveMotor, DCMotor.getNeo550(1)});
+
       case "nova_vortex":
-        return new ThriftyNovaSwerve(id, isDriveMotor, DCMotor.getNeoVortex(1));
+
+        return ReflectionsManager.<SwerveMotor>create(VENDOR.THRIFTYBOT,
+                                                      "swervelib.motors.ThriftyNovaSwerve",
+                                                      new Class[]{int.class, boolean.class, DCMotor.class},
+                                                      new Object[]{id, isDriveMotor, DCMotor.getNeoVortex(1)});
+
       case "nova_minion":
         throw new UnsupportedOperationException("Cannot create minion combination");//return new ThriftyNovaSwerve(id, isDriveMotor, DCMotor.getMinion(1));
       default:
         throw new RuntimeException(type + " is not a recognized motor type.");
     }
+
   }
 }

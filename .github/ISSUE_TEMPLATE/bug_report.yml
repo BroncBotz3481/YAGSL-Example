@@ -84,5 +84,5 @@ body:
       options:
         - label: "I am using the latest version of YAGSL."
           required: true
-        - label: "I have searched [open and closed issues](https://github.com/BroncBotz/YAGSL/issues) for duplicates."
+        - label: "I have searched [open and closed issues](https://github.com/BroncBotz/YAGSL-Example/issues) for duplicates."
           required: true

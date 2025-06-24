@@ -1,0 +1,88 @@
+name: "🐛 Bug Report"
+description: "File a bug report for YAGSL"
+title: "[BUG] <short description>"
+labels: [bug]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve YAGSL! Please complete the following form with as much detail as possible.
+
+  - type: input
+    id: version
+    attributes:
+      label: "YAGSL Version"
+      description: "What version of YAGSL are you using? (e.g. 2025.8.0)"
+      placeholder: "e.g. 2025.8.0"
+    validations:
+      required: true
+
+  - type: input
+    id: wpilib-version
+    attributes:
+      label: "WPILib Version"
+      description: "What version of WPILib are you using?"
+      placeholder: "e.g. 2025.3.1"
+    validations:
+      required: true
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: "Bug Description"
+      description: "What happened? What did you expect to happen?"
+      placeholder: "When I enable the robot, the swerve drive doesn't respond..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: "Steps to Reproduce"
+      description: "Please provide a step-by-step list to reproduce the issue."
+      placeholder: |
+        1. Clone repo
+        2. Deploy to roboRIO
+        3. Enable robot
+        4. Observe output...
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: "Logs or Stack Traces"
+      description: "Paste relevant logs or exception traces (formatted in code block if possible)."
+      render: shell
+
+  - type: textarea
+    id: code-snippet
+    attributes:
+      label: "Relevant Code (Optional)"
+      description: "Paste any code related to the issue. Format it properly for readability."
+      render: java
+
+  - type: input
+    id: hardware
+    attributes:
+      label: "What hardware are you using?"
+      description: "Include motor types, encoders, and controllers (e.g. Falcon500 + Pigeon2 + SDS MK4i)."
+      placeholder: "e.g. Falcon500, CTRE CANCoder, SDS MK4i L2"
+
+  - type: input
+    id: image-or-repo
+    attributes:
+      label: "Screenshot or Repository (Optional)"
+      description: "You may paste a link to an image (e.g. a screenshot of the error or setup) or the repository showing the issue."
+      placeholder: "e.g. https://github.com/YourTeam/your-robot-code"
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: "Acknowledgements"
+      description: "Please confirm the following:"
+      options:
+        - label: "I am using the latest version of YAGSL."
+          required: true
+        - label: "I have searched [open and closed issues](https://github.com/BroncBotz/YAGSL-Example/issues) for duplicates."
+          required: true

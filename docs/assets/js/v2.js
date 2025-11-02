@@ -63,16 +63,19 @@ function jsonify(name) {
         }
       }
       if (subStruct == null) {
-        data[struct][val.name.substring(val.name.lastIndexOf('_') + 1)] =
-            isNumeric(val.value) ?
-                parseFloat(val.value) :
-                (val.value === "" ? null : val.value);
+        const field = val.name.substring(val.name.lastIndexOf('_') + 1);
+      const $input = $(`#${name}-form [name="${val.name}"]`);
+      const isCanBusField = val.name.toLowerCase().includes('canbus');
+      data[struct][field] = isCanBusField && $input.attr('data-is-null') === 'true' ? 
+          null : 
+          (isNumeric(val.value) ? parseFloat(val.value) : (val.value === "" ? null : val.value));
       } else {
-        data[struct][subStruct][val.name.substring(
-            val.name.lastIndexOf('_') + 1)] =
-            isNumeric(val.value) ?
-                parseFloat(val.value) :
-                (val.value === "" ? null : val.value);
+        const field = val.name.substring(val.name.lastIndexOf('_') + 1);
+        const $input = $(`#${name}-form [name="${val.name}"]`);
+        const isCanBusField = val.name.toLowerCase().includes('canbus');
+        data[struct][subStruct][field] = isCanBusField && $input.attr('data-is-null') === 'true' ? 
+            null : 
+            (isNumeric(val.value) ? parseFloat(val.value) : (val.value === "" ? null : val.value));
       }
     } else {
       data[val.name] = isNumeric(val.value) ?
@@ -154,6 +157,196 @@ function zipDownload() {
   console.log("Downloaded YAGSL Config zip");
 }
 
+function addZipImporter() {
+  // If import button already exists, don't recreate; just ensure it's placed correctly
+  let existingImport = document.getElementById('import-zip-button');
+  let fileInput = document.getElementById('zip-file-input');
+
+  // Create hidden file input if missing
+  if (!fileInput) {
+    fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.zip,application/zip';
+    fileInput.id = 'zip-file-input';
+    fileInput.style.display = 'none';
+    document.body.appendChild(fileInput);
+  }
+  // Attach change listener once
+  if (!fileInput.__yagsl_listener_attached) {
+    fileInput.addEventListener('change', (e) => {
+      const f = e.target.files && e.target.files[0];
+      if (f) {
+        importZipFile(f);
+      }
+      fileInput.value = '';
+    });
+    fileInput.__yagsl_listener_attached = true;
+  }
+
+  // Helper to create a button only when needed
+  function makeButton(id, className, text, inlineStyle) {
+    const btn = document.createElement('button');
+    btn.id = id;
+    btn.type = 'button';
+    btn.className = className;
+    btn.textContent = text;
+    if (inlineStyle) btn.style.cssText = inlineStyle;
+    return btn;
+  }
+
+  if (!existingImport) {
+    existingImport = makeButton('import-zip-button', 'btn btn-primary btn-lg mt-2 mb-3', 'Import ZIP', null);
+    existingImport.addEventListener('click', () => fileInput.click());
+  }
+
+  // No test button: removed per user request
+
+  // Place buttons next to existing download button if present
+  const downloadContainer = document.getElementById('download-button');
+  if (downloadContainer) {
+    // Force layout with !important to ensure consistency
+    downloadContainer.style.cssText = `
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      gap: 10px !important;
+      flex-wrap: nowrap !important;
+      margin-bottom: 1rem !important;
+    `;
+    
+    // Avoid re-appending if already inside
+    if (!downloadContainer.contains(existingImport)) downloadContainer.appendChild(existingImport);
+    if (!downloadContainer.contains(fileInput)) downloadContainer.appendChild(fileInput);
+    
+    // Find and move the Run Import Tests button if it exists (use the known id)
+    const runImportButton = document.getElementById('run-import-tests');
+    if (runImportButton && !downloadContainer.contains(runImportButton)) {
+      downloadContainer.appendChild(runImportButton);
+    }
+    return;
+  }
+
+  // Fallback: create fixed container at top-right (used for embedded mode)
+  let fixedButtons = document.getElementById('fixed-buttons');
+  if (!fixedButtons) {
+    fixedButtons = document.createElement('div');
+    fixedButtons.id = 'fixed-buttons';
+    fixedButtons.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      gap: 10px;
+      flex-direction: column;
+    `;
+    document.body.appendChild(fixedButtons);
+  }
+
+  if (!fixedButtons.contains(existingImport)) fixedButtons.appendChild(existingImport);
+}
+
+// Modify the initialization to ensure DOM is loaded
+function initializeUI() {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupButtons);
+  } else {
+    setupButtons();
+  }
+}
+
+function setupButtons() {
+  updateAll();
+  setInterval(updateAll, 500);
+}
+
+function importZipFile(file) {
+  const jszip = new JSZip();
+  jszip.loadAsync(file).then((zip) => {
+    // mapping of expected zip paths to form names
+    const mapping = {
+      'swerve/controllerproperties.json': 'controllerproperties',
+      'swerve/swervedrive.json': 'swervedrive',
+      'swerve/modules/physicalproperties.json': 'physicalproperties',
+      'swerve/modules/frontleft.json': 'frontleft',
+      'swerve/modules/frontright.json': 'frontright',
+      'swerve/modules/backleft.json': 'backleft',
+      'swerve/modules/backright.json': 'backright',
+      'swerve/modules/pidfproperties.json': 'pidfproperties'
+    };
+
+    // try each expected file; when present, load and populate
+    Object.keys(mapping).forEach((path) => {
+      const entry = zip.file(path);
+      if (entry) {
+        entry.async('string').then((content) => {
+          try {
+            const obj = JSON.parse(content);
+            const name = mapping[path];
+            // update JSON textarea display
+            $(`#${name}-json`).text(JSON.stringify(obj, null, 2));
+            // populate form inputs where possible
+            populateFormFromObject(name, obj);
+            updateAll();
+          } catch (e) {
+            console.error('Failed to parse JSON from', path, e);
+          }
+        });
+      }
+    });
+
+  }).catch((err) => {
+    console.error('Failed to read ZIP', err);
+    alert('Failed to read ZIP file. See console for details.');
+  });
+}
+
+// Populate a form identified by `name` from a parsed JSON object.
+// Handles up to two levels of nesting to match the serialize naming convention
+// used elsewhere in the app (struct_subStruct_field).
+function populateFormFromObject(name, obj) {
+  if (!obj || typeof obj !== 'object') return;
+  const $form = $(`#${name}-form`);
+  if ($form.length === 0) return;
+
+  function setInputValue($input, value) {
+    if (!$input.length) return;
+    if ($input.attr('type') === 'checkbox') {
+      $input.prop('checked', !!value);
+    } else {
+      // Always remove data-is-null first
+      $input.removeAttr('data-is-null');
+      
+      // Special handling for CAN bus fields
+      const isCanBusField = $input.attr('name').toLowerCase().includes('canbus');
+      if (isCanBusField && value === null) {
+        // For null CAN bus values, set empty value but mark as null
+        $input.val('');
+        $input.attr('data-is-null', 'true');
+      } else {
+        // For all other fields (including non-null CAN bus)
+        const finalValue = (value === null || value === undefined || value === '') ? '' : value;
+        $input.val(finalValue);
+      }
+    }
+  }
+
+  function processNestedObject(baseKey, nestedObj) {
+    Object.entries(nestedObj).forEach(([key, value]) => {
+      const fullKey = baseKey ? `${baseKey}_${key}` : key;
+      if (value !== null && typeof value === 'object') {
+        // Recursively process nested objects
+        processNestedObject(fullKey, value);
+      } else {
+        const $input = $form.find(`[name="${fullKey}"]`);
+        setInputValue($input, value);
+      }
+    });
+  }
+
+  processNestedObject('', obj);
+}
+
 $(function () {
   const tooltipTriggerList = document.querySelectorAll(
       '[data-bs-toggle="tooltip"]'); // Initialize tooltips: https://getbootstrap.com/docs/5.3/components/tooltips/#enable-tooltips
@@ -165,6 +358,7 @@ $(function () {
     return false;
   });
 
-  updateAll();
-  setInterval(updateAll, 500);
+  // Single initialization point for all UI elements
+  addZipImporter();
+  setupButtons();
 });

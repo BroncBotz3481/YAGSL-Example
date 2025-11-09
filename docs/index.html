@@ -1283,10 +1283,13 @@
       </div>
     </div>
   </div>
-  <div id="download-button">
+  <div id="download-button" class="d-flex align-items-center justify-content-center gap-2">
     <button class="btn btn-primary btn-lg mt-2 mb-3" id="download" onclick="zipDownload()"
             type="button">Download
     </button>
+  </div>
+  <div class="text-muted text-center small mt-2">
+    Build: November 3, 2025
   </div>
 </div>
 <script src="https://unpkg.com/@popperjs/core@2"></script>
@@ -1300,6 +1303,15 @@
 <script
     src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
 <script src="assets/js/v2.js"></script>
+<script>
+  // Check if the import-test parameter is explicitly set to true
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('import-test') === 'true') {
+    const script = document.createElement('script');
+    script.src = 'assets/js/import-test.js';
+    document.body.appendChild(script);
+  }
+</script>
 
 </body>
 

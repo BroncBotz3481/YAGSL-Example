@@ -13,3 +13,24 @@ input[type=number] {
 .v2-tooltip {
   --bs-tooltip-bg: var(--bs-secondary);
 }
+
+/* Button container for fixed buttons */
+/* Add this to your Google Sites custom CSS */
+#fixed-buttons button:hover {
+  opacity: 0.9;
+}
+
+#fixed-buttons {
+  pointer-events: auto !important;
+}
+
+.btn {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Add top margin to main content to prevent buttons from overlapping */
+.container-md {
+  margin-top: 60px;  /* Provides space for the fixed buttons */
+}
